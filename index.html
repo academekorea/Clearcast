@@ -15,7 +15,6 @@
   --amber-bg:#faeeda;--amber-text:#854f0b;--amber:#ba7517;
   --blue-bg:#e6f1fb;--blue-text:#0c447c;
   --green-bg:#eaf3de;--green-text:#27500a;
-  --purple-bg:#eeedfe;--purple-text:#3c3489;
 }
 @media(prefers-color-scheme:dark){
   :root{
@@ -26,7 +25,6 @@
     --amber-bg:#251800;--amber-text:#fac775;
     --blue-bg:#031e3a;--blue-text:#85b7eb;
     --green-bg:#0e2100;--green-text:#97c459;
-    --purple-bg:#160f3e;--purple-text:#afa9ec;
   }
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
@@ -48,11 +46,12 @@ input[type=text]::placeholder{color:var(--text3)}
 .btn-primary{background:var(--text);color:var(--bg)}
 .btn-primary:hover{opacity:0.82}
 .btn-primary:disabled{opacity:0.4;cursor:not-allowed}
-.btn-ghost{background:transparent;color:var(--text2);border:0.5px solid var(--border2)}
+.btn-ghost{background:transparent;color:var(--text2);border:0.5px solid var(--border2);cursor:pointer;font-family:inherit}
 .btn-ghost:hover{background:var(--bg3)}
 .hints{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
 .hints span{font-size:12px;color:var(--text3)}
 .hints span::before{content:"↗ "}
+.note{font-size:12px;color:var(--text3);margin-top:10px;line-height:1.5}
 .tabs-wrap{max-width:660px;margin:24px auto 14px;padding:0 20px;display:none;gap:6px}
 .tabs-wrap.on{display:flex}
 .tab{padding:7px 15px;font-size:13px;font-family:inherit;border:0.5px solid var(--border);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
@@ -86,6 +85,16 @@ input[type=text]::placeholder{color:var(--text3)}
 .flag-title{font-size:13px;font-weight:500;margin-bottom:3px}
 .flag-detail{font-size:12px;color:var(--text2);line-height:1.5}
 .rcard-foot{padding:12px 18px;border-top:0.5px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
+.loading{text-align:center;padding:48px 20px;max-width:660px;margin:0 auto;display:none}
+.loading.on{display:block}
+.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-size:15px;font-weight:500;margin-bottom:6px}
+.loading p{font-size:13px;color:var(--text2)}
+.empty{text-align:center;padding:48px 20px}
+.empty h3{font-size:15px;font-weight:500;margin-bottom:6px}
+.empty p{font-size:13px;color:var(--text2)}
+.error-card{background:var(--red-bg);border:0.5px solid var(--red-text);border-radius:var(--r-lg);padding:16px 18px;color:var(--red-text);font-size:13px;margin-bottom:14px}
 .live-header{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:14px}
 .live-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .live-show{font-size:14px;font-weight:500}
@@ -111,14 +120,6 @@ input[type=text]::placeholder{color:var(--text3)}
 .badge-icon{width:26px;height:26px;border-radius:50%;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .badge-title{font-size:13px;font-weight:500}
 .badge-sub{font-size:11px;color:var(--text3)}
-.loading{text-align:center;padding:40px 20px;max-width:660px;margin:0 auto;display:none}
-.loading.on{display:block}
-.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading p{font-size:13px;color:var(--text2)}
-.empty{text-align:center;padding:48px 20px}
-.empty h3{font-size:15px;font-weight:500;margin-bottom:6px}
-.empty p{font-size:13px;color:var(--text2)}
 footer{border-top:0.5px solid var(--border);padding:20px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 footer p{font-size:12px;color:var(--text3)}
 </style>
@@ -132,21 +133,20 @@ footer p{font-size:12px;color:var(--text3)}
 
 <div class="hero">
   <h1>Know what you're<br><span>actually listening to</span></h1>
-  <p>Paste any podcast URL. We surface bias, unverified claims, and missing perspectives — so you can listen with your guard up.</p>
+  <p>Paste a direct podcast audio URL or RSS feed. We surface bias, unverified claims, and missing perspectives.</p>
 </div>
 
 <div class="input-wrap">
   <div class="input-card">
     <div class="input-row">
-      <input type="text" id="url-input" placeholder="Paste a Spotify, Apple Podcasts, or RSS URL…"/>
+      <input type="text" id="url-input" placeholder="Paste a direct MP3 URL or RSS feed URL…"/>
       <button class="btn btn-primary" id="analyze-btn" onclick="startAnalysis()">Analyze</button>
     </div>
     <div class="hints">
-      <span>Spotify episodes</span>
-      <span>Apple Podcasts</span>
-      <span>RSS feeds</span>
-      <span>Direct MP3 links</span>
+      <span>Direct MP3/M4A links</span>
+      <span>RSS feed URLs</span>
     </div>
+    <p class="note">Tip: To get an RSS feed from Spotify or Apple Podcasts, search "[show name] RSS feed" — most podcasts publish one publicly. Analysis takes 2–5 minutes depending on episode length.</p>
   </div>
 </div>
 
@@ -158,13 +158,14 @@ footer p{font-size:12px;color:var(--text3)}
 
 <div class="loading" id="loading">
   <div class="spinner"></div>
-  <p id="load-msg">Fetching transcript…</p>
+  <div class="loading-title" id="load-title">Starting analysis…</div>
+  <p id="load-msg">This takes 2–5 minutes for a full episode</p>
 </div>
 
 <div class="panel on" id="panel-analyze">
   <div class="empty" id="empty-state">
     <h3>Paste a podcast URL above</h3>
-    <p>Supports Spotify, Apple Podcasts, RSS feeds, and direct audio links</p>
+    <p>Supports direct MP3/M4A links and RSS feeds</p>
   </div>
   <div id="results"></div>
 </div>
@@ -172,18 +173,16 @@ footer p{font-size:12px;color:var(--text3)}
 <div class="panel" id="panel-live">
   <div class="live-header">
     <div class="live-top">
-      <span class="live-show">The Daily — "Why prices are still high"</span>
-      <span class="live-ind"><span class="live-dot"></span>Listening</span>
+      <span class="live-show">Analyze an episode first to enable live mode</span>
     </div>
-    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:42%"></div></div>
-    <div class="prog-times"><span id="prog-time">11:52</span><span>28:04</span></div>
+    <p style="font-size:13px;color:var(--text2);margin-top:4px">Live mode tracks bias markers in real time as you listen. Coming soon via browser extension.</p>
   </div>
   <div class="rcard">
-    <div class="flags-head">Live markers</div>
+    <div class="flags-head">Example live markers</div>
     <div class="mrow">
       <span class="ts">02:14</span>
       <span class="pill pill-blue" style="flex-shrink:0;margin-top:1px"><span class="dot dot-blue"></span>Context</span>
-      <span class="mtext">Citing a single IMF report as representative of all economists</span>
+      <span class="mtext">Citing a single report as representative of all economists</span>
     </div>
     <div class="mrow">
       <span class="ts">05:47</span>
@@ -193,17 +192,11 @@ footer p{font-size:12px;color:var(--text3)}
     <div class="mrow">
       <span class="ts">08:30</span>
       <span class="pill pill-amber" style="flex-shrink:0;margin-top:1px"><span class="dot dot-amber"></span>Framing</span>
-      <span class="mtext">Businesses framed as active agents; consumers consistently as victims</span>
-    </div>
-    <div class="mrow">
-      <span class="ts">10:18</span>
-      <span class="pill pill-amber" style="flex-shrink:0;margin-top:1px"><span class="dot dot-amber"></span>Omission</span>
-      <span class="mtext">Fed rate policy briefly mentioned but not examined as a causal factor</span>
+      <span class="mtext">Businesses framed as agents; consumers consistently as victims</span>
     </div>
     <div class="listening">
-      <span class="ts">11:52</span>
       <div class="dots"><span></span><span></span><span></span></div>
-      <span style="font-size:13px;color:var(--text3)">Listening…</span>
+      <span style="font-size:13px;color:var(--text3)">Browser extension coming soon…</span>
     </div>
   </div>
 </div>
@@ -228,102 +221,209 @@ footer p{font-size:12px;color:var(--text3)}
   </div>
   <div class="embed-block">
     <div class="embed-label">Browser extension — coming soon</div>
-    <p style="font-size:13px;color:var(--text2);line-height:1.65">Get live bias markers on any podcast page — Spotify, Apple Podcasts, YouTube. No copy-paste needed.</p>
-    <button class="btn btn-ghost" style="margin-top:12px;font-size:13px">Join waitlist</button>
+    <p style="font-size:13px;color:var(--text2);line-height:1.65">Get live bias markers on any podcast page — Spotify, Apple Podcasts, YouTube.</p>
+    <button class="btn btn-ghost" style="margin-top:12px;font-size:13px;padding:8px 14px;border-radius:var(--r)">Join waitlist</button>
   </div>
 </div>
 
 <footer>
-  <p>Clearcast · Analysis is AI-generated, grounded in publicly available fact-checking sources. Not a substitute for your own critical thinking.</p>
+  <p>Clearcast · Analysis is AI-generated and grounded in publicly available fact-checking sources. Not a substitute for your own critical thinking.</p>
   <p>clearcast-app.netlify.app</p>
 </footer>
 
 <script>
-const STEPS=["Fetching transcript…","Transcribing audio…","Running fact checks…","Detecting framing patterns…","Building your report…"];
-const FLAGS=[
-  {cls:"pill-red",dot:"dot-red",label:"Fact check",title:'"Inflation driven entirely by corporate greed" — overstated',detail:"Academic consensus points to multiple drivers: supply chain disruption, stimulus spending, energy prices. Corporate margins are one factor, not the sole cause."},
-  {cls:"pill-amber",dot:"dot-amber",label:"Framing",title:"Only economists aligned with one political perspective quoted",detail:"No counter-perspective from supply-side or monetarist economists. Creates an incomplete picture of the active policy debate."},
-  {cls:"pill-amber",dot:"dot-amber",label:"Omission",title:"Federal Reserve rate policy barely discussed",detail:"Many economists consider monetary policy the primary inflation lever. Its near-absence skews the causal framing toward fiscal and corporate explanations."},
-  {cls:"pill-red",dot:"dot-red",label:"Fact check",title:'"Real wages have fallen every year since 2020" — partially false',detail:"Real wages declined in 2021–22 but recovered through 2023–24. Presenting a partial window as a continuous trend is misleading."},
-  {cls:"pill-blue",dot:"dot-blue",label:"Sponsor note",title:"Episode sponsored by an investment platform",detail:"Host discusses investment as a coping strategy for inflation. Sponsor sells investment products. Soft conflict worth being aware of."},
-];
+let pollInterval = null;
 
-function switchTab(name,el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
   el.classList.add('on');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('panel-'+name).classList.add('on');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.getElementById('panel-' + name).classList.add('on');
 }
 
-function startAnalysis(){
-  const val=document.getElementById('url-input').value.trim();
-  if(!val){document.getElementById('url-input').focus();return;}
-  const btn=document.getElementById('analyze-btn');
-  btn.disabled=true;btn.textContent='Analyzing…';
-  document.getElementById('results').innerHTML='';
-  document.getElementById('empty-state').style.display='none';
+async function startAnalysis() {
+  const url = document.getElementById('url-input').value.trim();
+  if (!url) { document.getElementById('url-input').focus(); return; }
+
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true;
+  btn.textContent = 'Starting…';
+
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('empty-state').style.display = 'none';
   document.getElementById('tabs').classList.remove('on');
-  document.getElementById('panel-analyze').classList.add('on');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
   document.getElementById('loading').classList.add('on');
-  let s=0;
-  const iv=setInterval(()=>{s++;if(s<STEPS.length)document.getElementById('load-msg').textContent=STEPS[s];},950);
-  setTimeout(()=>{
-    clearInterval(iv);
-    document.getElementById('loading').classList.remove('on');
-    document.getElementById('tabs').classList.add('on');
-    document.getElementById('panel-analyze').classList.add('on');
-    btn.disabled=false;btn.textContent='Analyze';
-    renderResults();
-  },STEPS.length*950+500);
+  document.getElementById('load-title').textContent = 'Submitting for transcription…';
+  document.getElementById('load-msg').textContent = 'This takes 2–5 minutes for a full episode';
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      showError(data.error || 'Failed to start analysis');
+      resetBtn();
+      return;
+    }
+
+    pollForResults(data.jobId);
+  } catch (e) {
+    showError('Network error — please try again');
+    resetBtn();
+  }
 }
 
-function pill(cls,dot,label){return`<span class="pill ${cls}"><span class="dot ${dot}"></span>${label}</span>`;}
+function pollForResults(jobId) {
+  let dots = 0;
+  const stages = [
+    'Transcribing audio…',
+    'Reading transcript…',
+    'Checking facts…',
+    'Detecting framing…',
+    'Building report…',
+  ];
+  let stageIdx = 0;
 
-function renderResults(){
-  const flagsHtml=FLAGS.map(f=>`
+  pollInterval = setInterval(async () => {
+    dots = (dots + 1) % 4;
+    stageIdx = Math.min(stageIdx + 1, stages.length - 1);
+    document.getElementById('load-title').textContent = stages[stageIdx];
+
+    try {
+      const res = await fetch(`/api/status/${jobId}`);
+      const data = await res.json();
+
+      if (data.status === 'complete') {
+        clearInterval(pollInterval);
+        document.getElementById('loading').classList.remove('on');
+        document.getElementById('tabs').classList.add('on');
+        document.getElementById('panel-analyze').classList.add('on');
+        resetBtn();
+        renderResults(data);
+      } else if (data.status === 'error') {
+        clearInterval(pollInterval);
+        showError(data.error || 'Analysis failed');
+        resetBtn();
+      }
+    } catch (e) {
+      // Keep polling on network blip
+    }
+  }, 4000);
+}
+
+function resetBtn() {
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = false;
+  btn.textContent = 'Analyze';
+}
+
+function showError(msg) {
+  document.getElementById('loading').classList.remove('on');
+  document.getElementById('tabs').classList.add('on');
+  document.getElementById('panel-analyze').classList.add('on');
+  document.getElementById('results').innerHTML = `<div class="error-card">Error: ${msg}</div>`;
+}
+
+function biasPill(label) {
+  const map = {
+    'Far left': 'pill-red',
+    'Lean left': 'pill-amber',
+    'Center': 'pill-blue',
+    'Lean right': 'pill-amber',
+    'Far right': 'pill-red',
+  };
+  const dot = {
+    'Far left': 'dot-red',
+    'Lean left': 'dot-amber',
+    'Center': 'dot-blue',
+    'Lean right': 'dot-amber',
+    'Far right': 'dot-red',
+  };
+  const cls = map[label] || 'pill-blue';
+  const d = dot[label] || 'dot-blue';
+  return `<span class="pill ${cls}"><span class="dot ${d}"></span>${label}</span>`;
+}
+
+function factPill(label) {
+  const map = { 'Mostly factual': 'pill-green', 'Mixed factuality': 'pill-amber', 'Unreliable': 'pill-red' };
+  const dot = { 'Mostly factual': 'dot-green', 'Mixed factuality': 'dot-amber', 'Unreliable': 'dot-red' };
+  const cls = map[label] || 'pill-blue';
+  const d = dot[label] || 'dot-blue';
+  return `<span class="pill ${cls}"><span class="dot ${d}"></span>${label}</span>`;
+}
+
+function flagPill(type) {
+  const map = {
+    'fact-check': ['pill-red', 'dot-red', 'Fact check'],
+    'framing': ['pill-amber', 'dot-amber', 'Framing'],
+    'omission': ['pill-amber', 'dot-amber', 'Omission'],
+    'sponsor-note': ['pill-blue', 'dot-blue', 'Sponsor note'],
+    'context': ['pill-blue', 'dot-blue', 'Context'],
+  };
+  const [cls, d, label] = map[type] || ['pill-blue', 'dot-blue', type];
+  return `<span class="pill ${cls} flag-pill"><span class="dot ${d}"></span>${label}</span>`;
+}
+
+function biasColor(score) {
+  if (score < -30) return 'var(--amber-text)';
+  if (score > 30) return 'var(--amber-text)';
+  return 'var(--blue-text)';
+}
+
+function omissionColor(level) {
+  return level === 'High' ? 'var(--red)' : level === 'Med' ? 'var(--amber-text)' : 'var(--green-text)';
+}
+
+function renderResults(data) {
+  const flags = (data.flags || []).map(f => `
     <div class="flag">
-      <span class="pill ${f.cls} flag-pill"><span class="dot ${f.dot}"></span>${f.label}</span>
-      <div><div class="flag-title">${f.title}</div><div class="flag-detail">${f.detail}</div></div>
+      ${flagPill(f.type)}
+      <div>
+        <div class="flag-title">${f.title}</div>
+        <div class="flag-detail">${f.detail}</div>
+      </div>
     </div>`).join('');
-  document.getElementById('results').innerHTML=`
+
+  document.getElementById('results').innerHTML = `
     <div class="rcard">
       <div class="rcard-head">
         <div>
-          <div class="rcard-title">The Daily — "Why prices are still high"</div>
-          <div class="rcard-sub">New York Times · 28 min · Mar 18 2026</div>
+          <div class="rcard-title">${data.episodeTitle || 'Episode analysis'}</div>
+          <div class="rcard-sub">${data.duration || ''}</div>
         </div>
         <div class="badges">
-          ${pill('pill-amber','dot-amber','Lean left')}
-          ${pill('pill-blue','dot-blue','Mostly factual')}
+          ${biasPill(data.biasLabel || 'Center')}
+          ${factPill(data.factualityLabel || 'Mostly factual')}
         </div>
       </div>
       <div class="metrics">
-        <div class="metric"><div class="metric-label">Bias score</div><div class="metric-val" style="color:var(--amber-text)">-34</div><div class="metric-hint">-100 left · +100 right</div></div>
-        <div class="metric"><div class="metric-label">Fact flags</div><div class="metric-val" style="color:var(--red)">3</div><div class="metric-hint">claims to verify</div></div>
-        <div class="metric"><div class="metric-label">Omission risk</div><div class="metric-val" style="color:var(--amber-text)">Med</div><div class="metric-hint">key views missing</div></div>
+        <div class="metric">
+          <div class="metric-label">Bias score</div>
+          <div class="metric-val" style="color:${biasColor(data.biasScore)}">${data.biasScore ?? '0'}</div>
+          <div class="metric-hint">-100 left · +100 right</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Fact flags</div>
+          <div class="metric-val" style="color:var(--red)">${(data.flags || []).filter(f => f.type === 'fact-check').length}</div>
+          <div class="metric-hint">claims to verify</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Omission risk</div>
+          <div class="metric-val" style="color:${omissionColor(data.omissionRisk)}">${data.omissionRisk || 'Low'}</div>
+          <div class="metric-hint">key views missing</div>
+        </div>
       </div>
-      <div class="flags-head">Things to be aware of</div>
-      ${flagsHtml}
+      ${flags ? `<div class="flags-head">Things to be aware of</div>${flags}` : ''}
       <div class="rcard-foot">
-        <button class="btn btn-ghost" style="font-size:13px">Read balanced coverage</button>
-        <button class="btn btn-ghost" style="font-size:13px">Get the other side</button>
+        <button class="btn btn-ghost" style="font-size:13px;padding:8px 14px;border-radius:var(--r)" onclick="document.getElementById('url-input').value='';document.getElementById('url-input').focus()">Analyze another episode</button>
       </div>
     </div>`;
 }
-
-// Live progress
-setInterval(()=>{
-  const p=document.getElementById('prog');
-  const t=document.getElementById('prog-time');
-  if(!p||!t)return;
-  let pct=parseFloat(p.style.width)+0.04;
-  if(pct>99)pct=42;
-  p.style.width=pct+'%';
-  const cur=Math.round(pct/100*(28*60+4));
-  const m=Math.floor(cur/60),s=cur%60;
-  t.textContent=m+':'+(s<10?'0':'')+s;
-},1000);
 </script>
 </body>
 </html>
