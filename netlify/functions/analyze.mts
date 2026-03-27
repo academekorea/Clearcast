@@ -15,66 +15,55 @@ export default async (req: Request) => {
   }
 
   const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
-
   let audioUrl = url;
 
-  // Always try to parse as RSS unless it looks like a direct audio file
+  // If not a direct audio file, try to parse as RSS
   const isDirectAudio = url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i);
   if (!isDirectAudio) {
     try {
       const rssRes = await fetch(url, {
-        headers: { "User-Agent": "Clearcast/1.0 (podcast analyzer)" }
+        headers: { "User-Agent": "Clearcast/1.0" }
       });
       const rssText = await rssRes.text();
-
-      // Try multiple patterns to find audio URL
       const patterns = [
         /<enclosure[^>]+url="([^"]+)"/i,
         /<enclosure[^>]+url='([^']+)'/i,
         /url="([^"]+\.mp3[^"]*)"/i,
         /url="([^"]+\.m4a[^"]*)"/i,
         /<media:content[^>]+url="([^"]+)"/i,
-        /https?:\/\/[^\s"<>]+\.mp3[^\s"<>]*/i,
-        /https?:\/\/[^\s"<>]+\.m4a[^\s"<>]*/i,
       ];
-
       let found = false;
       for (const pattern of patterns) {
         const match = rssText.match(pattern);
         if (match) {
-          audioUrl = match[1] || match[0];
-          // Clean up any XML entities
-          audioUrl = audioUrl.replace(/&amp;/g, "&");
+          audioUrl = match[1].replace(/&amp;/g, "&");
           found = true;
           break;
         }
       }
-
       if (!found) {
-        return new Response(JSON.stringify({ error: "Could not find audio in RSS feed. Try pasting a direct MP3 link instead." }), {
+        return new Response(JSON.stringify({ error: "Could not find audio in RSS feed. Try pasting a direct MP3 URL instead." }), {
           status: 400,
           headers: { "Content-Type": "application/json" },
         });
       }
     } catch {
-      return new Response(JSON.stringify({ error: "Failed to fetch RSS feed. Try pasting a direct MP3 link instead." }), {
+      return new Response(JSON.stringify({ error: "Failed to fetch RSS feed. Try a direct MP3 URL instead." }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
   }
 
-  // Submit to AssemblyAI
+  // Submit to AssemblyAI v2
   const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
     headers: {
-      authorization: assemblyKey!,
+      "authorization": assemblyKey!,
       "content-type": "application/json",
     },
     body: JSON.stringify({
       audio_url: audioUrl,
-      speech_model: "universal-2",
-      auto_chapters: true,
     }),
   });
 
@@ -88,18 +77,17 @@ export default async (req: Request) => {
 
   const aaiData = await aaiRes.json();
   const transcriptId = aaiData.id;
-  const jobId = transcriptId;
 
-  // Store job in Netlify Blobs
+  // Store job
   const store = getStore("clearcast-jobs");
-  await store.setJSON(jobId, {
+  await store.setJSON(transcriptId, {
     status: "transcribing",
     transcriptId,
     url,
     createdAt: Date.now(),
   });
 
-  return new Response(JSON.stringify({ jobId, status: "transcribing" }), {
+  return new Response(JSON.stringify({ jobId: transcriptId, status: "transcribing" }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
