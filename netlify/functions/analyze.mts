@@ -11,8 +11,10 @@ export default async (req: Request) => {
       status: 400, headers: { "Content-Type": "application/json" },
     });
   }
+
   const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
   let audioUrl = url;
+
   const isDirectAudio = url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i);
   if (!isDirectAudio) {
     try {
@@ -41,21 +43,30 @@ export default async (req: Request) => {
       });
     }
   }
-  const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
+
+  // AssemblyAI v3 API
+  const aaiRes = await fetch("https://api.assemblyai.com/v3/transcripts", {
     method: "POST",
-    headers: { "authorization": assemblyKey!, "content-type": "application/json" },
+    headers: {
+      "Authorization": assemblyKey!,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ audio_url: audioUrl }),
   });
+
   if (!aaiRes.ok) {
     const err = await aaiRes.text();
-    return new Response(JSON.stringify({ error: "AssemblyAI error: " + err }), {
+    return new Response(JSON.stringify({ error: "Transcription error: " + err }), {
       status: 500, headers: { "Content-Type": "application/json" },
     });
   }
+
   const aaiData = await aaiRes.json();
   const transcriptId = aaiData.id;
+
   const store = getStore("clearcast-jobs");
   await store.setJSON(transcriptId, { status: "transcribing", transcriptId, url, createdAt: Date.now() });
+
   return new Response(JSON.stringify({ jobId: transcriptId, status: "transcribing" }), {
     status: 200, headers: { "Content-Type": "application/json" },
   });
