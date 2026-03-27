@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Clearcast — Know what you're listening to</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f7f6f2;--bg3:#efefea;
+  --text:#1a1a18;--text2:#6b6a63;--text3:#a0a098;
+  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);
+  --r:10px;--r-lg:14px;
+  --red-bg:#fcebeb;--red-text:#a32d2d;--red:#e24b4a;
+  --amber-bg:#faeeda;--amber-text:#854f0b;--amber:#ba7517;
+  --blue-bg:#e6f1fb;--blue-text:#0c447c;
+  --green-bg:#eaf3de;--green-text:#27500a;
+  --purple-bg:#eeedfe;--purple-text:#3c3489;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1c1a;--bg2:#232320;--bg3:#2a2a27;
+    --text:#e6e4da;--text2:#9b9a93;--text3:#636259;
+    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+    --red-bg:#2e1010;--red-text:#f09595;
+    --amber-bg:#251800;--amber-text:#fac775;
+    --blue-bg:#031e3a;--blue-text:#85b7eb;
+    --green-bg:#0e2100;--green-text:#97c459;
+    --purple-bg:#160f3e;--purple-text:#afa9ec;
+  }
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10}
+.logo{font-size:15px;font-weight:600;letter-spacing:-0.02em}
+.logo em{font-style:normal;opacity:0.35;font-weight:400}
+.beta{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--amber-bg);color:var(--amber-text);font-weight:500}
+.hero{max-width:580px;margin:0 auto;text-align:center;padding:60px 20px 40px}
+.hero h1{font-size:clamp(26px,5vw,40px);font-weight:600;letter-spacing:-0.03em;line-height:1.15;margin-bottom:14px}
+.hero h1 span{color:var(--text3)}
+.hero p{font-size:15px;color:var(--text2);line-height:1.65;max-width:420px;margin:0 auto}
+.input-wrap{max-width:660px;margin:28px auto 0;padding:0 20px}
+.input-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:18px}
+.input-row{display:flex;gap:8px}
+input[type=text]{flex:1;padding:10px 14px;font-size:14px;font-family:inherit;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;transition:border-color .15s}
+input[type=text]:focus{border-color:var(--text3)}
+input[type=text]::placeholder{color:var(--text3)}
+.btn{padding:10px 18px;font-size:14px;font-weight:500;font-family:inherit;border:none;border-radius:var(--r);cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.btn-primary{background:var(--text);color:var(--bg)}
+.btn-primary:hover{opacity:0.82}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--text2);border:0.5px solid var(--border2)}
+.btn-ghost:hover{background:var(--bg3)}
+.hints{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
+.hints span{font-size:12px;color:var(--text3)}
+.hints span::before{content:"↗ "}
+.tabs-wrap{max-width:660px;margin:24px auto 14px;padding:0 20px;display:none;gap:6px}
+.tabs-wrap.on{display:flex}
+.tab{padding:7px 15px;font-size:13px;font-family:inherit;border:0.5px solid var(--border);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.tab.on{background:var(--bg);color:var(--text);border-color:var(--border2)}
+.tab:hover:not(.on){background:var(--bg2)}
+.panel{max-width:660px;margin:0 auto;padding:0 20px 60px;display:none}
+.panel.on{display:block}
+.rcard{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px}
+.rcard-head{padding:16px 18px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.rcard-title{font-size:15px;font-weight:500}
+.rcard-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap}
+.pill-red{background:var(--red-bg);color:var(--red-text)}
+.pill-amber{background:var(--amber-bg);color:var(--amber-text)}
+.pill-blue{background:var(--blue-bg);color:var(--blue-text)}
+.pill-green{background:var(--green-bg);color:var(--green-text)}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot-red{background:var(--red-text)}
+.dot-amber{background:var(--amber-text)}
+.dot-blue{background:var(--blue-text)}
+.dot-green{background:var(--green-text)}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--border)}
+.metric{background:var(--bg);padding:14px 16px;text-align:center}
+.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.metric-val{font-size:22px;font-weight:500}
+.metric-hint{font-size:11px;color:var(--text3);margin-top:3px}
+.flags-head{padding:12px 18px 6px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
+.flag{display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-top:0.5px solid var(--border)}
+.flag-pill{flex-shrink:0;margin-top:1px}
+.flag-title{font-size:13px;font-weight:500;margin-bottom:3px}
+.flag-detail{font-size:12px;color:var(--text2);line-height:1.5}
+.rcard-foot{padding:12px 18px;border-top:0.5px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
+.live-header{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:14px}
+.live-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.live-show{font-size:14px;font-weight:500}
+.live-ind{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red-text)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.prog-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:7px}
+.prog-fill{height:100%;background:var(--text);border-radius:2px;transition:width .4s linear}
+.prog-times{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:monospace}
+.mrow{display:flex;align-items:flex-start;gap:10px;padding:10px 18px;border-top:0.5px solid var(--border)}
+.ts{font-size:11px;color:var(--text3);font-family:monospace;min-width:36px;padding-top:2px}
+.mtext{font-size:13px;line-height:1.4}
+.listening{display:flex;align-items:center;gap:10px;padding:12px 18px;border-top:0.5px solid var(--border);opacity:.4}
+.dots{display:flex;gap:3px}
+.dots span{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:blink 1.2s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.embed-block{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:14px}
+.embed-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:10px}
+.code-block{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:14px;font-family:monospace;font-size:12px;color:var(--text2);word-break:break-all;line-height:1.7}
+.badge-preview{display:inline-flex;align-items:center;gap:10px;padding:9px 14px;border:0.5px solid var(--border2);border-radius:var(--r);margin-top:14px}
+.badge-icon{width:26px;height:26px;border-radius:50%;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.badge-title{font-size:13px;font-weight:500}
+.badge-sub{font-size:11px;color:var(--text3)}
+.loading{text-align:center;padding:40px 20px;max-width:660px;margin:0 auto;display:none}
+.loading.on{display:block}
+.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-size:13px;color:var(--text2)}
+.empty{text-align:center;padding:48px 20px}
+.empty h3{font-size:15px;font-weight:500;margin-bottom:6px}
+.empty p{font-size:13px;color:var(--text2)}
+footer{border-top:0.5px solid var(--border);padding:20px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+footer p{font-size:12px;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Clearcast <em>/ podcast clarity</em></div>
+  <span class="beta">Beta</span>
+</nav>
+
+<div class="hero">
+  <h1>Know what you're<br><span>actually listening to</span></h1>
+  <p>Paste any podcast URL. We surface bias, unverified claims, and missing perspectives — so you can listen with your guard up.</p>
+</div>
+
+<div class="input-wrap">
+  <div class="input-card">
+    <div class="input-row">
+      <input type="text" id="url-input" placeholder="Paste a Spotify, Apple Podcasts, or RSS URL…"/>
+      <button class="btn btn-primary" id="analyze-btn" onclick="startAnalysis()">Analyze</button>
+    </div>
+    <div class="hints">
+      <span>Spotify episodes</span>
+      <span>Apple Podcasts</span>
+      <span>RSS feeds</span>
+      <span>Direct MP3 links</span>
+    </div>
+  </div>
+</div>
+
+<div class="tabs-wrap" id="tabs">
+  <button class="tab on" onclick="switchTab('analyze',this)">Analysis</button>
+  <button class="tab" onclick="switchTab('live',this)">Live mode</button>
+  <button class="tab" onclick="switchTab('embed',this)">Embed</button>
+</div>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p id="load-msg">Fetching transcript…</p>
+</div>
+
+<div class="panel on" id="panel-analyze">
+  <div class="empty" id="empty-state">
+    <h3>Paste a podcast URL above</h3>
+    <p>Supports Spotify, Apple Podcasts, RSS feeds, and direct audio links</p>
+  </div>
+  <div id="results"></div>
+</div>
+
+<div class="panel" id="panel-live">
+  <div class="live-header">
+    <div class="live-top">
+      <span class="live-show">The Daily — "Why prices are still high"</span>
+      <span class="live-ind"><span class="live-dot"></span>Listening</span>
+    </div>
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:42%"></div></div>
+    <div class="prog-times"><span id="prog-time">11:52</span><span>28:04</span></div>
+  </div>
+  <div class="rcard">
+    <div class="flags-head">Live markers</div>
+    <div class="mrow">
+      <span class="ts">02:14</span>
+      <span class="pill pill-blue" style="flex-shrink:0;margin-top:1px"><span class="dot dot-blue"></span>Context</span>
+      <span class="mtext">Citing a single IMF report as representative of all economists</span>
+    </div>
+    <div class="mrow">
+      <span class="ts">05:47</span>
+      <span class="pill pill-red" style="flex-shrink:0;margin-top:1px"><span class="dot dot-red"></span>Flag</span>
+      <span class="mtext">"Every economist agrees…" — sweeping claim, not substantiated</span>
+    </div>
+    <div class="mrow">
+      <span class="ts">08:30</span>
+      <span class="pill pill-amber" style="flex-shrink:0;margin-top:1px"><span class="dot dot-amber"></span>Framing</span>
+      <span class="mtext">Businesses framed as active agents; consumers consistently as victims</span>
+    </div>
+    <div class="mrow">
+      <span class="ts">10:18</span>
+      <span class="pill pill-amber" style="flex-shrink:0;margin-top:1px"><span class="dot dot-amber"></span>Omission</span>
+      <span class="mtext">Fed rate policy briefly mentioned but not examined as a causal factor</span>
+    </div>
+    <div class="listening">
+      <span class="ts">11:52</span>
+      <div class="dots"><span></span><span></span><span></span></div>
+      <span style="font-size:13px;color:var(--text3)">Listening…</span>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-embed">
+  <div class="embed-block">
+    <div class="embed-label">Drop into any website or podcast app</div>
+    <div class="code-block">&lt;script src="https://clearcast-app.netlify.app/embed.js"&gt;&lt;/script&gt;<br>&lt;clearcast-badge episode-url="YOUR_EPISODE_URL" /&gt;</div>
+    <div class="badge-preview">
+      <div class="badge-icon">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M6.5 1.5L11.5 11H1.5L6.5 1.5Z" stroke="var(--amber-text)" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
+          <line x1="6.5" y1="5.5" x2="6.5" y2="8" stroke="var(--amber-text)" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="6.5" cy="9.5" r=".6" fill="var(--amber-text)"/>
+        </svg>
+      </div>
+      <div>
+        <div class="badge-title">Lean left · 3 flags</div>
+        <div class="badge-sub">Powered by Clearcast</div>
+      </div>
+    </div>
+  </div>
+  <div class="embed-block">
+    <div class="embed-label">Browser extension — coming soon</div>
+    <p style="font-size:13px;color:var(--text2);line-height:1.65">Get live bias markers on any podcast page — Spotify, Apple Podcasts, YouTube. No copy-paste needed.</p>
+    <button class="btn btn-ghost" style="margin-top:12px;font-size:13px">Join waitlist</button>
+  </div>
+</div>
+
+<footer>
+  <p>Clearcast · Analysis is AI-generated, grounded in publicly available fact-checking sources. Not a substitute for your own critical thinking.</p>
+  <p>clearcast-app.netlify.app</p>
+</footer>
+
+<script>
+const STEPS=["Fetching transcript…","Transcribing audio…","Running fact checks…","Detecting framing patterns…","Building your report…"];
+const FLAGS=[
+  {cls:"pill-red",dot:"dot-red",label:"Fact check",title:'"Inflation driven entirely by corporate greed" — overstated',detail:"Academic consensus points to multiple drivers: supply chain disruption, stimulus spending, energy prices. Corporate margins are one factor, not the sole cause."},
+  {cls:"pill-amber",dot:"dot-amber",label:"Framing",title:"Only economists aligned with one political perspective quoted",detail:"No counter-perspective from supply-side or monetarist economists. Creates an incomplete picture of the active policy debate."},
+  {cls:"pill-amber",dot:"dot-amber",label:"Omission",title:"Federal Reserve rate policy barely discussed",detail:"Many economists consider monetary policy the primary inflation lever. Its near-absence skews the causal framing toward fiscal and corporate explanations."},
+  {cls:"pill-red",dot:"dot-red",label:"Fact check",title:'"Real wages have fallen every year since 2020" — partially false',detail:"Real wages declined in 2021–22 but recovered through 2023–24. Presenting a partial window as a continuous trend is misleading."},
+  {cls:"pill-blue",dot:"dot-blue",label:"Sponsor note",title:"Episode sponsored by an investment platform",detail:"Host discusses investment as a coping strategy for inflation. Sponsor sells investment products. Soft conflict worth being aware of."},
+];
+
+function switchTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('panel-'+name).classList.add('on');
+}
+
+function startAnalysis(){
+  const val=document.getElementById('url-input').value.trim();
+  if(!val){document.getElementById('url-input').focus();return;}
+  const btn=document.getElementById('analyze-btn');
+  btn.disabled=true;btn.textContent='Analyzing…';
+  document.getElementById('results').innerHTML='';
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('tabs').classList.remove('on');
+  document.getElementById('panel-analyze').classList.add('on');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('loading').classList.add('on');
+  let s=0;
+  const iv=setInterval(()=>{s++;if(s<STEPS.length)document.getElementById('load-msg').textContent=STEPS[s];},950);
+  setTimeout(()=>{
+    clearInterval(iv);
+    document.getElementById('loading').classList.remove('on');
+    document.getElementById('tabs').classList.add('on');
+    document.getElementById('panel-analyze').classList.add('on');
+    btn.disabled=false;btn.textContent='Analyze';
+    renderResults();
+  },STEPS.length*950+500);
+}
+
+function pill(cls,dot,label){return`<span class="pill ${cls}"><span class="dot ${dot}"></span>${label}</span>`;}
+
+function renderResults(){
+  const flagsHtml=FLAGS.map(f=>`
+    <div class="flag">
+      <span class="pill ${f.cls} flag-pill"><span class="dot ${f.dot}"></span>${f.label}</span>
+      <div><div class="flag-title">${f.title}</div><div class="flag-detail">${f.detail}</div></div>
+    </div>`).join('');
+  document.getElementById('results').innerHTML=`
+    <div class="rcard">
+      <div class="rcard-head">
+        <div>
+          <div class="rcard-title">The Daily — "Why prices are still high"</div>
+          <div class="rcard-sub">New York Times · 28 min · Mar 18 2026</div>
+        </div>
+        <div class="badges">
+          ${pill('pill-amber','dot-amber','Lean left')}
+          ${pill('pill-blue','dot-blue','Mostly factual')}
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Bias score</div><div class="metric-val" style="color:var(--amber-text)">-34</div><div class="metric-hint">-100 left · +100 right</div></div>
+        <div class="metric"><div class="metric-label">Fact flags</div><div class="metric-val" style="color:var(--red)">3</div><div class="metric-hint">claims to verify</div></div>
+        <div class="metric"><div class="metric-label">Omission risk</div><div class="metric-val" style="color:var(--amber-text)">Med</div><div class="metric-hint">key views missing</div></div>
+      </div>
+      <div class="flags-head">Things to be aware of</div>
+      ${flagsHtml}
+      <div class="rcard-foot">
+        <button class="btn btn-ghost" style="font-size:13px">Read balanced coverage</button>
+        <button class="btn btn-ghost" style="font-size:13px">Get the other side</button>
+      </div>
+    </div>`;
+}
+
+// Live progress
+setInterval(()=>{
+  const p=document.getElementById('prog');
+  const t=document.getElementById('prog-time');
+  if(!p||!t)return;
+  let pct=parseFloat(p.style.width)+0.04;
+  if(pct>99)pct=42;
+  p.style.width=pct+'%';
+  const cur=Math.round(pct/100*(28*60+4));
+  const m=Math.floor(cur/60),s=cur%60;
+  t.textContent=m+':'+(s<10?'0':'')+s;
+},1000);
+</script>
+</body>
+</html>
