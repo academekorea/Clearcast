@@ -1,4 +1,3 @@
-
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
@@ -74,6 +73,7 @@ export default async (req: Request) => {
     },
     body: JSON.stringify({
       audio_url: audioUrl,
+      speech_model: "universal-2",
       auto_chapters: true,
     }),
   });
