@@ -3,18 +3,19 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Clearcast — Know what you're listening to</title>
+<title>Clearcast — Podcast bias, clearly</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#ffffff;--bg2:#f7f6f2;--bg3:#efefea;
+  --bg:#fff;--bg2:#f7f6f2;--bg3:#efefea;
   --text:#1a1a18;--text2:#6b6a63;--text3:#a0a098;
   --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);
   --r:10px;--r-lg:14px;
   --red-bg:#fcebeb;--red-text:#a32d2d;--red:#e24b4a;
-  --amber-bg:#faeeda;--amber-text:#854f0b;--amber:#ba7517;
+  --amber-bg:#faeeda;--amber-text:#854f0b;
   --blue-bg:#e6f1fb;--blue-text:#0c447c;
   --green-bg:#eaf3de;--green-text:#27500a;
+  --purple-bg:#eeedfe;--purple-text:#3c3489;
 }
 @media(prefers-color-scheme:dark){
   :root{
@@ -25,128 +26,193 @@
     --amber-bg:#251800;--amber-text:#fac775;
     --blue-bg:#031e3a;--blue-text:#85b7eb;
     --green-bg:#0e2100;--green-text:#97c459;
+    --purple-bg:#160f3e;--purple-text:#afa9ec;
   }
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
-.logo{font-size:15px;font-weight:600;letter-spacing:-0.02em}
+
+/* NAV */
+nav{display:flex;align-items:center;gap:8px;padding:0 20px;height:54px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
+.logo{font-size:15px;font-weight:600;letter-spacing:-0.02em;cursor:pointer;margin-right:8px;flex-shrink:0}
 .logo em{font-style:normal;opacity:0.35;font-weight:400}
-.beta{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--amber-bg);color:var(--amber-text);font-weight:500}
-.hero{max-width:580px;margin:0 auto;text-align:center;padding:60px 20px 40px}
-.hero h1{font-size:clamp(26px,5vw,40px);font-weight:600;letter-spacing:-0.03em;line-height:1.15;margin-bottom:14px}
+.main-nav{display:flex;gap:2px;flex:1}
+.mnav{padding:6px 13px;font-size:13px;font-family:inherit;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:8px;transition:all .15s;white-space:nowrap}
+.mnav.on{background:var(--bg2);color:var(--text);font-weight:500}
+.mnav:hover:not(.on){background:var(--bg3)}
+.pro-badge{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--purple-bg);color:var(--purple-text);font-weight:500;cursor:pointer}
+.pro-badge:hover{opacity:0.85}
+.beta-badge{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--amber-bg);color:var(--amber-text);font-weight:500}
+
+/* VIEWS */
+.view{display:none}.view.on{display:block}
+
+/* ===================== ANALYZE ===================== */
+.hero{max-width:560px;margin:0 auto;text-align:center;padding:52px 20px 32px}
+.hero h1{font-size:clamp(24px,4vw,36px);font-weight:600;letter-spacing:-0.03em;line-height:1.15;margin-bottom:10px}
 .hero h1 span{color:var(--text3)}
-.hero p{font-size:15px;color:var(--text2);line-height:1.65;max-width:420px;margin:0 auto}
-.input-wrap{max-width:660px;margin:28px auto 0;padding:0 20px}
-.input-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:18px}
+.hero p{font-size:14px;color:var(--text2);line-height:1.65;max-width:380px;margin:0 auto}
+.input-wrap{max-width:640px;margin:20px auto 0;padding:0 20px}
+.input-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:16px}
 .input-row{display:flex;gap:8px}
 input[type=text]{flex:1;padding:10px 14px;font-size:14px;font-family:inherit;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;transition:border-color .15s}
 input[type=text]:focus{border-color:var(--text3)}
 input[type=text]::placeholder{color:var(--text3)}
 .btn{padding:10px 18px;font-size:14px;font-weight:500;font-family:inherit;border:none;border-radius:var(--r);cursor:pointer;transition:opacity .15s;white-space:nowrap}
-.btn-primary{background:var(--text);color:var(--bg)}
-.btn-primary:hover{opacity:0.82}
-.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
-.btn-ghost{background:transparent;color:var(--text2);border:0.5px solid var(--border2);cursor:pointer;font-family:inherit}
-.btn-ghost:hover{background:var(--bg3)}
-.hints{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
-.hints span{font-size:12px;color:var(--text3)}
-.hints span::before{content:"↗ "}
-.episode-picker{margin-top:14px;display:none}
-.episode-picker.on{display:block}
+.btn-primary{background:var(--text);color:var(--bg)}.btn-primary:hover{opacity:.82}.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--text2);border:0.5px solid var(--border2);cursor:pointer;font-family:inherit}.btn-ghost:hover{background:var(--bg3)}
+.hints{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+.hints span{font-size:12px;color:var(--text3)}.hints span::before{content:"↗ "}
+.ep-picker{margin-top:14px;display:none}.ep-picker.on{display:block}
 .ep-label{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500}
-.ep-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.ep-list{display:flex;flex-direction:column;gap:6px}
 .ep-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:border-color .15s}
 .ep-item:hover{border-color:var(--border2);background:var(--bg3)}
 .ep-title{font-size:13px;font-weight:500;line-height:1.4}
 .ep-meta{font-size:11px;color:var(--text3);margin-top:2px}
-.ep-btn{font-size:12px;padding:5px 10px;white-space:nowrap;flex-shrink:0}
-.tabs-wrap{max-width:660px;margin:24px auto 14px;padding:0 20px;display:none;gap:6px}
-.tabs-wrap.on{display:flex}
-.tab{padding:7px 15px;font-size:13px;font-family:inherit;border:0.5px solid var(--border);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
-.tab.on{background:var(--bg);color:var(--text);border-color:var(--border2)}
-.tab:hover:not(.on){background:var(--bg2)}
-.panel{max-width:660px;margin:0 auto;padding:0 20px 60px;display:none}
-.panel.on{display:block}
+.a-tabs{max-width:640px;margin:18px auto 12px;padding:0 20px;display:none;gap:6px}.a-tabs.on{display:flex}
+.atab{padding:7px 14px;font-size:13px;font-family:inherit;border:0.5px solid var(--border);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.atab.on{background:var(--bg);color:var(--text);border-color:var(--border2)}.atab:hover:not(.on){background:var(--bg2)}
+.panel{max-width:640px;margin:0 auto;padding:0 20px 60px;display:none}.panel.on{display:block}
 .rcard{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px}
 .rcard-head{padding:16px 18px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-.rcard-title{font-size:15px;font-weight:500}
-.rcard-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.rcard-title{font-size:15px;font-weight:500}.rcard-sub{font-size:12px;color:var(--text3);margin-top:3px}
 .badges{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
 .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap}
-.pill-red{background:var(--red-bg);color:var(--red-text)}
-.pill-amber{background:var(--amber-bg);color:var(--amber-text)}
-.pill-blue{background:var(--blue-bg);color:var(--blue-text)}
-.pill-green{background:var(--green-bg);color:var(--green-text)}
+.pill-red{background:var(--red-bg);color:var(--red-text)}.pill-amber{background:var(--amber-bg);color:var(--amber-text)}
+.pill-blue{background:var(--blue-bg);color:var(--blue-text)}.pill-green{background:var(--green-bg);color:var(--green-text)}
+.pill-purple{background:var(--purple-bg);color:var(--purple-text)}
 .dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
-.dot-red{background:var(--red-text)}
-.dot-amber{background:var(--amber-text)}
-.dot-blue{background:var(--blue-text)}
-.dot-green{background:var(--green-text)}
+.dot-red{background:var(--red-text)}.dot-amber{background:var(--amber-text)}.dot-blue{background:var(--blue-text)}.dot-green{background:var(--green-text)}
 .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--border)}
-.metric{background:var(--bg);padding:14px 16px;text-align:center;position:relative}
+.metric{background:var(--bg);padding:14px 16px;text-align:center}
 .metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:flex;align-items:center;justify-content:center;gap:4px}
-.metric-val{font-size:22px;font-weight:500}
-.metric-hint{font-size:11px;color:var(--text3);margin-top:3px}
-.info-btn{width:16px;height:16px;border-radius:50%;background:var(--bg3);border:0.5px solid var(--border2);font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;font-family:inherit;transition:background .15s}
-.info-btn:hover{background:var(--border2)}
-.tooltip-wrap{position:relative;display:inline-flex}
-.tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .15s;text-align:left;font-weight:400}
-.tooltip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--text)}
-.tooltip-wrap:hover .tooltip,.tooltip-wrap.open .tooltip{opacity:1;pointer-events:auto}
-.bias-scale{padding:14px 18px;border-top:0.5px solid var(--border)}
-.bias-scale-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.metric-val{font-size:22px;font-weight:500}.metric-hint{font-size:11px;color:var(--text3);margin-top:3px}
+.info-btn{width:16px;height:16px;border-radius:50%;background:var(--bg3);border:0.5px solid var(--border2);font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
+.tip{position:relative;display:inline-flex}
+.tip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;width:210px;z-index:200;opacity:0;pointer-events:none;transition:opacity .15s;text-align:left;font-weight:400}
+.tip-box::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--text)}
+.tip:hover .tip-box{opacity:1;pointer-events:auto}
+.scale-wrap{padding:14px 18px;border-top:0.5px solid var(--border)}
+.scale-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
 .scale-bar{height:8px;border-radius:4px;background:linear-gradient(to right,#3b6d11,#854f0b,#a32d2d);position:relative;margin-bottom:6px}
-.scale-marker{position:absolute;top:-4px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--text);transform:translateX(-50%);transition:left .5s}
+.scale-dot{position:absolute;top:-4px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--text);transform:translateX(-50%);transition:left .5s}
 .scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
 .flags-head{padding:12px 18px 6px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
 .flag{display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-top:0.5px solid var(--border)}
-.flag-pill{flex-shrink:0;margin-top:1px}
-.flag-title{font-size:13px;font-weight:500;margin-bottom:3px}
-.flag-detail{font-size:12px;color:var(--text2);line-height:1.5}
-.flag-type-desc{font-size:11px;color:var(--text3);margin-top:4px;font-style:italic}
+.flag-title{font-size:13px;font-weight:500;margin-bottom:3px}.flag-detail{font-size:12px;color:var(--text2);line-height:1.5}
 .rcard-foot{padding:12px 18px;border-top:0.5px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
-.live-header{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:14px}
-.live-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.live-show{font-size:14px;font-weight:500}
-.live-ind{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red-text)}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.prog-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:7px}
-.prog-fill{height:100%;background:var(--text);border-radius:2px}
-.prog-times{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:monospace}
-.mrow{display:flex;align-items:flex-start;gap:10px;padding:10px 18px;border-top:0.5px solid var(--border)}
-.ts{font-size:11px;color:var(--text3);font-family:monospace;min-width:36px;padding-top:2px}
-.mtext{font-size:13px;line-height:1.4}
-.listening{display:flex;align-items:center;gap:10px;padding:12px 18px;border-top:0.5px solid var(--border);opacity:.4}
-.dots{display:flex;gap:3px}
-.dots span{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:blink 1.2s ease-in-out infinite}
-.dots span:nth-child(2){animation-delay:.2s}
-.dots span:nth-child(3){animation-delay:.4s}
-@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
-.embed-block{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:14px}
-.embed-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:10px}
-.code-block{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:14px;font-family:monospace;font-size:12px;color:var(--text2);word-break:break-all;line-height:1.7}
-.badge-preview{display:inline-flex;align-items:center;gap:10px;padding:9px 14px;border:0.5px solid var(--border2);border-radius:var(--r);margin-top:14px}
-.badge-title{font-size:13px;font-weight:500}
-.badge-sub{font-size:11px;color:var(--text3)}
-.loading{text-align:center;padding:48px 20px;max-width:660px;margin:0 auto;display:none}
-.loading.on{display:block}
+.loading{text-align:center;padding:48px 20px;max-width:640px;margin:0 auto;display:none}.loading.on{display:block}
 .spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-title{font-size:15px;font-weight:500;margin-bottom:6px}
-.loading p{font-size:13px;color:var(--text2)}
-.empty{text-align:center;padding:48px 20px}
-.empty h3{font-size:15px;font-weight:500;margin-bottom:6px}
-.empty p{font-size:13px;color:var(--text2)}
-.error-card{background:var(--red-bg);border:0.5px solid var(--red-text);border-radius:var(--r-lg);padding:16px 18px;color:var(--red-text);font-size:13px;margin-bottom:14px}
+.ld-title{font-size:15px;font-weight:500;margin-bottom:6px}.ld-msg{font-size:13px;color:var(--text2)}
+.empty{text-align:center;padding:48px 20px}.empty h3{font-size:15px;font-weight:500;margin-bottom:6px}.empty p{font-size:13px;color:var(--text2)}
+.err{background:var(--red-bg);border:0.5px solid var(--red-text);border-radius:var(--r-lg);padding:16px 18px;color:var(--red-text);font-size:13px;margin-bottom:14px}
+
+/* ===================== MARKETPLACE ===================== */
+.mkt-wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+.mkt-top{padding:28px 0 0}
+.mkt-title{font-size:20px;font-weight:600;letter-spacing:-0.02em;margin-bottom:4px}
+.mkt-sub{font-size:14px;color:var(--text2);margin-bottom:20px}
+
+/* sub-nav inside marketplace */
+.mkt-subnav{display:flex;gap:6px;margin-bottom:0;border-bottom:0.5px solid var(--border);padding-bottom:0}
+.sntab{padding:9px 16px;font-size:13px;font-family:inherit;border:none;background:transparent;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-0.5px;transition:all .15s;font-weight:400}
+.sntab.on{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.sntab:hover:not(.on){color:var(--text)}
+
+.mkt-panel{display:none;padding-top:20px}.mkt-panel.on{display:block}
+
+/* Browse */
+.cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.cat-btn{padding:7px 16px;font-size:13px;font-family:inherit;border:0.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.cat-btn.on{background:var(--text);color:var(--bg);border-color:var(--text)}.cat-btn:hover:not(.on){background:var(--bg2)}
+.show-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.show-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s}
+.show-card:hover{border-color:var(--border2)}
+.show-top{display:flex;gap:10px;align-items:flex-start}
+.show-art{width:52px;height:52px;border-radius:9px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.show-art-ph{width:52px;height:52px;border-radius:9px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.show-info{flex:1;min-width:0}
+.show-name{font-size:13px;font-weight:500;line-height:1.35;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.show-artist{font-size:12px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.show-platforms{display:flex;gap:5px;flex-wrap:wrap}
+.plt-btn{font-size:11px;padding:4px 9px;border-radius:6px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:background .12s}
+.plt-btn:hover{background:var(--bg2)}
+.plt-btn.apple{border-color:rgba(255,59,48,0.3);color:#ff3b30}
+.plt-btn.spotify{border-color:rgba(30,215,96,0.3);color:#1db954}
+.plt-btn.youtube{border-color:rgba(255,0,0,0.3);color:#ff0000}
+.plt-btn.analyze{border-color:var(--border2);color:var(--text);font-weight:500}
+.mkt-loading{text-align:center;padding:60px 20px;color:var(--text3);font-size:14px}
+.mkt-spin{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--text3);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 12px}
+
+/* Stories */
+.stories-search{display:flex;gap:8px;margin-bottom:16px}
+.stories-search input{flex:1;padding:10px 14px;font-size:14px;font-family:inherit;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none}
+.stories-search input:focus{border-color:var(--text3)}
+.trending-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.trend-chip{padding:5px 13px;font-size:12px;font-family:inherit;border:0.5px solid var(--border);border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .12s}
+.trend-chip:hover{background:var(--bg3);color:var(--text)}
+.story-list{display:flex;flex-direction:column;gap:10px}
+.story-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:14px;display:flex;gap:12px;transition:border-color .15s}
+.story-card:hover{border-color:var(--border2)}
+.story-art{width:60px;height:60px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.story-art-ph{width:60px;height:60px;border-radius:8px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
+.story-body{flex:1;min-width:0}
+.story-show{font-size:12px;color:var(--text3);margin-bottom:3px}
+.story-title{font-size:14px;font-weight:500;line-height:1.35;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.story-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.story-meta{font-size:11px;color:var(--text3);margin-bottom:8px}
+.story-platforms{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+
+/* Blindspot */
+.blindspot-header{background:var(--purple-bg);border:0.5px solid var(--purple-text);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:16px;opacity:0.9}
+.bs-title{font-size:15px;font-weight:500;color:var(--purple-text);margin-bottom:4px}
+.bs-sub{font-size:13px;color:var(--purple-text);opacity:0.8}
+.bs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.bs-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:14px}
+.bs-card-title{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:10px}
+.bs-item{font-size:13px;padding:6px 0;border-bottom:0.5px solid var(--border);color:var(--text2);line-height:1.4}
+.bs-item:last-child{border-bottom:none}
+.bs-stat{font-size:28px;font-weight:600;color:var(--text);margin-bottom:2px}
+.bs-stat-lbl{font-size:12px;color:var(--text3)}
+
+/* Pro gate */
+.pro-gate{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:24px;text-align:center;margin:20px 0}
+.pro-gate h3{font-size:16px;font-weight:500;margin-bottom:8px}
+.pro-gate p{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.55}
+.pro-btn{background:var(--text);color:var(--bg);padding:10px 24px;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.pro-btn:hover{opacity:.85}
+.lock-icon{font-size:28px;margin-bottom:10px}
+
+/* Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;align-items:flex-end;justify-content:center}
 .modal-overlay.on{display:flex}
-.modal{background:var(--bg);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:24px 20px 32px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto}
+.modal{background:var(--bg);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:24px 20px 32px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
 .modal-title{font-size:15px;font-weight:500;margin-bottom:14px}
 .modal-close{float:right;background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;line-height:1;margin-top:-4px}
 .modal-body{font-size:14px;color:var(--text2);line-height:1.65}
 .modal-body h4{font-size:13px;font-weight:500;color:var(--text);margin:14px 0 4px}
 .modal-body p{margin-bottom:8px}
+
+/* Pro upgrade modal */
+.upgrade-modal{padding:28px 24px 36px}
+.upgrade-icon{font-size:36px;text-align:center;margin-bottom:14px}
+.upgrade-title{font-size:20px;font-weight:600;text-align:center;margin-bottom:8px;letter-spacing:-0.02em}
+.upgrade-sub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:20px;line-height:1.55}
+.upgrade-features{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.upgrade-feat{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5}
+.upgrade-feat-icon{width:18px;height:18px;border-radius:50%;background:var(--green-bg);color:var(--green-text);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px}
+.upgrade-prices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.price-card{border:0.5px solid var(--border2);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;transition:border-color .15s}
+.price-card.selected{border-color:var(--text);border-width:1.5px}
+.price-card-name{font-size:12px;color:var(--text3);margin-bottom:4px}
+.price-card-amount{font-size:20px;font-weight:600}
+.price-card-period{font-size:11px;color:var(--text3)}
+.price-card-save{font-size:10px;color:var(--green-text);font-weight:500;margin-top:2px}
+.upgrade-cta{width:100%;padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:var(--r);font-size:15px;font-weight:500;cursor:pointer;font-family:inherit}
+.upgrade-cta:hover{opacity:.88}
+.upgrade-note{font-size:11px;color:var(--text3);text-align:center;margin-top:10px}
+
 footer{border-top:0.5px solid var(--border);padding:20px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 footer p{font-size:12px;color:var(--text3)}
 </style>
@@ -154,354 +220,474 @@ footer p{font-size:12px;color:var(--text3)}
 <body>
 
 <nav>
-  <div class="logo">Clearcast <em>/ podcast clarity</em></div>
-  <span class="beta">Beta</span>
+  <div class="logo" onclick="switchView('analyze')">Clearcast <em>beta</em></div>
+  <div class="main-nav">
+    <button class="mnav on" id="mnav-analyze" onclick="switchView('analyze')">Analyze</button>
+    <button class="mnav" id="mnav-marketplace" onclick="switchView('marketplace')">Marketplace</button>
+  </div>
+  <button class="pro-badge" onclick="showUpgrade()">Get Pro</button>
 </nav>
 
-<div class="hero">
-  <h1>Know what you're<br><span>actually listening to</span></h1>
-  <p>Paste any podcast URL or RSS feed. We surface bias, unverified claims, and missing perspectives.</p>
-</div>
-
-<div class="input-wrap">
-  <div class="input-card">
-    <div class="input-row">
-      <input type="text" id="url-input" placeholder="Paste a podcast URL, episode link, or RSS feed…"/>
-      <button class="btn btn-primary" id="analyze-btn" onclick="handleInput()">Go</button>
-    </div>
-    <div class="hints">
-      <span>Episode pages</span>
-      <span>RSS feeds</span>
-      <span>Direct MP3 links</span>
-    </div>
-    <div class="episode-picker" id="episode-picker">
-      <div class="ep-label">Select an episode to analyze:</div>
-      <div class="ep-list" id="ep-list"></div>
-    </div>
+<!-- ============ ANALYZE ============ -->
+<div class="view on" id="view-analyze">
+  <div class="hero">
+    <h1>Know what you're<br><span>actually listening to</span></h1>
+    <p>Paste any podcast URL or RSS feed. We surface bias, unverified claims, and missing perspectives — free.</p>
   </div>
-</div>
-
-<div class="tabs-wrap" id="tabs">
-  <button class="tab on" onclick="switchTab('analyze',this)">Analysis</button>
-  <button class="tab" onclick="switchTab('live',this)">Live mode</button>
-  <button class="tab" onclick="switchTab('embed',this)">Embed</button>
-</div>
-
-<div class="loading" id="loading">
-  <div class="spinner"></div>
-  <div class="loading-title" id="load-title">Starting analysis…</div>
-  <p id="load-msg">This takes 2–5 minutes for a full episode</p>
-</div>
-
-<div class="panel on" id="panel-analyze">
-  <div class="empty" id="empty-state">
-    <h3>Paste a podcast URL above</h3>
-    <p>Supports episode pages, RSS feeds, and direct audio links</p>
-  </div>
-  <div id="results"></div>
-</div>
-
-<div class="panel" id="panel-live">
-  <div class="live-header">
-    <div class="live-top">
-      <span class="live-show">Analyze an episode first to enable live mode</span>
-    </div>
-    <p style="font-size:13px;color:var(--text2);margin-top:4px">Live mode tracks bias markers in real time. Coming soon via browser extension.</p>
-  </div>
-  <div class="rcard">
-    <div class="flags-head">Example live markers</div>
-    <div class="mrow">
-      <span class="ts">02:14</span>
-      <span class="pill pill-blue" style="flex-shrink:0;margin-top:1px"><span class="dot dot-blue"></span>Context</span>
-      <span class="mtext">Citing a single report as representative of all economists</span>
-    </div>
-    <div class="mrow">
-      <span class="ts">05:47</span>
-      <span class="pill pill-red" style="flex-shrink:0;margin-top:1px"><span class="dot dot-red"></span>Flag</span>
-      <span class="mtext">"Every economist agrees…" — sweeping claim, not substantiated</span>
-    </div>
-    <div class="mrow">
-      <span class="ts">08:30</span>
-      <span class="pill pill-amber" style="flex-shrink:0;margin-top:1px"><span class="dot dot-amber"></span>Framing</span>
-      <span class="mtext">Businesses framed as agents; consumers consistently as victims</span>
-    </div>
-    <div class="listening">
-      <div class="dots"><span></span><span></span><span></span></div>
-      <span style="font-size:13px;color:var(--text3)">Browser extension coming soon…</span>
-    </div>
-  </div>
-</div>
-
-<div class="panel" id="panel-embed">
-  <div class="embed-block">
-    <div class="embed-label">Drop into any website or podcast app</div>
-    <div class="code-block">&lt;script src="https://clearcast-app.netlify.app/embed.js"&gt;&lt;/script&gt;<br>&lt;clearcast-badge episode-url="YOUR_EPISODE_URL" /&gt;</div>
-    <div class="badge-preview">
-      <div style="width:26px;height:26px;border-radius:50%;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L11.5 11H1.5L6.5 1.5Z" stroke="var(--amber-text)" stroke-width="1.4" fill="none" stroke-linejoin="round"/><line x1="6.5" y1="5.5" x2="6.5" y2="8" stroke="var(--amber-text)" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="9.5" r=".6" fill="var(--amber-text)"/></svg>
+  <div class="input-wrap">
+    <div class="input-card">
+      <div class="input-row">
+        <input type="text" id="url-input" placeholder="Paste a podcast URL, episode link, or RSS feed…"/>
+        <button class="btn btn-primary" id="analyze-btn" onclick="handleInput()">Go</button>
       </div>
-      <div><div class="badge-title">Lean left · 3 flags</div><div class="badge-sub">Powered by Clearcast</div></div>
+      <div class="hints"><span>Episode pages</span><span>RSS feeds</span><span>Direct MP3 links</span></div>
+      <div class="ep-picker" id="ep-picker">
+        <div class="ep-label">Select an episode to analyze:</div>
+        <div class="ep-list" id="ep-list"></div>
+      </div>
     </div>
   </div>
-  <div class="embed-block">
-    <div class="embed-label">Browser extension — coming soon</div>
-    <p style="font-size:13px;color:var(--text2);line-height:1.65">Get live bias markers on any podcast page — Spotify, Apple Podcasts, YouTube.</p>
-    <button class="btn btn-ghost" style="margin-top:12px;font-size:13px;padding:8px 14px;border-radius:var(--r)">Join waitlist</button>
+
+  <div class="a-tabs" id="a-tabs">
+    <button class="atab on" onclick="switchATab('results',this)">Analysis</button>
+    <button class="atab" onclick="switchATab('live-tab',this)">Live mode</button>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="ld-title" id="ld-title">Starting analysis…</div>
+    <p class="ld-msg">This takes 2–5 minutes for a full episode</p>
+  </div>
+
+  <div class="panel on" id="panel-results">
+    <div class="empty" id="empty-state">
+      <h3>Paste a podcast URL above</h3>
+      <p>Supports episode pages, RSS feeds, and direct audio links</p>
+    </div>
+    <div id="results"></div>
+  </div>
+
+  <div class="panel" id="panel-live-tab">
+    <div class="rcard">
+      <div class="flags-head">Live mode — coming soon</div>
+      <div style="padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.6">Real-time bias markers as you listen, via browser extension. Join the waitlist to be notified when it launches.</div>
+      <div class="rcard-foot"><button class="btn btn-ghost" style="font-size:13px;padding:8px 14px;border-radius:var(--r)">Join waitlist</button></div>
+    </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="info-modal" onclick="closeModal(event)">
+<!-- ============ MARKETPLACE ============ -->
+<div class="view" id="view-marketplace">
+  <div class="mkt-wrap">
+    <div class="mkt-top">
+      <div class="mkt-title">Podcast marketplace</div>
+      <div class="mkt-sub">Browse top shows, search any topic, see how different podcasts cover the same story.</div>
+      <div class="mkt-subnav">
+        <button class="sntab on" onclick="switchMktTab('browse',this)">Browse shows</button>
+        <button class="sntab" onclick="switchMktTab('stories',this)">Stories by topic</button>
+        <button class="sntab" onclick="switchMktTab('blindspot',this)">
+          Blindspot
+          <span class="pill pill-purple" style="font-size:10px;padding:1px 6px;margin-left:4px">Pro</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Browse -->
+    <div class="mkt-panel on" id="mkt-browse">
+      <div class="cat-row" id="cat-row">
+        <button class="cat-btn on" onclick="loadBrowse('news',this)">News & Politics</button>
+        <button class="cat-btn" onclick="loadBrowse('technology',this)">Technology</button>
+        <button class="cat-btn" onclick="loadBrowse('business',this)">Business</button>
+        <button class="cat-btn" onclick="loadBrowse('society',this)">Society & Culture</button>
+        <button class="cat-btn" onclick="loadBrowse('true-crime',this)">True Crime</button>
+        <button class="cat-btn" onclick="loadBrowse('comedy',this)">Comedy</button>
+        <button class="cat-btn" onclick="loadBrowse('education',this)">Education</button>
+        <button class="cat-btn" onclick="loadBrowse('health',this)">Health</button>
+        <button class="cat-btn" onclick="loadBrowse('sports',this)">Sports</button>
+      </div>
+      <div class="mkt-loading" id="browse-loading"><div class="mkt-spin"></div>Loading top podcasts…</div>
+      <div class="show-grid" id="show-grid" style="display:none"></div>
+    </div>
+
+    <!-- Stories -->
+    <div class="mkt-panel" id="mkt-stories">
+      <div class="stories-search">
+        <input type="text" id="story-input" placeholder="Search any topic — Iran war, AI regulation, Fed rates…"/>
+        <button class="btn btn-primary" onclick="searchStories()">Search</button>
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Trending now</div>
+      <div class="trending-row" id="trending-row"></div>
+      <div class="mkt-loading" id="stories-loading" style="display:none"><div class="mkt-spin"></div>Searching podcasts…</div>
+      <div class="story-list" id="story-list"></div>
+    </div>
+
+    <!-- Blindspot -->
+    <div class="mkt-panel" id="mkt-blindspot">
+      <div class="pro-gate" id="bs-gate">
+        <div class="lock-icon">&#128274;</div>
+        <h3>Blindspot is a Pro feature</h3>
+        <p>See which stories are being covered heavily by left-leaning podcasts but ignored by right-leaning ones — and vice versa. Updated weekly from Clearcast's analysis data.</p>
+        <button class="pro-btn" onclick="showUpgrade()">Unlock with Pro — $5/mo</button>
+      </div>
+      <div id="bs-content" style="display:none">
+        <div class="blindspot-header">
+          <div class="bs-title">This week's blindspot report</div>
+          <div class="bs-sub" id="bs-date"></div>
+        </div>
+        <div class="bs-grid">
+          <div class="bs-card">
+            <div class="bs-card-title" style="color:var(--amber-text)">Left-leaning podcasts are covering</div>
+            <div id="bs-left"></div>
+          </div>
+          <div class="bs-card">
+            <div class="bs-card-title" style="color:var(--red-text)">Right-leaning podcasts are covering</div>
+            <div id="bs-right"></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div class="bs-card" style="text-align:center"><div class="bs-stat" id="bs-total">—</div><div class="bs-stat-lbl">Episodes analyzed</div></div>
+          <div class="bs-card" style="text-align:center"><div class="bs-stat" id="bs-left-count" style="color:var(--amber-text)">—</div><div class="bs-stat-lbl">Lean left episodes</div></div>
+          <div class="bs-card" style="text-align:center"><div class="bs-stat" id="bs-right-count" style="color:var(--red-text)">—</div><div class="bs-stat-lbl">Lean right episodes</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Info modal -->
+<div class="modal-overlay" id="info-modal" onclick="if(event.target===this)this.classList.remove('on')">
   <div class="modal">
     <button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('on')">&#x2715;</button>
-    <div class="modal-title" id="modal-title">Understanding this metric</div>
+    <div class="modal-title" id="modal-title"></div>
     <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
 
+<!-- Upgrade modal -->
+<div class="modal-overlay" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal upgrade-modal">
+    <button class="modal-close" onclick="document.getElementById('upgrade-modal').classList.remove('on')">&#x2715;</button>
+    <div class="upgrade-icon">&#127911;</div>
+    <div class="upgrade-title">Clearcast Pro</div>
+    <div class="upgrade-sub">The full media literacy layer for audio. No ads, no conflicts of interest — ever.</div>
+    <div class="upgrade-features">
+      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Unlimited episode analysis</div>
+      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Full bias scores & factuality ratings</div>
+      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Stories by topic — cross-show coverage</div>
+      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Weekly Blindspot report</div>
+      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Personal listening bias profile</div>
+      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Priority analysis queue</div>
+    </div>
+    <div class="upgrade-prices">
+      <div class="price-card" onclick="selectPlan('monthly',this)">
+        <div class="price-card-name">Monthly</div>
+        <div class="price-card-amount">$5</div>
+        <div class="price-card-period">per month</div>
+      </div>
+      <div class="price-card selected" onclick="selectPlan('annual',this)">
+        <div class="price-card-name">Annual</div>
+        <div class="price-card-amount">$40</div>
+        <div class="price-card-period">per year</div>
+        <div class="price-card-save">Save 33%</div>
+      </div>
+    </div>
+    <button class="upgrade-cta" onclick="handleUpgrade()">Start free 7-day trial</button>
+    <div class="upgrade-note">Cancel anytime. No ads, ever. Independent analysis only.</div>
+  </div>
+</div>
+
 <footer>
-  <p>Clearcast · AI-generated analysis grounded in publicly available fact-checking sources. Not a substitute for critical thinking.</p>
+  <p>Clearcast · AI analysis grounded in publicly available fact-checking sources. Not a substitute for critical thinking.</p>
   <p>clearcast-app.netlify.app</p>
 </footer>
 
 <script>
-const TOOLTIPS = {
-  bias: {
-    title: "Bias score",
-    body: "<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p><h4>Scale guide</h4><p>-100 to -60: Far left | -59 to -20: Lean left</p><p>-19 to +19: Center | +20 to +59: Lean right</p><p>+60 to +100: Far right</p><h4>What this means</h4><p>Bias does not mean wrong. It means the content reflects a particular political perspective through word choice, which voices are included, and which stories are covered.</p>"
-  },
-  factuality: {
-    title: "Factuality rating",
-    body: "<p>How well claims made in the episode hold up against publicly verifiable information.</p><h4>Ratings</h4><p><strong>Mostly factual</strong> — Claims are generally accurate.</p><p><strong>Mixed factuality</strong> — Some claims are overstated or unverifiable.</p><p><strong>Unreliable</strong> — Significant false or misleading claims detected.</p><h4>Important</h4><p>This is AI analysis, not professional fact-checking. Always verify important claims independently.</p>"
-  },
-  omission: {
-    title: "Omission risk",
-    body: "<p>How much important context or opposing perspectives appear to be missing.</p><h4>Levels</h4><p><strong>Low</strong> — Multiple perspectives represented.</p><p><strong>Med</strong> — Some relevant perspectives appear absent.</p><p><strong>High</strong> — Significant viewpoints appear missing, which may distort understanding.</p><h4>Why it matters</h4><p>What a podcast leaves out is often as influential as what it includes. Omission shapes worldview without the listener noticing.</p>"
-  }
+// ─── STATE ───
+let _episodes = [];
+let _isPro = false; // Will wire to Stripe auth later
+let _selectedPlan = 'annual';
+
+// ─── TOOLTIPS ───
+const TIPS = {
+  bias:"<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p><h4>Scale guide</h4><p>-100 to -60 Far left · -59 to -20 Lean left · -19 to +19 Center · +20 to +59 Lean right · +60 to +100 Far right</p><h4>What this means</h4><p>Bias does not mean wrong. It means content reflects a political perspective through word choice, which voices are included, and which stories are covered.</p>",
+  factuality:"<p>How well claims hold up against publicly verifiable information.</p><h4>Ratings</h4><p><strong>Mostly factual</strong> — Generally accurate.<br><strong>Mixed factuality</strong> — Some claims overstated or unverifiable.<br><strong>Unreliable</strong> — Significant false claims detected.</p>",
+  omission:"<p>How much important context or opposing perspectives appear to be missing.</p><h4>Levels</h4><p><strong>Low</strong> — Multiple perspectives represented.<br><strong>Med</strong> — Some perspectives absent.<br><strong>High</strong> — Significant viewpoints missing, may distort understanding.</p>"
 };
 
-const FLAG_EXPLANATIONS = {
-  "fact-check": "A specific claim that appears inaccurate, overstated, or unverifiable.",
-  "framing": "The way the story is presented may reflect a particular viewpoint.",
-  "omission": "Important context or perspectives appear to be missing.",
-  "sponsor-note": "A potential conflict of interest between content and advertiser.",
-  "context": "Additional background that would help listeners understand more fully."
-};
-
-const isMobile = () => window.matchMedia("(hover: none)").matches;
-
-function showInfo(key) {
-  const t = TOOLTIPS[key];
-  if (!t) return;
-  if (isMobile()) {
-    document.getElementById('modal-title').textContent = t.title;
-    document.getElementById('modal-body').innerHTML = t.body;
-    document.getElementById('info-modal').classList.add('on');
-  }
+const isMobile = () => window.matchMedia('(hover: none)').matches;
+function tipBtn(key) {
+  if (isMobile()) return '<button class="info-btn" onclick="showTip(\''+key+'\')">?</button>';
+  return '<span class="tip"><button class="info-btn">?</button><div class="tip-box">'+TIPS[key]+'</div></span>';
+}
+function showTip(key) {
+  document.getElementById('modal-title').textContent = {bias:'Bias score',factuality:'Factuality',omission:'Omission risk'}[key];
+  document.getElementById('modal-body').innerHTML = TIPS[key];
+  document.getElementById('info-modal').classList.add('on');
 }
 
-function closeModal(e) {
-  if (e.target === document.getElementById('info-modal')) {
-    document.getElementById('info-modal').classList.remove('on');
-  }
+// ─── NAV ───
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('view-'+name).classList.add('on');
+  document.querySelectorAll('.mnav').forEach(t=>t.classList.remove('on'));
+  document.getElementById('mnav-'+name).classList.add('on');
+  if (name==='marketplace') initMarketplace();
 }
 
-function infoBtn(key) {
-  if (isMobile()) {
-    return '<button class="info-btn" onclick="showInfo(\'' + key + '\')">?</button>';
-  }
-  const t = TOOLTIPS[key];
-  return '<span class="tooltip-wrap"><button class="info-btn">?</button><div class="tooltip">' + t.body + '</div></span>';
-}
-
-function switchTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+function switchATab(name, el) {
+  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));
   el.classList.add('on');
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
-  document.getElementById('panel-' + name).classList.add('on');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('panel-'+name).classList.add('on');
 }
 
+function switchMktTab(name, el) {
+  document.querySelectorAll('.sntab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.mkt-panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('mkt-'+name).classList.add('on');
+  if (name==='blindspot') loadBlindspot();
+}
+
+// ─── UPGRADE ───
+function showUpgrade() { document.getElementById('upgrade-modal').classList.add('on'); }
+function selectPlan(plan, el) {
+  _selectedPlan = plan;
+  document.querySelectorAll('.price-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function handleUpgrade() {
+  alert('Stripe integration coming soon — thank you for your interest in Clearcast Pro!');
+  document.getElementById('upgrade-modal').classList.remove('on');
+}
+
+// ─── ANALYZE ───
+function looksLikeSpecificEpisode(url) {
+  return url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i) ||
+    url.match(/\/episodes?\//i) || url.match(/\/e\/[a-z0-9-]+/i) ||
+    url.match(/[?&]episode=/i) || url.match(/\/\d{7,}/);
+}
 function looksLikeRss(url) {
-  return url.match(/\.(xml|rss)(\?|$)/i) ||
-    url.match(/\/feed/i) ||
-    url.match(/feeds\./i) ||
-    url.match(/\/podcast\.xml/i) ||
-    url.match(/\.fm\/feed|\.com\/feed|\.org\/feed/i);
+  return url.match(/\.(xml|rss)(\?|$)/i) || url.match(/\/feed/i) ||
+    url.match(/feeds\./i) || url.match(/\/podcast\.xml/i);
 }
 
 async function handleInput() {
   let url = document.getElementById('url-input').value.trim();
   if (!url) { document.getElementById('url-input').focus(); return; }
   if (!url.startsWith('http')) url = 'https://' + url;
-
-  if (looksLikeRss(url)) {
-    await loadEpisodes(url);
-  } else {
-    startAnalysis(url);
-  }
+  if (looksLikeSpecificEpisode(url)) startAnalysis(url);
+  else if (looksLikeRss(url)) await loadEpisodes(url);
+  else startAnalysis(url);
 }
 
 async function loadEpisodes(feedUrl) {
   const btn = document.getElementById('analyze-btn');
-  btn.disabled = true;
-  btn.textContent = 'Loading…';
+  btn.disabled=true; btn.textContent='Loading…';
   try {
-    const res = await fetch('/api/episodes?url=' + encodeURIComponent(feedUrl));
+    const res = await fetch('/api/episodes?url='+encodeURIComponent(feedUrl));
     const data = await res.json();
-    if (data.error || !data.episodes?.length) {
-      startAnalysis(feedUrl);
-      return;
-    }
-    const list = document.getElementById('ep-list');
-    list.innerHTML = data.episodes.map(ep => {
-      const safeUrl = ep.audioUrl.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-      return '<div class="ep-item" onclick="startAnalysis(\'' + safeUrl + '\')">' +
-        '<div><div class="ep-title">' + ep.title + '</div>' +
-        '<div class="ep-meta">' + [ep.date, ep.duration].filter(Boolean).join(' · ') + '</div></div>' +
-        '<button class="btn btn-ghost ep-btn">Analyze</button></div>';
+    if (data.error || !data.episodes?.length) { startAnalysis(feedUrl); return; }
+    _episodes = data.episodes;
+    document.getElementById('ep-list').innerHTML = _episodes.map(function(ep,i){
+      return '<div class="ep-item" onclick="startAnalysis(_episodes['+i+'].audioUrl)">'+
+        '<div><div class="ep-title">'+ep.title+'</div>'+
+        '<div class="ep-meta">'+[ep.date,ep.duration].filter(Boolean).join(' · ')+'</div></div>'+
+        '<button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;flex-shrink:0">Analyze</button></div>';
     }).join('');
-    document.getElementById('episode-picker').classList.add('on');
-  } catch {
-    startAnalysis(feedUrl);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Go';
-  }
+    document.getElementById('ep-picker').classList.add('on');
+  } catch(e) { startAnalysis(feedUrl); }
+  finally { btn.disabled=false; btn.textContent='Go'; }
 }
 
-let pollInterval = null;
+function analyzeShow(feedUrl) {
+  switchView('analyze');
+  document.getElementById('url-input').value = feedUrl;
+  loadEpisodes(feedUrl);
+}
 
+let _poll = null;
 function startAnalysis(audioUrl) {
-  document.getElementById('episode-picker').classList.remove('on');
+  document.getElementById('ep-picker').classList.remove('on');
   const btn = document.getElementById('analyze-btn');
-  btn.disabled = true;
-  btn.textContent = 'Analyzing…';
-  document.getElementById('results').innerHTML = '';
-  document.getElementById('empty-state').style.display = 'none';
-  document.getElementById('tabs').classList.remove('on');
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  btn.disabled=true; btn.textContent='Analyzing…';
+  document.getElementById('results').innerHTML='';
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('a-tabs').classList.remove('on');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.getElementById('loading').classList.add('on');
-  document.getElementById('load-title').textContent = 'Submitting for transcription…';
-
-  fetch('/api/analyze', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url: audioUrl }),
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.error) { showError(data.error); resetBtn(); return; }
-    pollForResults(data.jobId);
-  })
-  .catch(() => { showError('Network error — please try again'); resetBtn(); });
+  document.getElementById('ld-title').textContent='Submitting for transcription…';
+  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl})})
+    .then(r=>r.json())
+    .then(d=>{ if(d.error){showErr(d.error);resetBtn();return;} pollResults(d.jobId); })
+    .catch(()=>{showErr('Network error — please try again');resetBtn();});
 }
 
-function pollForResults(jobId) {
-  const stages = ['Transcribing audio…','Reading transcript…','Checking facts…','Detecting framing…','Building report…'];
-  let stageIdx = 0;
-  if (pollInterval) clearInterval(pollInterval);
-  pollInterval = setInterval(async () => {
-    stageIdx = Math.min(stageIdx + 1, stages.length - 1);
-    document.getElementById('load-title').textContent = stages[stageIdx];
+function pollResults(jobId) {
+  const stages=['Transcribing audio…','Reading transcript…','Checking facts…','Detecting framing…','Building report…'];
+  let si=0;
+  if(_poll) clearInterval(_poll);
+  _poll=setInterval(async()=>{
+    si=Math.min(si+1,stages.length-1);
+    document.getElementById('ld-title').textContent=stages[si];
     try {
-      const res = await fetch('/api/status/' + jobId);
-      const data = await res.json();
-      if (data.status === 'complete') {
-        clearInterval(pollInterval);
+      const d=await fetch('/api/status/'+jobId).then(r=>r.json());
+      if(d.status==='complete'){
+        clearInterval(_poll);
         document.getElementById('loading').classList.remove('on');
-        document.getElementById('tabs').classList.add('on');
-        document.getElementById('panel-analyze').classList.add('on');
-        resetBtn();
-        renderResults(data);
-      } else if (data.status === 'error') {
-        clearInterval(pollInterval);
-        showError(data.error || 'Analysis failed');
-        resetBtn();
+        document.getElementById('a-tabs').classList.add('on');
+        document.getElementById('panel-results').classList.add('on');
+        resetBtn(); renderResults(d);
+      } else if(d.status==='error'){
+        clearInterval(_poll); showErr(d.error||'Analysis failed'); resetBtn();
       }
-    } catch {}
-  }, 4000);
+    } catch{}
+  },4000);
 }
 
-function resetBtn() {
-  const btn = document.getElementById('analyze-btn');
-  btn.disabled = false;
-  btn.textContent = 'Go';
-}
-
-function showError(msg) {
+function resetBtn(){ const b=document.getElementById('analyze-btn'); b.disabled=false; b.textContent='Go'; }
+function showErr(msg){
   document.getElementById('loading').classList.remove('on');
-  document.getElementById('tabs').classList.add('on');
-  document.getElementById('panel-analyze').classList.add('on');
-  document.getElementById('results').innerHTML = '<div class="error-card">Error: ' + msg + '</div>';
+  document.getElementById('a-tabs').classList.add('on');
+  document.getElementById('panel-results').classList.add('on');
+  document.getElementById('results').innerHTML='<div class="err">Error: '+msg+'</div>';
 }
 
-function pill(cls, dot, label) {
-  return '<span class="pill ' + cls + '"><span class="dot ' + dot + '"></span>' + label + '</span>';
-}
-
-function biasPill(label) {
-  const m = {'Far left':'pill-red','Lean left':'pill-amber','Center':'pill-blue','Lean right':'pill-amber','Far right':'pill-red'};
-  const d = {'Far left':'dot-red','Lean left':'dot-amber','Center':'dot-blue','Lean right':'dot-amber','Far right':'dot-red'};
-  return pill(m[label]||'pill-blue', d[label]||'dot-blue', label);
-}
-
-function factPill(label) {
-  const m = {'Mostly factual':'pill-green','Mixed factuality':'pill-amber','Unreliable':'pill-red'};
-  const d = {'Mostly factual':'dot-green','Mixed factuality':'dot-amber','Unreliable':'dot-red'};
-  return pill(m[label]||'pill-blue', d[label]||'dot-blue', label);
-}
-
-function flagPill(type) {
-  const m = {'fact-check':['pill-red','dot-red','Fact check'],'framing':['pill-amber','dot-amber','Framing'],'omission':['pill-amber','dot-amber','Omission'],'sponsor-note':['pill-blue','dot-blue','Sponsor note'],'context':['pill-blue','dot-blue','Context']};
-  const [cls, d, label] = m[type] || ['pill-blue','dot-blue',type];
-  return '<span class="pill ' + cls + ' flag-pill"><span class="dot ' + d + '"></span>' + label + '</span>';
-}
-
-function biasColor(score) {
-  return (score < -20 || score > 20) ? 'var(--amber-text)' : 'var(--blue-text)';
-}
-
-function omissionColor(level) {
-  return level === 'High' ? 'var(--red)' : level === 'Med' ? 'var(--amber-text)' : 'var(--green-text)';
-}
+function pill(c,d,l){ return '<span class="pill '+c+'"><span class="dot '+d+'"></span>'+l+'</span>'; }
+function biasPill(l){const m={'Far left':'pill-red','Lean left':'pill-amber','Center':'pill-blue','Lean right':'pill-amber','Far right':'pill-red'},d={'Far left':'dot-red','Lean left':'dot-amber','Center':'dot-blue','Lean right':'dot-amber','Far right':'dot-red'};return pill(m[l]||'pill-blue',d[l]||'dot-blue',l);}
+function factPill(l){const m={'Mostly factual':'pill-green','Mixed factuality':'pill-amber','Unreliable':'pill-red'},d={'Mostly factual':'dot-green','Mixed factuality':'dot-amber','Unreliable':'dot-red'};return pill(m[l]||'pill-blue',d[l]||'dot-blue',l);}
+function flagPill(t){const m={'fact-check':['pill-red','dot-red','Fact check'],'framing':['pill-amber','dot-amber','Framing'],'omission':['pill-amber','dot-amber','Omission'],'sponsor-note':['pill-blue','dot-blue','Sponsor note'],'context':['pill-blue','dot-blue','Context']};const[c,d,l]=m[t]||['pill-blue','dot-blue',t];return '<span class="pill '+c+'"><span class="dot '+d+'"></span>'+l+'</span>';}
 
 function renderResults(data) {
-  const score = data.biasScore ?? 0;
-  const pos = Math.round(((score + 100) / 200) * 100);
-  const flags = (data.flags || []).map(f =>
-    '<div class="flag">' + flagPill(f.type) +
-    '<div><div class="flag-title">' + f.title + '</div>' +
-    '<div class="flag-detail">' + f.detail + '</div>' +
-    (FLAG_EXPLANATIONS[f.type] ? '<div class="flag-type-desc">' + FLAG_EXPLANATIONS[f.type] + '</div>' : '') +
-    '</div></div>'
-  ).join('');
-
-  document.getElementById('results').innerHTML =
-    '<div class="rcard">' +
-    '<div class="rcard-head"><div>' +
-    '<div class="rcard-title">' + (data.episodeTitle || 'Episode analysis') + '</div>' +
-    '<div class="rcard-sub">' + (data.duration || '') + '</div></div>' +
-    '<div class="badges">' + biasPill(data.biasLabel || 'Center') + factPill(data.factualityLabel || 'Mostly factual') + '</div></div>' +
-    '<div class="metrics">' +
-    '<div class="metric"><div class="metric-label">Bias score ' + infoBtn('bias') + '</div>' +
-    '<div class="metric-val" style="color:' + biasColor(score) + '">' + score + '</div>' +
-    '<div class="metric-hint">-100 left · +100 right</div></div>' +
-    '<div class="metric"><div class="metric-label">Fact flags ' + infoBtn('factuality') + '</div>' +
-    '<div class="metric-val" style="color:var(--red)">' + (data.flags||[]).filter(f=>f.type==='fact-check').length + '</div>' +
-    '<div class="metric-hint">claims to verify</div></div>' +
-    '<div class="metric"><div class="metric-label">Omission risk ' + infoBtn('omission') + '</div>' +
-    '<div class="metric-val" style="color:' + omissionColor(data.omissionRisk) + '">' + (data.omissionRisk||'Low') + '</div>' +
-    '<div class="metric-hint">key views missing</div></div></div>' +
-    '<div class="bias-scale"><div class="bias-scale-label">Bias position on spectrum</div>' +
-    '<div class="scale-bar"><div class="scale-marker" style="left:' + pos + '%"></div></div>' +
-    '<div class="scale-labels"><span>Far left</span><span>Center</span><span>Far right</span></div></div>' +
-    (flags ? '<div class="flags-head">Things to be aware of</div>' + flags : '') +
-    '<div class="rcard-foot"><button class="btn btn-ghost" style="font-size:13px;padding:8px 14px;border-radius:var(--r)" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'url-input\').focus();document.getElementById(\'episode-picker\').classList.remove(\'on\')">Analyze another episode</button></div>' +
+  const score=data.biasScore??0;
+  const pos=Math.round(((score+100)/200)*100);
+  const flags=(data.flags||[]).map(f=>'<div class="flag">'+flagPill(f.type)+'<div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div></div></div>').join('');
+  document.getElementById('results').innerHTML=
+    '<div class="rcard">'+
+    '<div class="rcard-head"><div><div class="rcard-title">'+(data.episodeTitle||'Episode analysis')+'</div><div class="rcard-sub">'+(data.duration||'')+'</div></div>'+
+    '<div class="badges">'+biasPill(data.biasLabel||'Center')+factPill(data.factualityLabel||'Mostly factual')+'</div></div>'+
+    '<div class="metrics">'+
+    '<div class="metric"><div class="metric-label">Bias score '+tipBtn('bias')+'</div><div class="metric-val" style="color:'+((score<-20||score>20)?'var(--amber-text)':'var(--blue-text)')+'">'+score+'</div><div class="metric-hint">-100 left · +100 right</div></div>'+
+    '<div class="metric"><div class="metric-label">Fact flags '+tipBtn('factuality')+'</div><div class="metric-val" style="color:var(--red)">'+((data.flags||[]).filter(f=>f.type==='fact-check').length)+'</div><div class="metric-hint">claims to verify</div></div>'+
+    '<div class="metric"><div class="metric-label">Omission risk '+tipBtn('omission')+'</div><div class="metric-val" style="color:'+(data.omissionRisk==='High'?'var(--red)':data.omissionRisk==='Med'?'var(--amber-text)':'var(--green-text)')+'">'+( data.omissionRisk||'Low')+'</div><div class="metric-hint">key views missing</div></div></div>'+
+    '<div class="scale-wrap"><div class="scale-lbl">Bias position on spectrum</div><div class="scale-bar"><div class="scale-dot" style="left:'+pos+'%"></div></div><div class="scale-labels"><span>Far left</span><span>Center</span><span>Far right</span></div></div>'+
+    (flags?'<div class="flags-head">Things to be aware of</div>'+flags:'')+
+    '<div class="rcard-foot"><button class="btn btn-ghost" style="font-size:13px;padding:8px 14px;border-radius:var(--r)" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'url-input\').focus();document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button></div>'+
     '</div>';
 }
 
-document.getElementById('url-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleInput();
-});
+// ─── MARKETPLACE ───
+let _mktInit = false;
+function initMarketplace() {
+  if (_mktInit) return;
+  _mktInit = true;
+  loadBrowse('news', document.querySelector('.cat-btn.on'));
+  loadTrending();
+}
+
+async function loadBrowse(genre, el) {
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));
+  if(el) el.classList.add('on');
+  const grid=document.getElementById('show-grid');
+  const loading=document.getElementById('browse-loading');
+  grid.style.display='none'; loading.style.display='block'; grid.innerHTML='';
+  try {
+    const data=await fetch('/api/marketplace?genre='+genre).then(r=>r.json());
+    if(!data.podcasts?.length){loading.innerHTML='<p style="color:var(--text3)">Could not load. Try another category.</p>';return;}
+    grid.innerHTML=data.podcasts.map(function(p){
+      const art=p.artwork
+        ?'<img class="show-art" src="'+p.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+'<div class="show-art-ph" style="display:none">&#127911;</div>'
+        :'<div class="show-art-ph">&#127911;</div>';
+      const searchQ=encodeURIComponent(p.name);
+      const ytUrl='https://www.youtube.com/results?search_query='+searchQ+'+podcast';
+      const spUrl='https://open.spotify.com/search/'+searchQ+'/shows';
+      const apUrl=p.itunesUrl||'https://podcasts.apple.com/search?term='+searchQ;
+      const analyzeBtn=p.feedUrl
+        ?'<button class="plt-btn analyze" onclick="analyzeShow(\''+p.feedUrl.replace(/'/g,"\\'")+'\')"">Analyze ↗</button>'
+        :'';
+      return '<div class="show-card">'+
+        '<div class="show-top">'+art+'<div class="show-info">'+
+        '<div class="show-name">'+p.name+'</div>'+
+        '<div class="show-artist">'+p.artist+'</div></div></div>'+
+        '<div class="show-platforms">'+
+        '<a class="plt-btn youtube" href="'+ytUrl+'" target="_blank" rel="noopener">YT</a>'+
+        '<a class="plt-btn spotify" href="'+spUrl+'" target="_blank" rel="noopener">Spotify</a>'+
+        '<a class="plt-btn apple" href="'+apUrl+'" target="_blank" rel="noopener">Apple</a>'+
+        analyzeBtn+
+        '</div></div>';
+    }).join('');
+    loading.style.display='none'; grid.style.display='grid';
+  } catch(e) { loading.innerHTML='<p style="color:var(--text3)">Failed to load.</p>'; }
+}
+
+// ─── STORIES ───
+async function loadTrending() {
+  try {
+    const data=await fetch('/api/stories?trending=1').then(r=>r.json());
+    document.getElementById('trending-row').innerHTML=(data.topics||[]).map(t=>
+      '<button class="trend-chip" onclick="setStorySearch(\''+t+'\')">'+t+'</button>'
+    ).join('');
+  } catch{}
+}
+
+function setStorySearch(topic) {
+  document.getElementById('story-input').value=topic;
+  searchStories();
+}
+
+async function searchStories() {
+  const q=document.getElementById('story-input').value.trim();
+  if(!q) return;
+  const loading=document.getElementById('stories-loading');
+  const list=document.getElementById('story-list');
+  loading.style.display='block'; list.innerHTML='';
+  try {
+    const data=await fetch('/api/stories?q='+encodeURIComponent(q)).then(r=>r.json());
+    loading.style.display='none';
+    if(!data.results?.length){list.innerHTML='<p style="color:var(--text3);font-size:13px;padding:20px 0">No podcast episodes found for this topic. Try different keywords.</p>';return;}
+    list.innerHTML=data.results.map(function(ep){
+      const art=ep.artwork
+        ?'<img class="story-art" src="'+ep.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+'<div class="story-art-ph" style="display:none">&#127911;</div>'
+        :'<div class="story-art-ph">&#127911;</div>';
+      const meta=[ep.releaseDate,ep.duration].filter(Boolean).join(' · ');
+      return '<div class="story-card">'+art+
+        '<div class="story-body">'+
+        '<div class="story-show">'+ep.showName+'</div>'+
+        '<div class="story-title">'+ep.epTitle+'</div>'+
+        (ep.description?'<div class="story-desc">'+ep.description+'</div>':'')+
+        (meta?'<div class="story-meta">'+meta+'</div>':'')+
+        '<div class="story-platforms">'+
+        (ep.youtubeUrl?'<a class="plt-btn youtube" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener">Watch on YouTube</a>':'')+
+        (ep.spotifyUrl?'<a class="plt-btn spotify" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener">Listen on Spotify</a>':'')+
+        (ep.appleUrl?'<a class="plt-btn apple" href="'+ep.appleUrl+'" target="_blank" rel="noopener">Apple Podcasts</a>':'')+
+        (ep.feedUrl?'<button class="plt-btn analyze" onclick="analyzeShow(\''+ep.feedUrl.replace(/'/g,"\\'")+'\')" >Analyze ↗</button>':'')+
+        '</div></div></div>';
+    }).join('');
+  } catch(e){loading.style.display='none';list.innerHTML='<p style="color:var(--text3);font-size:13px;padding:20px 0">Search failed. Please try again.</p>';}
+}
+
+// ─── BLINDSPOT ───
+async function loadBlindspot() {
+  if(!_isPro) return; // gate shown in HTML
+  try {
+    const data=await fetch('/api/blindspot').then(r=>r.json());
+    document.getElementById('bs-gate').style.display='none';
+    document.getElementById('bs-content').style.display='block';
+    document.getElementById('bs-date').textContent='Last updated '+data.lastUpdated;
+    document.getElementById('bs-total').textContent=data.totalAnalyzed;
+    document.getElementById('bs-left-count').textContent=data.leftLeaning.count;
+    document.getElementById('bs-right-count').textContent=data.rightLeaning.count;
+    document.getElementById('bs-left').innerHTML=(data.leftLeaning.topFlags.length
+      ?data.leftLeaning.topFlags.map(t=>'<div class="bs-item">'+t+'</div>').join('')
+      :'<div class="bs-item" style="color:var(--text3)">Not enough data yet</div>');
+    document.getElementById('bs-right').innerHTML=(data.rightLeaning.topFlags.length
+      ?data.rightLeaning.topFlags.map(t=>'<div class="bs-item">'+t+'</div>').join('')
+      :'<div class="bs-item" style="color:var(--text3)">Not enough data yet</div>');
+  } catch{}
+}
+
+document.getElementById('url-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleInput();});
+document.getElementById('story-input').addEventListener('keydown',function(e){if(e.key==='Enter')searchStories();});
 </script>
 </body>
 </html>
