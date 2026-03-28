@@ -28,7 +28,7 @@
   }
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
 .logo{font-size:15px;font-weight:600;letter-spacing:-0.02em}
 .logo em{font-style:normal;opacity:0.35;font-weight:400}
 .beta{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--amber-bg);color:var(--amber-text);font-weight:500}
@@ -51,7 +51,15 @@ input[type=text]::placeholder{color:var(--text3)}
 .hints{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
 .hints span{font-size:12px;color:var(--text3)}
 .hints span::before{content:"↗ "}
-.note{font-size:12px;color:var(--text3);margin-top:10px;line-height:1.5}
+.episode-picker{margin-top:14px;display:none}
+.episode-picker.on{display:block}
+.ep-label{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500}
+.ep-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.ep-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:border-color .15s}
+.ep-item:hover{border-color:var(--border2);background:var(--bg3)}
+.ep-title{font-size:13px;font-weight:500;line-height:1.4}
+.ep-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.ep-btn{font-size:12px;padding:5px 10px;white-space:nowrap;flex-shrink:0}
 .tabs-wrap{max-width:660px;margin:24px auto 14px;padding:0 20px;display:none;gap:6px}
 .tabs-wrap.on{display:flex}
 .tab{padding:7px 15px;font-size:13px;font-family:inherit;border:0.5px solid var(--border);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
@@ -75,26 +83,28 @@ input[type=text]::placeholder{color:var(--text3)}
 .dot-blue{background:var(--blue-text)}
 .dot-green{background:var(--green-text)}
 .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--border)}
-.metric{background:var(--bg);padding:14px 16px;text-align:center}
-.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.metric{background:var(--bg);padding:14px 16px;text-align:center;position:relative}
+.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:flex;align-items:center;justify-content:center;gap:4px}
 .metric-val{font-size:22px;font-weight:500}
 .metric-hint{font-size:11px;color:var(--text3);margin-top:3px}
+.info-btn{width:16px;height:16px;border-radius:50%;background:var(--bg3);border:0.5px solid var(--border2);font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;font-family:inherit;transition:background .15s}
+.info-btn:hover{background:var(--border2)}
+.tooltip-wrap{position:relative;display:inline-flex}
+.tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .15s;text-align:left;font-weight:400}
+.tooltip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--text)}
+.tooltip-wrap:hover .tooltip,.tooltip-wrap.open .tooltip{opacity:1;pointer-events:auto}
+.bias-scale{padding:14px 18px;border-top:0.5px solid var(--border)}
+.bias-scale-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.scale-bar{height:8px;border-radius:4px;background:linear-gradient(to right,#3b6d11,#854f0b,#a32d2d);position:relative;margin-bottom:6px}
+.scale-marker{position:absolute;top:-4px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--text);transform:translateX(-50%);transition:left .5s}
+.scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
 .flags-head{padding:12px 18px 6px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
 .flag{display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-top:0.5px solid var(--border)}
 .flag-pill{flex-shrink:0;margin-top:1px}
 .flag-title{font-size:13px;font-weight:500;margin-bottom:3px}
 .flag-detail{font-size:12px;color:var(--text2);line-height:1.5}
+.flag-type-desc{font-size:11px;color:var(--text3);margin-top:4px;font-style:italic}
 .rcard-foot{padding:12px 18px;border-top:0.5px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
-.loading{text-align:center;padding:48px 20px;max-width:660px;margin:0 auto;display:none}
-.loading.on{display:block}
-.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-title{font-size:15px;font-weight:500;margin-bottom:6px}
-.loading p{font-size:13px;color:var(--text2)}
-.empty{text-align:center;padding:48px 20px}
-.empty h3{font-size:15px;font-weight:500;margin-bottom:6px}
-.empty p{font-size:13px;color:var(--text2)}
-.error-card{background:var(--red-bg);border:0.5px solid var(--red-text);border-radius:var(--r-lg);padding:16px 18px;color:var(--red-text);font-size:13px;margin-bottom:14px}
 .live-header{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:14px}
 .live-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .live-show{font-size:14px;font-weight:500}
@@ -102,7 +112,7 @@ input[type=text]::placeholder{color:var(--text3)}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .prog-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:7px}
-.prog-fill{height:100%;background:var(--text);border-radius:2px;transition:width .4s linear}
+.prog-fill{height:100%;background:var(--text);border-radius:2px}
 .prog-times{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:monospace}
 .mrow{display:flex;align-items:flex-start;gap:10px;padding:10px 18px;border-top:0.5px solid var(--border)}
 .ts{font-size:11px;color:var(--text3);font-family:monospace;min-width:36px;padding-top:2px}
@@ -117,9 +127,26 @@ input[type=text]::placeholder{color:var(--text3)}
 .embed-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:10px}
 .code-block{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:14px;font-family:monospace;font-size:12px;color:var(--text2);word-break:break-all;line-height:1.7}
 .badge-preview{display:inline-flex;align-items:center;gap:10px;padding:9px 14px;border:0.5px solid var(--border2);border-radius:var(--r);margin-top:14px}
-.badge-icon{width:26px;height:26px;border-radius:50%;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .badge-title{font-size:13px;font-weight:500}
 .badge-sub{font-size:11px;color:var(--text3)}
+.loading{text-align:center;padding:48px 20px;max-width:660px;margin:0 auto;display:none}
+.loading.on{display:block}
+.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-size:15px;font-weight:500;margin-bottom:6px}
+.loading p{font-size:13px;color:var(--text2)}
+.empty{text-align:center;padding:48px 20px}
+.empty h3{font-size:15px;font-weight:500;margin-bottom:6px}
+.empty p{font-size:13px;color:var(--text2)}
+.error-card{background:var(--red-bg);border:0.5px solid var(--red-text);border-radius:var(--r-lg);padding:16px 18px;color:var(--red-text);font-size:13px;margin-bottom:14px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;align-items:flex-end;justify-content:center}
+.modal-overlay.on{display:flex}
+.modal{background:var(--bg);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:24px 20px 32px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:15px;font-weight:500;margin-bottom:14px}
+.modal-close{float:right;background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;line-height:1;margin-top:-4px}
+.modal-body{font-size:14px;color:var(--text2);line-height:1.65}
+.modal-body h4{font-size:13px;font-weight:500;color:var(--text);margin:14px 0 4px}
+.modal-body p{margin-bottom:8px}
 footer{border-top:0.5px solid var(--border);padding:20px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 footer p{font-size:12px;color:var(--text3)}
 </style>
@@ -133,20 +160,24 @@ footer p{font-size:12px;color:var(--text3)}
 
 <div class="hero">
   <h1>Know what you're<br><span>actually listening to</span></h1>
-  <p>Paste a direct podcast audio URL or RSS feed. We surface bias, unverified claims, and missing perspectives.</p>
+  <p>Paste any podcast URL or RSS feed. We surface bias, unverified claims, and missing perspectives.</p>
 </div>
 
 <div class="input-wrap">
   <div class="input-card">
     <div class="input-row">
-      <input type="text" id="url-input" placeholder="Paste a direct MP3 URL or RSS feed URL…"/>
-      <button class="btn btn-primary" id="analyze-btn" onclick="startAnalysis()">Analyze</button>
+      <input type="text" id="url-input" placeholder="Paste a podcast URL, episode link, or RSS feed…"/>
+      <button class="btn btn-primary" id="analyze-btn" onclick="handleInput()">Go</button>
     </div>
     <div class="hints">
-      <span>Direct MP3/M4A links</span>
-      <span>RSS feed URLs</span>
+      <span>Episode pages</span>
+      <span>RSS feeds</span>
+      <span>Direct MP3 links</span>
     </div>
-    <p class="note">Tip: To get an RSS feed from Spotify or Apple Podcasts, search "[show name] RSS feed" — most podcasts publish one publicly. Analysis takes 2–5 minutes depending on episode length.</p>
+    <div class="episode-picker" id="episode-picker">
+      <div class="ep-label">Select an episode to analyze:</div>
+      <div class="ep-list" id="ep-list"></div>
+    </div>
   </div>
 </div>
 
@@ -165,7 +196,7 @@ footer p{font-size:12px;color:var(--text3)}
 <div class="panel on" id="panel-analyze">
   <div class="empty" id="empty-state">
     <h3>Paste a podcast URL above</h3>
-    <p>Supports direct MP3/M4A links and RSS feeds</p>
+    <p>Supports episode pages, RSS feeds, and direct audio links</p>
   </div>
   <div id="results"></div>
 </div>
@@ -175,7 +206,7 @@ footer p{font-size:12px;color:var(--text3)}
     <div class="live-top">
       <span class="live-show">Analyze an episode first to enable live mode</span>
     </div>
-    <p style="font-size:13px;color:var(--text2);margin-top:4px">Live mode tracks bias markers in real time as you listen. Coming soon via browser extension.</p>
+    <p style="font-size:13px;color:var(--text2);margin-top:4px">Live mode tracks bias markers in real time. Coming soon via browser extension.</p>
   </div>
   <div class="rcard">
     <div class="flags-head">Example live markers</div>
@@ -206,17 +237,10 @@ footer p{font-size:12px;color:var(--text3)}
     <div class="embed-label">Drop into any website or podcast app</div>
     <div class="code-block">&lt;script src="https://clearcast-app.netlify.app/embed.js"&gt;&lt;/script&gt;<br>&lt;clearcast-badge episode-url="YOUR_EPISODE_URL" /&gt;</div>
     <div class="badge-preview">
-      <div class="badge-icon">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-          <path d="M6.5 1.5L11.5 11H1.5L6.5 1.5Z" stroke="var(--amber-text)" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
-          <line x1="6.5" y1="5.5" x2="6.5" y2="8" stroke="var(--amber-text)" stroke-width="1.3" stroke-linecap="round"/>
-          <circle cx="6.5" cy="9.5" r=".6" fill="var(--amber-text)"/>
-        </svg>
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L11.5 11H1.5L6.5 1.5Z" stroke="var(--amber-text)" stroke-width="1.4" fill="none" stroke-linejoin="round"/><line x1="6.5" y1="5.5" x2="6.5" y2="8" stroke="var(--amber-text)" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="9.5" r=".6" fill="var(--amber-text)"/></svg>
       </div>
-      <div>
-        <div class="badge-title">Lean left · 3 flags</div>
-        <div class="badge-sub">Powered by Clearcast</div>
-      </div>
+      <div><div class="badge-title">Lean left · 3 flags</div><div class="badge-sub">Powered by Clearcast</div></div>
     </div>
   </div>
   <div class="embed-block">
@@ -226,13 +250,68 @@ footer p{font-size:12px;color:var(--text3)}
   </div>
 </div>
 
+<div class="modal-overlay" id="info-modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('on')">&#x2715;</button>
+    <div class="modal-title" id="modal-title">Understanding this metric</div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
 <footer>
-  <p>Clearcast · Analysis is AI-generated and grounded in publicly available fact-checking sources. Not a substitute for your own critical thinking.</p>
+  <p>Clearcast · AI-generated analysis grounded in publicly available fact-checking sources. Not a substitute for critical thinking.</p>
   <p>clearcast-app.netlify.app</p>
 </footer>
 
 <script>
-let pollInterval = null;
+const TOOLTIPS = {
+  bias: {
+    title: "Bias score",
+    body: "<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p><h4>Scale guide</h4><p>-100 to -60: Far left | -59 to -20: Lean left</p><p>-19 to +19: Center | +20 to +59: Lean right</p><p>+60 to +100: Far right</p><h4>What this means</h4><p>Bias does not mean wrong. It means the content reflects a particular political perspective through word choice, which voices are included, and which stories are covered.</p>"
+  },
+  factuality: {
+    title: "Factuality rating",
+    body: "<p>How well claims made in the episode hold up against publicly verifiable information.</p><h4>Ratings</h4><p><strong>Mostly factual</strong> — Claims are generally accurate.</p><p><strong>Mixed factuality</strong> — Some claims are overstated or unverifiable.</p><p><strong>Unreliable</strong> — Significant false or misleading claims detected.</p><h4>Important</h4><p>This is AI analysis, not professional fact-checking. Always verify important claims independently.</p>"
+  },
+  omission: {
+    title: "Omission risk",
+    body: "<p>How much important context or opposing perspectives appear to be missing.</p><h4>Levels</h4><p><strong>Low</strong> — Multiple perspectives represented.</p><p><strong>Med</strong> — Some relevant perspectives appear absent.</p><p><strong>High</strong> — Significant viewpoints appear missing, which may distort understanding.</p><h4>Why it matters</h4><p>What a podcast leaves out is often as influential as what it includes. Omission shapes worldview without the listener noticing.</p>"
+  }
+};
+
+const FLAG_EXPLANATIONS = {
+  "fact-check": "A specific claim that appears inaccurate, overstated, or unverifiable.",
+  "framing": "The way the story is presented may reflect a particular viewpoint.",
+  "omission": "Important context or perspectives appear to be missing.",
+  "sponsor-note": "A potential conflict of interest between content and advertiser.",
+  "context": "Additional background that would help listeners understand more fully."
+};
+
+const isMobile = () => window.matchMedia("(hover: none)").matches;
+
+function showInfo(key) {
+  const t = TOOLTIPS[key];
+  if (!t) return;
+  if (isMobile()) {
+    document.getElementById('modal-title').textContent = t.title;
+    document.getElementById('modal-body').innerHTML = t.body;
+    document.getElementById('info-modal').classList.add('on');
+  }
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('info-modal')) {
+    document.getElementById('info-modal').classList.remove('on');
+  }
+}
+
+function infoBtn(key) {
+  if (isMobile()) {
+    return '<button class="info-btn" onclick="showInfo(\'' + key + '\')">?</button>';
+  }
+  const t = TOOLTIPS[key];
+  return '<span class="tooltip-wrap"><button class="info-btn">?</button><div class="tooltip">' + t.body + '</div></span>';
+}
 
 function switchTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
@@ -241,63 +320,91 @@ function switchTab(name, el) {
   document.getElementById('panel-' + name).classList.add('on');
 }
 
-async function startAnalysis() {
-  const url = document.getElementById('url-input').value.trim();
-  if (!url) { document.getElementById('url-input').focus(); return; }
+function looksLikeRss(url) {
+  return url.match(/\.(xml|rss)(\?|$)/i) ||
+    url.match(/\/feed/i) ||
+    url.match(/feeds\./i) ||
+    url.match(/\/podcast\.xml/i) ||
+    url.match(/\.fm\/feed|\.com\/feed|\.org\/feed/i);
+}
 
+async function handleInput() {
+  let url = document.getElementById('url-input').value.trim();
+  if (!url) { document.getElementById('url-input').focus(); return; }
+  if (!url.startsWith('http')) url = 'https://' + url;
+
+  if (looksLikeRss(url)) {
+    await loadEpisodes(url);
+  } else {
+    startAnalysis(url);
+  }
+}
+
+async function loadEpisodes(feedUrl) {
   const btn = document.getElementById('analyze-btn');
   btn.disabled = true;
-  btn.textContent = 'Starting…';
+  btn.textContent = 'Loading…';
+  try {
+    const res = await fetch('/api/episodes?url=' + encodeURIComponent(feedUrl));
+    const data = await res.json();
+    if (data.error || !data.episodes?.length) {
+      startAnalysis(feedUrl);
+      return;
+    }
+    const list = document.getElementById('ep-list');
+    list.innerHTML = data.episodes.map(ep => {
+      const safeUrl = ep.audioUrl.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      return '<div class="ep-item" onclick="startAnalysis(\'' + safeUrl + '\')">' +
+        '<div><div class="ep-title">' + ep.title + '</div>' +
+        '<div class="ep-meta">' + [ep.date, ep.duration].filter(Boolean).join(' · ') + '</div></div>' +
+        '<button class="btn btn-ghost ep-btn">Analyze</button></div>';
+    }).join('');
+    document.getElementById('episode-picker').classList.add('on');
+  } catch {
+    startAnalysis(feedUrl);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Go';
+  }
+}
 
+let pollInterval = null;
+
+function startAnalysis(audioUrl) {
+  document.getElementById('episode-picker').classList.remove('on');
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true;
+  btn.textContent = 'Analyzing…';
   document.getElementById('results').innerHTML = '';
   document.getElementById('empty-state').style.display = 'none';
   document.getElementById('tabs').classList.remove('on');
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
   document.getElementById('loading').classList.add('on');
   document.getElementById('load-title').textContent = 'Submitting for transcription…';
-  document.getElementById('load-msg').textContent = 'This takes 2–5 minutes for a full episode';
 
-  try {
-    const res = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url }),
-    });
-
-    const data = await res.json();
-    if (!res.ok || data.error) {
-      showError(data.error || 'Failed to start analysis');
-      resetBtn();
-      return;
-    }
-
+  fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url: audioUrl }),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) { showError(data.error); resetBtn(); return; }
     pollForResults(data.jobId);
-  } catch (e) {
-    showError('Network error — please try again');
-    resetBtn();
-  }
+  })
+  .catch(() => { showError('Network error — please try again'); resetBtn(); });
 }
 
 function pollForResults(jobId) {
-  let dots = 0;
-  const stages = [
-    'Transcribing audio…',
-    'Reading transcript…',
-    'Checking facts…',
-    'Detecting framing…',
-    'Building report…',
-  ];
+  const stages = ['Transcribing audio…','Reading transcript…','Checking facts…','Detecting framing…','Building report…'];
   let stageIdx = 0;
-
+  if (pollInterval) clearInterval(pollInterval);
   pollInterval = setInterval(async () => {
-    dots = (dots + 1) % 4;
     stageIdx = Math.min(stageIdx + 1, stages.length - 1);
     document.getElementById('load-title').textContent = stages[stageIdx];
-
     try {
-      const res = await fetch(`/api/status/${jobId}`);
+      const res = await fetch('/api/status/' + jobId);
       const data = await res.json();
-
       if (data.status === 'complete') {
         clearInterval(pollInterval);
         document.getElementById('loading').classList.remove('on');
@@ -310,69 +417,47 @@ function pollForResults(jobId) {
         showError(data.error || 'Analysis failed');
         resetBtn();
       }
-    } catch (e) {
-      // Keep polling on network blip
-    }
+    } catch {}
   }, 4000);
 }
 
 function resetBtn() {
   const btn = document.getElementById('analyze-btn');
   btn.disabled = false;
-  btn.textContent = 'Analyze';
+  btn.textContent = 'Go';
 }
 
 function showError(msg) {
   document.getElementById('loading').classList.remove('on');
   document.getElementById('tabs').classList.add('on');
   document.getElementById('panel-analyze').classList.add('on');
-  document.getElementById('results').innerHTML = `<div class="error-card">Error: ${msg}</div>`;
+  document.getElementById('results').innerHTML = '<div class="error-card">Error: ' + msg + '</div>';
+}
+
+function pill(cls, dot, label) {
+  return '<span class="pill ' + cls + '"><span class="dot ' + dot + '"></span>' + label + '</span>';
 }
 
 function biasPill(label) {
-  const map = {
-    'Far left': 'pill-red',
-    'Lean left': 'pill-amber',
-    'Center': 'pill-blue',
-    'Lean right': 'pill-amber',
-    'Far right': 'pill-red',
-  };
-  const dot = {
-    'Far left': 'dot-red',
-    'Lean left': 'dot-amber',
-    'Center': 'dot-blue',
-    'Lean right': 'dot-amber',
-    'Far right': 'dot-red',
-  };
-  const cls = map[label] || 'pill-blue';
-  const d = dot[label] || 'dot-blue';
-  return `<span class="pill ${cls}"><span class="dot ${d}"></span>${label}</span>`;
+  const m = {'Far left':'pill-red','Lean left':'pill-amber','Center':'pill-blue','Lean right':'pill-amber','Far right':'pill-red'};
+  const d = {'Far left':'dot-red','Lean left':'dot-amber','Center':'dot-blue','Lean right':'dot-amber','Far right':'dot-red'};
+  return pill(m[label]||'pill-blue', d[label]||'dot-blue', label);
 }
 
 function factPill(label) {
-  const map = { 'Mostly factual': 'pill-green', 'Mixed factuality': 'pill-amber', 'Unreliable': 'pill-red' };
-  const dot = { 'Mostly factual': 'dot-green', 'Mixed factuality': 'dot-amber', 'Unreliable': 'dot-red' };
-  const cls = map[label] || 'pill-blue';
-  const d = dot[label] || 'dot-blue';
-  return `<span class="pill ${cls}"><span class="dot ${d}"></span>${label}</span>`;
+  const m = {'Mostly factual':'pill-green','Mixed factuality':'pill-amber','Unreliable':'pill-red'};
+  const d = {'Mostly factual':'dot-green','Mixed factuality':'dot-amber','Unreliable':'dot-red'};
+  return pill(m[label]||'pill-blue', d[label]||'dot-blue', label);
 }
 
 function flagPill(type) {
-  const map = {
-    'fact-check': ['pill-red', 'dot-red', 'Fact check'],
-    'framing': ['pill-amber', 'dot-amber', 'Framing'],
-    'omission': ['pill-amber', 'dot-amber', 'Omission'],
-    'sponsor-note': ['pill-blue', 'dot-blue', 'Sponsor note'],
-    'context': ['pill-blue', 'dot-blue', 'Context'],
-  };
-  const [cls, d, label] = map[type] || ['pill-blue', 'dot-blue', type];
-  return `<span class="pill ${cls} flag-pill"><span class="dot ${d}"></span>${label}</span>`;
+  const m = {'fact-check':['pill-red','dot-red','Fact check'],'framing':['pill-amber','dot-amber','Framing'],'omission':['pill-amber','dot-amber','Omission'],'sponsor-note':['pill-blue','dot-blue','Sponsor note'],'context':['pill-blue','dot-blue','Context']};
+  const [cls, d, label] = m[type] || ['pill-blue','dot-blue',type];
+  return '<span class="pill ' + cls + ' flag-pill"><span class="dot ' + d + '"></span>' + label + '</span>';
 }
 
 function biasColor(score) {
-  if (score < -30) return 'var(--amber-text)';
-  if (score > 30) return 'var(--amber-text)';
-  return 'var(--blue-text)';
+  return (score < -20 || score > 20) ? 'var(--amber-text)' : 'var(--blue-text)';
 }
 
 function omissionColor(level) {
@@ -380,50 +465,43 @@ function omissionColor(level) {
 }
 
 function renderResults(data) {
-  const flags = (data.flags || []).map(f => `
-    <div class="flag">
-      ${flagPill(f.type)}
-      <div>
-        <div class="flag-title">${f.title}</div>
-        <div class="flag-detail">${f.detail}</div>
-      </div>
-    </div>`).join('');
+  const score = data.biasScore ?? 0;
+  const pos = Math.round(((score + 100) / 200) * 100);
+  const flags = (data.flags || []).map(f =>
+    '<div class="flag">' + flagPill(f.type) +
+    '<div><div class="flag-title">' + f.title + '</div>' +
+    '<div class="flag-detail">' + f.detail + '</div>' +
+    (FLAG_EXPLANATIONS[f.type] ? '<div class="flag-type-desc">' + FLAG_EXPLANATIONS[f.type] + '</div>' : '') +
+    '</div></div>'
+  ).join('');
 
-  document.getElementById('results').innerHTML = `
-    <div class="rcard">
-      <div class="rcard-head">
-        <div>
-          <div class="rcard-title">${data.episodeTitle || 'Episode analysis'}</div>
-          <div class="rcard-sub">${data.duration || ''}</div>
-        </div>
-        <div class="badges">
-          ${biasPill(data.biasLabel || 'Center')}
-          ${factPill(data.factualityLabel || 'Mostly factual')}
-        </div>
-      </div>
-      <div class="metrics">
-        <div class="metric">
-          <div class="metric-label">Bias score</div>
-          <div class="metric-val" style="color:${biasColor(data.biasScore)}">${data.biasScore ?? '0'}</div>
-          <div class="metric-hint">-100 left · +100 right</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Fact flags</div>
-          <div class="metric-val" style="color:var(--red)">${(data.flags || []).filter(f => f.type === 'fact-check').length}</div>
-          <div class="metric-hint">claims to verify</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Omission risk</div>
-          <div class="metric-val" style="color:${omissionColor(data.omissionRisk)}">${data.omissionRisk || 'Low'}</div>
-          <div class="metric-hint">key views missing</div>
-        </div>
-      </div>
-      ${flags ? `<div class="flags-head">Things to be aware of</div>${flags}` : ''}
-      <div class="rcard-foot">
-        <button class="btn btn-ghost" style="font-size:13px;padding:8px 14px;border-radius:var(--r)" onclick="document.getElementById('url-input').value='';document.getElementById('url-input').focus()">Analyze another episode</button>
-      </div>
-    </div>`;
+  document.getElementById('results').innerHTML =
+    '<div class="rcard">' +
+    '<div class="rcard-head"><div>' +
+    '<div class="rcard-title">' + (data.episodeTitle || 'Episode analysis') + '</div>' +
+    '<div class="rcard-sub">' + (data.duration || '') + '</div></div>' +
+    '<div class="badges">' + biasPill(data.biasLabel || 'Center') + factPill(data.factualityLabel || 'Mostly factual') + '</div></div>' +
+    '<div class="metrics">' +
+    '<div class="metric"><div class="metric-label">Bias score ' + infoBtn('bias') + '</div>' +
+    '<div class="metric-val" style="color:' + biasColor(score) + '">' + score + '</div>' +
+    '<div class="metric-hint">-100 left · +100 right</div></div>' +
+    '<div class="metric"><div class="metric-label">Fact flags ' + infoBtn('factuality') + '</div>' +
+    '<div class="metric-val" style="color:var(--red)">' + (data.flags||[]).filter(f=>f.type==='fact-check').length + '</div>' +
+    '<div class="metric-hint">claims to verify</div></div>' +
+    '<div class="metric"><div class="metric-label">Omission risk ' + infoBtn('omission') + '</div>' +
+    '<div class="metric-val" style="color:' + omissionColor(data.omissionRisk) + '">' + (data.omissionRisk||'Low') + '</div>' +
+    '<div class="metric-hint">key views missing</div></div></div>' +
+    '<div class="bias-scale"><div class="bias-scale-label">Bias position on spectrum</div>' +
+    '<div class="scale-bar"><div class="scale-marker" style="left:' + pos + '%"></div></div>' +
+    '<div class="scale-labels"><span>Far left</span><span>Center</span><span>Far right</span></div></div>' +
+    (flags ? '<div class="flags-head">Things to be aware of</div>' + flags : '') +
+    '<div class="rcard-foot"><button class="btn btn-ghost" style="font-size:13px;padding:8px 14px;border-radius:var(--r)" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'url-input\').focus();document.getElementById(\'episode-picker\').classList.remove(\'on\')">Analyze another episode</button></div>' +
+    '</div>';
 }
+
+document.getElementById('url-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleInput();
+});
 </script>
 </body>
 </html>
