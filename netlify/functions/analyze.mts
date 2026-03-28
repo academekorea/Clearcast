@@ -56,22 +56,25 @@ export default async (req: Request) => {
     const extracted = await extractAudioUrl(url);
     if (!extracted) {
       return new Response(JSON.stringify({
-        error: "Could not find audio in this URL. Try pasting a direct MP3 link or RSS feed URL."
+        error: "Could not find audio. Try a direct MP3 link or RSS feed URL."
       }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
     audioUrl = extracted;
   }
-  const aaiRes = await fetch("https://api.assemblyai.com/v3/transcripts", {
+  const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
     headers: {
-      "Authorization": assemblyKey!,
-      "Content-Type": "application/json",
+      "authorization": assemblyKey!,
+      "content-type": "application/json",
     },
-    body: JSON.stringify({ audio_url: audioUrl }),
+    body: JSON.stringify({
+      audio_url: audioUrl,
+      speech_models: ["universal-2"],
+    }),
   });
   if (!aaiRes.ok) {
     const err = await aaiRes.text();
-    return new Response(JSON.stringify({ error: "Transcription error: " + err }), {
+    return new Response(JSON.stringify({ error: "AssemblyAI: " + err }), {
       status: 500, headers: { "Content-Type": "application/json" },
     });
   }
