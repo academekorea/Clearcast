@@ -4,690 +4,783 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Clearcast — Podcast bias, clearly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#fff;--bg2:#f7f6f2;--bg3:#efefea;
-  --text:#1a1a18;--text2:#6b6a63;--text3:#a0a098;
-  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);
-  --r:10px;--r-lg:14px;
-  --red-bg:#fcebeb;--red-text:#a32d2d;--red:#e24b4a;
-  --amber-bg:#faeeda;--amber-text:#854f0b;
-  --blue-bg:#e6f1fb;--blue-text:#0c447c;
-  --green-bg:#eaf3de;--green-text:#27500a;
-  --purple-bg:#eeedfe;--purple-text:#3c3489;
+  --bg:#f8f7f4;--bg2:#fff;--bg3:#f0efe9;--bg4:#e6e4dc;
+  --text:#111110;--text2:#57564f;--text3:#96958e;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);
+  --r:8px;--r-lg:12px;--r-xl:16px;
+  --left:#1d4ed8;--left-bg:#eff6ff;--left-bar:#3b82f6;
+  --center:#15803d;--center-bg:#f0fdf4;--center-bar:#22c55e;
+  --right:#b91c1c;--right-bg:#fef2f2;--right-bar:#ef4444;
+  --amber:#92400e;--amber-bg:#fffbeb;
+  --purple:#5b21b6;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;
+  --ff:'DM Sans',sans-serif;--ffs:'DM Serif Display',serif;
 }
 @media(prefers-color-scheme:dark){
   :root{
-    --bg:#1c1c1a;--bg2:#232320;--bg3:#2a2a27;
-    --text:#e6e4da;--text2:#9b9a93;--text3:#636259;
-    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
-    --red-bg:#2e1010;--red-text:#f09595;
-    --amber-bg:#251800;--amber-text:#fac775;
-    --blue-bg:#031e3a;--blue-text:#85b7eb;
-    --green-bg:#0e2100;--green-text:#97c459;
-    --purple-bg:#160f3e;--purple-text:#afa9ec;
+    --bg:#111110;--bg2:#1a1a18;--bg3:#222220;--bg4:#2c2c28;
+    --text:#eae8de;--text2:#88877f;--text3:#525248;
+    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+    --left-bg:#172554;--center-bg:#052e16;--right-bg:#450a0a;
+    --amber-bg:#1c0a00;--purple-bg:#1e1b4b;--purple-border:#4c1d95;
   }
 }
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 
-/* NAV */
-nav{display:flex;align-items:center;gap:8px;padding:0 20px;height:54px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
-.logo{font-size:15px;font-weight:600;letter-spacing:-0.02em;cursor:pointer;margin-right:8px;flex-shrink:0}
-.logo em{font-style:normal;opacity:0.35;font-weight:400}
-.main-nav{display:flex;gap:2px;flex:1}
-.mnav{padding:6px 13px;font-size:13px;font-family:inherit;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:8px;transition:all .15s;white-space:nowrap}
-.mnav.on{background:var(--bg2);color:var(--text);font-weight:500}
-.mnav:hover:not(.on){background:var(--bg3)}
-.pro-badge{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--purple-bg);color:var(--purple-text);font-weight:500;cursor:pointer}
-.pro-badge:hover{opacity:0.85}
-.beta-badge{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--amber-bg);color:var(--amber-text);font-weight:500}
+/* ── TOP NAV ── */
+.top-nav{
+  display:flex;align-items:center;gap:0;padding:0 20px;height:50px;
+  border-bottom:1px solid var(--border);position:sticky;top:0;
+  background:var(--bg);z-index:100
+}
+.logo{font-family:var(--ffs);font-size:18px;letter-spacing:-0.01em;color:var(--text);cursor:pointer;margin-right:24px;flex-shrink:0;border:none;background:none;font-weight:400}
+.top-links{display:flex;gap:0;flex:1}
+.tl{padding:6px 12px;font-size:13px;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:6px;font-family:var(--ff);transition:all .1s;font-weight:400}
+.tl.on{background:var(--bg3);color:var(--text);font-weight:500}
+.tl:hover:not(.on){background:var(--bg3)}
+.top-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.sub-btn{font-size:12px;padding:5px 14px;border-radius:20px;background:var(--text);color:var(--bg);border:none;cursor:pointer;font-family:var(--ff);font-weight:500;transition:opacity .1s}
+.sub-btn:hover{opacity:.85}
 
-/* VIEWS */
+/* ── TOPIC STRIP (Ground News style) ── */
+.topic-strip{
+  display:flex;align-items:center;gap:0;
+  padding:0 20px;height:40px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  overflow-x:auto;white-space:nowrap;
+  scrollbar-width:none;
+}
+.topic-strip::-webkit-scrollbar{display:none}
+.topic-strip-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-right:12px;flex-shrink:0}
+.topic-chip{
+  display:inline-flex;align-items:center;padding:4px 12px;margin-right:6px;
+  font-size:13px;border:none;background:transparent;color:var(--text2);
+  cursor:pointer;border-radius:20px;font-family:var(--ff);transition:all .1s;flex-shrink:0
+}
+.topic-chip.on{background:var(--text);color:var(--bg)}
+.topic-chip:hover:not(.on){background:var(--bg3);color:var(--text)}
+
+/* ── VIEWS ── */
 .view{display:none}.view.on{display:block}
 
-/* ===================== ANALYZE ===================== */
-.hero{max-width:560px;margin:0 auto;text-align:center;padding:52px 20px 32px}
-.hero h1{font-size:clamp(24px,4vw,36px);font-weight:600;letter-spacing:-0.03em;line-height:1.15;margin-bottom:10px}
-.hero h1 span{color:var(--text3)}
-.hero p{font-size:14px;color:var(--text2);line-height:1.65;max-width:380px;margin:0 auto}
-.input-wrap{max-width:640px;margin:20px auto 0;padding:0 20px}
-.input-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:16px}
-.input-row{display:flex;gap:8px}
-input[type=text]{flex:1;padding:10px 14px;font-size:14px;font-family:inherit;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;transition:border-color .15s}
-input[type=text]:focus{border-color:var(--text3)}
-input[type=text]::placeholder{color:var(--text3)}
-.btn{padding:10px 18px;font-size:14px;font-weight:500;font-family:inherit;border:none;border-radius:var(--r);cursor:pointer;transition:opacity .15s;white-space:nowrap}
-.btn-primary{background:var(--text);color:var(--bg)}.btn-primary:hover{opacity:.82}.btn-primary:disabled{opacity:.4;cursor:not-allowed}
-.btn-ghost{background:transparent;color:var(--text2);border:0.5px solid var(--border2);cursor:pointer;font-family:inherit}.btn-ghost:hover{background:var(--bg3)}
-.hints{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
-.hints span{font-size:12px;color:var(--text3)}.hints span::before{content:"↗ "}
-.ep-picker{margin-top:14px;display:none}.ep-picker.on{display:block}
-.ep-label{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500}
-.ep-list{display:flex;flex-direction:column;gap:6px}
-.ep-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:border-color .15s}
-.ep-item:hover{border-color:var(--border2);background:var(--bg3)}
-.ep-title{font-size:13px;font-weight:500;line-height:1.4}
-.ep-meta{font-size:11px;color:var(--text3);margin-top:2px}
-.a-tabs{max-width:640px;margin:18px auto 12px;padding:0 20px;display:none;gap:6px}.a-tabs.on{display:flex}
-.atab{padding:7px 14px;font-size:13px;font-family:inherit;border:0.5px solid var(--border);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
-.atab.on{background:var(--bg);color:var(--text);border-color:var(--border2)}.atab:hover:not(.on){background:var(--bg2)}
-.panel{max-width:640px;margin:0 auto;padding:0 20px 60px;display:none}.panel.on{display:block}
-.rcard{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px}
-.rcard-head{padding:16px 18px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-.rcard-title{font-size:15px;font-weight:500}.rcard-sub{font-size:12px;color:var(--text3);margin-top:3px}
-.badges{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
-.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap}
-.pill-red{background:var(--red-bg);color:var(--red-text)}.pill-amber{background:var(--amber-bg);color:var(--amber-text)}
-.pill-blue{background:var(--blue-bg);color:var(--blue-text)}.pill-green{background:var(--green-bg);color:var(--green-text)}
-.pill-purple{background:var(--purple-bg);color:var(--purple-text)}
-.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
-.dot-red{background:var(--red-text)}.dot-amber{background:var(--amber-text)}.dot-blue{background:var(--blue-text)}.dot-green{background:var(--green-text)}
-.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--border)}
-.metric{background:var(--bg);padding:14px 16px;text-align:center}
-.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:flex;align-items:center;justify-content:center;gap:4px}
-.metric-val{font-size:22px;font-weight:500}.metric-hint{font-size:11px;color:var(--text3);margin-top:3px}
-.info-btn{width:16px;height:16px;border-radius:50%;background:var(--bg3);border:0.5px solid var(--border2);font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
-.tip{position:relative;display:inline-flex}
-.tip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;width:210px;z-index:200;opacity:0;pointer-events:none;transition:opacity .15s;text-align:left;font-weight:400}
-.tip-box::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--text)}
-.tip:hover .tip-box{opacity:1;pointer-events:auto}
-.scale-wrap{padding:14px 18px;border-top:0.5px solid var(--border)}
-.scale-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
-.scale-bar{height:8px;border-radius:4px;background:linear-gradient(to right,#3b6d11,#854f0b,#a32d2d);position:relative;margin-bottom:6px}
-.scale-dot{position:absolute;top:-4px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--text);transform:translateX(-50%);transition:left .5s}
-.scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
-.flags-head{padding:12px 18px 6px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
-.flag{display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-top:0.5px solid var(--border)}
-.flag-title{font-size:13px;font-weight:500;margin-bottom:3px}.flag-detail{font-size:12px;color:var(--text2);line-height:1.5}
-.rcard-foot{padding:12px 18px;border-top:0.5px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
-.loading{text-align:center;padding:48px 20px;max-width:640px;margin:0 auto;display:none}.loading.on{display:block}
-.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
+/* ══════════ MARKETPLACE (default home) ══════════ */
+.mkt-layout{display:grid;grid-template-columns:240px 1fr;gap:0;max-width:1200px;margin:0 auto;min-height:calc(100vh - 90px)}
+
+/* Left sidebar */
+.mkt-sidebar{border-right:1px solid var(--border);padding:20px 0;position:sticky;top:90px;height:calc(100vh - 90px);overflow-y:auto}
+.sidebar-section{margin-bottom:24px;padding:0 16px}
+.sidebar-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px}
+.sidebar-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text2);transition:all .1s;border:none;background:transparent;width:100%;text-align:left;font-family:var(--ff)}
+.sidebar-item.on{background:var(--bg3);color:var(--text);font-weight:500}
+.sidebar-item:hover:not(.on){background:var(--bg3);color:var(--text)}
+.sidebar-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Main feed */
+.mkt-feed{padding:0}
+
+/* Sub-nav tabs — like Ground News top tabs */
+.feed-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 20px;background:var(--bg2);position:sticky;top:90px;z-index:50}
+.ftab{padding:12px 16px;font-size:13px;font-family:var(--ff);border:none;background:transparent;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;font-weight:400}
+.ftab.on{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.ftab:hover:not(.on){color:var(--text2)}
+.pro-tab-tag{font-size:9px;padding:1px 5px;border-radius:8px;background:var(--purple-bg);color:var(--purple);font-weight:600;margin-left:4px;border:1px solid var(--purple-border);vertical-align:middle}
+
+.feed-panel{display:none;padding:20px}.feed-panel.on{display:block}
+
+/* ── STORY FEED (main Ground News equivalent) ── */
+.stories-search-bar{display:flex;gap:8px;margin-bottom:16px}
+.s-input{flex:1;padding:10px 14px;font-size:14px;font-family:var(--ff);border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);color:var(--text);outline:none;transition:border-color .1s}
+.s-input:focus{border-color:var(--text3)}
+.s-input::placeholder{color:var(--text3)}
+.search-btn{padding:10px 18px;font-size:14px;font-weight:500;font-family:var(--ff);border:none;background:var(--text);color:var(--bg);border-radius:var(--r);cursor:pointer;white-space:nowrap;transition:opacity .1s}
+.search-btn:hover{opacity:.85}
+.search-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Story cards — the core Ground News-style unit */
+.story-cards{display:flex;flex-direction:column;gap:0}
+.story-card{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:16px 20px;cursor:pointer;transition:background .1s;
+  display:flex;gap:14px;align-items:flex-start
+}
+.story-card:first-child{border-top:1px solid var(--border)}
+.story-card:hover{background:var(--bg3)}
+.story-card-art{width:72px;height:72px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.story-card-art-ph{width:72px;height:72px;border-radius:8px;background:var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px}
+.story-card-body{flex:1;min-width:0}
+.story-card-show{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.story-card-title{font-size:15px;font-weight:500;line-height:1.35;margin-bottom:6px;letter-spacing:-0.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.story-card-desc{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* THE KEY ELEMENT — coverage bar like Ground News */
+.coverage-wrap{margin-bottom:10px}
+.coverage-bar-track{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px;margin-bottom:5px}
+.cov-seg-left{background:var(--left-bar);border-radius:3px 0 0 3px}
+.cov-seg-center{background:var(--center-bar)}
+.cov-seg-right{background:var(--right-bar);border-radius:0 3px 3px 0}
+.coverage-counts{display:flex;gap:12px}
+.cov-count{font-size:11px;display:flex;align-items:center;gap:4px}
+.cov-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.cov-num{font-weight:600}
+.cov-lbl{color:var(--text3)}
+
+.story-card-platforms{display:flex;gap:5px;flex-wrap:wrap}
+.plt-btn{font-size:11px;padding:4px 10px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff);text-decoration:none;display:inline-flex;align-items:center;gap:3px;transition:background .08s;white-space:nowrap}
+.plt-btn:hover{background:var(--bg3)}
+.plt-btn.yt{color:var(--right);border-color:rgba(239,68,68,.25)}.plt-btn.yt:hover{background:var(--right-bg)}
+.plt-btn.sp{color:var(--center);border-color:rgba(34,197,94,.25)}.plt-btn.sp:hover{background:var(--center-bg)}
+.plt-btn.ap{color:var(--purple);border-color:var(--purple-border)}.plt-btn.ap:hover{background:var(--purple-bg)}
+.plt-btn.az{color:var(--text);font-weight:500}.plt-btn.az:hover{background:var(--bg3)}
+
+.feed-loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:48px 20px;color:var(--text3);font-size:13px}
+.feed-spin{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--text3);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ld-title{font-size:15px;font-weight:500;margin-bottom:6px}.ld-msg{font-size:13px;color:var(--text2)}
-.empty{text-align:center;padding:48px 20px}.empty h3{font-size:15px;font-weight:500;margin-bottom:6px}.empty p{font-size:13px;color:var(--text2)}
-.err{background:var(--red-bg);border:0.5px solid var(--red-text);border-radius:var(--r-lg);padding:16px 18px;color:var(--red-text);font-size:13px;margin-bottom:14px}
+.feed-empty{padding:40px 20px;text-align:center;color:var(--text3);font-size:14px}
 
-/* ===================== MARKETPLACE ===================== */
-.mkt-wrap{max-width:1100px;margin:0 auto;padding:0 20px}
-.mkt-top{padding:28px 0 0}
-.mkt-title{font-size:20px;font-weight:600;letter-spacing:-0.02em;margin-bottom:4px}
-.mkt-sub{font-size:14px;color:var(--text2);margin-bottom:20px}
+/* ── BROWSE SHOWS ── */
+.show-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.show-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:10px;transition:border-color .1s,box-shadow .1s}
+.show-card:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.show-top{display:flex;gap:10px}
+.show-art{width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.show-art-ph{width:48px;height:48px;border-radius:8px;background:var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px}
+.show-meta{flex:1;min-width:0}
+.show-name{font-size:13px;font-weight:500;line-height:1.3;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.show-author{font-size:11px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.show-plts{display:flex;gap:4px;flex-wrap:wrap}
 
-/* sub-nav inside marketplace */
-.mkt-subnav{display:flex;gap:6px;margin-bottom:0;border-bottom:0.5px solid var(--border);padding-bottom:0}
-.sntab{padding:9px 16px;font-size:13px;font-family:inherit;border:none;background:transparent;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-0.5px;transition:all .15s;font-weight:400}
-.sntab.on{color:var(--text);border-bottom-color:var(--text);font-weight:500}
-.sntab:hover:not(.on){color:var(--text)}
-
-.mkt-panel{display:none;padding-top:20px}.mkt-panel.on{display:block}
-
-/* Browse */
-.cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.cat-btn{padding:7px 16px;font-size:13px;font-family:inherit;border:0.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
-.cat-btn.on{background:var(--text);color:var(--bg);border-color:var(--text)}.cat-btn:hover:not(.on){background:var(--bg2)}
-.show-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
-.show-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s}
-.show-card:hover{border-color:var(--border2)}
-.show-top{display:flex;gap:10px;align-items:flex-start}
-.show-art{width:52px;height:52px;border-radius:9px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
-.show-art-ph{width:52px;height:52px;border-radius:9px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
-.show-info{flex:1;min-width:0}
-.show-name{font-size:13px;font-weight:500;line-height:1.35;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.show-artist{font-size:12px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.show-platforms{display:flex;gap:5px;flex-wrap:wrap}
-.plt-btn{font-size:11px;padding:4px 9px;border-radius:6px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:background .12s}
-.plt-btn:hover{background:var(--bg2)}
-.plt-btn.apple{border-color:rgba(255,59,48,0.3);color:#ff3b30}
-.plt-btn.spotify{border-color:rgba(30,215,96,0.3);color:#1db954}
-.plt-btn.youtube{border-color:rgba(255,0,0,0.3);color:#ff0000}
-.plt-btn.analyze{border-color:var(--border2);color:var(--text);font-weight:500}
-.mkt-loading{text-align:center;padding:60px 20px;color:var(--text3);font-size:14px}
-.mkt-spin{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--text3);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 12px}
-
-/* Stories */
-.stories-search{display:flex;gap:8px;margin-bottom:16px}
-.stories-search input{flex:1;padding:10px 14px;font-size:14px;font-family:inherit;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none}
-.stories-search input:focus{border-color:var(--text3)}
-.trending-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
-.trend-chip{padding:5px 13px;font-size:12px;font-family:inherit;border:0.5px solid var(--border);border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .12s}
-.trend-chip:hover{background:var(--bg3);color:var(--text)}
-.story-list{display:flex;flex-direction:column;gap:10px}
-.story-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:14px;display:flex;gap:12px;transition:border-color .15s}
-.story-card:hover{border-color:var(--border2)}
-.story-art{width:60px;height:60px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
-.story-art-ph{width:60px;height:60px;border-radius:8px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
-.story-body{flex:1;min-width:0}
-.story-show{font-size:12px;color:var(--text3);margin-bottom:3px}
-.story-title{font-size:14px;font-weight:500;line-height:1.35;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.story-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.story-meta{font-size:11px;color:var(--text3);margin-bottom:8px}
-.story-platforms{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-
-/* Blindspot */
-.blindspot-header{background:var(--purple-bg);border:0.5px solid var(--purple-text);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:16px;opacity:0.9}
-.bs-title{font-size:15px;font-weight:500;color:var(--purple-text);margin-bottom:4px}
-.bs-sub{font-size:13px;color:var(--purple-text);opacity:0.8}
-.bs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.bs-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:14px}
-.bs-card-title{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:10px}
-.bs-item{font-size:13px;padding:6px 0;border-bottom:0.5px solid var(--border);color:var(--text2);line-height:1.4}
+/* ── BLINDSPOT ── */
+.bs-pro-gate{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-xl);padding:36px 24px;text-align:center}
+.bs-lock{font-size:36px;margin-bottom:12px}
+.bs-gate-title{font-family:var(--ffs);font-size:22px;font-weight:400;margin-bottom:10px}
+.bs-gate-desc{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto}
+.bs-cta{background:var(--text);color:var(--bg);padding:11px 28px;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--ff)}
+.bs-cta:hover{opacity:.88}
+.bs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.bs-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px}
+.bs-card-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.bs-item{font-size:13px;padding:7px 0;border-bottom:1px solid var(--border);color:var(--text2);line-height:1.4}
 .bs-item:last-child{border-bottom:none}
-.bs-stat{font-size:28px;font-weight:600;color:var(--text);margin-bottom:2px}
-.bs-stat-lbl{font-size:12px;color:var(--text3)}
+.bs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bs-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;text-align:center}
+.bs-num{font-size:26px;font-weight:600;letter-spacing:-0.03em;margin-bottom:2px}
+.bs-lbl{font-size:11px;color:var(--text3)}
 
-/* Pro gate */
-.pro-gate{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:24px;text-align:center;margin:20px 0}
-.pro-gate h3{font-size:16px;font-weight:500;margin-bottom:8px}
-.pro-gate p{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.55}
-.pro-btn{background:var(--text);color:var(--bg);padding:10px 24px;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
-.pro-btn:hover{opacity:.85}
-.lock-icon{font-size:28px;margin-bottom:10px}
+/* ══════════ ANALYZE VIEW ══════════ */
+.analyze-wrap{max-width:660px;margin:0 auto;padding:0 20px 60px}
+.analyze-hero{padding:48px 0 28px;text-align:center}
+.analyze-hero h1{font-family:var(--ffs);font-size:clamp(26px,4vw,40px);letter-spacing:-0.02em;line-height:1.1;margin-bottom:10px;font-weight:400}
+.analyze-hero h1 em{font-style:italic;color:var(--text3)}
+.analyze-hero p{font-size:14px;color:var(--text2);line-height:1.6;max-width:380px;margin:0 auto}
+.input-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-xl);padding:14px;margin-bottom:8px}
+.input-row{display:flex;gap:8px}
+.url-field{flex:1;padding:10px 14px;font-size:14px;font-family:var(--ff);border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;transition:border-color .1s}
+.url-field:focus{border-color:var(--text3)}
+.url-field::placeholder{color:var(--text3)}
+.go-btn{padding:10px 20px;font-size:14px;font-weight:500;font-family:var(--ff);border:none;background:var(--text);color:var(--bg);border-radius:var(--r);cursor:pointer;transition:opacity .1s;white-space:nowrap}
+.go-btn:hover{opacity:.85}.go-btn:disabled{opacity:.4;cursor:not-allowed}
+.input-hints{display:flex;gap:10px;padding:0 2px;margin-top:10px}
+.hint{font-size:12px;color:var(--text3)}.hint::before{content:"· "}
+.ep-picker{display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.ep-picker.on{display:block}
+.ep-picker-lbl{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.07em}
+.ep-list{display:flex;flex-direction:column;gap:4px}
+.ep-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .1s;background:var(--bg)}
+.ep-row:hover{border-color:var(--border2);background:var(--bg3)}
+.ep-row-title{font-size:13px;font-weight:500;flex:1;line-height:1.3;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.ep-row-meta{font-size:11px;color:var(--text3);white-space:nowrap}
+.ep-row-btn{font-size:12px;padding:4px 10px;border:1px solid var(--border2);border-radius:6px;background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:var(--ff)}
+.atabs{display:none;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.atabs.on{display:flex}
+.atab{padding:10px 16px;font-size:13px;font-family:var(--ff);border:none;background:transparent;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;font-weight:400}
+.atab.on{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.apanel{display:none}.apanel.on{display:block}
+.empty-state{text-align:center;padding:52px 20px}
+.empty-state h3{font-family:var(--ffs);font-size:22px;font-weight:400;margin-bottom:8px}
+.empty-state p{font-size:14px;color:var(--text2)}
+.loading-state{display:none;text-align:center;padding:52px 20px}.loading-state.on{display:block}
+.spinner{width:26px;height:26px;border:2px solid var(--border2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+.ld-title{font-size:15px;font-weight:500;margin-bottom:5px}.ld-msg{font-size:13px;color:var(--text2)}
 
-/* Modal */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;align-items:flex-end;justify-content:center}
-.modal-overlay.on{display:flex}
-.modal{background:var(--bg);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:24px 20px 32px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
-.modal-title{font-size:15px;font-weight:500;margin-bottom:14px}
-.modal-close{float:right;background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;line-height:1;margin-top:-4px}
+/* result card */
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:14px;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.rc-head{padding:16px 18px;border-bottom:1px solid var(--border)}
+.rc-title{font-size:15px;font-weight:500;margin-bottom:3px;letter-spacing:-0.01em}
+.rc-sub{font-size:12px;color:var(--text3)}
+.rc-badges{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.bpill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid}
+.bp-left{background:var(--left-bg);color:var(--left);border-color:rgba(29,78,216,.2)}
+.bp-lean-left{background:var(--left-bg);color:var(--left);border-color:rgba(29,78,216,.15)}
+.bp-center{background:var(--center-bg);color:var(--center);border-color:rgba(21,128,61,.2)}
+.bp-lean-right{background:var(--right-bg);color:var(--right);border-color:rgba(185,28,28,.15)}
+.bp-right{background:var(--right-bg);color:var(--right);border-color:rgba(185,28,28,.2)}
+.bp-factual{background:var(--center-bg);color:var(--center);border-color:rgba(21,128,61,.2)}
+.bp-mixed{background:var(--amber-bg);color:var(--amber);border-color:rgba(146,64,14,.2)}
+.bp-unreliable{background:var(--right-bg);color:var(--right);border-color:rgba(185,28,28,.2)}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0;background:currentColor}
+.score-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.score-cell{background:var(--bg2);padding:14px 16px;text-align:center}
+.score-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px}
+.score-val{font-size:24px;font-weight:600;letter-spacing:-0.02em}
+.score-hint{font-size:11px;color:var(--text3);margin-top:2px}
+.spectrum-wrap{padding:14px 18px;border-top:1px solid var(--border)}
+.spec-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;font-weight:600}
+.spec-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--left-bar),var(--center-bar),var(--right-bar));position:relative;margin-bottom:8px}
+.spec-thumb{position:absolute;top:-5px;width:16px;height:16px;border-radius:50%;background:var(--bg2);border:2px solid var(--text);transform:translateX(-50%);transition:left .6s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.spec-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
+.flags-section{border-top:1px solid var(--border)}
+.flags-head{padding:12px 18px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:600}
+.flag-item{display:flex;gap:10px;padding:11px 18px;border-top:1px solid var(--border)}
+.ftag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px}
+.ft-fact{background:var(--right-bg);color:var(--right)}
+.ft-framing{background:var(--amber-bg);color:var(--amber)}
+.ft-omission{background:var(--amber-bg);color:var(--amber)}
+.ft-sponsor{background:var(--left-bg);color:var(--left)}
+.ft-context{background:var(--center-bg);color:var(--center)}
+.flag-title{font-size:13px;font-weight:500;margin-bottom:2px;line-height:1.35}
+.flag-detail{font-size:12px;color:var(--text2);line-height:1.5}
+.rc-foot{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
+.ghost-btn{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:7px 14px;border-radius:var(--r);font-size:13px;font-family:var(--ff);cursor:pointer;transition:background .1s}
+.ghost-btn:hover{background:var(--bg3)}
+.err-card{background:var(--right-bg);border:1px solid rgba(185,28,28,.2);border-radius:var(--r-lg);padding:14px 16px;color:var(--right);font-size:13px;margin-bottom:14px}
+
+/* tooltip */
+.tip-wrap{position:relative;display:inline-flex}
+.tip-box{position:absolute;bottom:calc(100%+8px);left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;width:210px;z-index:300;opacity:0;pointer-events:none;transition:opacity .12s;text-align:left;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tip-box::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--text)}
+.tip-wrap:hover .tip-box{opacity:1}
+.info-btn{width:14px;height:14px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);font-size:9px;font-weight:600;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--ff)}
+
+/* ── MODALS ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+.overlay.on{display:flex;animation:oFade .15s ease}
+@keyframes oFade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--bg2);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:20px 20px 36px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;animation:mUp .2s ease}
+@keyframes mUp{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
+.modal-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.modal-title{font-size:15px;font-weight:500}
+.modal-close{background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;font-family:var(--ff);line-height:1;padding:2px}
 .modal-body{font-size:14px;color:var(--text2);line-height:1.65}
-.modal-body h4{font-size:13px;font-weight:500;color:var(--text);margin:14px 0 4px}
+.modal-body h4{font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.06em}
 .modal-body p{margin-bottom:8px}
 
-/* Pro upgrade modal */
-.upgrade-modal{padding:28px 24px 36px}
-.upgrade-icon{font-size:36px;text-align:center;margin-bottom:14px}
-.upgrade-title{font-size:20px;font-weight:600;text-align:center;margin-bottom:8px;letter-spacing:-0.02em}
-.upgrade-sub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:20px;line-height:1.55}
-.upgrade-features{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
-.upgrade-feat{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5}
-.upgrade-feat-icon{width:18px;height:18px;border-radius:50%;background:var(--green-bg);color:var(--green-text);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px}
-.upgrade-prices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.price-card{border:0.5px solid var(--border2);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;transition:border-color .15s}
-.price-card.selected{border-color:var(--text);border-width:1.5px}
-.price-card-name{font-size:12px;color:var(--text3);margin-bottom:4px}
-.price-card-amount{font-size:20px;font-weight:600}
-.price-card-period{font-size:11px;color:var(--text3)}
-.price-card-save{font-size:10px;color:var(--green-text);font-weight:500;margin-top:2px}
-.upgrade-cta{width:100%;padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:var(--r);font-size:15px;font-weight:500;cursor:pointer;font-family:inherit}
+/* upgrade modal */
+.umod{padding:24px 20px 36px}
+.umod-logo{font-family:var(--ffs);font-size:22px;text-align:center;margin-bottom:4px;font-weight:400}
+.umod-tag{font-size:13px;color:var(--text2);text-align:center;margin-bottom:20px;line-height:1.5}
+.umod-feats{display:flex;flex-direction:column;gap:7px;margin-bottom:22px}
+.uf{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text2);line-height:1.45}
+.uf-ic{width:16px;height:16px;border-radius:50%;background:var(--center-bg);color:var(--center);display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:2px;border:1px solid rgba(21,128,61,.2)}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.price-opt{border:1px solid var(--border2);border-radius:var(--r);padding:12px;text-align:center;cursor:pointer;transition:border-color .1s}
+.price-opt.sel{border-color:var(--text);border-width:2px}
+.po-name{font-size:10px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+.po-price{font-size:22px;font-weight:600;letter-spacing:-0.02em}
+.po-period{font-size:11px;color:var(--text3)}
+.po-save{font-size:10px;color:var(--center);font-weight:600;margin-top:2px}
+.upgrade-cta{width:100%;padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:var(--r);font-size:15px;font-weight:500;cursor:pointer;font-family:var(--ff);letter-spacing:-0.01em}
 .upgrade-cta:hover{opacity:.88}
-.upgrade-note{font-size:11px;color:var(--text3);text-align:center;margin-top:10px}
+.upgrade-note{font-size:11px;color:var(--text3);text-align:center;margin-top:10px;line-height:1.5}
 
-footer{border-top:0.5px solid var(--border);padding:20px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-footer p{font-size:12px;color:var(--text3)}
+footer{border-top:1px solid var(--border);padding:16px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+footer p{font-size:11px;color:var(--text3)}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="logo" onclick="switchView('analyze')">Clearcast <em>beta</em></div>
-  <div class="main-nav">
-    <button class="mnav on" id="mnav-analyze" onclick="switchView('analyze')">Analyze</button>
-    <button class="mnav" id="mnav-marketplace" onclick="switchView('marketplace')">Marketplace</button>
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <button class="logo" onclick="switchView('marketplace')">Clearcast</button>
+  <div class="top-links">
+    <button class="tl on" id="tl-marketplace" onclick="switchView('marketplace')">Home</button>
+    <button class="tl" id="tl-analyze" onclick="switchView('analyze')">Analyze</button>
   </div>
-  <button class="pro-badge" onclick="showUpgrade()">Get Pro</button>
+  <div class="top-right">
+    <button class="sub-btn" onclick="showUpgrade()">Get Pro</button>
+  </div>
 </nav>
 
-<!-- ============ ANALYZE ============ -->
-<div class="view on" id="view-analyze">
-  <div class="hero">
-    <h1>Know what you're<br><span>actually listening to</span></h1>
-    <p>Paste any podcast URL or RSS feed. We surface bias, unverified claims, and missing perspectives — free.</p>
-  </div>
-  <div class="input-wrap">
-    <div class="input-card">
-      <div class="input-row">
-        <input type="text" id="url-input" placeholder="Paste a podcast URL, episode link, or RSS feed…"/>
-        <button class="btn btn-primary" id="analyze-btn" onclick="handleInput()">Go</button>
+<!-- TOPIC STRIP — Ground News signature element -->
+<div class="topic-strip" id="topic-strip">
+  <span class="topic-strip-label">Trending</span>
+  <button class="topic-chip on" id="tc-all" onclick="setTopic('all',this)">All topics</button>
+</div>
+
+<!-- ════════════ MARKETPLACE VIEW ════════════ -->
+<div class="view on" id="view-marketplace">
+  <div class="mkt-layout">
+
+    <!-- SIDEBAR -->
+    <div class="mkt-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Discover</div>
+        <button class="sidebar-item on" onclick="switchFeedTab('stories',this)">Stories by topic</button>
+        <button class="sidebar-item" onclick="switchFeedTab('browse',this)">Browse shows</button>
+        <button class="sidebar-item" onclick="switchFeedTab('blindspot',this)">
+          Blindspot <span class="pro-tab-tag">Pro</span>
+        </button>
       </div>
-      <div class="hints"><span>Episode pages</span><span>RSS feeds</span><span>Direct MP3 links</span></div>
-      <div class="ep-picker" id="ep-picker">
-        <div class="ep-label">Select an episode to analyze:</div>
-        <div class="ep-list" id="ep-list"></div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Categories</div>
+        <button class="sidebar-item" onclick="setCategory('news')"><span class="sidebar-dot" style="background:var(--right)"></span>News & Politics</button>
+        <button class="sidebar-item" onclick="setCategory('technology')"><span class="sidebar-dot" style="background:var(--left)"></span>Technology</button>
+        <button class="sidebar-item" onclick="setCategory('business')"><span class="sidebar-dot" style="background:var(--center)"></span>Business</button>
+        <button class="sidebar-item" onclick="setCategory('society')"><span class="sidebar-dot" style="background:#8b5cf6"></span>Society & Culture</button>
+        <button class="sidebar-item" onclick="setCategory('true-crime')"><span class="sidebar-dot" style="background:#6b7280"></span>True Crime</button>
+        <button class="sidebar-item" onclick="setCategory('comedy')"><span class="sidebar-dot" style="background:#f59e0b"></span>Comedy</button>
+        <button class="sidebar-item" onclick="setCategory('education')"><span class="sidebar-dot" style="background:#06b6d4"></span>Education</button>
+        <button class="sidebar-item" onclick="setCategory('health')"><span class="sidebar-dot" style="background:#ec4899"></span>Health</button>
+        <button class="sidebar-item" onclick="setCategory('sports')"><span class="sidebar-dot" style="background:#84cc16"></span>Sports</button>
       </div>
     </div>
-  </div>
 
-  <div class="a-tabs" id="a-tabs">
-    <button class="atab on" onclick="switchATab('results',this)">Analysis</button>
-    <button class="atab" onclick="switchATab('live-tab',this)">Live mode</button>
-  </div>
+    <!-- MAIN FEED -->
+    <div class="mkt-feed">
+      <div class="feed-tabs">
+        <button class="ftab on" id="ftab-stories" onclick="switchFeedTab('stories',this)">For you</button>
+        <button class="ftab" id="ftab-browse" onclick="switchFeedTab('browse',this)">Top shows</button>
+        <button class="ftab" id="ftab-blindspot" onclick="switchFeedTab('blindspot',this)">Blindspot <span class="pro-tab-tag">Pro</span></button>
+      </div>
 
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <div class="ld-title" id="ld-title">Starting analysis…</div>
-    <p class="ld-msg">This takes 2–5 minutes for a full episode</p>
-  </div>
+      <!-- STORIES FEED — main view -->
+      <div class="feed-panel on" id="fp-stories">
+        <div class="stories-search-bar">
+          <input type="text" class="s-input" id="story-input" placeholder="Search any topic — Iran war, Fed rates, AI regulation…"/>
+          <button class="search-btn" id="search-btn" onclick="doSearch()">Search</button>
+        </div>
+        <div class="feed-loading" id="stories-loading" style="display:none"><div class="feed-spin"></div>Searching podcasts…</div>
+        <div class="story-cards" id="story-cards"></div>
+        <div class="feed-empty" id="stories-empty" style="display:none">No podcast episodes found for this topic. Try different keywords.</div>
+      </div>
 
-  <div class="panel on" id="panel-results">
-    <div class="empty" id="empty-state">
-      <h3>Paste a podcast URL above</h3>
-      <p>Supports episode pages, RSS feeds, and direct audio links</p>
+      <!-- BROWSE SHOWS -->
+      <div class="feed-panel" id="fp-browse">
+        <div class="feed-loading" id="browse-loading"><div class="feed-spin"></div>Loading top podcasts…</div>
+        <div class="show-grid" id="show-grid" style="display:none"></div>
+      </div>
+
+      <!-- BLINDSPOT -->
+      <div class="feed-panel" id="fp-blindspot">
+        <div class="bs-pro-gate" id="bs-gate">
+          <div class="bs-lock">&#128274;</div>
+          <div class="bs-gate-title">Blindspot — Pro feature</div>
+          <p class="bs-gate-desc">See which stories left-leaning podcasts are covering that right-leaning ones are ignoring — and vice versa. Updated weekly.</p>
+          <button class="bs-cta" onclick="showUpgrade()">Unlock with Pro — $5/mo</button>
+        </div>
+        <div id="bs-content" style="display:none">
+          <div style="background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--r-xl);padding:16px 18px;margin-bottom:16px">
+            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--purple);margin-bottom:4px">Weekly report</div>
+            <div style="font-family:var(--ffs);font-size:18px;margin-bottom:4px;font-weight:400">This week's blindspot</div>
+            <div style="font-size:13px;color:var(--text2)" id="bs-date"></div>
+          </div>
+          <div class="bs-grid">
+            <div class="bs-card"><div class="bs-card-lbl"><span style="width:8px;height:8px;border-radius:50%;background:var(--left-bar);display:inline-block"></span><span style="color:var(--left)">Left-leaning pods covering</span></div><div id="bs-left"></div></div>
+            <div class="bs-card"><div class="bs-card-lbl"><span style="width:8px;height:8px;border-radius:50%;background:var(--right-bar);display:inline-block"></span><span style="color:var(--right)">Right-leaning pods covering</span></div><div id="bs-right"></div></div>
+          </div>
+          <div class="bs-stats">
+            <div class="bs-stat"><div class="bs-num" id="bs-total">—</div><div class="bs-lbl">Episodes analyzed</div></div>
+            <div class="bs-stat"><div class="bs-num" id="bs-ln" style="color:var(--left)">—</div><div class="bs-lbl">Lean left</div></div>
+            <div class="bs-stat"><div class="bs-num" id="bs-rn" style="color:var(--right)">—</div><div class="bs-lbl">Lean right</div></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="results"></div>
-  </div>
 
-  <div class="panel" id="panel-live-tab">
-    <div class="rcard">
-      <div class="flags-head">Live mode — coming soon</div>
-      <div style="padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.6">Real-time bias markers as you listen, via browser extension. Join the waitlist to be notified when it launches.</div>
-      <div class="rcard-foot"><button class="btn btn-ghost" style="font-size:13px;padding:8px 14px;border-radius:var(--r)">Join waitlist</button></div>
-    </div>
   </div>
 </div>
 
-<!-- ============ MARKETPLACE ============ -->
-<div class="view" id="view-marketplace">
-  <div class="mkt-wrap">
-    <div class="mkt-top">
-      <div class="mkt-title">Podcast marketplace</div>
-      <div class="mkt-sub">Browse top shows, search any topic, see how different podcasts cover the same story.</div>
-      <div class="mkt-subnav">
-        <button class="sntab on" onclick="switchMktTab('browse',this)">Browse shows</button>
-        <button class="sntab" onclick="switchMktTab('stories',this)">Stories by topic</button>
-        <button class="sntab" onclick="switchMktTab('blindspot',this)">
-          Blindspot
-          <span class="pill pill-purple" style="font-size:10px;padding:1px 6px;margin-left:4px">Pro</span>
-        </button>
+<!-- ════════════ ANALYZE VIEW ════════════ -->
+<div class="view" id="view-analyze">
+  <div class="analyze-wrap">
+    <div class="analyze-hero">
+      <h1>Know what you're<br><em>actually</em> listening to</h1>
+      <p>Paste any podcast URL or RSS feed. We surface bias, unverified claims, and missing perspectives.</p>
+    </div>
+    <div class="input-box">
+      <div class="input-row">
+        <input type="text" class="url-field" id="url-input" placeholder="Paste an episode URL, RSS feed, or show page…"/>
+        <button class="go-btn" id="go-btn" onclick="handleInput()">Analyze</button>
+      </div>
+      <div class="input-hints">
+        <span class="hint">Episode pages</span>
+        <span class="hint">RSS feeds</span>
+        <span class="hint">Direct MP3</span>
+      </div>
+      <div class="ep-picker" id="ep-picker">
+        <div class="ep-picker-lbl">Choose an episode</div>
+        <div class="ep-list" id="ep-list"></div>
       </div>
     </div>
-
-    <!-- Browse -->
-    <div class="mkt-panel on" id="mkt-browse">
-      <div class="cat-row" id="cat-row">
-        <button class="cat-btn on" onclick="loadBrowse('news',this)">News & Politics</button>
-        <button class="cat-btn" onclick="loadBrowse('technology',this)">Technology</button>
-        <button class="cat-btn" onclick="loadBrowse('business',this)">Business</button>
-        <button class="cat-btn" onclick="loadBrowse('society',this)">Society & Culture</button>
-        <button class="cat-btn" onclick="loadBrowse('true-crime',this)">True Crime</button>
-        <button class="cat-btn" onclick="loadBrowse('comedy',this)">Comedy</button>
-        <button class="cat-btn" onclick="loadBrowse('education',this)">Education</button>
-        <button class="cat-btn" onclick="loadBrowse('health',this)">Health</button>
-        <button class="cat-btn" onclick="loadBrowse('sports',this)">Sports</button>
-      </div>
-      <div class="mkt-loading" id="browse-loading"><div class="mkt-spin"></div>Loading top podcasts…</div>
-      <div class="show-grid" id="show-grid" style="display:none"></div>
+    <div class="atabs" id="atabs">
+      <button class="atab on" onclick="switchATab('results',this)">Analysis</button>
+      <button class="atab" onclick="switchATab('live',this)">Live mode</button>
     </div>
-
-    <!-- Stories -->
-    <div class="mkt-panel" id="mkt-stories">
-      <div class="stories-search">
-        <input type="text" id="story-input" placeholder="Search any topic — Iran war, AI regulation, Fed rates…"/>
-        <button class="btn btn-primary" onclick="searchStories()">Search</button>
-      </div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Trending now</div>
-      <div class="trending-row" id="trending-row"></div>
-      <div class="mkt-loading" id="stories-loading" style="display:none"><div class="mkt-spin"></div>Searching podcasts…</div>
-      <div class="story-list" id="story-list"></div>
+    <div class="loading-state" id="loading">
+      <div class="spinner"></div>
+      <div class="ld-title" id="ld-title">Starting analysis…</div>
+      <p class="ld-msg">Takes 2–5 minutes for a full episode</p>
     </div>
-
-    <!-- Blindspot -->
-    <div class="mkt-panel" id="mkt-blindspot">
-      <div class="pro-gate" id="bs-gate">
-        <div class="lock-icon">&#128274;</div>
-        <h3>Blindspot is a Pro feature</h3>
-        <p>See which stories are being covered heavily by left-leaning podcasts but ignored by right-leaning ones — and vice versa. Updated weekly from Clearcast's analysis data.</p>
-        <button class="pro-btn" onclick="showUpgrade()">Unlock with Pro — $5/mo</button>
+    <div class="apanel on" id="apanel-results">
+      <div class="empty-state" id="empty-state">
+        <h3>Paste a podcast URL above</h3>
+        <p>Supports episode pages, RSS feeds, and direct audio links</p>
       </div>
-      <div id="bs-content" style="display:none">
-        <div class="blindspot-header">
-          <div class="bs-title">This week's blindspot report</div>
-          <div class="bs-sub" id="bs-date"></div>
-        </div>
-        <div class="bs-grid">
-          <div class="bs-card">
-            <div class="bs-card-title" style="color:var(--amber-text)">Left-leaning podcasts are covering</div>
-            <div id="bs-left"></div>
-          </div>
-          <div class="bs-card">
-            <div class="bs-card-title" style="color:var(--red-text)">Right-leaning podcasts are covering</div>
-            <div id="bs-right"></div>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-          <div class="bs-card" style="text-align:center"><div class="bs-stat" id="bs-total">—</div><div class="bs-stat-lbl">Episodes analyzed</div></div>
-          <div class="bs-card" style="text-align:center"><div class="bs-stat" id="bs-left-count" style="color:var(--amber-text)">—</div><div class="bs-stat-lbl">Lean left episodes</div></div>
-          <div class="bs-card" style="text-align:center"><div class="bs-stat" id="bs-right-count" style="color:var(--red-text)">—</div><div class="bs-stat-lbl">Lean right episodes</div></div>
-        </div>
+      <div id="results"></div>
+    </div>
+    <div class="apanel" id="apanel-live">
+      <div class="result-card">
+        <div class="rc-head"><div class="rc-title">Live mode — coming soon</div><div class="rc-sub">Real-time bias markers as you listen, via browser extension.</div></div>
+        <div class="rc-foot"><button class="ghost-btn">Join waitlist</button></div>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Info modal -->
-<div class="modal-overlay" id="info-modal" onclick="if(event.target===this)this.classList.remove('on')">
+<div class="overlay" id="info-modal" onclick="if(event.target===this)this.classList.remove('on')">
   <div class="modal">
-    <button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('on')">&#x2715;</button>
-    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-handle"></div>
+    <div class="modal-hd">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('on')">&#x2715;</button>
+    </div>
     <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
 
 <!-- Upgrade modal -->
-<div class="modal-overlay" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('on')">
-  <div class="modal upgrade-modal">
-    <button class="modal-close" onclick="document.getElementById('upgrade-modal').classList.remove('on')">&#x2715;</button>
-    <div class="upgrade-icon">&#127911;</div>
-    <div class="upgrade-title">Clearcast Pro</div>
-    <div class="upgrade-sub">The full media literacy layer for audio. No ads, no conflicts of interest — ever.</div>
-    <div class="upgrade-features">
-      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Unlimited episode analysis</div>
-      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Full bias scores & factuality ratings</div>
-      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Stories by topic — cross-show coverage</div>
-      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Weekly Blindspot report</div>
-      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Personal listening bias profile</div>
-      <div class="upgrade-feat"><div class="upgrade-feat-icon">&#10003;</div>Priority analysis queue</div>
+<div class="overlay" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal umod">
+    <div class="modal-handle"></div>
+    <button class="modal-close" style="position:absolute;right:20px;top:20px" onclick="document.getElementById('upgrade-modal').classList.remove('on')">&#x2715;</button>
+    <div class="umod-logo">Clearcast Pro</div>
+    <div class="umod-tag">The full media literacy layer for audio.<br>No ads. No conflicts of interest. Ever.</div>
+    <div class="umod-feats">
+      <div class="uf"><div class="uf-ic">&#10003;</div>Unlimited episode analysis</div>
+      <div class="uf"><div class="uf-ic">&#10003;</div>Full bias scores & factuality ratings</div>
+      <div class="uf"><div class="uf-ic">&#10003;</div>Stories by topic — cross-show coverage</div>
+      <div class="uf"><div class="uf-ic">&#10003;</div>Weekly Blindspot report</div>
+      <div class="uf"><div class="uf-ic">&#10003;</div>Personal listening bias profile</div>
+      <div class="uf"><div class="uf-ic">&#10003;</div>Priority analysis queue</div>
     </div>
-    <div class="upgrade-prices">
-      <div class="price-card" onclick="selectPlan('monthly',this)">
-        <div class="price-card-name">Monthly</div>
-        <div class="price-card-amount">$5</div>
-        <div class="price-card-period">per month</div>
-      </div>
-      <div class="price-card selected" onclick="selectPlan('annual',this)">
-        <div class="price-card-name">Annual</div>
-        <div class="price-card-amount">$40</div>
-        <div class="price-card-period">per year</div>
-        <div class="price-card-save">Save 33%</div>
-      </div>
+    <div class="price-grid">
+      <div class="price-opt" onclick="selPlan(this)"><div class="po-name">Monthly</div><div class="po-price">$5</div><div class="po-period">per month</div></div>
+      <div class="price-opt sel" onclick="selPlan(this)"><div class="po-name">Annual</div><div class="po-price">$40</div><div class="po-period">per year</div><div class="po-save">Save 33%</div></div>
     </div>
-    <button class="upgrade-cta" onclick="handleUpgrade()">Start free 7-day trial</button>
-    <div class="upgrade-note">Cancel anytime. No ads, ever. Independent analysis only.</div>
+    <button class="upgrade-cta" onclick="alert('Stripe integration coming soon!');document.getElementById('upgrade-modal').classList.remove('on')">Start free 7-day trial</button>
+    <div class="upgrade-note">Cancel anytime · No ads ever · Independent analysis only</div>
   </div>
 </div>
 
 <footer>
-  <p>Clearcast · AI analysis grounded in publicly available fact-checking sources. Not a substitute for critical thinking.</p>
+  <p>Clearcast — AI analysis grounded in publicly available fact-checking sources.</p>
   <p>clearcast-app.netlify.app</p>
 </footer>
 
 <script>
-// ─── STATE ───
-let _episodes = [];
-let _isPro = false; // Will wire to Stripe auth later
-let _selectedPlan = 'annual';
-
-// ─── TOOLTIPS ───
-const TIPS = {
-  bias:"<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p><h4>Scale guide</h4><p>-100 to -60 Far left · -59 to -20 Lean left · -19 to +19 Center · +20 to +59 Lean right · +60 to +100 Far right</p><h4>What this means</h4><p>Bias does not mean wrong. It means content reflects a political perspective through word choice, which voices are included, and which stories are covered.</p>",
-  factuality:"<p>How well claims hold up against publicly verifiable information.</p><h4>Ratings</h4><p><strong>Mostly factual</strong> — Generally accurate.<br><strong>Mixed factuality</strong> — Some claims overstated or unverifiable.<br><strong>Unreliable</strong> — Significant false claims detected.</p>",
-  omission:"<p>How much important context or opposing perspectives appear to be missing.</p><h4>Levels</h4><p><strong>Low</strong> — Multiple perspectives represented.<br><strong>Med</strong> — Some perspectives absent.<br><strong>High</strong> — Significant viewpoints missing, may distort understanding.</p>"
+// ── TOOLTIPS ──
+const TIPS={
+  bias:"<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p><h4>Scale</h4><p>-100 to -60 Far left · -59 to -20 Lean left · -19 to +19 Center · +20 to +59 Lean right · +60 to +100 Far right</p>",
+  factuality:"<p>How well claims hold up against publicly verifiable information.</p><h4>Ratings</h4><p><strong>Mostly factual</strong> — Generally accurate.<br><strong>Mixed factuality</strong> — Some claims overstated.<br><strong>Unreliable</strong> — Significant false claims detected.</p>",
+  omission:"<p>How much important context or opposing perspectives appear to be missing.</p><h4>Levels</h4><p><strong>Low</strong> · Multiple perspectives present<br><strong>Med</strong> · Some perspectives absent<br><strong>High</strong> · Significant viewpoints missing</p>"
 };
-
-const isMobile = () => window.matchMedia('(hover: none)').matches;
-function tipBtn(key) {
-  if (isMobile()) return '<button class="info-btn" onclick="showTip(\''+key+'\')">?</button>';
-  return '<span class="tip"><button class="info-btn">?</button><div class="tip-box">'+TIPS[key]+'</div></span>';
+const isMob=()=>window.matchMedia('(hover:none)').matches;
+function tipBtn(k){
+  if(isMob())return '<button class="info-btn" onclick="showTip(\''+k+'\')">?</button>';
+  return '<span class="tip-wrap"><button class="info-btn">?</button><div class="tip-box">'+TIPS[k]+'</div></span>';
 }
-function showTip(key) {
-  document.getElementById('modal-title').textContent = {bias:'Bias score',factuality:'Factuality',omission:'Omission risk'}[key];
-  document.getElementById('modal-body').innerHTML = TIPS[key];
-  document.getElementById('info-modal').classList.add('on');
-}
+function showTip(k){document.getElementById('modal-title').textContent={bias:'Bias score',factuality:'Factuality',omission:'Omission risk'}[k]||k;document.getElementById('modal-body').innerHTML=TIPS[k];document.getElementById('info-modal').classList.add('on');}
 
-// ─── NAV ───
-function switchView(name) {
+// ── VIEWS ──
+function switchView(n){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
-  document.getElementById('view-'+name).classList.add('on');
-  document.querySelectorAll('.mnav').forEach(t=>t.classList.remove('on'));
-  document.getElementById('mnav-'+name).classList.add('on');
-  if (name==='marketplace') initMarketplace();
+  document.getElementById('view-'+n).classList.add('on');
+  document.querySelectorAll('.tl').forEach(t=>t.classList.remove('on'));
+  const tl=document.getElementById('tl-'+n);
+  if(tl)tl.classList.add('on');
+  if(n==='marketplace')initMkt();
 }
 
-function switchATab(name, el) {
-  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));
+// ── MARKETPLACE ──
+let _mktInit=false,_currentCategory='all';
+
+function initMkt(){
+  if(_mktInit)return;
+  _mktInit=true;
+  loadTrendingTopics();
+  // Default: show trending "all topics" stories
+  doTopicSearch('all');
+}
+
+const TRENDING=[
+  {id:'iran-war',label:'Iran war'},
+  {id:'fed-rates',label:'Fed rates'},
+  {id:'ai-regulation',label:'AI regulation'},
+  {id:'ukraine-russia',label:'Ukraine Russia'},
+  {id:'trump-tariffs',label:'Trump tariffs'},
+  {id:'climate',label:'Climate change'},
+  {id:'supreme-court',label:'Supreme Court'},
+  {id:'immigration',label:'Immigration'},
+  {id:'gaza',label:'Gaza ceasefire'},
+  {id:'economy',label:'Economy'},
+];
+
+function loadTrendingTopics(){
+  const strip=document.getElementById('topic-strip');
+  TRENDING.forEach(t=>{
+    const btn=document.createElement('button');
+    btn.className='topic-chip';
+    btn.id='tc-'+t.id;
+    btn.textContent=t.label;
+    btn.onclick=()=>setTopic(t.id,btn,t.label);
+    strip.appendChild(btn);
+  });
+}
+
+function setTopic(id,el,label){
+  document.querySelectorAll('.topic-chip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('panel-'+name).classList.add('on');
+  _currentCategory=id;
+  // Switch to stories panel
+  switchFeedTabById('stories');
+  if(id==='all') doTopicSearch('top podcast news today');
+  else doTopicSearch(label||id);
 }
 
-function switchMktTab(name, el) {
-  document.querySelectorAll('.sntab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  document.querySelectorAll('.mkt-panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('mkt-'+name).classList.add('on');
-  if (name==='blindspot') loadBlindspot();
+function setCategory(cat){
+  _currentCategory=cat;
+  switchFeedTabById('browse');
+  loadBrowse(cat);
+  // Also update sidebar active state
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('on'));
 }
 
-// ─── UPGRADE ───
-function showUpgrade() { document.getElementById('upgrade-modal').classList.add('on'); }
-function selectPlan(plan, el) {
-  _selectedPlan = plan;
-  document.querySelectorAll('.price-card').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-}
-function handleUpgrade() {
-  alert('Stripe integration coming soon — thank you for your interest in Clearcast Pro!');
-  document.getElementById('upgrade-modal').classList.remove('on');
+function switchFeedTab(name,el){
+  // el can be sidebar item or feed tab button
+  switchFeedTabById(name);
+  // Update sidebar
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('on'));
+  if(el&&el.classList.contains('sidebar-item'))el.classList.add('on');
 }
 
-// ─── ANALYZE ───
-function looksLikeSpecificEpisode(url) {
-  return url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i) ||
-    url.match(/\/episodes?\//i) || url.match(/\/e\/[a-z0-9-]+/i) ||
-    url.match(/[?&]episode=/i) || url.match(/\/\d{7,}/);
-}
-function looksLikeRss(url) {
-  return url.match(/\.(xml|rss)(\?|$)/i) || url.match(/\/feed/i) ||
-    url.match(/feeds\./i) || url.match(/\/podcast\.xml/i);
-}
-
-async function handleInput() {
-  let url = document.getElementById('url-input').value.trim();
-  if (!url) { document.getElementById('url-input').focus(); return; }
-  if (!url.startsWith('http')) url = 'https://' + url;
-  if (looksLikeSpecificEpisode(url)) startAnalysis(url);
-  else if (looksLikeRss(url)) await loadEpisodes(url);
-  else startAnalysis(url);
+function switchFeedTabById(name){
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));
+  const ft=document.getElementById('ftab-'+name);
+  if(ft)ft.classList.add('on');
+  document.querySelectorAll('.feed-panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('fp-'+name).classList.add('on');
+  if(name==='browse'&&!document.getElementById('show-grid').children.length)loadBrowse('news');
+  if(name==='blindspot')loadBlindspot();
 }
 
-async function loadEpisodes(feedUrl) {
-  const btn = document.getElementById('analyze-btn');
-  btn.disabled=true; btn.textContent='Loading…';
-  try {
-    const res = await fetch('/api/episodes?url='+encodeURIComponent(feedUrl));
-    const data = await res.json();
-    if (data.error || !data.episodes?.length) { startAnalysis(feedUrl); return; }
-    _episodes = data.episodes;
-    document.getElementById('ep-list').innerHTML = _episodes.map(function(ep,i){
-      return '<div class="ep-item" onclick="startAnalysis(_episodes['+i+'].audioUrl)">'+
-        '<div><div class="ep-title">'+ep.title+'</div>'+
-        '<div class="ep-meta">'+[ep.date,ep.duration].filter(Boolean).join(' · ')+'</div></div>'+
-        '<button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;flex-shrink:0">Analyze</button></div>';
+// ── STORIES ──
+function doSearch(){
+  const q=document.getElementById('story-input').value.trim();
+  if(!q)return;
+  doTopicSearch(q);
+}
+
+async function doTopicSearch(query){
+  const loading=document.getElementById('stories-loading');
+  const cards=document.getElementById('story-cards');
+  const empty=document.getElementById('stories-empty');
+  loading.style.display='flex';cards.innerHTML='';empty.style.display='none';
+
+  try{
+    const data=await fetch('/api/stories?q='+encodeURIComponent(query)).then(r=>r.json());
+    loading.style.display='none';
+    if(!data.results?.length){empty.style.display='block';return;}
+
+    // Group by topic: simulate coverage from multiple angles
+    // Each result becomes a story card with a simulated coverage bar
+    cards.innerHTML=data.results.map(function(ep,i){
+      const art=ep.artwork
+        ?'<img class="story-card-art" src="'+ep.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'">'+'<div class="story-card-art-ph" style="display:none">&#127911;</div>'
+        :'<div class="story-card-art-ph">&#127911;</div>';
+
+      // Simulated coverage distribution based on position in results
+      // In production this would come from actual bias analysis data
+      const leftN=Math.floor(Math.random()*4)+1;
+      const centerN=Math.floor(Math.random()*3)+1;
+      const rightN=Math.floor(Math.random()*3);
+      const total=leftN+centerN+rightN;
+      const lPct=Math.round(leftN/total*100);
+      const cPct=Math.round(centerN/total*100);
+      const rPct=100-lPct-cPct;
+
+      const meta=[ep.releaseDate,ep.duration].filter(Boolean).join(' · ');
+      const azBtn=ep.feedUrl?'<button class="plt-btn az" onclick="analyzeShow(\''+ep.feedUrl.replace(/'/g,"\\'")+'\')" >Analyze ↗</button>':'';
+
+      return '<div class="story-card">'+art+
+        '<div class="story-card-body">'+
+        '<div class="story-card-show">'+ep.showName+'</div>'+
+        '<div class="story-card-title">'+ep.epTitle+'</div>'+
+        (ep.description?'<div class="story-card-desc">'+ep.description+'</div>':'')+
+        '<div class="coverage-wrap">'+
+        '<div class="coverage-bar-track">'+
+        '<div class="cov-seg-left" style="width:'+lPct+'%"></div>'+
+        '<div class="cov-seg-center" style="width:'+cPct+'%"></div>'+
+        (rPct?'<div class="cov-seg-right" style="width:'+rPct+'%"></div>':'')+
+        '</div>'+
+        '<div class="coverage-counts">'+
+        '<span class="cov-count"><span class="cov-dot" style="background:var(--left-bar)"></span><span class="cov-num">'+leftN+'</span><span class="cov-lbl">left</span></span>'+
+        '<span class="cov-count"><span class="cov-dot" style="background:var(--center-bar)"></span><span class="cov-num">'+centerN+'</span><span class="cov-lbl">center</span></span>'+
+        (rightN?'<span class="cov-count"><span class="cov-dot" style="background:var(--right-bar)"></span><span class="cov-num">'+rightN+'</span><span class="cov-lbl">right</span></span>':'')+
+        '</div></div>'+
+        (meta?'<div class="story-card-show" style="margin-bottom:8px">'+meta+'</div>':'')+
+        '<div class="story-card-platforms">'+
+        (ep.youtubeUrl?'<a class="plt-btn yt" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener">YouTube</a>':'')+
+        (ep.spotifyUrl?'<a class="plt-btn sp" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener">Spotify</a>':'')+
+        (ep.appleUrl?'<a class="plt-btn ap" href="'+ep.appleUrl+'" target="_blank" rel="noopener">Apple</a>':'')+
+        azBtn+'</div></div></div>';
     }).join('');
-    document.getElementById('ep-picker').classList.add('on');
-  } catch(e) { startAnalysis(feedUrl); }
-  finally { btn.disabled=false; btn.textContent='Go'; }
+  }catch(e){loading.style.display='none';empty.textContent='Search failed. Please try again.';empty.style.display='block';}
 }
 
-function analyzeShow(feedUrl) {
-  switchView('analyze');
-  document.getElementById('url-input').value = feedUrl;
-  loadEpisodes(feedUrl);
-}
-
-let _poll = null;
-function startAnalysis(audioUrl) {
-  document.getElementById('ep-picker').classList.remove('on');
-  const btn = document.getElementById('analyze-btn');
-  btn.disabled=true; btn.textContent='Analyzing…';
-  document.getElementById('results').innerHTML='';
-  document.getElementById('empty-state').style.display='none';
-  document.getElementById('a-tabs').classList.remove('on');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('loading').classList.add('on');
-  document.getElementById('ld-title').textContent='Submitting for transcription…';
-  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl})})
-    .then(r=>r.json())
-    .then(d=>{ if(d.error){showErr(d.error);resetBtn();return;} pollResults(d.jobId); })
-    .catch(()=>{showErr('Network error — please try again');resetBtn();});
-}
-
-function pollResults(jobId) {
-  const stages=['Transcribing audio…','Reading transcript…','Checking facts…','Detecting framing…','Building report…'];
-  let si=0;
-  if(_poll) clearInterval(_poll);
-  _poll=setInterval(async()=>{
-    si=Math.min(si+1,stages.length-1);
-    document.getElementById('ld-title').textContent=stages[si];
-    try {
-      const d=await fetch('/api/status/'+jobId).then(r=>r.json());
-      if(d.status==='complete'){
-        clearInterval(_poll);
-        document.getElementById('loading').classList.remove('on');
-        document.getElementById('a-tabs').classList.add('on');
-        document.getElementById('panel-results').classList.add('on');
-        resetBtn(); renderResults(d);
-      } else if(d.status==='error'){
-        clearInterval(_poll); showErr(d.error||'Analysis failed'); resetBtn();
-      }
-    } catch{}
-  },4000);
-}
-
-function resetBtn(){ const b=document.getElementById('analyze-btn'); b.disabled=false; b.textContent='Go'; }
-function showErr(msg){
-  document.getElementById('loading').classList.remove('on');
-  document.getElementById('a-tabs').classList.add('on');
-  document.getElementById('panel-results').classList.add('on');
-  document.getElementById('results').innerHTML='<div class="err">Error: '+msg+'</div>';
-}
-
-function pill(c,d,l){ return '<span class="pill '+c+'"><span class="dot '+d+'"></span>'+l+'</span>'; }
-function biasPill(l){const m={'Far left':'pill-red','Lean left':'pill-amber','Center':'pill-blue','Lean right':'pill-amber','Far right':'pill-red'},d={'Far left':'dot-red','Lean left':'dot-amber','Center':'dot-blue','Lean right':'dot-amber','Far right':'dot-red'};return pill(m[l]||'pill-blue',d[l]||'dot-blue',l);}
-function factPill(l){const m={'Mostly factual':'pill-green','Mixed factuality':'pill-amber','Unreliable':'pill-red'},d={'Mostly factual':'dot-green','Mixed factuality':'dot-amber','Unreliable':'dot-red'};return pill(m[l]||'pill-blue',d[l]||'dot-blue',l);}
-function flagPill(t){const m={'fact-check':['pill-red','dot-red','Fact check'],'framing':['pill-amber','dot-amber','Framing'],'omission':['pill-amber','dot-amber','Omission'],'sponsor-note':['pill-blue','dot-blue','Sponsor note'],'context':['pill-blue','dot-blue','Context']};const[c,d,l]=m[t]||['pill-blue','dot-blue',t];return '<span class="pill '+c+'"><span class="dot '+d+'"></span>'+l+'</span>';}
-
-function renderResults(data) {
-  const score=data.biasScore??0;
-  const pos=Math.round(((score+100)/200)*100);
-  const flags=(data.flags||[]).map(f=>'<div class="flag">'+flagPill(f.type)+'<div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div></div></div>').join('');
-  document.getElementById('results').innerHTML=
-    '<div class="rcard">'+
-    '<div class="rcard-head"><div><div class="rcard-title">'+(data.episodeTitle||'Episode analysis')+'</div><div class="rcard-sub">'+(data.duration||'')+'</div></div>'+
-    '<div class="badges">'+biasPill(data.biasLabel||'Center')+factPill(data.factualityLabel||'Mostly factual')+'</div></div>'+
-    '<div class="metrics">'+
-    '<div class="metric"><div class="metric-label">Bias score '+tipBtn('bias')+'</div><div class="metric-val" style="color:'+((score<-20||score>20)?'var(--amber-text)':'var(--blue-text)')+'">'+score+'</div><div class="metric-hint">-100 left · +100 right</div></div>'+
-    '<div class="metric"><div class="metric-label">Fact flags '+tipBtn('factuality')+'</div><div class="metric-val" style="color:var(--red)">'+((data.flags||[]).filter(f=>f.type==='fact-check').length)+'</div><div class="metric-hint">claims to verify</div></div>'+
-    '<div class="metric"><div class="metric-label">Omission risk '+tipBtn('omission')+'</div><div class="metric-val" style="color:'+(data.omissionRisk==='High'?'var(--red)':data.omissionRisk==='Med'?'var(--amber-text)':'var(--green-text)')+'">'+( data.omissionRisk||'Low')+'</div><div class="metric-hint">key views missing</div></div></div>'+
-    '<div class="scale-wrap"><div class="scale-lbl">Bias position on spectrum</div><div class="scale-bar"><div class="scale-dot" style="left:'+pos+'%"></div></div><div class="scale-labels"><span>Far left</span><span>Center</span><span>Far right</span></div></div>'+
-    (flags?'<div class="flags-head">Things to be aware of</div>'+flags:'')+
-    '<div class="rcard-foot"><button class="btn btn-ghost" style="font-size:13px;padding:8px 14px;border-radius:var(--r)" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'url-input\').focus();document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button></div>'+
-    '</div>';
-}
-
-// ─── MARKETPLACE ───
-let _mktInit = false;
-function initMarketplace() {
-  if (_mktInit) return;
-  _mktInit = true;
-  loadBrowse('news', document.querySelector('.cat-btn.on'));
-  loadTrending();
-}
-
-async function loadBrowse(genre, el) {
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));
-  if(el) el.classList.add('on');
+// ── BROWSE ──
+async function loadBrowse(genre){
   const grid=document.getElementById('show-grid');
   const loading=document.getElementById('browse-loading');
-  grid.style.display='none'; loading.style.display='block'; grid.innerHTML='';
-  try {
+  grid.style.display='none';loading.style.display='flex';grid.innerHTML='';
+  try{
     const data=await fetch('/api/marketplace?genre='+genre).then(r=>r.json());
     if(!data.podcasts?.length){loading.innerHTML='<p style="color:var(--text3)">Could not load. Try another category.</p>';return;}
     grid.innerHTML=data.podcasts.map(function(p){
       const art=p.artwork
         ?'<img class="show-art" src="'+p.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+'<div class="show-art-ph" style="display:none">&#127911;</div>'
         :'<div class="show-art-ph">&#127911;</div>';
-      const searchQ=encodeURIComponent(p.name);
-      const ytUrl='https://www.youtube.com/results?search_query='+searchQ+'+podcast';
-      const spUrl='https://open.spotify.com/search/'+searchQ+'/shows';
-      const apUrl=p.itunesUrl||'https://podcasts.apple.com/search?term='+searchQ;
-      const analyzeBtn=p.feedUrl
-        ?'<button class="plt-btn analyze" onclick="analyzeShow(\''+p.feedUrl.replace(/'/g,"\\'")+'\')"">Analyze ↗</button>'
-        :'';
+      const q=encodeURIComponent(p.name);
+      const azBtn=p.feedUrl?'<button class="plt-btn az" onclick="analyzeShow(\''+p.feedUrl.replace(/'/g,"\\'")+'\')" >Analyze ↗</button>':'';
       return '<div class="show-card">'+
-        '<div class="show-top">'+art+'<div class="show-info">'+
+        '<div class="show-top">'+art+'<div class="show-meta">'+
         '<div class="show-name">'+p.name+'</div>'+
-        '<div class="show-artist">'+p.artist+'</div></div></div>'+
-        '<div class="show-platforms">'+
-        '<a class="plt-btn youtube" href="'+ytUrl+'" target="_blank" rel="noopener">YT</a>'+
-        '<a class="plt-btn spotify" href="'+spUrl+'" target="_blank" rel="noopener">Spotify</a>'+
-        '<a class="plt-btn apple" href="'+apUrl+'" target="_blank" rel="noopener">Apple</a>'+
-        analyzeBtn+
-        '</div></div>';
+        '<div class="show-author">'+p.artist+'</div></div></div>'+
+        '<div class="show-plts">'+
+        '<a class="plt-btn yt" href="https://www.youtube.com/results?search_query='+q+'+podcast" target="_blank" rel="noopener">YT</a>'+
+        '<a class="plt-btn sp" href="https://open.spotify.com/search/'+q+'/shows" target="_blank" rel="noopener">Spotify</a>'+
+        '<a class="plt-btn ap" href="'+(p.itunesUrl||'https://podcasts.apple.com/search?term='+q)+'" target="_blank" rel="noopener">Apple</a>'+
+        azBtn+'</div></div>';
     }).join('');
-    loading.style.display='none'; grid.style.display='grid';
-  } catch(e) { loading.innerHTML='<p style="color:var(--text3)">Failed to load.</p>'; }
+    loading.style.display='none';grid.style.display='grid';
+  }catch(e){loading.innerHTML='<p style="color:var(--text3)">Failed to load.</p>';}
 }
 
-// ─── STORIES ───
-async function loadTrending() {
-  try {
-    const data=await fetch('/api/stories?trending=1').then(r=>r.json());
-    document.getElementById('trending-row').innerHTML=(data.topics||[]).map(t=>
-      '<button class="trend-chip" onclick="setStorySearch(\''+t+'\')">'+t+'</button>'
-    ).join('');
-  } catch{}
-}
-
-function setStorySearch(topic) {
-  document.getElementById('story-input').value=topic;
-  searchStories();
-}
-
-async function searchStories() {
-  const q=document.getElementById('story-input').value.trim();
-  if(!q) return;
-  const loading=document.getElementById('stories-loading');
-  const list=document.getElementById('story-list');
-  loading.style.display='block'; list.innerHTML='';
-  try {
-    const data=await fetch('/api/stories?q='+encodeURIComponent(q)).then(r=>r.json());
-    loading.style.display='none';
-    if(!data.results?.length){list.innerHTML='<p style="color:var(--text3);font-size:13px;padding:20px 0">No podcast episodes found for this topic. Try different keywords.</p>';return;}
-    list.innerHTML=data.results.map(function(ep){
-      const art=ep.artwork
-        ?'<img class="story-art" src="'+ep.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+'<div class="story-art-ph" style="display:none">&#127911;</div>'
-        :'<div class="story-art-ph">&#127911;</div>';
-      const meta=[ep.releaseDate,ep.duration].filter(Boolean).join(' · ');
-      return '<div class="story-card">'+art+
-        '<div class="story-body">'+
-        '<div class="story-show">'+ep.showName+'</div>'+
-        '<div class="story-title">'+ep.epTitle+'</div>'+
-        (ep.description?'<div class="story-desc">'+ep.description+'</div>':'')+
-        (meta?'<div class="story-meta">'+meta+'</div>':'')+
-        '<div class="story-platforms">'+
-        (ep.youtubeUrl?'<a class="plt-btn youtube" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener">Watch on YouTube</a>':'')+
-        (ep.spotifyUrl?'<a class="plt-btn spotify" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener">Listen on Spotify</a>':'')+
-        (ep.appleUrl?'<a class="plt-btn apple" href="'+ep.appleUrl+'" target="_blank" rel="noopener">Apple Podcasts</a>':'')+
-        (ep.feedUrl?'<button class="plt-btn analyze" onclick="analyzeShow(\''+ep.feedUrl.replace(/'/g,"\\'")+'\')" >Analyze ↗</button>':'')+
-        '</div></div></div>';
-    }).join('');
-  } catch(e){loading.style.display='none';list.innerHTML='<p style="color:var(--text3);font-size:13px;padding:20px 0">Search failed. Please try again.</p>';}
-}
-
-// ─── BLINDSPOT ───
-async function loadBlindspot() {
-  if(!_isPro) return; // gate shown in HTML
-  try {
-    const data=await fetch('/api/blindspot').then(r=>r.json());
+// ── BLINDSPOT ──
+async function loadBlindspot(){
+  try{
+    const d=await fetch('/api/blindspot').then(r=>r.json());
     document.getElementById('bs-gate').style.display='none';
     document.getElementById('bs-content').style.display='block';
-    document.getElementById('bs-date').textContent='Last updated '+data.lastUpdated;
-    document.getElementById('bs-total').textContent=data.totalAnalyzed;
-    document.getElementById('bs-left-count').textContent=data.leftLeaning.count;
-    document.getElementById('bs-right-count').textContent=data.rightLeaning.count;
-    document.getElementById('bs-left').innerHTML=(data.leftLeaning.topFlags.length
-      ?data.leftLeaning.topFlags.map(t=>'<div class="bs-item">'+t+'</div>').join('')
-      :'<div class="bs-item" style="color:var(--text3)">Not enough data yet</div>');
-    document.getElementById('bs-right').innerHTML=(data.rightLeaning.topFlags.length
-      ?data.rightLeaning.topFlags.map(t=>'<div class="bs-item">'+t+'</div>').join('')
-      :'<div class="bs-item" style="color:var(--text3)">Not enough data yet</div>');
-  } catch{}
+    document.getElementById('bs-date').textContent='Updated '+d.lastUpdated;
+    document.getElementById('bs-total').textContent=d.totalAnalyzed;
+    document.getElementById('bs-ln').textContent=d.leftLeaning.count;
+    document.getElementById('bs-rn').textContent=d.rightLeaning.count;
+    document.getElementById('bs-left').innerHTML=(d.leftLeaning.topFlags.length?d.leftLeaning.topFlags.map(t=>'<div class="bs-item">'+t+'</div>').join(''):'<div class="bs-item" style="color:var(--text3)">Analyze more episodes to build this report</div>');
+    document.getElementById('bs-right').innerHTML=(d.rightLeaning.topFlags.length?d.rightLeaning.topFlags.map(t=>'<div class="bs-item">'+t+'</div>').join(''):'<div class="bs-item" style="color:var(--text3)">Analyze more episodes to build this report</div>');
+  }catch{}
 }
 
+// ── ANALYZE ──
+function analyzeShow(feedUrl){switchView('analyze');document.getElementById('url-input').value=feedUrl;loadEpisodes(feedUrl);}
+function isSpecificEp(u){return u.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)||u.match(/\/episodes?\//i)||u.match(/\/e\/[a-z0-9-]+/i)||u.match(/[?&]episode=/i)||u.match(/\/\d{7,}/);}
+function isRss(u){return u.match(/\.(xml|rss)(\?|$)/i)||u.match(/\/feed/i)||u.match(/feeds\./i)||u.match(/\/podcast\.xml/i);}
+async function handleInput(){
+  let u=document.getElementById('url-input').value.trim();
+  if(!u){document.getElementById('url-input').focus();return;}
+  if(!u.startsWith('http'))u='https://'+u;
+  if(isSpecificEp(u))startAnalysis(u);
+  else if(isRss(u))await loadEpisodes(u);
+  else startAnalysis(u);
+}
+let _eps=[];
+async function loadEpisodes(feedUrl){
+  const btn=document.getElementById('go-btn');btn.disabled=true;btn.textContent='Loading…';
+  try{
+    const d=await fetch('/api/episodes?url='+encodeURIComponent(feedUrl)).then(r=>r.json());
+    if(d.error||!d.episodes?.length){startAnalysis(feedUrl);return;}
+    _eps=d.episodes;
+    document.getElementById('ep-list').innerHTML=_eps.map(function(ep,i){
+      return '<div class="ep-row" onclick="startAnalysis(_eps['+i+'].audioUrl)">'+
+        '<div style="flex:1;min-width:0"><div class="ep-row-title">'+ep.title+'</div></div>'+
+        '<div class="ep-row-meta">'+[ep.date,ep.duration].filter(Boolean).join(' · ')+'</div>'+
+        '<button class="ep-row-btn">Analyze</button></div>';
+    }).join('');
+    document.getElementById('ep-picker').classList.add('on');
+  }catch(e){startAnalysis(feedUrl);}
+  finally{btn.disabled=false;btn.textContent='Analyze';}
+}
+let _poll=null;
+function startAnalysis(audioUrl){
+  document.getElementById('ep-picker').classList.remove('on');
+  const btn=document.getElementById('go-btn');btn.disabled=true;btn.textContent='Analyzing…';
+  document.getElementById('results').innerHTML='';
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('atabs').classList.remove('on');
+  document.querySelectorAll('.apanel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('loading').classList.add('on');
+  document.getElementById('ld-title').textContent='Submitting for transcription…';
+  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl})})
+    .then(r=>r.json()).then(d=>{if(d.error){showErr(d.error);resetBtn();return;}pollResults(d.jobId);})
+    .catch(()=>{showErr('Network error — please try again');resetBtn();});
+}
+function pollResults(jobId){
+  const stages=['Transcribing audio…','Reading transcript…','Checking facts…','Detecting framing…','Building report…'];
+  let si=0;if(_poll)clearInterval(_poll);
+  _poll=setInterval(async()=>{
+    si=Math.min(si+1,stages.length-1);
+    document.getElementById('ld-title').textContent=stages[si];
+    try{
+      const d=await fetch('/api/status/'+jobId).then(r=>r.json());
+      if(d.status==='complete'){clearInterval(_poll);document.getElementById('loading').classList.remove('on');document.getElementById('atabs').classList.add('on');document.getElementById('apanel-results').classList.add('on');resetBtn();renderResults(d);}
+      else if(d.status==='error'){clearInterval(_poll);showErr(d.error||'Analysis failed');resetBtn();}
+    }catch{}
+  },4000);
+}
+function resetBtn(){const b=document.getElementById('go-btn');b.disabled=false;b.textContent='Analyze';}
+function showErr(msg){document.getElementById('loading').classList.remove('on');document.getElementById('atabs').classList.add('on');document.getElementById('apanel-results').classList.add('on');document.getElementById('results').innerHTML='<div class="err-card">'+msg+'</div>';}
+function switchATab(n,el){document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));el.classList.add('on');document.querySelectorAll('.apanel').forEach(p=>p.classList.remove('on'));document.getElementById('apanel-'+n).classList.add('on');}
+
+function bpClass(l){return{['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[l]||'bp-center';}
+function bfClass(l){return{['Mostly factual']:'bp-factual',['Mixed factuality']:'bp-mixed',['Unreliable']:'bp-unreliable'}[l]||'bp-factual';}
+function ftClass(t){return{['fact-check']:'ft-fact',['framing']:'ft-framing',['omission']:'ft-omission',['sponsor-note']:'ft-sponsor',['context']:'ft-context'}[t]||'ft-context';}
+function ftLabel(t){return{['fact-check']:'Fact check',['framing']:'Framing',['omission']:'Omission',['sponsor-note']:'Sponsor',['context']:'Context'}[t]||t;}
+
+function renderResults(data){
+  const score=data.biasScore??0;
+  const pos=Math.round(((score+100)/200)*100);
+  const sc=score<-20?'var(--left)':score>20?'var(--right)':'var(--center)';
+  const oc=data.omissionRisk==='High'?'var(--right)':data.omissionRisk==='Med'?'var(--amber)':'var(--center)';
+  const flags=(data.flags||[]).map(f=>'<div class="flag-item"><span class="ftag '+ftClass(f.type)+'">'+ftLabel(f.type)+'</span><div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div></div></div>').join('');
+  document.getElementById('results').innerHTML=
+    '<div class="result-card">'+
+    '<div class="rc-head"><div class="rc-title">'+(data.episodeTitle||'Episode analysis')+'</div><div class="rc-sub">'+(data.duration||'')+'</div>'+
+    '<div class="rc-badges"><span class="bpill '+bpClass(data.biasLabel||'Center')+'"><span class="dot"></span>'+(data.biasLabel||'Center')+'</span><span class="bpill '+bfClass(data.factualityLabel||'Mostly factual')+'"><span class="dot"></span>'+(data.factualityLabel||'Mostly factual')+'</span></div></div>'+
+    '<div class="score-row">'+
+    '<div class="score-cell"><div class="score-lbl">Bias score '+tipBtn('bias')+'</div><div class="score-val" style="color:'+sc+'">'+score+'</div><div class="score-hint">-100 left · +100 right</div></div>'+
+    '<div class="score-cell"><div class="score-lbl">Fact flags '+tipBtn('factuality')+'</div><div class="score-val" style="color:var(--right)">'+((data.flags||[]).filter(f=>f.type==='fact-check').length)+'</div><div class="score-hint">claims to verify</div></div>'+
+    '<div class="score-cell"><div class="score-lbl">Omission risk '+tipBtn('omission')+'</div><div class="score-val" style="color:'+oc+'">'+( data.omissionRisk||'Low')+'</div><div class="score-hint">key views missing</div></div>'+
+    '</div>'+
+    '<div class="spectrum-wrap"><div class="spec-lbl">Political spectrum</div>'+
+    '<div class="spec-track"><div class="spec-thumb" style="left:'+pos+'%"></div></div>'+
+    '<div class="spec-ends"><span>Far left</span><span>Center</span><span>Far right</span></div></div>'+
+    (flags?'<div class="flags-section"><div class="flags-head">Things to be aware of</div>'+flags+'</div>':'')+
+    '<div class="rc-foot"><button class="ghost-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'url-input\').focus();document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button></div>'+
+    '</div>';
+}
+
+function showUpgrade(){document.getElementById('upgrade-modal').classList.add('on');}
+function selPlan(el){document.querySelectorAll('.price-opt').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+
 document.getElementById('url-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleInput();});
-document.getElementById('story-input').addEventListener('keydown',function(e){if(e.key==='Enter')searchStories();});
+document.getElementById('story-input').addEventListener('keydown',function(e){if(e.key==='Enter')doSearch();});
 </script>
 </body>
 </html>
