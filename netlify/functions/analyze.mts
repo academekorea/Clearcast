@@ -1,595 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Clearcast — Know what you're listening to</title>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#ffffff;--bg2:#f7f6f2;--bg3:#efefea;
-  --text:#1a1a18;--text2:#6b6a63;--text3:#a0a098;
-  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);
-  --r:10px;--r-lg:14px;
-  --red-bg:#fcebeb;--red-text:#a32d2d;--red:#e24b4a;
-  --amber-bg:#faeeda;--amber-text:#854f0b;--amber:#ba7517;
-  --blue-bg:#e6f1fb;--blue-text:#0c447c;
-  --green-bg:#eaf3de;--green-text:#27500a;
-}
-@media(prefers-color-scheme:dark){
-  :root{
-    --bg:#1c1c1a;--bg2:#232320;--bg3:#2a2a27;
-    --text:#e6e4da;--text2:#9b9a93;--text3:#636259;
-    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
-    --red-bg:#2e1010;--red-text:#f09595;
-    --amber-bg:#251800;--amber-text:#fac775;
-    --blue-bg:#031e3a;--blue-text:#85b7eb;
-    --green-bg:#0e2100;--green-text:#97c459;
-  }
-}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
-.logo{font-size:15px;font-weight:600;letter-spacing:-0.02em}
-.logo em{font-style:normal;opacity:0.35;font-weight:400}
-.beta{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--amber-bg);color:var(--amber-text);font-weight:500}
-.hero{max-width:580px;margin:0 auto;text-align:center;padding:60px 20px 40px}
-.hero h1{font-size:clamp(26px,5vw,40px);font-weight:600;letter-spacing:-0.03em;line-height:1.15;margin-bottom:14px}
-.hero h1 span{color:var(--text3)}
-.hero p{font-size:15px;color:var(--text2);line-height:1.65;max-width:420px;margin:0 auto}
-.input-wrap{max-width:660px;margin:28px auto 0;padding:0 20px}
-.input-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:18px}
-.input-row{display:flex;gap:8px}
-input[type=text]{flex:1;padding:10px 14px;font-size:14px;font-family:inherit;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;transition:border-color .15s}
-input[type=text]:focus{border-color:var(--text3)}
-input[type=text]::placeholder{color:var(--text3)}
-.btn{padding:10px 18px;font-size:14px;font-weight:500;font-family:inherit;border:none;border-radius:var(--r);cursor:pointer;transition:opacity .15s;white-space:nowrap}
-.btn-primary{background:var(--text);color:var(--bg)}
-.btn-primary:hover{opacity:0.82}
-.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
-.btn-ghost{background:transparent;color:var(--text2);border:0.5px solid var(--border2);cursor:pointer;font-family:inherit}
-.btn-ghost:hover{background:var(--bg3)}
-.hints{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
-.hints span{font-size:12px;color:var(--text3)}
-.hints span::before{content:"↗ "}
+import type { Config } from "@netlify/functions";
+import { getStore } from "@netlify/blobs";
 
-/* Episode picker */
-.episode-picker{margin-top:14px;display:none}
-.episode-picker.on{display:block}
-.ep-label{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500}
-.ep-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
-.ep-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:border-color .15s}
-.ep-item:hover{border-color:var(--border2);background:var(--bg3)}
-.ep-title{font-size:13px;font-weight:500;line-height:1.4}
-.ep-meta{font-size:11px;color:var(--text3);margin-top:2px}
-.ep-btn{font-size:12px;padding:5px 10px;white-space:nowrap;flex-shrink:0}
-
-.tabs-wrap{max-width:660px;margin:24px auto 14px;padding:0 20px;display:none;gap:6px}
-.tabs-wrap.on{display:flex}
-.tab{padding:7px 15px;font-size:13px;font-family:inherit;border:0.5px solid var(--border);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
-.tab.on{background:var(--bg);color:var(--text);border-color:var(--border2)}
-.tab:hover:not(.on){background:var(--bg2)}
-.panel{max-width:660px;margin:0 auto;padding:0 20px 60px;display:none}
-.panel.on{display:block}
-.rcard{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px}
-.rcard-head{padding:16px 18px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-.rcard-title{font-size:15px;font-weight:500}
-.rcard-sub{font-size:12px;color:var(--text3);margin-top:3px}
-.badges{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
-.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap}
-.pill-red{background:var(--red-bg);color:var(--red-text)}
-.pill-amber{background:var(--amber-bg);color:var(--amber-text)}
-.pill-blue{background:var(--blue-bg);color:var(--blue-text)}
-.pill-green{background:var(--green-bg);color:var(--green-text)}
-.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
-.dot-red{background:var(--red-text)}
-.dot-amber{background:var(--amber-text)}
-.dot-blue{background:var(--blue-text)}
-.dot-green{background:var(--green-text)}
-
-/* Metrics with tooltip */
-.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--border)}
-.metric{background:var(--bg);padding:14px 16px;text-align:center;position:relative}
-.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:flex;align-items:center;justify-content:center;gap:4px}
-.metric-val{font-size:22px;font-weight:500}
-.metric-hint{font-size:11px;color:var(--text3);margin-top:3px}
-
-/* Info button (? icon) */
-.info-btn{width:16px;height:16px;border-radius:50%;background:var(--bg3);border:0.5px solid var(--border2);font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;font-family:inherit;transition:background .15s}
-.info-btn:hover{background:var(--border2)}
-
-/* Tooltip */
-.tooltip-wrap{position:relative;display:inline-flex}
-.tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .15s;text-align:left;font-weight:400}
-.tooltip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--text)}
-.tooltip-wrap:hover .tooltip,.tooltip-wrap.open .tooltip{opacity:1;pointer-events:auto}
-
-/* Bias scale */
-.bias-scale{padding:14px 18px;border-top:0.5px solid var(--border)}
-.bias-scale-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
-.scale-bar{height:8px;border-radius:4px;background:linear-gradient(to right,#3b6d11,#854f0b,#a32d2d);position:relative;margin-bottom:6px}
-.scale-marker{position:absolute;top:-4px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--text);transform:translateX(-50%);transition:left .5s}
-.scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
-
-/* Flags */
-.flags-head{padding:12px 18px 6px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
-.flag{display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-top:0.5px solid var(--border)}
-.flag-pill{flex-shrink:0;margin-top:1px}
-.flag-title{font-size:13px;font-weight:500;margin-bottom:3px}
-.flag-detail{font-size:12px;color:var(--text2);line-height:1.5}
-.rcard-foot{padding:12px 18px;border-top:0.5px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
-
-/* Live */
-.live-header{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:14px}
-.live-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.live-show{font-size:14px;font-weight:500}
-.live-ind{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red-text)}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.prog-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:7px}
-.prog-fill{height:100%;background:var(--text);border-radius:2px}
-.prog-times{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:monospace}
-.mrow{display:flex;align-items:flex-start;gap:10px;padding:10px 18px;border-top:0.5px solid var(--border)}
-.ts{font-size:11px;color:var(--text3);font-family:monospace;min-width:36px;padding-top:2px}
-.mtext{font-size:13px;line-height:1.4}
-.listening{display:flex;align-items:center;gap:10px;padding:12px 18px;border-top:0.5px solid var(--border);opacity:.4}
-.dots{display:flex;gap:3px}
-.dots span{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:blink 1.2s ease-in-out infinite}
-.dots span:nth-child(2){animation-delay:.2s}
-.dots span:nth-child(3){animation-delay:.4s}
-@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
-
-/* Embed */
-.embed-block{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:14px}
-.embed-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:10px}
-.code-block{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:14px;font-family:monospace;font-size:12px;color:var(--text2);word-break:break-all;line-height:1.7}
-.badge-preview{display:inline-flex;align-items:center;gap:10px;padding:9px 14px;border:0.5px solid var(--border2);border-radius:var(--r);margin-top:14px}
-.badge-title{font-size:13px;font-weight:500}
-.badge-sub{font-size:11px;color:var(--text3)}
-
-/* Loading */
-.loading{text-align:center;padding:48px 20px;max-width:660px;margin:0 auto;display:none}
-.loading.on{display:block}
-.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-title{font-size:15px;font-weight:500;margin-bottom:6px}
-.loading p{font-size:13px;color:var(--text2)}
-.empty{text-align:center;padding:48px 20px}
-.empty h3{font-size:15px;font-weight:500;margin-bottom:6px}
-.empty p{font-size:13px;color:var(--text2)}
-.error-card{background:var(--red-bg);border:0.5px solid var(--red-text);border-radius:var(--r-lg);padding:16px 18px;color:var(--red-text);font-size:13px;margin-bottom:14px}
-
-/* Modal for mobile info */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;align-items:flex-end;justify-content:center}
-.modal-overlay.on{display:flex}
-.modal{background:var(--bg);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:24px 20px 32px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto}
-.modal-title{font-size:15px;font-weight:500;margin-bottom:14px}
-.modal-close{float:right;background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;line-height:1;margin-top:-4px}
-.modal-body{font-size:14px;color:var(--text2);line-height:1.65}
-.modal-body h4{font-size:13px;font-weight:500;color:var(--text);margin:14px 0 4px}
-.modal-body p{margin-bottom:8px}
-
-footer{border-top:0.5px solid var(--border);padding:20px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-footer p{font-size:12px;color:var(--text3)}
-</style>
-</head>
-<body>
-
-<nav>
-  <div class="logo">Clearcast <em>/ podcast clarity</em></div>
-  <span class="beta">Beta</span>
-</nav>
-
-<div class="hero">
-  <h1>Know what you're<br><span>actually listening to</span></h1>
-  <p>Paste any podcast URL or RSS feed. We surface bias, unverified claims, and missing perspectives.</p>
-</div>
-
-<div class="input-wrap">
-  <div class="input-card">
-    <div class="input-row">
-      <input type="text" id="url-input" placeholder="Paste a podcast URL, episode link, or RSS feed…"/>
-      <button class="btn btn-primary" id="analyze-btn" onclick="handleInput()">Go</button>
-    </div>
-    <div class="hints">
-      <span>Episode pages</span>
-      <span>RSS feeds</span>
-      <span>Direct MP3 links</span>
-    </div>
-    <div class="episode-picker" id="episode-picker">
-      <div class="ep-label">Select an episode to analyze:</div>
-      <div class="ep-list" id="ep-list"></div>
-    </div>
-  </div>
-</div>
-
-<div class="tabs-wrap" id="tabs">
-  <button class="tab on" onclick="switchTab('analyze',this)">Analysis</button>
-  <button class="tab" onclick="switchTab('live',this)">Live mode</button>
-  <button class="tab" onclick="switchTab('embed',this)">Embed</button>
-</div>
-
-<div class="loading" id="loading">
-  <div class="spinner"></div>
-  <div class="loading-title" id="load-title">Starting analysis…</div>
-  <p id="load-msg">This takes 2–5 minutes for a full episode</p>
-</div>
-
-<div class="panel on" id="panel-analyze">
-  <div class="empty" id="empty-state">
-    <h3>Paste a podcast URL above</h3>
-    <p>Supports episode pages, RSS feeds, and direct audio links</p>
-  </div>
-  <div id="results"></div>
-</div>
-
-<div class="panel" id="panel-live">
-  <div class="live-header">
-    <div class="live-top">
-      <span class="live-show">Analyze an episode first to enable live mode</span>
-    </div>
-    <p style="font-size:13px;color:var(--text2);margin-top:4px">Live mode tracks bias markers in real time. Coming soon via browser extension.</p>
-  </div>
-  <div class="rcard">
-    <div class="flags-head">Example live markers</div>
-    <div class="mrow">
-      <span class="ts">02:14</span>
-      <span class="pill pill-blue" style="flex-shrink:0;margin-top:1px"><span class="dot dot-blue"></span>Context</span>
-      <span class="mtext">Citing a single report as representative of all economists</span>
-    </div>
-    <div class="mrow">
-      <span class="ts">05:47</span>
-      <span class="pill pill-red" style="flex-shrink:0;margin-top:1px"><span class="dot dot-red"></span>Flag</span>
-      <span class="mtext">"Every economist agrees…" — sweeping claim, not substantiated</span>
-    </div>
-    <div class="mrow">
-      <span class="ts">08:30</span>
-      <span class="pill pill-amber" style="flex-shrink:0;margin-top:1px"><span class="dot dot-amber"></span>Framing</span>
-      <span class="mtext">Businesses framed as agents; consumers consistently as victims</span>
-    </div>
-    <div class="listening">
-      <div class="dots"><span></span><span></span><span></span></div>
-      <span style="font-size:13px;color:var(--text3)">Browser extension coming soon…</span>
-    </div>
-  </div>
-</div>
-
-<div class="panel" id="panel-embed">
-  <div class="embed-block">
-    <div class="embed-label">Drop into any website or podcast app</div>
-    <div class="code-block">&lt;script src="https://clearcast-app.netlify.app/embed.js"&gt;&lt;/script&gt;<br>&lt;clearcast-badge episode-url="YOUR_EPISODE_URL" /&gt;</div>
-    <div class="badge-preview">
-      <div style="width:26px;height:26px;border-radius:50%;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L11.5 11H1.5L6.5 1.5Z" stroke="var(--amber-text)" stroke-width="1.4" fill="none" stroke-linejoin="round"/><line x1="6.5" y1="5.5" x2="6.5" y2="8" stroke="var(--amber-text)" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="9.5" r=".6" fill="var(--amber-text)"/></svg>
-      </div>
-      <div><div class="badge-title">Lean left · 3 flags</div><div class="badge-sub">Powered by Clearcast</div></div>
-    </div>
-  </div>
-  <div class="embed-block">
-    <div class="embed-label">Browser extension — coming soon</div>
-    <p style="font-size:13px;color:var(--text2);line-height:1.65">Get live bias markers on any podcast page — Spotify, Apple Podcasts, YouTube.</p>
-    <button class="btn btn-ghost" style="margin-top:12px;font-size:13px;padding:8px 14px;border-radius:var(--r)">Join waitlist</button>
-  </div>
-</div>
-
-<!-- Info modal (mobile) -->
-<div class="modal-overlay" id="info-modal" onclick="closeModal(event)">
-  <div class="modal">
-    <button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('on')">✕</button>
-    <div class="modal-title" id="modal-title">Understanding this metric</div>
-    <div class="modal-body" id="modal-body"></div>
-  </div>
-</div>
-
-<footer>
-  <p>Clearcast · AI-generated analysis grounded in publicly available fact-checking sources. Not a substitute for critical thinking.</p>
-  <p>clearcast-app.netlify.app</p>
-</footer>
-
-<script>
-const TOOLTIPS = {
-  bias: {
-    title: "Bias score",
-    body: `<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p>
-    <h4>Scale guide</h4>
-    <p>-100 to -60: Far left &nbsp;|&nbsp; -59 to -20: Lean left</p>
-    <p>-19 to +19: Center &nbsp;|&nbsp; +20 to +59: Lean right</p>
-    <p>+60 to +100: Far right</p>
-    <h4>What this means</h4>
-    <p>Bias doesn't mean wrong. It means the content reflects a particular political perspective through word choice, which voices are included, and which stories are covered.</p>`
-  },
-  factuality: {
-    title: "Factuality rating",
-    body: `<p>How well claims made in the episode hold up against publicly verifiable information.</p>
-    <h4>Ratings</h4>
-    <p><strong>Mostly factual</strong> — Claims are generally accurate. Minor imprecisions may exist.</p>
-    <p><strong>Mixed factuality</strong> — Some claims are accurate, others are overstated, misleading, or unverifiable.</p>
-    <p><strong>Unreliable</strong> — Significant false or highly misleading claims detected.</p>
-    <h4>Important</h4>
-    <p>This is AI analysis, not professional fact-checking. Always verify important claims independently.</p>`
-  },
-  omission: {
-    title: "Omission risk",
-    body: `<p>How much important context or opposing perspectives appear to be missing from the episode.</p>
-    <h4>Levels</h4>
-    <p><strong>Low</strong> — Multiple perspectives represented. Key context included.</p>
-    <p><strong>Med</strong> — Some relevant perspectives or context appear absent.</p>
-    <p><strong>High</strong> — Significant viewpoints or facts appear to be missing, which may distort the listener's understanding.</p>
-    <h4>Why it matters</h4>
-    <p>What a podcast leaves out is often as influential as what it includes. Omission shapes worldview without the listener noticing.</p>`
-  }
-};
-
-const FLAG_EXPLANATIONS = {
-  "fact-check": "A specific claim that appears inaccurate, overstated, or unverifiable based on publicly available information.",
-  "framing": "The way the story is presented — word choice, tone, or structure — that may reflect a particular viewpoint.",
-  "omission": "Important context, data, or perspectives that appear to be missing from the discussion.",
-  "sponsor-note": "A potential conflict of interest between the episode's content and its advertiser or sponsor.",
-  "context": "Additional background that would help listeners form a more complete understanding."
-};
-
-const isMobile = () => window.matchMedia("(hover: none)").matches;
-
-function showInfo(key) {
-  const t = TOOLTIPS[key];
-  if (!t) return;
-  if (isMobile()) {
-    document.getElementById('modal-title').textContent = t.title;
-    document.getElementById('modal-body').innerHTML = t.body;
-    document.getElementById('info-modal').classList.add('on');
+async function extractAudioUrl(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; Clearcast/1.0)",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      },
+      signal: AbortSignal.timeout(8000),
+    });
+    const text = await res.text();
+    const patterns = [
+      /<enclosure[^>]+url="([^"]+)"/i,
+      /["'](https?:\/\/[^"']+\.mp3[^"']*?)["']/i,
+      /["'](https?:\/\/[^"']+\.m4a[^"']*?)["']/i,
+      /["'](https?:\/\/[^"']+\.ogg[^"']*?)["']/i,
+      /"audio_url"\s*:\s*"([^"]+)"/i,
+      /content="(https?:\/\/[^"]+\.mp3[^"]*)"/i,
+      /url="([^"]+\.mp3[^"]*)"/i,
+      /src="(https?:\/\/[^"]+\.mp3[^"]*)"/i,
+    ];
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match) return match[1].replace(/&amp;/g, "&");
+    }
+    return null;
+  } catch {
+    return null;
   }
 }
 
-function closeModal(e) {
-  if (e.target === document.getElementById('info-modal')) {
-    document.getElementById('info-modal').classList.remove('on');
+function isAudioUrl(url: string): boolean {
+  return !!(
+    url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i) ||
+    url.includes("audio") ||
+    url.includes("media") ||
+    url.includes("cdn") ||
+    url.includes("podcast") ||
+    url.includes("episode") ||
+    url.match(/\/(e|ep|episodes?)\//i)
+  );
+}
+
+export default async (req: Request) => {
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405 });
   }
-}
-
-function infoBtn(key) {
-  if (isMobile()) {
-    return `<button class="info-btn" onclick="showInfo('${key}')">?</button>`;
-  }
-  const t = TOOLTIPS[key];
-  return `<span class="tooltip-wrap"><button class="info-btn">?</button><div class="tooltip">${t.body}</div></span>`;
-}
-
-function switchTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-  el.classList.add('on');
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
-  document.getElementById('panel-' + name).classList.add('on');
-}
-
-function isRssFeed(url) {
-  return url.match(/\.(xml|rss)$/i) ||
-    url.includes('/feed') || url.includes('/rss') ||
-    url.includes('feeds.') || url.includes('anchor.fm/') ||
-    url.includes('buzzsprout.com') === false && url.match(/feeds\.|\.fm\/feed|\.com\/feed/i);
-}
-
-async function handleInput() {
-  const url = document.getElementById('url-input').value.trim();
-  if (!url) { document.getElementById('url-input').focus(); return; }
-
-  // Check if it looks like an RSS feed
-  const looksLikeRss = url.match(/\.(xml|rss)(\?|$)/i) ||
-    url.match(/\/feed\/?(\?|$)/i) ||
-    url.match(/feeds\.(npr|buzzsprout|podbean|libsyn|simplecast|megaphone|anchor)/i) ||
-    url.match(/\/podcast\.xml/i);
-
-  if (looksLikeRss) {
-    await loadEpisodes(url);
-  } else {
-    startAnalysis(url);
-  }
-}
-
-async function loadEpisodes(feedUrl) {
-  const btn = document.getElementById('analyze-btn');
-  btn.disabled = true;
-  btn.textContent = 'Loading…';
 
   try {
-    const res = await fetch(`/api/episodes?url=${encodeURIComponent(feedUrl)}`);
-    const data = await res.json();
+    const body = await req.json();
+    const { url } = body;
 
-    if (data.error || !data.episodes?.length) {
-      // Fall back to direct analysis
-      startAnalysis(feedUrl);
-      return;
+    if (!url) {
+      return new Response(JSON.stringify({ error: "URL is required" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
     }
 
-    const picker = document.getElementById('episode-picker');
-    const list = document.getElementById('ep-list');
-    list.innerHTML = data.episodes.map((ep, i) => `
-      <div class="ep-item" onclick="startAnalysis('${ep.audioUrl.replace(/'/g, "\\'")}')">
-        <div>
-          <div class="ep-title">${ep.title}</div>
-          <div class="ep-meta">${[ep.date, ep.duration].filter(Boolean).join(' · ')}</div>
-        </div>
-        <button class="btn btn-ghost ep-btn">Analyze</button>
-      </div>`).join('');
-    picker.classList.add('on');
-  } catch {
-    startAnalysis(feedUrl);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Go';
-  }
-}
+    const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
+    if (!assemblyKey) {
+      return new Response(JSON.stringify({ error: "Transcription service not configured" }), {
+        status: 500, headers: { "Content-Type": "application/json" },
+      });
+    }
 
-let pollInterval = null;
+    let audioUrl = url;
 
-function startAnalysis(audioUrl) {
-  document.getElementById('episode-picker').classList.remove('on');
-
-  const btn = document.getElementById('analyze-btn');
-  btn.disabled = true;
-  btn.textContent = 'Analyzing…';
-
-  document.getElementById('results').innerHTML = '';
-  document.getElementById('empty-state').style.display = 'none';
-  document.getElementById('tabs').classList.remove('on');
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
-  document.getElementById('loading').classList.add('on');
-  document.getElementById('load-title').textContent = 'Submitting for transcription…';
-
-  fetch('/api/analyze', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url: audioUrl }),
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.error) { showError(data.error); resetBtn(); return; }
-    pollForResults(data.jobId);
-  })
-  .catch(() => { showError('Network error — please try again'); resetBtn(); });
-}
-
-function pollForResults(jobId) {
-  const stages = ['Transcribing audio…', 'Reading transcript…', 'Checking facts…', 'Detecting framing…', 'Building report…'];
-  let stageIdx = 0;
-
-  if (pollInterval) clearInterval(pollInterval);
-  pollInterval = setInterval(async () => {
-    stageIdx = Math.min(stageIdx + 1, stages.length - 1);
-    document.getElementById('load-title').textContent = stages[stageIdx];
-    try {
-      const res = await fetch(`/api/status/${jobId}`);
-      const data = await res.json();
-      if (data.status === 'complete') {
-        clearInterval(pollInterval);
-        document.getElementById('loading').classList.remove('on');
-        document.getElementById('tabs').classList.add('on');
-        document.getElementById('panel-analyze').classList.add('on');
-        resetBtn();
-        renderResults(data);
-      } else if (data.status === 'error') {
-        clearInterval(pollInterval);
-        showError(data.error || 'Analysis failed');
-        resetBtn();
+    // If it doesn't look like a direct audio file, try to extract audio URL
+    if (!url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
+      const extracted = await extractAudioUrl(url);
+      if (extracted) {
+        audioUrl = extracted;
+      } else if (!isAudioUrl(url)) {
+        return new Response(JSON.stringify({
+          error: "Could not find audio. Please paste a direct MP3 link or RSS feed URL."
+        }), { status: 400, headers: { "Content-Type": "application/json" } });
       }
-    } catch {}
-  }, 4000);
-}
+      // If isAudioUrl but no extension matched, try the URL directly
+    }
 
-function resetBtn() {
-  const btn = document.getElementById('analyze-btn');
-  btn.disabled = false;
-  btn.textContent = 'Go';
-}
+    // Submit to AssemblyAI v2
+    const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
+      method: "POST",
+      headers: {
+        "authorization": assemblyKey,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        audio_url: audioUrl,
+        speech_model: "best",
+      }),
+    });
 
-function showError(msg) {
-  document.getElementById('loading').classList.remove('on');
-  document.getElementById('tabs').classList.add('on');
-  document.getElementById('panel-analyze').classList.add('on');
-  document.getElementById('results').innerHTML = `<div class="error-card">Error: ${msg}</div>`;
-}
+    if (!aaiRes.ok) {
+      const err = await aaiRes.text();
+      console.error("AssemblyAI error:", err);
+      return new Response(JSON.stringify({ error: "Transcription service error. Please try again." }), {
+        status: 500, headers: { "Content-Type": "application/json" },
+      });
+    }
 
-function pill(cls, dot, label) {
-  return `<span class="pill ${cls}"><span class="dot ${dot}"></span>${label}</span>`;
-}
+    const aaiData = await aaiRes.json();
+    const transcriptId = aaiData.id;
 
-function biasPill(label) {
-  const m = {'Far left':'pill-red','Lean left':'pill-amber','Center':'pill-blue','Lean right':'pill-amber','Far right':'pill-red'};
-  const d = {'Far left':'dot-red','Lean left':'dot-amber','Center':'dot-blue','Lean right':'dot-amber','Far right':'dot-red'};
-  return pill(m[label]||'pill-blue', d[label]||'dot-blue', label);
-}
+    if (!transcriptId) {
+      return new Response(JSON.stringify({ error: "Failed to start transcription. Please try again." }), {
+        status: 500, headers: { "Content-Type": "application/json" },
+      });
+    }
 
-function factPill(label) {
-  const m = {'Mostly factual':'pill-green','Mixed factuality':'pill-amber','Unreliable':'pill-red'};
-  const d = {'Mostly factual':'dot-green','Mixed factuality':'dot-amber','Unreliable':'dot-red'};
-  return pill(m[label]||'pill-blue', d[label]||'dot-blue', label);
-}
+    const store = getStore("clearcast-jobs");
+    await store.setJSON(transcriptId, {
+      status: "transcribing",
+      transcriptId,
+      url,
+      audioUrl,
+      createdAt: Date.now(),
+    });
 
-function flagPill(type) {
-  const m = {'fact-check':['pill-red','dot-red','Fact check'],'framing':['pill-amber','dot-amber','Framing'],'omission':['pill-amber','dot-amber','Omission'],'sponsor-note':['pill-blue','dot-blue','Sponsor note'],'context':['pill-blue','dot-blue','Context']};
-  const [cls, d, label] = m[type] || ['pill-blue','dot-blue',type];
-  return `<span class="pill ${cls} flag-pill"><span class="dot ${d}"></span>${label}</span>`;
-}
+    return new Response(JSON.stringify({ jobId: transcriptId, status: "transcribing" }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
 
-function biasColor(score) {
-  if (score < -20) return 'var(--amber-text)';
-  if (score > 20) return 'var(--amber-text)';
-  return 'var(--blue-text)';
-}
+  } catch (e: any) {
+    console.error("Analyze error:", e);
+    return new Response(JSON.stringify({ error: "Server error: " + (e?.message || "Unknown error") }), {
+      status: 500, headers: { "Content-Type": "application/json" },
+    });
+  }
+};
 
-function omissionColor(level) {
-  return level === 'High' ? 'var(--red)' : level === 'Med' ? 'var(--amber-text)' : 'var(--green-text)';
-}
-
-function scalePosition(score) {
-  return Math.round(((score + 100) / 200) * 100);
-}
-
-function renderResults(data) {
-  const score = data.biasScore ?? 0;
-  const flags = (data.flags || []).map(f => `
-    <div class="flag">
-      ${flagPill(f.type)}
-      <div>
-        <div class="flag-title">${f.title}</div>
-        <div class="flag-detail">${f.detail}</div>
-        ${FLAG_EXPLANATIONS[f.type] ? `<div style="font-size:11px;color:var(--text3);margin-top:4px;font-style:italic">${FLAG_EXPLANATIONS[f.type]}</div>` : ''}
-      </div>
-    </div>`).join('');
-
-  document.getElementById('results').innerHTML = `
-    <div class="rcard">
-      <div class="rcard-head">
-        <div>
-          <div class="rcard-title">${data.episodeTitle || 'Episode analysis'}</div>
-          <div class="rcard-sub">${data.duration || ''}</div>
-        </div>
-        <div class="badges">
-          ${biasPill(data.biasLabel || 'Center')}
-          ${factPill(data.factualityLabel || 'Mostly factual')}
-        </div>
-      </div>
-
-      <div class="metrics">
-        <div class="metric">
-          <div class="metric-label">Bias score ${infoBtn('bias')}</div>
-          <div class="metric-val" style="color:${biasColor(score)}">${score}</div>
-          <div class="metric-hint">-100 left · +100 right</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Fact flags ${infoBtn('factuality')}</div>
-          <div class="metric-val" style="color:var(--red)">${(data.flags||[]).filter(f=>f.type==='fact-check').length}</div>
-          <div class="metric-hint">claims to verify</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Omission risk ${infoBtn('omission')}</div>
-          <div class="metric-val" style="color:${omissionColor(data.omissionRisk)}">${data.omissionRisk||'Low'}</div>
-          <div class="metric-hint">key views missing</div>
-        </div>
-      </div>
-
-      <div class="bias-scale">
-        <div class="bias-scale-label">Bias position on spectrum</div>
-        <div class="scale-bar">
-          <div class="scale-marker" style="left:${scalePosition(score)}%"></div>
-        </div>
-        <div class="scale-labels">
-          <span>Far left</span>
-          <span>Center</span>
-          <span>Far right</span>
-        </div>
-      </div>
-
-      ${flags ? `<div class="flags-head">Things to be aware of</div>${flags}` : ''}
-
-      <div class="rcard-foot">
-        <button class="btn btn-ghost" style="font-size:13px;padding:8px 14px;border-radius:var(--r)" onclick="document.getElementById('url-input').value='';document.getElementById('url-input').focus();document.getElementById('episode-picker').classList.remove('on')">Analyze another episode</button>
-      </div>
-    </div>`;
-}
-
-// Allow Enter key to trigger analysis
-document.getElementById('url-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleInput();
-});
-</script>
-</body>
-</html>
+export const config: Config = { path: "/api/analyze" };
