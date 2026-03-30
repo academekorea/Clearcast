@@ -691,7 +691,21 @@ async function loadBlindspot(){
 // ── ANALYZE ──
 function analyzeShow(feedUrl){switchView('analyze');document.getElementById('url-input').value=feedUrl;loadEpisodes(feedUrl);}
 function isSpecificEp(u){return u.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)||u.match(/\/episodes?\//i)||u.match(/\/e\/[a-z0-9-]+/i)||u.match(/[?&]episode=/i)||u.match(/\/\d{7,}/);}
-function isRss(u){return u.match(/\.(xml|rss)(\?|$)/i)||u.match(/\/feed/i)||u.match(/feeds\./i)||u.match(/\/podcast\.xml/i);}
+function isRss(u){
+  return u.match(/\.(xml|rss)(\?|$)/i) ||
+    u.match(/\/feed/i) ||
+    u.match(/feeds\./i) ||
+    u.match(/\/podcast\.xml/i) ||
+    u.match(/^https?:\/\/rss\d*\./i) ||
+    u.match(/\/rss$/i) ||
+    u.match(/[?&]format=rss/i) ||
+    u.match(/anchor\.fm\/.+\/podcast/i) ||
+    u.match(/buzzsprout\.com\/\d+\.rss/i) ||
+    u.match(/flightcast\.com/i) ||
+    u.match(/podbean\.com\/feed/i) ||
+    u.match(/simplecast\.com\/rss/i) ||
+    u.match(/megaphone\.fm\/channel/i);
+}
 async function handleInput(){
   let u=document.getElementById('url-input').value.trim();
   if(!u){document.getElementById('url-input').focus();return;}
@@ -728,7 +742,22 @@ function startAnalysis(audioUrl){
   document.getElementById('loading').classList.add('on');
   document.getElementById('ld-title').textContent='Submitting for transcription…';
   fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl})})
-    .then(r=>r.json()).then(d=>{if(d.error){showErr(d.error);resetBtn();return;}pollResults(d.jobId);})
+    .then(r=>r.json()).then(async d=>{
+      if(d.error){
+        // If audio not found, try treating URL as RSS feed and show episode picker
+        if(d.error.toLowerCase().includes('could not find audio')||d.error.toLowerCase().includes('audio')){
+          document.getElementById('loading').classList.remove('on');
+          document.getElementById('atabs').classList.remove('on');
+          document.getElementById('apanel-results').classList.add('on');
+          document.getElementById('empty-state').style.display='block';
+          resetBtn();
+          await loadEpisodes(audioUrl);
+          return;
+        }
+        showErr(d.error);resetBtn();return;
+      }
+      pollResults(d.jobId);
+    })
     .catch(()=>{showErr('Network error — please try again');resetBtn();});
 }
 function pollResults(jobId){
