@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Clearcast — Podcast bias, clearly</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#f8f7f4;--bg2:#fff;--bg3:#f0efe9;--bg4:#e6e4dc;
   --text:#111110;--text2:#57564f;--text3:#96958e;
-  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
   --r:8px;--r-lg:12px;--r-xl:16px;
   --left:#1d4ed8;--left-bg:#eff6ff;--left-bar:#3b82f6;
   --center:#15803d;--center-bg:#f0fdf4;--center-bar:#22c55e;
@@ -32,189 +32,215 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 
-/* ── TOP NAV ── */
-.top-nav{
-  display:flex;align-items:center;gap:0;padding:0 20px;height:50px;
-  border-bottom:1px solid var(--border);position:sticky;top:0;
-  background:var(--bg);z-index:100
-}
-.logo{font-family:var(--ffs);font-size:18px;letter-spacing:-0.01em;color:var(--text);cursor:pointer;margin-right:24px;flex-shrink:0;border:none;background:none;font-weight:400}
-.top-links{display:flex;gap:0;flex:1}
-.tl{padding:6px 12px;font-size:13px;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:6px;font-family:var(--ff);transition:all .1s;font-weight:400}
-.tl.on{background:var(--bg3);color:var(--text);font-weight:500}
-.tl:hover:not(.on){background:var(--bg3)}
-.top-right{display:flex;align-items:center;gap:8px;margin-left:auto}
-.sub-btn{font-size:12px;padding:5px 14px;border-radius:20px;background:var(--text);color:var(--bg);border:none;cursor:pointer;font-family:var(--ff);font-weight:500;transition:opacity .1s}
+/* NAV */
+.nav{display:flex;align-items:center;padding:0 20px;height:50px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:200}
+.logo{font-family:var(--ffs);font-size:18px;color:var(--text);cursor:pointer;margin-right:24px;flex-shrink:0;border:none;background:none;font-weight:400;font-style:italic}
+.nav-links{display:flex;gap:2px;flex:1}
+.nl{padding:6px 12px;font-size:13px;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:6px;font-family:var(--ff);transition:all .1s}
+.nl.on{background:var(--bg3);color:var(--text);font-weight:500}
+.nl:hover:not(.on){background:var(--bg3)}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.lang-btn{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff);transition:all .1s}
+.lang-btn.on{background:var(--bg3);color:var(--text)}
+.sub-btn{font-size:12px;padding:5px 14px;border-radius:20px;background:var(--text);color:var(--bg);border:none;cursor:pointer;font-family:var(--ff);font-weight:500}
 .sub-btn:hover{opacity:.85}
 
-/* ── TOPIC STRIP (Ground News style) ── */
-.topic-strip{
-  display:flex;align-items:center;gap:0;
-  padding:0 20px;height:40px;
-  border-bottom:1px solid var(--border);
-  background:var(--bg2);
-  overflow-x:auto;white-space:nowrap;
-  scrollbar-width:none;
-}
+/* TOPIC STRIP */
+.topic-strip{display:flex;align-items:center;padding:0 20px;height:38px;border-bottom:1px solid var(--border);background:var(--bg2);overflow-x:auto;white-space:nowrap;scrollbar-width:none;gap:4px}
 .topic-strip::-webkit-scrollbar{display:none}
-.topic-strip-label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-right:12px;flex-shrink:0}
-.topic-chip{
-  display:inline-flex;align-items:center;padding:4px 12px;margin-right:6px;
-  font-size:13px;border:none;background:transparent;color:var(--text2);
-  cursor:pointer;border-radius:20px;font-family:var(--ff);transition:all .1s;flex-shrink:0
-}
-.topic-chip.on{background:var(--text);color:var(--bg)}
-.topic-chip:hover:not(.on){background:var(--bg3);color:var(--text)}
+.strip-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-right:8px;flex-shrink:0}
+.t-chip{padding:4px 12px;font-size:12px;border:none;background:transparent;color:var(--text2);cursor:pointer;border-radius:20px;font-family:var(--ff);transition:all .1s;flex-shrink:0}
+.t-chip.on{background:var(--text);color:var(--bg)}
+.t-chip:hover:not(.on){background:var(--bg3);color:var(--text)}
 
-/* ── VIEWS ── */
+/* VIEWS */
 .view{display:none}.view.on{display:block}
 
-/* ══════════ MARKETPLACE (default home) ══════════ */
-.mkt-layout{display:grid;grid-template-columns:240px 1fr;gap:0;max-width:1200px;margin:0 auto;min-height:calc(100vh - 90px)}
+/* ═══ MARKETPLACE ═══ */
+.mkt-layout{display:grid;grid-template-columns:220px 1fr 260px;min-height:calc(100vh - 88px);max-width:1400px;margin:0 auto}
 
-/* Left sidebar */
-.mkt-sidebar{border-right:1px solid var(--border);padding:20px 0;position:sticky;top:90px;height:calc(100vh - 90px);overflow-y:auto}
-.sidebar-section{margin-bottom:24px;padding:0 16px}
-.sidebar-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px}
-.sidebar-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text2);transition:all .1s;border:none;background:transparent;width:100%;text-align:left;font-family:var(--ff)}
-.sidebar-item.on{background:var(--bg3);color:var(--text);font-weight:500}
-.sidebar-item:hover:not(.on){background:var(--bg3);color:var(--text)}
-.sidebar-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+/* Sidebar */
+.mkt-sidebar{border-right:1px solid var(--border);padding:20px 0}
+.sb-section{margin-bottom:20px;padding:0 14px}
+.sb-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:6px;padding:0 6px}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text2);transition:all .1s;border:none;background:transparent;width:100%;text-align:left;font-family:var(--ff)}
+.sb-item.on{background:var(--bg3);color:var(--text);font-weight:500}
+.sb-item:hover:not(.on){background:var(--bg3);color:var(--text)}
+.sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sb-pro{font-size:9px;padding:1px 5px;border-radius:8px;background:var(--purple-bg);color:var(--purple);font-weight:600;border:1px solid var(--purple-border)}
 
-/* Main feed */
-.mkt-feed{padding:0}
+/* Feed */
+.mkt-feed{border-right:1px solid var(--border);overflow:hidden}
+.feed-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 20px;background:var(--bg2);position:sticky;top:88px;z-index:50}
+.ft{padding:11px 16px;font-size:13px;font-family:var(--ff);border:none;background:transparent;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .1s}
+.ft.on{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.ft:hover:not(.on){color:var(--text2)}
+.fp{display:none}.fp.on{display:block}
 
-/* Sub-nav tabs — like Ground News top tabs */
-.feed-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 20px;background:var(--bg2);position:sticky;top:90px;z-index:50}
-.ftab{padding:12px 16px;font-size:13px;font-family:var(--ff);border:none;background:transparent;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;font-weight:400}
-.ftab.on{color:var(--text);border-bottom-color:var(--text);font-weight:500}
-.ftab:hover:not(.on){color:var(--text2)}
-.pro-tab-tag{font-size:9px;padding:1px 5px;border-radius:8px;background:var(--purple-bg);color:var(--purple);font-weight:600;margin-left:4px;border:1px solid var(--purple-border);vertical-align:middle}
+/* HERO STORY — big image */
+.hero-story{position:relative;width:100%;height:340px;overflow:hidden;cursor:pointer}
+.hero-story img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-story-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.3) 50%,transparent 100%)}
+.hero-story-body{position:absolute;bottom:0;left:0;right:0;padding:20px}
+.hero-story-show{font-size:11px;font-weight:600;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.hero-story-title{font-family:var(--ffs);font-size:clamp(18px,2.5vw,26px);color:#fff;line-height:1.2;margin-bottom:10px;font-weight:400}
+.hero-cov-bar{display:flex;height:4px;border-radius:2px;overflow:hidden;gap:1px;margin-bottom:6px}
+.hcl{background:var(--left-bar);border-radius:2px 0 0 2px}
+.hcc{background:var(--center-bar)}
+.hcr{background:var(--right-bar);border-radius:0 2px 2px 0}
+.hero-cov-counts{display:flex;gap:12px}
+.hcc2{font-size:11px;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:4px}
+.hcd{width:7px;height:7px;border-radius:50%}
+.hero-plts{display:flex;gap:6px;margin-top:10px}
+.hero-plt{font-size:11px;padding:4px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;backdrop-filter:blur(4px);font-family:var(--ff);transition:background .1s}
+.hero-plt:hover{background:rgba(255,255,255,.2)}
 
-.feed-panel{display:none;padding:20px}.feed-panel.on{display:block}
+/* Story list */
+.story-list{display:flex;flex-direction:column}
+.story-row{display:flex;gap:0;border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+.story-row:hover{background:var(--bg3)}
+.story-img-wrap{width:100px;height:80px;flex-shrink:0;overflow:hidden}
+.story-img{width:100%;height:100%;object-fit:cover}
+.story-img-ph{width:100%;height:100%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:20px}
+.story-body{flex:1;padding:12px 14px;min-width:0}
+.story-show{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.story-title{font-size:14px;font-weight:500;line-height:1.35;color:var(--text);margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;letter-spacing:-0.01em}
+.story-cov{display:flex;height:4px;border-radius:2px;overflow:hidden;gap:1px;margin-bottom:4px}
+.scl{background:var(--left-bar)}.scc{background:var(--center-bar)}.scr{background:var(--right-bar)}
+.story-counts{display:flex;gap:8px}
+.sc{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:3px}
+.scd{width:6px;height:6px;border-radius:50%}
+.story-meta{font-size:11px;color:var(--text3);margin-top:4px}
+.story-plts{display:flex;gap:4px;margin-top:6px}
 
-/* ── STORY FEED (main Ground News equivalent) ── */
-.stories-search-bar{display:flex;gap:8px;margin-bottom:16px}
-.s-input{flex:1;padding:10px 14px;font-size:14px;font-family:var(--ff);border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);color:var(--text);outline:none;transition:border-color .1s}
+/* Platform buttons */
+.plt{font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff);text-decoration:none;display:inline-flex;align-items:center;gap:3px;transition:background .08s;white-space:nowrap}
+.plt:hover{background:var(--bg3)}
+.plt.yt{color:var(--right);border-color:rgba(239,68,68,.25)}.plt.yt:hover{background:var(--right-bg)}
+.plt.sp{color:var(--center);border-color:rgba(34,197,94,.25)}.plt.sp:hover{background:var(--center-bg)}
+.plt.ap{color:var(--purple);border-color:var(--purple-border)}.plt.ap:hover{background:var(--purple-bg)}
+.plt.az{color:var(--text);font-weight:500}
+
+/* YouTube embed */
+.yt-embed-wrap{position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px}
+.yt-embed-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+
+/* RIGHT PANEL */
+.mkt-right{padding:20px}
+.rp-section{margin-bottom:24px}
+.rp-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:12px}
+
+/* Unheard (formerly Blindspot) */
+.unheard-card{background:linear-gradient(135deg,var(--purple-bg),var(--bg2));border:1px solid var(--purple-border);border-radius:var(--r-xl);padding:16px;margin-bottom:12px}
+.unheard-eye{font-size:20px;margin-bottom:6px}
+.unheard-title{font-family:var(--ffs);font-size:16px;font-weight:400;color:var(--text);margin-bottom:4px;font-style:italic}
+.unheard-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px}
+.unheard-btn{font-size:12px;padding:6px 14px;border-radius:20px;background:var(--purple);color:#fff;border:none;cursor:pointer;font-family:var(--ff);font-weight:500}
+.unheard-content{display:none}
+.unheard-side{margin-bottom:10px}
+.unheard-side-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.unheard-item{font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);color:var(--text2)}
+.unheard-item:last-child{border-bottom:none}
+
+/* Top shows sidebar */
+.top-show{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.top-show:last-child{border-bottom:none}
+.ts-art{width:40px;height:40px;border-radius:7px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.ts-art-ph{width:40px;height:40px;border-radius:7px;background:var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.ts-name{font-size:13px;font-weight:500;line-height:1.3;margin-bottom:2px}
+.ts-author{font-size:11px;color:var(--text3)}
+.ts-plts{display:flex;gap:4px;margin-top:4px}
+
+/* Loading */
+.feed-loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:40px;color:var(--text3);font-size:13px}
+.feed-spin{width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--text3);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Search */
+.stories-search{display:flex;gap:8px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--bg)}
+.s-input{flex:1;padding:9px 14px;font-size:14px;font-family:var(--ff);border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);color:var(--text);outline:none;transition:border-color .1s}
 .s-input:focus{border-color:var(--text3)}
 .s-input::placeholder{color:var(--text3)}
-.search-btn{padding:10px 18px;font-size:14px;font-weight:500;font-family:var(--ff);border:none;background:var(--text);color:var(--bg);border-radius:var(--r);cursor:pointer;white-space:nowrap;transition:opacity .1s}
+.search-btn{padding:9px 18px;font-size:13px;font-weight:500;font-family:var(--ff);border:none;background:var(--text);color:var(--bg);border-radius:var(--r);cursor:pointer;white-space:nowrap}
 .search-btn:hover{opacity:.85}
-.search-btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* Story cards — the core Ground News-style unit */
-.story-cards{display:flex;flex-direction:column;gap:0}
-.story-card{
-  background:var(--bg2);border-bottom:1px solid var(--border);
-  padding:16px 20px;cursor:pointer;transition:background .1s;
-  display:flex;gap:14px;align-items:flex-start
-}
-.story-card:first-child{border-top:1px solid var(--border)}
-.story-card:hover{background:var(--bg3)}
-.story-card-art{width:72px;height:72px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
-.story-card-art-ph{width:72px;height:72px;border-radius:8px;background:var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px}
-.story-card-body{flex:1;min-width:0}
-.story-card-show{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.story-card-title{font-size:15px;font-weight:500;line-height:1.35;margin-bottom:6px;letter-spacing:-0.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.story-card-desc{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-
-/* THE KEY ELEMENT — coverage bar like Ground News */
-.coverage-wrap{margin-bottom:10px}
-.coverage-bar-track{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px;margin-bottom:5px}
-.cov-seg-left{background:var(--left-bar);border-radius:3px 0 0 3px}
-.cov-seg-center{background:var(--center-bar)}
-.cov-seg-right{background:var(--right-bar);border-radius:0 3px 3px 0}
-.coverage-counts{display:flex;gap:12px}
-.cov-count{font-size:11px;display:flex;align-items:center;gap:4px}
-.cov-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.cov-num{font-weight:600}
-.cov-lbl{color:var(--text3)}
-
-.story-card-platforms{display:flex;gap:5px;flex-wrap:wrap}
-.plt-btn{font-size:11px;padding:4px 10px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff);text-decoration:none;display:inline-flex;align-items:center;gap:3px;transition:background .08s;white-space:nowrap}
-.plt-btn:hover{background:var(--bg3)}
-.plt-btn.yt{color:var(--right);border-color:rgba(239,68,68,.25)}.plt-btn.yt:hover{background:var(--right-bg)}
-.plt-btn.sp{color:var(--center);border-color:rgba(34,197,94,.25)}.plt-btn.sp:hover{background:var(--center-bg)}
-.plt-btn.ap{color:var(--purple);border-color:var(--purple-border)}.plt-btn.ap:hover{background:var(--purple-bg)}
-.plt-btn.az{color:var(--text);font-weight:500}.plt-btn.az:hover{background:var(--bg3)}
-
-.feed-loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:48px 20px;color:var(--text3);font-size:13px}
-.feed-spin{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--text3);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.feed-empty{padding:40px 20px;text-align:center;color:var(--text3);font-size:14px}
-
-/* ── BROWSE SHOWS ── */
-.show-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
-.show-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:10px;transition:border-color .1s,box-shadow .1s}
-.show-card:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.show-top{display:flex;gap:10px}
-.show-art{width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
-.show-art-ph{width:48px;height:48px;border-radius:8px;background:var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px}
-.show-meta{flex:1;min-width:0}
-.show-name{font-size:13px;font-weight:500;line-height:1.3;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* Browse grid */
+.browse-wrap{padding:20px}
+.cat-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.cat-chip{padding:6px 14px;font-size:12px;font-family:var(--ff);border:1px solid var(--border2);border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .1s}
+.cat-chip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.cat-chip:hover:not(.on){background:var(--bg3)}
+.show-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.show-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;display:flex;flex-direction:column;gap:8px;transition:border-color .1s}
+.show-card:hover{border-color:var(--border2)}
+.show-top{display:flex;gap:9px}
+.show-art{width:44px;height:44px;border-radius:7px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.show-art-ph{width:44px;height:44px;border-radius:7px;background:var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.show-name{font-size:12px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .show-author{font-size:11px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .show-plts{display:flex;gap:4px;flex-wrap:wrap}
 
-/* ── BLINDSPOT ── */
-.bs-pro-gate{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-xl);padding:36px 24px;text-align:center}
-.bs-lock{font-size:36px;margin-bottom:12px}
-.bs-gate-title{font-family:var(--ffs);font-size:22px;font-weight:400;margin-bottom:10px}
-.bs-gate-desc{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto}
-.bs-cta{background:var(--text);color:var(--bg);padding:11px 28px;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--ff)}
-.bs-cta:hover{opacity:.88}
-.bs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-.bs-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px}
-.bs-card-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:5px}
-.bs-item{font-size:13px;padding:7px 0;border-bottom:1px solid var(--border);color:var(--text2);line-height:1.4}
-.bs-item:last-child{border-bottom:none}
-.bs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.bs-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;text-align:center}
-.bs-num{font-size:26px;font-weight:600;letter-spacing:-0.03em;margin-bottom:2px}
-.bs-lbl{font-size:11px;color:var(--text3)}
-
-/* ══════════ ANALYZE VIEW ══════════ */
-.analyze-wrap{max-width:660px;margin:0 auto;padding:0 20px 60px}
-.analyze-hero{padding:48px 0 28px;text-align:center}
-.analyze-hero h1{font-family:var(--ffs);font-size:clamp(26px,4vw,40px);letter-spacing:-0.02em;line-height:1.1;margin-bottom:10px;font-weight:400}
-.analyze-hero h1 em{font-style:italic;color:var(--text3)}
-.analyze-hero p{font-size:14px;color:var(--text2);line-height:1.6;max-width:380px;margin:0 auto}
-.input-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-xl);padding:14px;margin-bottom:8px}
+/* ═══ ANALYZE LAYOUT ═══ */
+.analyze-outer{max-width:1300px;margin:0 auto;padding:0 20px 60px}
+.analyze-hero{padding:44px 0 28px;text-align:center;max-width:700px;margin:0 auto}
+.analyze-hero h1{font-family:var(--ffs);font-size:clamp(26px,4vw,40px);letter-spacing:-0.02em;line-height:1.1;margin-bottom:10px;font-weight:400;font-style:italic}
+.analyze-hero p{font-size:14px;color:var(--text2);line-height:1.6;max-width:420px;margin:0 auto}
+.input-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-xl);padding:14px;margin-bottom:8px;max-width:700px;margin-left:auto;margin-right:auto}
 .input-row{display:flex;gap:8px}
 .url-field{flex:1;padding:10px 14px;font-size:14px;font-family:var(--ff);border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;transition:border-color .1s}
 .url-field:focus{border-color:var(--text3)}
 .url-field::placeholder{color:var(--text3)}
-.go-btn{padding:10px 20px;font-size:14px;font-weight:500;font-family:var(--ff);border:none;background:var(--text);color:var(--bg);border-radius:var(--r);cursor:pointer;transition:opacity .1s;white-space:nowrap}
+.go-btn{padding:10px 20px;font-size:14px;font-weight:500;font-family:var(--ff);border:none;background:var(--text);color:var(--bg);border-radius:var(--r);cursor:pointer;white-space:nowrap}
 .go-btn:hover{opacity:.85}.go-btn:disabled{opacity:.4;cursor:not-allowed}
-.input-hints{display:flex;gap:10px;padding:0 2px;margin-top:10px}
+.hints{display:flex;gap:10px;padding:0 2px;margin-top:10px}
 .hint{font-size:12px;color:var(--text3)}.hint::before{content:"· "}
 .ep-picker{display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
 .ep-picker.on{display:block}
-.ep-picker-lbl{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.07em}
+.ep-lbl{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.07em}
 .ep-list{display:flex;flex-direction:column;gap:4px}
-.ep-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .1s;background:var(--bg)}
+.ep-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .1s}
 .ep-row:hover{border-color:var(--border2);background:var(--bg3)}
-.ep-row-title{font-size:13px;font-weight:500;flex:1;line-height:1.3;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.ep-row-title{font-size:13px;font-weight:500;flex:1;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .ep-row-meta{font-size:11px;color:var(--text3);white-space:nowrap}
-.ep-row-btn{font-size:12px;padding:4px 10px;border:1px solid var(--border2);border-radius:6px;background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:var(--ff)}
-.atabs{display:none;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.ep-row-btn{font-size:12px;padding:4px 10px;border:1px solid var(--border2);border-radius:6px;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff)}
+
+/* Side-by-side layout when YouTube embed is present */
+.analyze-sidebyside{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start;margin-top:20px}
+.analyze-player{position:sticky;top:108px}
+.analyze-results-col{min-width:0}
+@media(max-width:960px){.analyze-sidebyside{grid-template-columns:1fr}.analyze-player{position:static}}
+
+.atabs{display:none;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;max-width:700px}
 .atabs.on{display:flex}
-.atab{padding:10px 16px;font-size:13px;font-family:var(--ff);border:none;background:transparent;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s;font-weight:400}
+.atab{padding:10px 16px;font-size:13px;font-family:var(--ff);border:none;background:transparent;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .1s}
 .atab.on{color:var(--text);border-bottom-color:var(--text);font-weight:500}
 .apanel{display:none}.apanel.on{display:block}
-.empty-state{text-align:center;padding:52px 20px}
-.empty-state h3{font-family:var(--ffs);font-size:22px;font-weight:400;margin-bottom:8px}
-.empty-state p{font-size:14px;color:var(--text2)}
-.loading-state{display:none;text-align:center;padding:52px 20px}.loading-state.on{display:block}
+.loading-state{display:none;text-align:center;padding:52px 20px;max-width:700px}.loading-state.on{display:block}
 .spinner{width:26px;height:26px;border:2px solid var(--border2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
 .ld-title{font-size:15px;font-weight:500;margin-bottom:5px}.ld-msg{font-size:13px;color:var(--text2)}
+.empty-state{text-align:center;padding:52px 20px;max-width:700px}
+.empty-state h3{font-family:var(--ffs);font-size:22px;font-weight:400;margin-bottom:8px;font-style:italic}
+.empty-state p{font-size:14px;color:var(--text2)}
 
-/* result card */
-.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:14px;animation:fadeUp .3s ease}
+/* audio lean bar in results */
+.audio-lean-wrap{padding:14px 18px;border-bottom:1px solid var(--border)}
+.audio-lean-track{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;margin:10px 0 6px}
+.al-left{background:var(--left-bar);border-radius:5px 0 0 5px;transition:width .6s ease}
+.al-center{background:var(--center-bar);transition:width .6s ease}
+.al-right{background:var(--right-bar);border-radius:0 5px 5px 0;transition:width .6s ease}
+.audio-lean-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
+.audio-lean-counts{display:flex;gap:14px;margin-top:6px}
+.alc{font-size:12px;display:flex;align-items:center;gap:5px;font-weight:500}
+.alcd{width:8px;height:8px;border-radius:50%}
+.audio-lean-basis{font-size:11px;color:var(--text3);font-style:italic;margin-top:6px;line-height:1.5;padding:8px 10px;background:var(--bg3);border-radius:var(--r)}
+
+/* Result card */
+.rcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:14px;animation:fadeUp .3s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.rc-head{padding:16px 18px;border-bottom:1px solid var(--border)}
-.rc-title{font-size:15px;font-weight:500;margin-bottom:3px;letter-spacing:-0.01em}
-.rc-sub{font-size:12px;color:var(--text3)}
-.rc-badges{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.rcard-head{padding:16px 18px;border-bottom:1px solid var(--border)}
+.rcard-title{font-size:16px;font-weight:500;margin-bottom:3px;letter-spacing:-0.01em}
+.rcard-sub{font-size:12px;color:var(--text3)}
+.badges{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .bpill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid}
 .bp-left{background:var(--left-bg);color:var(--left);border-color:rgba(29,78,216,.2)}
 .bp-lean-left{background:var(--left-bg);color:var(--left);border-color:rgba(29,78,216,.15)}
@@ -225,17 +251,55 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .bp-mixed{background:var(--amber-bg);color:var(--amber);border-color:rgba(146,64,14,.2)}
 .bp-unreliable{background:var(--right-bg);color:var(--right);border-color:rgba(185,28,28,.2)}
 .dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0;background:currentColor}
+
+/* Summary */
+.r-summary{padding:14px 18px;border-bottom:1px solid var(--border);font-size:14px;color:var(--text2);line-height:1.65;font-style:italic}
+
+/* Scores */
 .score-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
 .score-cell{background:var(--bg2);padding:14px 16px;text-align:center}
 .score-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px}
 .score-val{font-size:24px;font-weight:600;letter-spacing:-0.02em}
 .score-hint{font-size:11px;color:var(--text3);margin-top:2px}
-.spectrum-wrap{padding:14px 18px;border-top:1px solid var(--border)}
+
+/* Spectrum */
+.spectrum-wrap{padding:14px 18px;border-bottom:1px solid var(--border)}
 .spec-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;font-weight:600}
 .spec-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--left-bar),var(--center-bar),var(--right-bar));position:relative;margin-bottom:8px}
 .spec-thumb{position:absolute;top:-5px;width:16px;height:16px;border-radius:50%;background:var(--bg2);border:2px solid var(--text);transform:translateX(-50%);transition:left .6s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .spec-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
-.flags-section{border-top:1px solid var(--border)}
+
+/* Topic breakdown */
+.topics-wrap{padding:14px 18px;border-bottom:1px solid var(--border)}
+.topic-bars{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.topic-bar-row{display:flex;align-items:center;gap:10px}
+.topic-bar-label{font-size:12px;color:var(--text2);width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topic-bar-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.topic-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.topic-bar-pct{font-size:11px;color:var(--text3);width:30px;text-align:right;flex-shrink:0}
+
+/* Key quotes */
+.quotes-wrap{padding:14px 18px;border-bottom:1px solid var(--border)}
+.quote-item{margin-top:10px;padding:10px 12px;border-radius:var(--r);border-left:3px solid var(--border2)}
+.quote-item.concern-high{border-left-color:var(--right);background:var(--right-bg)}
+.quote-item.concern-medium{border-left-color:var(--amber);background:var(--amber-bg)}
+.quote-item.concern-low{border-left-color:var(--center);background:var(--center-bg)}
+.quote-text{font-size:13px;font-style:italic;color:var(--text);line-height:1.5;margin-bottom:4px}
+.quote-note{font-size:11px;color:var(--text3)}
+
+/* Host trust */
+.trust-wrap{padding:14px 18px;border-bottom:1px solid var(--border)}
+.trust-meter{display:flex;align-items:center;gap:12px;margin-top:8px}
+.trust-track{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.trust-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.trust-score{font-size:20px;font-weight:600;min-width:32px}
+
+/* Missing voices */
+.missing-wrap{padding:14px 18px;border-bottom:1px solid var(--border)}
+.missing-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.missing-tag{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+
+/* Flags */
 .flags-head{padding:12px 18px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:600}
 .flag-item{display:flex;gap:10px;padding:11px 18px;border-top:1px solid var(--border)}
 .ftag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px}
@@ -246,19 +310,20 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .ft-context{background:var(--center-bg);color:var(--center)}
 .flag-title{font-size:13px;font-weight:500;margin-bottom:2px;line-height:1.35}
 .flag-detail{font-size:12px;color:var(--text2);line-height:1.5}
-.rc-foot{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
+.rcard-foot{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
 .ghost-btn{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:7px 14px;border-radius:var(--r);font-size:13px;font-family:var(--ff);cursor:pointer;transition:background .1s}
 .ghost-btn:hover{background:var(--bg3)}
 .err-card{background:var(--right-bg);border:1px solid rgba(185,28,28,.2);border-radius:var(--r-lg);padding:14px 16px;color:var(--right);font-size:13px;margin-bottom:14px}
+.section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
 
-/* tooltip */
+/* Tip */
 .tip-wrap{position:relative;display:inline-flex}
-.tip-box{position:absolute;bottom:calc(100%+8px);left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;width:210px;z-index:300;opacity:0;pointer-events:none;transition:opacity .12s;text-align:left;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tip-box{position:absolute;bottom:calc(100%+8px);left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;width:200px;z-index:300;opacity:0;pointer-events:none;transition:opacity .12s;text-align:left}
 .tip-box::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--text)}
 .tip-wrap:hover .tip-box{opacity:1}
 .info-btn{width:14px;height:14px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);font-size:9px;font-weight:600;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--ff)}
 
-/* ── MODALS ── */
+/* MODALS */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
 .overlay.on{display:flex;animation:oFade .15s ease}
 @keyframes oFade{from{opacity:0}to{opacity:1}}
@@ -267,14 +332,12 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
 .modal-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
 .modal-title{font-size:15px;font-weight:500}
-.modal-close{background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;font-family:var(--ff);line-height:1;padding:2px}
+.modal-close{background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;font-family:var(--ff)}
 .modal-body{font-size:14px;color:var(--text2);line-height:1.65}
 .modal-body h4{font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.06em}
 .modal-body p{margin-bottom:8px}
-
-/* upgrade modal */
 .umod{padding:24px 20px 36px}
-.umod-logo{font-family:var(--ffs);font-size:22px;text-align:center;margin-bottom:4px;font-weight:400}
+.umod-logo{font-family:var(--ffs);font-size:22px;text-align:center;margin-bottom:4px;font-weight:400;font-style:italic}
 .umod-tag{font-size:13px;color:var(--text2);text-align:center;margin-bottom:20px;line-height:1.5}
 .umod-feats{display:flex;flex-direction:column;gap:7px;margin-bottom:22px}
 .uf{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text2);line-height:1.45}
@@ -286,159 +349,188 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .po-price{font-size:22px;font-weight:600;letter-spacing:-0.02em}
 .po-period{font-size:11px;color:var(--text3)}
 .po-save{font-size:10px;color:var(--center);font-weight:600;margin-top:2px}
-.upgrade-cta{width:100%;padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:var(--r);font-size:15px;font-weight:500;cursor:pointer;font-family:var(--ff);letter-spacing:-0.01em}
+.upgrade-cta{width:100%;padding:12px;background:var(--text);color:var(--bg);border:none;border-radius:var(--r);font-size:15px;font-weight:500;cursor:pointer;font-family:var(--ff)}
 .upgrade-cta:hover{opacity:.88}
 .upgrade-note{font-size:11px;color:var(--text3);text-align:center;margin-top:10px;line-height:1.5}
 
+@media(max-width:900px){
+  .mkt-layout{grid-template-columns:1fr}
+  .mkt-sidebar{display:none}
+  .mkt-right{display:none}
+}
 footer{border-top:1px solid var(--border);padding:16px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 footer p{font-size:11px;color:var(--text3)}
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
-<nav class="top-nav">
+<nav class="nav">
   <button class="logo" onclick="switchView('marketplace')">Clearcast</button>
-  <div class="top-links">
-    <button class="tl on" id="tl-marketplace" onclick="switchView('marketplace')">Home</button>
-    <button class="tl" id="tl-analyze" onclick="switchView('analyze')">Analyze</button>
+  <div class="nav-links">
+    <button class="nl on" id="nl-marketplace" onclick="switchView('marketplace')">Home</button>
+    <button class="nl" id="nl-analyze" onclick="switchView('analyze')">Analyze</button>
   </div>
-  <div class="top-right">
+  <div class="nav-r">
+    <button class="lang-btn on" id="lang-en" onclick="setLang('en',this)">EN</button>
+    <button class="lang-btn" id="lang-ko" onclick="setLang('ko',this)">한국어</button>
     <button class="sub-btn" onclick="showUpgrade()">Get Pro</button>
   </div>
 </nav>
 
-<!-- TOPIC STRIP — Ground News signature element -->
 <div class="topic-strip" id="topic-strip">
-  <span class="topic-strip-label">Trending</span>
-  <button class="topic-chip on" id="tc-all" onclick="setTopic('all',this)">All topics</button>
+  <span class="strip-lbl">Trending</span>
 </div>
 
-<!-- ════════════ MARKETPLACE VIEW ════════════ -->
+<!-- ═══════ MARKETPLACE ═══════ -->
 <div class="view on" id="view-marketplace">
   <div class="mkt-layout">
 
-    <!-- SIDEBAR -->
+    <!-- LEFT SIDEBAR -->
     <div class="mkt-sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-label">Discover</div>
-        <button class="sidebar-item on" onclick="switchFeedTab('stories',this)">Stories by topic</button>
-        <button class="sidebar-item" onclick="switchFeedTab('browse',this)">Browse shows</button>
-        <button class="sidebar-item" onclick="switchFeedTab('blindspot',this)">
-          Blindspot <span class="pro-tab-tag">Pro</span>
-        </button>
+      <div class="sb-section">
+        <div class="sb-lbl">Discover</div>
+        <button class="sb-item on" onclick="switchFeed('stories',this)">Stories by topic</button>
+        <button class="sb-item" onclick="switchFeed('browse',this)">Browse shows</button>
+        <button class="sb-item" onclick="switchFeed('unheard',this)">Unheard <span class="sb-pro">Pro</span></button>
       </div>
-      <div class="sidebar-section">
-        <div class="sidebar-label">Categories</div>
-        <button class="sidebar-item" onclick="setCategory('news')"><span class="sidebar-dot" style="background:var(--right)"></span>News & Politics</button>
-        <button class="sidebar-item" onclick="setCategory('technology')"><span class="sidebar-dot" style="background:var(--left)"></span>Technology</button>
-        <button class="sidebar-item" onclick="setCategory('business')"><span class="sidebar-dot" style="background:var(--center)"></span>Business</button>
-        <button class="sidebar-item" onclick="setCategory('society')"><span class="sidebar-dot" style="background:#8b5cf6"></span>Society & Culture</button>
-        <button class="sidebar-item" onclick="setCategory('true-crime')"><span class="sidebar-dot" style="background:#6b7280"></span>True Crime</button>
-        <button class="sidebar-item" onclick="setCategory('comedy')"><span class="sidebar-dot" style="background:#f59e0b"></span>Comedy</button>
-        <button class="sidebar-item" onclick="setCategory('education')"><span class="sidebar-dot" style="background:#06b6d4"></span>Education</button>
-        <button class="sidebar-item" onclick="setCategory('health')"><span class="sidebar-dot" style="background:#ec4899"></span>Health</button>
-        <button class="sidebar-item" onclick="setCategory('sports')"><span class="sidebar-dot" style="background:#84cc16"></span>Sports</button>
+      <div class="sb-section">
+        <div class="sb-lbl">Categories</div>
+        <button class="sb-item" onclick="setCat('news')"><span class="sb-dot" style="background:var(--right)"></span>News & Politics</button>
+        <button class="sb-item" onclick="setCat('technology')"><span class="sb-dot" style="background:var(--left)"></span>Technology</button>
+        <button class="sb-item" onclick="setCat('business')"><span class="sb-dot" style="background:var(--center)"></span>Business</button>
+        <button class="sb-item" onclick="setCat('society')"><span class="sb-dot" style="background:#8b5cf6"></span>Society & Culture</button>
+        <button class="sb-item" onclick="setCat('true-crime')"><span class="sb-dot" style="background:#6b7280"></span>True Crime</button>
+        <button class="sb-item" onclick="setCat('comedy')"><span class="sb-dot" style="background:#f59e0b"></span>Comedy</button>
+        <button class="sb-item" onclick="setCat('education')"><span class="sb-dot" style="background:#06b6d4"></span>Education</button>
+        <button class="sb-item" onclick="setCat('health')"><span class="sb-dot" style="background:#ec4899"></span>Health</button>
+        <button class="sb-item" onclick="setCat('sports')"><span class="sb-dot" style="background:#84cc16"></span>Sports</button>
       </div>
     </div>
 
     <!-- MAIN FEED -->
     <div class="mkt-feed">
       <div class="feed-tabs">
-        <button class="ftab on" id="ftab-stories" onclick="switchFeedTab('stories',this)">For you</button>
-        <button class="ftab" id="ftab-browse" onclick="switchFeedTab('browse',this)">Top shows</button>
-        <button class="ftab" id="ftab-blindspot" onclick="switchFeedTab('blindspot',this)">Blindspot <span class="pro-tab-tag">Pro</span></button>
+        <button class="ft on" id="ft-stories" onclick="switchFeed('stories',this)">For you</button>
+        <button class="ft" id="ft-browse" onclick="switchFeed('browse',this)">Top shows</button>
+        <button class="ft" id="ft-unheard" onclick="switchFeed('unheard',this)">Unheard</button>
       </div>
 
-      <!-- STORIES FEED — main view -->
-      <div class="feed-panel on" id="fp-stories">
-        <div class="stories-search-bar">
-          <input type="text" class="s-input" id="story-input" placeholder="Search any topic — Iran war, Fed rates, AI regulation…"/>
-          <button class="search-btn" id="search-btn" onclick="doSearch()">Search</button>
+      <!-- STORIES FEED -->
+      <div class="fp on" id="fp-stories">
+        <div class="stories-search">
+          <input type="text" class="s-input" id="story-input" placeholder="Search any topic — AI regulation, Iran war, Fed rates…"/>
+          <button class="search-btn" onclick="doSearch()">Search</button>
         </div>
+        <div id="hero-story-wrap"></div>
         <div class="feed-loading" id="stories-loading" style="display:none"><div class="feed-spin"></div>Searching podcasts…</div>
-        <div class="story-cards" id="story-cards"></div>
-        <div class="feed-empty" id="stories-empty" style="display:none">No podcast episodes found for this topic. Try different keywords.</div>
+        <div class="story-list" id="story-list"></div>
+        <div id="stories-empty" style="display:none;padding:32px 20px;text-align:center;color:var(--text3);font-size:13px">No episodes found. Try different keywords.</div>
       </div>
 
-      <!-- BROWSE SHOWS -->
-      <div class="feed-panel" id="fp-browse">
-        <div class="feed-loading" id="browse-loading"><div class="feed-spin"></div>Loading top podcasts…</div>
-        <div class="show-grid" id="show-grid" style="display:none"></div>
-      </div>
-
-      <!-- BLINDSPOT -->
-      <div class="feed-panel" id="fp-blindspot">
-        <div class="bs-pro-gate" id="bs-gate">
-          <div class="bs-lock">&#128274;</div>
-          <div class="bs-gate-title">Blindspot — Pro feature</div>
-          <p class="bs-gate-desc">See which stories left-leaning podcasts are covering that right-leaning ones are ignoring — and vice versa. Updated weekly.</p>
-          <button class="bs-cta" onclick="showUpgrade()">Unlock with Pro — $5/mo</button>
+      <!-- BROWSE -->
+      <div class="fp" id="fp-browse">
+        <div class="browse-wrap">
+          <div class="cat-strip" id="cat-strip">
+            <button class="cat-chip on" onclick="loadBrowse('news',this)">News & Politics</button>
+            <button class="cat-chip" onclick="loadBrowse('technology',this)">Technology</button>
+            <button class="cat-chip" onclick="loadBrowse('business',this)">Business</button>
+            <button class="cat-chip" onclick="loadBrowse('society',this)">Society</button>
+            <button class="cat-chip" onclick="loadBrowse('true-crime',this)">True Crime</button>
+            <button class="cat-chip" onclick="loadBrowse('comedy',this)">Comedy</button>
+            <button class="cat-chip" onclick="loadBrowse('education',this)">Education</button>
+            <button class="cat-chip" onclick="loadBrowse('health',this)">Health</button>
+            <button class="cat-chip" onclick="loadBrowse('sports',this)">Sports</button>
+          </div>
+          <div class="feed-loading" id="browse-loading"><div class="feed-spin"></div>Loading top podcasts…</div>
+          <div class="show-grid" id="show-grid" style="display:none"></div>
         </div>
-        <div id="bs-content" style="display:none">
-          <div style="background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--r-xl);padding:16px 18px;margin-bottom:16px">
-            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--purple);margin-bottom:4px">Weekly report</div>
-            <div style="font-family:var(--ffs);font-size:18px;margin-bottom:4px;font-weight:400">This week's blindspot</div>
-            <div style="font-size:13px;color:var(--text2)" id="bs-date"></div>
+      </div>
+
+      <!-- UNHEARD -->
+      <div class="fp" id="fp-unheard">
+        <div style="padding:20px">
+          <div class="unheard-card">
+            <div class="unheard-eye">👁</div>
+            <div class="unheard-title">Unheard</div>
+            <div class="unheard-desc">Stories covered heavily by one side of the political spectrum that the other side is ignoring. Updated weekly from Clearcast analysis data.</div>
+            <button class="unheard-btn" onclick="showUpgrade()">Unlock with Pro — $5/mo</button>
           </div>
-          <div class="bs-grid">
-            <div class="bs-card"><div class="bs-card-lbl"><span style="width:8px;height:8px;border-radius:50%;background:var(--left-bar);display:inline-block"></span><span style="color:var(--left)">Left-leaning pods covering</span></div><div id="bs-left"></div></div>
-            <div class="bs-card"><div class="bs-card-lbl"><span style="width:8px;height:8px;border-radius:50%;background:var(--right-bar);display:inline-block"></span><span style="color:var(--right)">Right-leaning pods covering</span></div><div id="bs-right"></div></div>
-          </div>
-          <div class="bs-stats">
-            <div class="bs-stat"><div class="bs-num" id="bs-total">—</div><div class="bs-lbl">Episodes analyzed</div></div>
-            <div class="bs-stat"><div class="bs-num" id="bs-ln" style="color:var(--left)">—</div><div class="bs-lbl">Lean left</div></div>
-            <div class="bs-stat"><div class="bs-num" id="bs-rn" style="color:var(--right)">—</div><div class="bs-lbl">Lean right</div></div>
+          <div id="unheard-content" style="display:none">
+            <div class="unheard-side">
+              <div class="unheard-side-lbl"><span style="width:8px;height:8px;border-radius:50%;background:var(--left-bar);display:inline-block"></span><span style="color:var(--left);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em">Left-leaning shows covering</span></div>
+              <div id="unheard-left"></div>
+            </div>
+            <div class="unheard-side">
+              <div class="unheard-side-lbl"><span style="width:8px;height:8px;border-radius:50%;background:var(--right-bar);display:inline-block"></span><span style="color:var(--right);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em">Right-leaning shows covering</span></div>
+              <div id="unheard-right"></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- RIGHT PANEL -->
+    <div class="mkt-right">
+      <div class="rp-section">
+        <div class="rp-title">Top shows this week</div>
+        <div id="top-shows-list"><div class="feed-loading"><div class="feed-spin"></div></div></div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ════════════ ANALYZE VIEW ════════════ -->
+<!-- ═══════ ANALYZE ═══════ -->
 <div class="view" id="view-analyze">
-  <div class="analyze-wrap">
+  <div class="analyze-outer">
     <div class="analyze-hero">
       <h1>Know what you're<br><em>actually</em> listening to</h1>
-      <p>Paste any podcast URL or RSS feed. We surface bias, unverified claims, and missing perspectives.</p>
+      <p>Paste any podcast URL or RSS feed. We surface bias, unverified claims, host influence patterns, and missing perspectives.</p>
     </div>
+
     <div class="input-box">
       <div class="input-row">
-        <input type="text" class="url-field" id="url-input" placeholder="Paste an episode URL, RSS feed, or show page…"/>
+        <input type="text" class="url-field" id="url-input" placeholder="Paste a YouTube URL, episode link, RSS feed, or direct MP3…"/>
         <button class="go-btn" id="go-btn" onclick="handleInput()">Analyze</button>
       </div>
-      <div class="input-hints">
+      <div class="hints">
+        <span class="hint">YouTube URLs</span>
         <span class="hint">Episode pages</span>
         <span class="hint">RSS feeds</span>
         <span class="hint">Direct MP3</span>
       </div>
       <div class="ep-picker" id="ep-picker">
-        <div class="ep-picker-lbl">Choose an episode</div>
+        <div class="ep-lbl">Choose an episode</div>
         <div class="ep-list" id="ep-list"></div>
       </div>
     </div>
+
     <div class="atabs" id="atabs">
       <button class="atab on" onclick="switchATab('results',this)">Analysis</button>
       <button class="atab" onclick="switchATab('live',this)">Live mode</button>
     </div>
+
     <div class="loading-state" id="loading">
       <div class="spinner"></div>
       <div class="ld-title" id="ld-title">Starting analysis…</div>
       <p class="ld-msg">Takes 2–5 minutes for a full episode</p>
     </div>
+
     <div class="apanel on" id="apanel-results">
       <div class="empty-state" id="empty-state">
         <h3>Paste a podcast URL above</h3>
-        <p>Supports episode pages, RSS feeds, and direct audio links</p>
+        <p>Supports YouTube, episode pages, RSS feeds, and direct audio links.<br>The analysis panel will appear alongside the player.</p>
       </div>
+      <!-- Side-by-side container — populated by renderResults() -->
       <div id="results"></div>
     </div>
+
     <div class="apanel" id="apanel-live">
-      <div class="result-card">
-        <div class="rc-head"><div class="rc-title">Live mode — coming soon</div><div class="rc-sub">Real-time bias markers as you listen, via browser extension.</div></div>
-        <div class="rc-foot"><button class="ghost-btn">Join waitlist</button></div>
+      <div class="rcard" style="max-width:700px">
+        <div class="rcard-head"><div class="rcard-title">Live mode — coming soon</div><div class="rcard-sub">Real-time bias markers as you listen, via browser extension. Works on Spotify, Apple Podcasts, and YouTube.</div></div>
+        <div style="padding:14px 18px;font-size:13px;color:var(--text2);line-height:1.65">
+          The extension overlays the Clearcast analysis panel directly on the podcast page you're already using. No redirect, no tab switching. Bias markers appear at the exact timestamp they occur.
+        </div>
+        <div class="rcard-foot"><button class="ghost-btn">Join waitlist</button></div>
       </div>
     </div>
   </div>
@@ -464,277 +556,359 @@ footer p{font-size:11px;color:var(--text3)}
     <div class="umod-logo">Clearcast Pro</div>
     <div class="umod-tag">The full media literacy layer for audio.<br>No ads. No conflicts of interest. Ever.</div>
     <div class="umod-feats">
-      <div class="uf"><div class="uf-ic">&#10003;</div>Unlimited episode analysis</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Full bias scores & factuality ratings</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Stories by topic — cross-show coverage</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Weekly Blindspot report</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Personal listening bias profile</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Priority analysis queue</div>
+      <div class="uf"><div class="uf-ic">✓</div>Unlimited episode analysis</div>
+      <div class="uf"><div class="uf-ic">✓</div>Full bias scores, factuality & omission ratings</div>
+      <div class="uf"><div class="uf-ic">✓</div>Host trust & influence score</div>
+      <div class="uf"><div class="uf-ic">✓</div>Topic time breakdown & key quotes</div>
+      <div class="uf"><div class="uf-ic">✓</div>Missing voices & sponsor conflict detection</div>
+      <div class="uf"><div class="uf-ic">✓</div>Weekly Unheard report</div>
+      <div class="uf"><div class="uf-ic">✓</div>Personal audio bias fingerprint</div>
     </div>
     <div class="price-grid">
       <div class="price-opt" onclick="selPlan(this)"><div class="po-name">Monthly</div><div class="po-price">$5</div><div class="po-period">per month</div></div>
       <div class="price-opt sel" onclick="selPlan(this)"><div class="po-name">Annual</div><div class="po-price">$40</div><div class="po-period">per year</div><div class="po-save">Save 33%</div></div>
     </div>
-    <button class="upgrade-cta" onclick="alert('Stripe integration coming soon!');document.getElementById('upgrade-modal').classList.remove('on')">Start free 7-day trial</button>
+    <button class="upgrade-cta" onclick="alert('Stripe coming soon — thank you!');document.getElementById('upgrade-modal').classList.remove('on')">Start free 7-day trial</button>
     <div class="upgrade-note">Cancel anytime · No ads ever · Independent analysis only</div>
   </div>
 </div>
 
 <footer>
-  <p>Clearcast — AI analysis grounded in publicly available fact-checking sources.</p>
+  <p>Clearcast — AI analysis grounded in publicly available fact-checking sources. Not a substitute for critical thinking.</p>
   <p>clearcast-app.netlify.app</p>
 </footer>
 
 <script>
-// ── TOOLTIPS ──
-const TIPS={
-  bias:"<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p><h4>Scale</h4><p>-100 to -60 Far left · -59 to -20 Lean left · -19 to +19 Center · +20 to +59 Lean right · +60 to +100 Far right</p>",
-  factuality:"<p>How well claims hold up against publicly verifiable information.</p><h4>Ratings</h4><p><strong>Mostly factual</strong> — Generally accurate.<br><strong>Mixed factuality</strong> — Some claims overstated.<br><strong>Unreliable</strong> — Significant false claims detected.</p>",
-  omission:"<p>How much important context or opposing perspectives appear to be missing.</p><h4>Levels</h4><p><strong>Low</strong> · Multiple perspectives present<br><strong>Med</strong> · Some perspectives absent<br><strong>High</strong> · Significant viewpoints missing</p>"
+// ── LANGUAGE ──
+let _lang = 'en';
+const TOPICS_EN = ['Israel-Gaza','Iran war','Fed rates','AI regulation','Trump tariffs','Ukraine','Climate change','Supreme Court','Immigration','Economy'];
+const TOPICS_KO = ['이스라엘-가자','이란 전쟁','금리 정책','AI 규제','트럼프 관세','우크라이나','기후변화','대법원','이민 정책','경제'];
+
+function setLang(lang, el) {
+  _lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  buildTopicStrip();
+  if (_currentFeed === 'stories') doTopicSearch(_currentTopic || 'top podcast news');
+}
+
+// ── TIPS ──
+const TIPS = {
+  bias:"<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p><h4>Scale</h4><p>-100 to -60 Far left · -59 to -20 Lean left<br>-19 to +19 Center · +20 to +59 Lean right<br>+60 to +100 Far right</p>",
+  factuality:"<p>How well claims hold up against publicly verifiable information.</p><h4>Ratings</h4><p><strong>Mostly factual</strong> — Generally accurate.<br><strong>Mixed</strong> — Some claims overstated.<br><strong>Unreliable</strong> — Significant false claims.</p>",
+  omission:"<p>How much important context or opposing perspectives appear missing.</p><h4>Levels</h4><p><strong>Low</strong> — Multiple perspectives present.<br><strong>Med</strong> — Some absent.<br><strong>High</strong> — Significant viewpoints missing.</p>",
+  trust:"<p>How strongly the host uses language that builds personal trust rather than presenting facts neutrally.</p><h4>Examples</h4><p>'Trust me', 'everyone knows', 'I've been saying this for years', 'my listeners know'</p><p>High scores mean the host relies heavily on parasocial relationship to convey credibility.</p>"
 };
-const isMob=()=>window.matchMedia('(hover:none)').matches;
-function tipBtn(k){
-  if(isMob())return '<button class="info-btn" onclick="showTip(\''+k+'\')">?</button>';
+const isMob = () => window.matchMedia('(hover:none)').matches;
+function tipBtn(k) {
+  if (isMob()) return '<button class="info-btn" onclick="showTip(\''+k+'\')">?</button>';
   return '<span class="tip-wrap"><button class="info-btn">?</button><div class="tip-box">'+TIPS[k]+'</div></span>';
 }
-function showTip(k){document.getElementById('modal-title').textContent={bias:'Bias score',factuality:'Factuality',omission:'Omission risk'}[k]||k;document.getElementById('modal-body').innerHTML=TIPS[k];document.getElementById('info-modal').classList.add('on');}
+function showTip(k) {
+  document.getElementById('modal-title').textContent={bias:'Bias score',factuality:'Factuality',omission:'Omission risk',trust:'Host trust score'}[k]||k;
+  document.getElementById('modal-body').innerHTML=TIPS[k];
+  document.getElementById('info-modal').classList.add('on');
+}
 
 // ── VIEWS ──
-function switchView(n){
+function switchView(n) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.getElementById('view-'+n).classList.add('on');
-  document.querySelectorAll('.tl').forEach(t=>t.classList.remove('on'));
-  const tl=document.getElementById('tl-'+n);
-  if(tl)tl.classList.add('on');
-  if(n==='marketplace')initMkt();
+  document.querySelectorAll('.nl').forEach(t=>t.classList.remove('on'));
+  document.getElementById('nl-'+n).classList.add('on');
+  if (n==='marketplace') initMkt();
+}
+
+function switchATab(n,el) {
+  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.apanel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('apanel-'+n).classList.add('on');
 }
 
 // ── MARKETPLACE ──
-let _mktInit=false,_currentCategory='all';
+let _mktInit=false, _currentFeed='stories', _currentTopic='', _currentCat='news';
 
-function initMkt(){
-  if(_mktInit)return;
-  _mktInit=true;
-  loadTrendingTopics();
-  // Default: show trending "all topics" stories
-  doTopicSearch('all');
+function initMkt() {
+  if (_mktInit) return;
+  _mktInit = true;
+  buildTopicStrip();
+  doTopicSearch('top podcast news today');
+  loadTopShows();
 }
 
-const TRENDING=[
-  {id:'iran-war',label:'Iran war'},
-  {id:'fed-rates',label:'Fed rates'},
-  {id:'ai-regulation',label:'AI regulation'},
-  {id:'ukraine-russia',label:'Ukraine Russia'},
-  {id:'trump-tariffs',label:'Trump tariffs'},
-  {id:'climate',label:'Climate change'},
-  {id:'supreme-court',label:'Supreme Court'},
-  {id:'immigration',label:'Immigration'},
-  {id:'gaza',label:'Gaza ceasefire'},
-  {id:'economy',label:'Economy'},
-];
-
-function loadTrendingTopics(){
-  const strip=document.getElementById('topic-strip');
-  TRENDING.forEach(t=>{
-    const btn=document.createElement('button');
-    btn.className='topic-chip';
-    btn.id='tc-'+t.id;
-    btn.textContent=t.label;
-    btn.onclick=()=>setTopic(t.id,btn,t.label);
+function buildTopicStrip() {
+  const topics = _lang === 'ko' ? TOPICS_KO : TOPICS_EN;
+  const strip = document.getElementById('topic-strip');
+  strip.innerHTML = '<span class="strip-lbl">' + (_lang==='ko'?'트렌딩':'Trending') + '</span>';
+  const all = document.createElement('button');
+  all.className = 'topic-chip on';
+  all.id = 'tc-all';
+  all.textContent = _lang==='ko'?'전체':'All topics';
+  all.onclick = () => setTopic('', all, _lang==='ko'?'top podcast news':'top podcast news today');
+  strip.appendChild(all);
+  topics.forEach((t,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'topic-chip';
+    btn.textContent = t;
+    btn.onclick = () => setTopic(t, btn, t);
     strip.appendChild(btn);
   });
 }
 
-function setTopic(id,el,label){
+function setTopic(id, el, query) {
   document.querySelectorAll('.topic-chip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
-  _currentCategory=id;
-  // Switch to stories panel
-  switchFeedTabById('stories');
-  if(id==='all') doTopicSearch('top podcast news today');
-  else doTopicSearch(label||id);
+  _currentTopic = query;
+  switchFeed('stories', null);
+  doTopicSearch(query);
 }
 
-function setCategory(cat){
-  _currentCategory=cat;
-  switchFeedTabById('browse');
+function setCat(cat) {
+  _currentCat = cat;
+  switchFeed('browse', null);
   loadBrowse(cat);
-  // Also update sidebar active state
-  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('on'));
 }
 
-function switchFeedTab(name,el){
-  // el can be sidebar item or feed tab button
-  switchFeedTabById(name);
-  // Update sidebar
-  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('on'));
-  if(el&&el.classList.contains('sidebar-item'))el.classList.add('on');
-}
-
-function switchFeedTabById(name){
-  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));
-  const ft=document.getElementById('ftab-'+name);
-  if(ft)ft.classList.add('on');
-  document.querySelectorAll('.feed-panel').forEach(p=>p.classList.remove('on'));
+function switchFeed(name, el) {
+  _currentFeed = name;
+  document.querySelectorAll('.ft').forEach(t=>t.classList.remove('on'));
+  const ft = document.getElementById('ft-'+name);
+  if (ft) ft.classList.add('on');
+  document.querySelectorAll('.fp').forEach(p=>p.classList.remove('on'));
   document.getElementById('fp-'+name).classList.add('on');
-  if(name==='browse'&&!document.getElementById('show-grid').children.length)loadBrowse('news');
-  if(name==='blindspot')loadBlindspot();
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('on'));
+  if (el&&el.classList.contains('sb-item')) el.classList.add('on');
+  if (name==='browse' && !document.getElementById('show-grid').children.length) loadBrowse(_currentCat);
+  if (name==='unheard') loadUnheard();
+}
+
+// ── YOUTUBE EMBED ──
+function getYouTubeId(url) {
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function makeYTEmbed(videoId) {
+  return '<div class="yt-embed-wrap"><iframe src="https://www.youtube.com/embed/'+videoId+'?rel=0&modestbranding=1" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>';
+}
+
+// ── COVERAGE BAR — real data only ──
+// ep.audioLean comes from actual Claude analysis stored in Netlify Blobs
+// If not analyzed yet, show "Analyze to see bias" CTA instead of fake numbers
+function makeAnalyzeCta(ep, dark) {
+  var al = ep.audioLean;
+  if (al && typeof al.leftPct !== 'undefined') {
+    var lp = al.leftPct, cp = al.centerPct, rp = al.rightPct;
+    var bar = '<div class="story-cov"><div class="scl" style="width:'+lp+'%"></div><div class="scc" style="width:'+cp+'%"></div>'+(rp?'<div class="scr" style="width:'+rp+'%"></div>':'')+'</div>';
+    var counts = '<div class="story-counts">'
+      +(lp?'<span class="sc"><span class="scd" style="background:var(--left-bar)"></span>'+lp+'% left</span>':'')
+      +(cp?'<span class="sc"><span class="scd" style="background:var(--center-bar)"></span>'+cp+'% center</span>':'')
+      +(rp?'<span class="sc"><span class="scd" style="background:var(--right-bar)"></span>'+rp+'% right</span>':'')
+      +'<span style="font-size:9px;opacity:.5;margin-left:4px">· verified</span></div>';
+    if (al.basis) counts += '<div style="font-size:10px;color:'+(dark?'rgba(255,255,255,.5)':'var(--text3)')+'margin-top:2px">' + al.basis + '</div>';
+    return bar + counts;
+  }
+  // No analysis yet — show honest CTA
+  var style = dark
+    ? 'font-size:11px;color:rgba(255,255,255,.65);padding:4px 0;'
+    : 'font-size:11px;color:var(--text3);padding:4px 0;';
+  return '<div style="'+style+'">Bias data not yet available · <span style="text-decoration:underline;cursor:pointer" onclick="event.stopPropagation();'+(ep.feedUrl?'analyzeShow(\\''+ep.feedUrl.replace(/'/g,"\\'")+'\\')':'void(0)')+'">Analyze this show ↗</span></div>';
 }
 
 // ── STORIES ──
-function doSearch(){
-  const q=document.getElementById('story-input').value.trim();
-  if(!q)return;
+function doSearch() {
+  const q = document.getElementById('story-input').value.trim();
+  if (!q) return;
   doTopicSearch(q);
 }
 
-async function doTopicSearch(query){
-  const loading=document.getElementById('stories-loading');
-  const cards=document.getElementById('story-cards');
-  const empty=document.getElementById('stories-empty');
-  loading.style.display='flex';cards.innerHTML='';empty.style.display='none';
+async function doTopicSearch(query) {
+  const loading = document.getElementById('stories-loading');
+  const list = document.getElementById('story-list');
+  const empty = document.getElementById('stories-empty');
+  const hero = document.getElementById('hero-story-wrap');
+  loading.style.display='flex'; list.innerHTML=''; empty.style.display='none'; hero.innerHTML='';
 
-  try{
-    const data=await fetch('/api/stories?q='+encodeURIComponent(query)).then(r=>r.json());
+  try {
+    const data = await fetch('/api/stories?q='+encodeURIComponent(query)).then(r=>r.json());
     loading.style.display='none';
-    if(!data.results?.length){empty.style.display='block';return;}
+    if (!data.results?.length) { empty.style.display='block'; return; }
 
-    // Group by topic: simulate coverage from multiple angles
-    // Each result becomes a story card with a simulated coverage bar
-    cards.innerHTML=data.results.map(function(ep,i){
-      const art=ep.artwork
-        ?'<img class="story-card-art" src="'+ep.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'">'+'<div class="story-card-art-ph" style="display:none">&#127911;</div>'
-        :'<div class="story-card-art-ph">&#127911;</div>';
+    // First result becomes hero
+    const first = data.results[0];
+    const heroYtId = first.youtubeUrl ? getYouTubeId(first.youtubeUrl) : null;
 
-      // Simulated coverage distribution based on position in results
-      // In production this would come from actual bias analysis data
-      const leftN=Math.floor(Math.random()*4)+1;
-      const centerN=Math.floor(Math.random()*3)+1;
-      const rightN=Math.floor(Math.random()*3);
-      const total=leftN+centerN+rightN;
-      const lPct=Math.round(leftN/total*100);
-      const cPct=Math.round(centerN/total*100);
-      const rPct=100-lPct-cPct;
+    if (heroYtId) {
+      hero.innerHTML = '<div style="padding:0">' + makeYTEmbed(heroYtId) +
+        '<div style="padding:12px 16px 0">' +
+        '<div class="story-show">'+first.showName+'</div>' +
+        '<div style="font-family:var(--ffs);font-size:18px;font-weight:400;margin-bottom:8px;line-height:1.3">'+first.epTitle+'</div>' +
+        makeAnalyzeCta(first, false) +
+        '<div style="display:flex;gap:6px;margin-top:10px;margin-bottom:16px">' +
+        (first.appleUrl?'<a class="plt ap" href="'+first.appleUrl+'" target="_blank" rel="noopener">Apple Podcasts</a>':'')+
+        (first.spotifyUrl?'<a class="plt sp" href="'+first.spotifyUrl+'" target="_blank" rel="noopener">Spotify</a>':'')+
+        (first.feedUrl?'<button class="plt az" onclick="analyzeShow(\''+first.feedUrl.replace(/\'/g,"\\'")+'\')">Analyze</button>':'')+
+        '</div></div></div>';
+    } else if (first.artwork) {
+      hero.innerHTML = '<div class="hero-story">' +
+        '<img src="'+first.artwork+'" alt="" onerror="this.parentElement.style.display=\'none\'">' +
+        '<div class="hero-story-grad"></div>' +
+        '<div class="hero-story-body">' +
+        '<div class="hero-story-show">'+first.showName+'</div>' +
+        '<div class="hero-story-title">'+first.epTitle+'</div>' +
+        makeAnalyzeCta(first, true) +
+        '<div class="hero-plts">' +
+        (first.youtubeUrl?'<a class="hero-plt" href="'+first.youtubeUrl+'" target="_blank" rel="noopener">YouTube</a>':'')+
+        (first.spotifyUrl?'<a class="hero-plt" href="'+first.spotifyUrl+'" target="_blank" rel="noopener">Spotify</a>':'')+
+        (first.feedUrl?'<button class="hero-plt" onclick="analyzeShow(\''+first.feedUrl.replace(/\'/g,"\\'")+'\')">Analyze</button>':'')+
+        '</div></div></div>';
+    }
 
-      const meta=[ep.releaseDate,ep.duration].filter(Boolean).join(' · ');
-      const azBtn=ep.feedUrl?'<button class="plt-btn az" onclick="analyzeShow(\''+ep.feedUrl.replace(/'/g,"\\'")+'\')" >Analyze ↗</button>':'';
-
-      return '<div class="story-card">'+art+
-        '<div class="story-card-body">'+
-        '<div class="story-card-show">'+ep.showName+'</div>'+
-        '<div class="story-card-title">'+ep.epTitle+'</div>'+
-        (ep.description?'<div class="story-card-desc">'+ep.description+'</div>':'')+
-        '<div class="coverage-wrap">'+
-        '<div class="coverage-bar-track">'+
-        '<div class="cov-seg-left" style="width:'+lPct+'%"></div>'+
-        '<div class="cov-seg-center" style="width:'+cPct+'%"></div>'+
-        (rPct?'<div class="cov-seg-right" style="width:'+rPct+'%"></div>':'')+
-        '</div>'+
-        '<div class="coverage-counts">'+
-        '<span class="cov-count"><span class="cov-dot" style="background:var(--left-bar)"></span><span class="cov-num">'+leftN+'</span><span class="cov-lbl">left</span></span>'+
-        '<span class="cov-count"><span class="cov-dot" style="background:var(--center-bar)"></span><span class="cov-num">'+centerN+'</span><span class="cov-lbl">center</span></span>'+
-        (rightN?'<span class="cov-count"><span class="cov-dot" style="background:var(--right-bar)"></span><span class="cov-num">'+rightN+'</span><span class="cov-lbl">right</span></span>':'')+
-        '</div></div>'+
-        (meta?'<div class="story-card-show" style="margin-bottom:8px">'+meta+'</div>':'')+
-        '<div class="story-card-platforms">'+
-        (ep.youtubeUrl?'<a class="plt-btn yt" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener">YouTube</a>':'')+
-        (ep.spotifyUrl?'<a class="plt-btn sp" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener">Spotify</a>':'')+
-        (ep.appleUrl?'<a class="plt-btn ap" href="'+ep.appleUrl+'" target="_blank" rel="noopener">Apple</a>':'')+
+    // Story rows - real audioLean data only, never fake numbers
+    list.innerHTML = data.results.slice(1).map(function(ep) {
+      const ytId = ep.youtubeUrl ? getYouTubeId(ep.youtubeUrl) : null;
+      const art = ep.artwork
+        ? '<img class="story-img" src="'+ep.artwork+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=story-img-ph>&#127897;</div>\'">'
+        : '<div class="story-img-ph">&#127897;</div>';
+      const azBtn = ep.feedUrl ? '<button class="plt az" onclick="event.stopPropagation();analyzeShow(\''+ep.feedUrl.replace(/\'/g,"\\'")+'\')">Analyze</button>' : '';
+      return '<div class="story-row" onclick="openStory(this)" data-yt="'+(ytId||'')+'" data-ep=\''+JSON.stringify({t:ep.epTitle,s:ep.showName,art:ep.artwork||'',yt:ep.youtubeUrl||'',sp:ep.spotifyUrl||'',ap:ep.appleUrl||'',feed:ep.feedUrl||''}).replace(/\'/g,"&#39;")+'\'>' +
+        '<div class="story-img-wrap">'+art+'</div>' +
+        '<div class="story-body">' +
+        '<div class="story-show">'+ep.showName+'</div>' +
+        '<div class="story-title">'+ep.epTitle+'</div>' +
+        makeAnalyzeCta(ep, false) +
+        (ep.releaseDate?'<div class="story-meta">'+ep.releaseDate+'</div>':'')+
+        '<div class="story-plts">'+
+        (ep.youtubeUrl?'<a class="plt yt" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">YouTube</a>':'')+
+        (ep.spotifyUrl?'<a class="plt sp" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>':'')+
+        (ep.appleUrl?'<a class="plt ap" href="'+ep.appleUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>':'')+
         azBtn+'</div></div></div>';
     }).join('');
-  }catch(e){loading.style.display='none';empty.textContent='Search failed. Please try again.';empty.style.display='block';}
+
+
+    } catch(e) { loading.style.display='none'; empty.textContent='Search failed. Please try again.'; empty.style.display='block'; }
+}
+
+function openStory(el) {
+  const ytId = el.dataset.yt;
+  if (ytId) {
+    // Replace story row with inline YouTube embed
+    const ep = JSON.parse(el.dataset.ep.replace(/&#39;/g,"'"));
+    el.innerHTML = '<div style="width:100%;padding:12px">' +
+      makeYTEmbed(ytId) +
+      '<div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:4px">'+ep.s+'</div>' +
+      '<div style="font-size:14px;font-weight:500;margin-bottom:8px">'+ep.t+'</div>' +
+      '<div style="display:flex;gap:5px">' +
+      (ep.sp?'<a class="plt sp" href="'+ep.sp+'" target="_blank" rel="noopener">Spotify</a>':'')+
+      (ep.ap?'<a class="plt ap" href="'+ep.ap+'" target="_blank" rel="noopener">Apple</a>':'')+
+      (ep.feed?'<button class="plt az" onclick="analyzeShow(\''+ep.feed.replace(/'/g,"\\'")+'\')" >Analyze ↗</button>':'')+
+      '</div></div>';
+    el.onclick = null;
+    el.style.cursor = 'default';
+  }
 }
 
 // ── BROWSE ──
-async function loadBrowse(genre){
-  const grid=document.getElementById('show-grid');
-  const loading=document.getElementById('browse-loading');
-  grid.style.display='none';loading.style.display='flex';grid.innerHTML='';
-  try{
-    const data=await fetch('/api/marketplace?genre='+genre).then(r=>r.json());
-    if(!data.podcasts?.length){loading.innerHTML='<p style="color:var(--text3)">Could not load. Try another category.</p>';return;}
-    grid.innerHTML=data.podcasts.map(function(p){
-      const art=p.artwork
-        ?'<img class="show-art" src="'+p.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+'<div class="show-art-ph" style="display:none">&#127911;</div>'
-        :'<div class="show-art-ph">&#127911;</div>';
-      const q=encodeURIComponent(p.name);
-      const azBtn=p.feedUrl?'<button class="plt-btn az" onclick="analyzeShow(\''+p.feedUrl.replace(/'/g,"\\'")+'\')" >Analyze ↗</button>':'';
+async function loadBrowse(genre) {
+  const grid = document.getElementById('show-grid');
+  const loading = document.getElementById('browse-loading');
+  grid.style.display='none'; loading.style.display='flex'; grid.innerHTML='';
+  const country = _lang === 'ko' ? 'kr' : 'us';
+  try {
+    const data = await fetch('/api/marketplace?genre='+genre+'&country='+country).then(r=>r.json());
+    if (!data.podcasts?.length) { loading.innerHTML='<p style="color:var(--text3)">Could not load. Try another category.</p>'; return; }
+    grid.innerHTML = data.podcasts.map(function(p) {
+      const art = p.artwork
+        ?'<img class="show-art" src="'+p.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+'<div class="show-art-ph" style="display:none">🎙</div>'
+        :'<div class="show-art-ph">🎙</div>';
+      const q = encodeURIComponent(p.name);
+      const azBtn = p.feedUrl?'<button class="plt az" onclick="analyzeShow(\''+p.feedUrl.replace(/'/g,"\\'")+'\')" >Analyze ↗</button>':'';
       return '<div class="show-card">'+
-        '<div class="show-top">'+art+'<div class="show-meta">'+
-        '<div class="show-name">'+p.name+'</div>'+
-        '<div class="show-author">'+p.artist+'</div></div></div>'+
+        '<div class="show-top">'+art+'<div><div class="show-name">'+p.name+'</div><div class="show-author">'+p.artist+'</div></div></div>'+
         '<div class="show-plts">'+
-        '<a class="plt-btn yt" href="https://www.youtube.com/results?search_query='+q+'+podcast" target="_blank" rel="noopener">YT</a>'+
-        '<a class="plt-btn sp" href="https://open.spotify.com/search/'+q+'/shows" target="_blank" rel="noopener">Spotify</a>'+
-        '<a class="plt-btn ap" href="'+(p.itunesUrl||'https://podcasts.apple.com/search?term='+q)+'" target="_blank" rel="noopener">Apple</a>'+
+        '<a class="plt yt" href="https://www.youtube.com/results?search_query='+q+'+podcast" target="_blank" rel="noopener">YT</a>'+
+        '<a class="plt sp" href="https://open.spotify.com/search/'+q+'/shows" target="_blank" rel="noopener">Spotify</a>'+
+        '<a class="plt ap" href="'+(p.itunesUrl||'https://podcasts.apple.com/search?term='+q)+'" target="_blank" rel="noopener">Apple</a>'+
         azBtn+'</div></div>';
     }).join('');
-    loading.style.display='none';grid.style.display='grid';
-  }catch(e){loading.innerHTML='<p style="color:var(--text3)">Failed to load.</p>';}
+    loading.style.display='none'; grid.style.display='grid';
+  } catch(e) { loading.innerHTML='<p style="color:var(--text3)">Failed to load.</p>'; }
 }
 
-// ── BLINDSPOT ──
-async function loadBlindspot(){
-  try{
-    const d=await fetch('/api/blindspot').then(r=>r.json());
-    document.getElementById('bs-gate').style.display='none';
-    document.getElementById('bs-content').style.display='block';
-    document.getElementById('bs-date').textContent='Updated '+d.lastUpdated;
-    document.getElementById('bs-total').textContent=d.totalAnalyzed;
-    document.getElementById('bs-ln').textContent=d.leftLeaning.count;
-    document.getElementById('bs-rn').textContent=d.rightLeaning.count;
-    document.getElementById('bs-left').innerHTML=(d.leftLeaning.topFlags.length?d.leftLeaning.topFlags.map(t=>'<div class="bs-item">'+t+'</div>').join(''):'<div class="bs-item" style="color:var(--text3)">Analyze more episodes to build this report</div>');
-    document.getElementById('bs-right').innerHTML=(d.rightLeaning.topFlags.length?d.rightLeaning.topFlags.map(t=>'<div class="bs-item">'+t+'</div>').join(''):'<div class="bs-item" style="color:var(--text3)">Analyze more episodes to build this report</div>');
-  }catch{}
+async function loadTopShows() {
+  try {
+    const data = await fetch('/api/marketplace?genre=news').then(r=>r.json());
+    const list = document.getElementById('top-shows-list');
+    if (!data.podcasts?.length) { list.innerHTML=''; return; }
+    list.innerHTML = data.podcasts.slice(0,6).map(function(p) {
+      const art = p.artwork
+        ?'<img class="ts-art" src="'+p.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+'<div class="ts-art-ph" style="display:none">🎙</div>'
+        :'<div class="ts-art-ph">🎙</div>';
+      const q = encodeURIComponent(p.name);
+      const azBtn = p.feedUrl?'<button class="plt az" style="font-size:10px;padding:2px 7px" onclick="analyzeShow(\''+p.feedUrl.replace(/'/g,"\\'")+'\')" >Analyze</button>':'';
+      return '<div class="top-show">'+art+'<div><div class="ts-name">'+p.name+'</div><div class="ts-author">'+p.artist+'</div>' +
+        '<div class="ts-plts"><a class="plt yt" href="https://www.youtube.com/results?search_query='+q+'+podcast" target="_blank" rel="noopener" style="font-size:10px;padding:2px 7px">YT</a>'+
+        '<a class="plt sp" href="https://open.spotify.com/search/'+q+'/shows" target="_blank" rel="noopener" style="font-size:10px;padding:2px 7px">Spotify</a>'+azBtn+'</div></div></div>';
+    }).join('');
+  } catch {}
+}
+
+async function loadUnheard() {
+  try {
+    const data = await fetch('/api/blindspot').then(r=>r.json());
+    document.querySelector('.unheard-card').style.display='none';
+    document.getElementById('unheard-content').style.display='block';
+    document.getElementById('unheard-left').innerHTML = (data.leftLeaning?.topFlags?.length
+      ? data.leftLeaning.topFlags.map(t=>'<div class="unheard-item">'+t+'</div>').join('')
+      : '<div class="unheard-item" style="color:var(--text3)">Analyze more episodes to build this report</div>');
+    document.getElementById('unheard-right').innerHTML = (data.rightLeaning?.topFlags?.length
+      ? data.rightLeaning.topFlags.map(t=>'<div class="unheard-item">'+t+'</div>').join('')
+      : '<div class="unheard-item" style="color:var(--text3)">Analyze more episodes to build this report</div>');
+  } catch {}
 }
 
 // ── ANALYZE ──
-function analyzeShow(feedUrl){switchView('analyze');document.getElementById('url-input').value=feedUrl;loadEpisodes(feedUrl);}
-function isSpecificEp(u){return u.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)||u.match(/\/episodes?\//i)||u.match(/\/e\/[a-z0-9-]+/i)||u.match(/[?&]episode=/i)||u.match(/\/\d{7,}/);}
+function analyzeShow(feedUrl) { switchView('analyze'); document.getElementById('url-input').value=feedUrl; loadEpisodes(feedUrl); }
+function isSpecificEp(u){ return u.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)||u.match(/\/episodes?\//i)||u.match(/\/e\/[a-z0-9-]+/i)||u.match(/[?&]episode=/i)||u.match(/\/\d{7,}/); }
 function isRss(u){
-  return u.match(/\.(xml|rss)(\?|$)/i) ||
-    u.match(/\/feed/i) ||
-    u.match(/feeds\./i) ||
-    u.match(/\/podcast\.xml/i) ||
-    u.match(/^https?:\/\/rss\d*\./i) ||
-    u.match(/\/rss$/i) ||
-    u.match(/[?&]format=rss/i) ||
-    u.match(/anchor\.fm\/.+\/podcast/i) ||
-    u.match(/buzzsprout\.com\/\d+\.rss/i) ||
-    u.match(/flightcast\.com/i) ||
-    u.match(/podbean\.com\/feed/i) ||
-    u.match(/simplecast\.com\/rss/i) ||
-    u.match(/megaphone\.fm\/channel/i);
+  return u.match(/\.(xml|rss)(\?|$)/i)||u.match(/\/feed/i)||u.match(/feeds\./i)||
+    u.match(/\/podcast\.xml/i)||u.match(/^https?:\/\/rss\d*\./i)||u.match(/\/rss$/i)||
+    u.match(/flightcast\.com/i)||u.match(/buzzsprout\.com\/\d+\.rss/i)||
+    u.match(/simplecast\.com\/rss/i)||u.match(/podbean\.com\/feed/i);
 }
-async function handleInput(){
-  let u=document.getElementById('url-input').value.trim();
-  if(!u){document.getElementById('url-input').focus();return;}
-  if(!u.startsWith('http'))u='https://'+u;
-  if(isSpecificEp(u))startAnalysis(u);
-  else if(isRss(u))await loadEpisodes(u);
+
+async function handleInput() {
+  let u = document.getElementById('url-input').value.trim();
+  if (!u) { document.getElementById('url-input').focus(); return; }
+  if (!u.startsWith('http')) u = 'https://'+u;
+  if (isSpecificEp(u)) startAnalysis(u);
+  else if (isRss(u)) await loadEpisodes(u);
   else startAnalysis(u);
 }
-let _eps=[];
-async function loadEpisodes(feedUrl){
-  const btn=document.getElementById('go-btn');btn.disabled=true;btn.textContent='Loading…';
-  try{
-    const d=await fetch('/api/episodes?url='+encodeURIComponent(feedUrl)).then(r=>r.json());
-    if(d.error||!d.episodes?.length){startAnalysis(feedUrl);return;}
-    _eps=d.episodes;
-    document.getElementById('ep-list').innerHTML=_eps.map(function(ep,i){
+
+let _eps = [];
+async function loadEpisodes(feedUrl) {
+  const btn = document.getElementById('go-btn'); btn.disabled=true; btn.textContent='Loading…';
+  try {
+    const d = await fetch('/api/episodes?url='+encodeURIComponent(feedUrl)).then(r=>r.json());
+    if (d.error||!d.episodes?.length) { startAnalysis(feedUrl); return; }
+    _eps = d.episodes;
+    document.getElementById('ep-list').innerHTML = _eps.map(function(ep,i) {
       return '<div class="ep-row" onclick="startAnalysis(_eps['+i+'].audioUrl)">'+
         '<div style="flex:1;min-width:0"><div class="ep-row-title">'+ep.title+'</div></div>'+
         '<div class="ep-row-meta">'+[ep.date,ep.duration].filter(Boolean).join(' · ')+'</div>'+
         '<button class="ep-row-btn">Analyze</button></div>';
     }).join('');
     document.getElementById('ep-picker').classList.add('on');
-  }catch(e){startAnalysis(feedUrl);}
-  finally{btn.disabled=false;btn.textContent='Analyze';}
+  } catch(e) { startAnalysis(feedUrl); }
+  finally { btn.disabled=false; btn.textContent='Analyze'; }
 }
-let _poll=null;
-function startAnalysis(audioUrl){
+
+let _poll = null;
+function startAnalysis(audioUrl) {
   document.getElementById('ep-picker').classList.remove('on');
-  const btn=document.getElementById('go-btn');btn.disabled=true;btn.textContent='Analyzing…';
+  const btn = document.getElementById('go-btn'); btn.disabled=true; btn.textContent='Analyzing…';
   document.getElementById('results').innerHTML='';
   document.getElementById('empty-state').style.display='none';
   document.getElementById('atabs').classList.remove('on');
@@ -744,29 +918,26 @@ function startAnalysis(audioUrl){
   fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl})})
     .then(r=>r.json()).then(async d=>{
       if(d.error){
-        // If audio not found, try treating URL as RSS feed and show episode picker
-        if(d.error.toLowerCase().includes('could not find audio')||d.error.toLowerCase().includes('audio')){
+        if(d.error.toLowerCase().includes('audio')){
           document.getElementById('loading').classList.remove('on');
-          document.getElementById('atabs').classList.remove('on');
           document.getElementById('apanel-results').classList.add('on');
           document.getElementById('empty-state').style.display='block';
-          resetBtn();
-          await loadEpisodes(audioUrl);
-          return;
+          resetBtn(); await loadEpisodes(audioUrl); return;
         }
-        showErr(d.error);resetBtn();return;
+        showErr(d.error); resetBtn(); return;
       }
       pollResults(d.jobId);
     })
     .catch(()=>{showErr('Network error — please try again');resetBtn();});
 }
-function pollResults(jobId){
-  const stages=['Transcribing audio…','Reading transcript…','Checking facts…','Detecting framing…','Building report…'];
-  let si=0;if(_poll)clearInterval(_poll);
+
+function pollResults(jobId) {
+  const stages=['Transcribing audio…','Reading transcript…','Checking claims…','Detecting framing…','Analyzing host patterns…','Building your report…'];
+  let si=0; if(_poll)clearInterval(_poll);
   _poll=setInterval(async()=>{
     si=Math.min(si+1,stages.length-1);
     document.getElementById('ld-title').textContent=stages[si];
-    try{
+    try {
       const d=await fetch('/api/status/'+jobId).then(r=>r.json());
       if(d.status==='complete'){clearInterval(_poll);document.getElementById('loading').classList.remove('on');document.getElementById('atabs').classList.add('on');document.getElementById('apanel-results').classList.add('on');resetBtn();renderResults(d);}
       else if(d.status==='error'){clearInterval(_poll);showErr(d.error||'Analysis failed');resetBtn();}
@@ -775,35 +946,122 @@ function pollResults(jobId){
 }
 function resetBtn(){const b=document.getElementById('go-btn');b.disabled=false;b.textContent='Analyze';}
 function showErr(msg){document.getElementById('loading').classList.remove('on');document.getElementById('atabs').classList.add('on');document.getElementById('apanel-results').classList.add('on');document.getElementById('results').innerHTML='<div class="err-card">'+msg+'</div>';}
-function switchATab(n,el){document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));el.classList.add('on');document.querySelectorAll('.apanel').forEach(p=>p.classList.remove('on'));document.getElementById('apanel-'+n).classList.add('on');}
 
 function bpClass(l){return{['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[l]||'bp-center';}
 function bfClass(l){return{['Mostly factual']:'bp-factual',['Mixed factuality']:'bp-mixed',['Unreliable']:'bp-unreliable'}[l]||'bp-factual';}
 function ftClass(t){return{['fact-check']:'ft-fact',['framing']:'ft-framing',['omission']:'ft-omission',['sponsor-note']:'ft-sponsor',['context']:'ft-context'}[t]||'ft-context';}
 function ftLabel(t){return{['fact-check']:'Fact check',['framing']:'Framing',['omission']:'Omission',['sponsor-note']:'Sponsor',['context']:'Context'}[t]||t;}
 
-function renderResults(data){
+function topicBarColor(lean) {
+  return {left:'var(--left-bar)',center:'var(--center-bar)',right:'var(--right-bar)',neutral:'var(--text3)'}[lean]||'var(--text3)';
+}
+
+function renderResults(data) {
   const score=data.biasScore??0;
   const pos=Math.round(((score+100)/200)*100);
   const sc=score<-20?'var(--left)':score>20?'var(--right)':'var(--center)';
   const oc=data.omissionRisk==='High'?'var(--right)':data.omissionRisk==='Med'?'var(--amber)':'var(--center)';
-  const flags=(data.flags||[]).map(f=>'<div class="flag-item"><span class="ftag '+ftClass(f.type)+'">'+ftLabel(f.type)+'</span><div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div></div></div>').join('');
-  document.getElementById('results').innerHTML=
-    '<div class="result-card">'+
-    '<div class="rc-head"><div class="rc-title">'+(data.episodeTitle||'Episode analysis')+'</div><div class="rc-sub">'+(data.duration||'')+'</div>'+
-    '<div class="rc-badges"><span class="bpill '+bpClass(data.biasLabel||'Center')+'"><span class="dot"></span>'+(data.biasLabel||'Center')+'</span><span class="bpill '+bfClass(data.factualityLabel||'Mostly factual')+'"><span class="dot"></span>'+(data.factualityLabel||'Mostly factual')+'</span></div></div>'+
-    '<div class="score-row">'+
-    '<div class="score-cell"><div class="score-lbl">Bias score '+tipBtn('bias')+'</div><div class="score-val" style="color:'+sc+'">'+score+'</div><div class="score-hint">-100 left · +100 right</div></div>'+
-    '<div class="score-cell"><div class="score-lbl">Fact flags '+tipBtn('factuality')+'</div><div class="score-val" style="color:var(--right)">'+((data.flags||[]).filter(f=>f.type==='fact-check').length)+'</div><div class="score-hint">claims to verify</div></div>'+
-    '<div class="score-cell"><div class="score-lbl">Omission risk '+tipBtn('omission')+'</div><div class="score-val" style="color:'+oc+'">'+( data.omissionRisk||'Low')+'</div><div class="score-hint">key views missing</div></div>'+
-    '</div>'+
-    '<div class="spectrum-wrap"><div class="spec-lbl">Political spectrum</div>'+
-    '<div class="spec-track"><div class="spec-thumb" style="left:'+pos+'%"></div></div>'+
-    '<div class="spec-ends"><span>Far left</span><span>Center</span><span>Far right</span></div></div>'+
-    (flags?'<div class="flags-section"><div class="flags-head">Things to be aware of</div>'+flags+'</div>':'')+
-    '<div class="rc-foot"><button class="ghost-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'url-input\').focus();document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button></div>'+
-    '</div>';
+  const tc=data.hostTrustScore>60?'var(--right)':data.hostTrustScore>30?'var(--amber)':'var(--center)';
+  const ytId = data.url ? getYouTubeId(data.url) : null;
+
+  let card = '<div class="rcard">';
+
+  card += '<div class="rcard-head"><div class="rcard-title">'+(data.episodeTitle||'Episode analysis')+'</div>';
+  card += '<div class="rcard-sub">'+(data.duration||'')+(data.wordCount?' · ~'+Math.round(data.wordCount/130)+' min read':'')+'</div>';
+  card += '<div class="badges"><span class="bpill '+bpClass(data.biasLabel||'Center')+'"><span class="dot"></span>'+(data.biasLabel||'Center')+'</span>';
+  card += '<span class="bpill '+bfClass(data.factualityLabel||'Mostly factual')+'"><span class="dot"></span>'+(data.factualityLabel||'Mostly factual')+'</span></div></div>';
+
+  if (data.summary) card += '<div class="r-summary">"'+data.summary+'"</div>';
+
+  // AUDIO LEAN BAR — real data only, grounded in transcript analysis
+  if (data.audioLean && typeof data.audioLean.leftPct !== 'undefined') {
+    const al = data.audioLean;
+    card += '<div class="audio-lean-wrap">';
+    card += '<div class="section-title">Audio lean — based on language, framing & positions expressed</div>';
+    card += '<div class="audio-lean-track">';
+    if (al.leftPct) card += '<div class="al-left" style="width:'+al.leftPct+'%"></div>';
+    if (al.centerPct) card += '<div class="al-center" style="width:'+al.centerPct+'%"></div>';
+    if (al.rightPct) card += '<div class="al-right" style="width:'+al.rightPct+'%"></div>';
+    card += '</div>';
+    card += '<div class="audio-lean-labels"><span>Lean left</span><span>Center</span><span>Lean right</span></div>';
+    card += '<div class="audio-lean-counts">';
+    if (al.leftPct) card += '<span class="alc"><span class="alcd" style="background:var(--left-bar)"></span>'+al.leftPct+'% lean left</span>';
+    if (al.centerPct) card += '<span class="alc"><span class="alcd" style="background:var(--center-bar)"></span>'+al.centerPct+'% center</span>';
+    if (al.rightPct) card += '<span class="alc"><span class="alcd" style="background:var(--right-bar)"></span>'+al.rightPct+'% lean right</span>';
+    card += '</div>';
+    if (al.basis) card += '<div class="audio-lean-basis">'+al.basis+'</div>';
+    card += '</div>';
+  }
+
+  card += '<div class="score-row">';
+  card += '<div class="score-cell"><div class="score-lbl">Bias score '+tipBtn('bias')+'</div><div class="score-val" style="color:'+sc+'">'+score+'</div><div class="score-hint">-100 left · +100 right</div></div>';
+  card += '<div class="score-cell"><div class="score-lbl">Fact flags '+tipBtn('factuality')+'</div><div class="score-val" style="color:var(--right)">'+((data.flags||[]).filter(f=>f.type==='fact-check').length)+'</div><div class="score-hint">claims to verify</div></div>';
+  card += '<div class="score-cell"><div class="score-lbl">Omission risk '+tipBtn('omission')+'</div><div class="score-val" style="color:'+oc+'">'+(data.omissionRisk||'Low')+'</div><div class="score-hint">key views missing</div></div>';
+  card += '</div>';
+
+  card += '<div class="spectrum-wrap"><div class="spec-lbl">Political spectrum position</div><div class="spec-track"><div class="spec-thumb" style="left:'+pos+'%"></div></div><div class="spec-ends"><span>Far left</span><span>Center</span><span>Far right</span></div></div>';
+
+  if (data.hostTrustScore !== undefined) {
+    card += '<div class="trust-wrap"><div class="section-title">Host trust & influence '+tipBtn('trust')+'</div>';
+    card += '<div class="trust-meter"><div class="trust-track"><div class="trust-fill" style="width:'+data.hostTrustScore+'%;background:'+tc+'"></div></div>';
+    card += '<div class="trust-score" style="color:'+tc+'">'+data.hostTrustScore+'</div>';
+    card += '<div style="font-size:12px;color:var(--text2)">'+(data.hostTrustLabel||'')+'</div></div></div>';
+  }
+
+  if (data.topicBreakdown && data.topicBreakdown.length) {
+    card += '<div class="topics-wrap"><div class="section-title">Topic breakdown</div><div class="topic-bars">';
+    data.topicBreakdown.forEach(function(t) {
+      card += '<div class="topic-bar-row"><div class="topic-bar-label">'+t.topic+'</div>';
+      card += '<div class="topic-bar-track"><div class="topic-bar-fill" style="width:'+t.percentage+'%;background:'+topicBarColor(t.lean)+'"></div></div>';
+      card += '<div class="topic-bar-pct">'+t.percentage+'%</div></div>';
+    });
+    card += '</div></div>';
+  }
+
+  if (data.keyQuotes && data.keyQuotes.length) {
+    card += '<div class="quotes-wrap"><div class="section-title">Key quotes</div>';
+    data.keyQuotes.forEach(function(q) {
+      card += '<div class="quote-item concern-'+(q.concern||'low')+'">';
+      card += '<div class="quote-text">"'+q.quote+'"</div>';
+      if (q.note) card += '<div class="quote-note">'+q.note+'</div>';
+      card += '</div>';
+    });
+    card += '</div>';
+  }
+
+  if (data.missingVoices && data.missingVoices.length) {
+    card += '<div class="missing-wrap"><div class="section-title">Missing voices & perspectives</div>';
+    card += '<div class="missing-tags">'+data.missingVoices.map(function(v){return '<span class="missing-tag">'+v+'</span>';}).join('')+'</div></div>';
+  }
+
+  if (data.sponsorConflicts && data.sponsorConflicts.length) {
+    card += '<div style="padding:14px 18px;border-bottom:1px solid var(--border)"><div class="section-title">Sponsor conflicts detected</div>';
+    data.sponsorConflicts.forEach(function(s) {
+      card += '<div style="font-size:13px;color:var(--amber);margin-top:6px;display:flex;align-items:flex-start;gap:6px"><span style="background:var(--amber-bg);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;flex-shrink:0">Sponsor</span>'+s+'</div>';
+    });
+    card += '</div>';
+  }
+
+  const flags=(data.flags||[]).map(function(f){return '<div class="flag-item"><span class="ftag '+ftClass(f.type)+'">'+ftLabel(f.type)+'</span><div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div></div></div>';}).join('');
+  if (flags) card += '<div><div class="flags-head">Things to be aware of</div>'+flags+'</div>';
+
+  card += '<div class="rcard-foot"><button class="ghost-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'url-input\').focus();document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button></div>';
+  card += '</div>';
+
+  // Side-by-side: YouTube player on left, analysis on right
+  if (ytId) {
+    document.getElementById('results').innerHTML =
+      '<div class="analyze-sidebyside">' +
+      '<div class="analyze-player">' + makeYTEmbed(ytId) +
+      '<p style="font-size:12px;color:var(--text3);margin-top:8px;text-align:center">Analysis runs alongside this episode</p>' +
+      '</div>' +
+      '<div class="analyze-results-col">' + card + '</div>' +
+      '</div>';
+  } else {
+    document.getElementById('results').innerHTML = '<div style="max-width:700px">' + card + '</div>';
+  }
 }
+
 
 function showUpgrade(){document.getElementById('upgrade-modal').classList.add('on');}
 function selPlan(el){document.querySelectorAll('.price-opt').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
