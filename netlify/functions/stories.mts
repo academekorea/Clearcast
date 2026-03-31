@@ -10,8 +10,10 @@ const TRENDING_TOPICS = [
   "Ukraine Russia",
   "Supreme Court",
   "Immigration",
-  "Stock market crash",
+  "Stock market",
 ];
+
+const FALLBACK_QUERIES = ["news", "politics", "technology", "business", "society"];
 
 export default async (req: Request) => {
   const url = new URL(req.url);
@@ -24,41 +26,44 @@ export default async (req: Request) => {
     });
   }
 
-  if (!query) {
-    return new Response(JSON.stringify({ error: "Query required", results: [] }), {
-      status: 400, headers: { "Content-Type": "application/json" },
-    });
-  }
+  const searchQuery = query || "news";
 
   try {
-    const searchUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=podcast&entity=podcastEpisode&limit=20&sort=recent`;
-    const res = await fetch(searchUrl);
-    const data = await res.json();
+    const doSearch = async (term: string) => {
+      const searchUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=podcast&entity=podcastEpisode&limit=20&sort=recent`;
+      const res = await fetch(searchUrl, { headers: { "User-Agent": "Clearcast/1.0" } });
+      const data = await res.json();
+      return data.results || [];
+    };
 
-    const results = (data.results || []).map((ep: any) => {
+    let results = await doSearch(searchQuery);
+
+    // Fallback: if no results, try first fallback query
+    if (!results.length && query) {
+      results = await doSearch(FALLBACK_QUERIES[0]);
+    }
+
+    const mapped = results.map((ep: any) => {
       const showName = ep.collectionName || ep.artistName || "Unknown show";
       const epTitle = ep.trackName || "Untitled episode";
       const artwork = ep.artworkUrl100?.replace("100x100", "300x300") || ep.artworkUrl60 || "";
-      const releaseDate = ep.releaseDate ? new Date(ep.releaseDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
+      const releaseDate = ep.releaseDate
+        ? new Date(ep.releaseDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+        : "";
       const duration = ep.trackTimeMillis ? Math.round(ep.trackTimeMillis / 60000) + " min" : "";
       const appleUrl = ep.trackViewUrl || "";
-      const collectionId = ep.collectionId || "";
-      const trackId = ep.trackId || "";
-
-      // Construct platform links
       const searchQ = encodeURIComponent(showName + " " + epTitle);
       const youtubeUrl = "https://www.youtube.com/results?search_query=" + searchQ;
       const spotifyUrl = "https://open.spotify.com/search/" + encodeURIComponent(epTitle) + "/episodes";
       const feedUrl = ep.feedUrl || "";
-
       return {
         showName, epTitle, artwork, releaseDate, duration,
-        appleUrl, youtubeUrl, spotifyUrl, feedUrl, collectionId, trackId,
+        appleUrl, youtubeUrl, spotifyUrl, feedUrl,
         description: ep.shortDescription || ep.description || "",
       };
     });
 
-    return new Response(JSON.stringify({ results, query }), {
+    return new Response(JSON.stringify({ results: mapped, query: searchQuery }), {
       status: 200, headers: { "Content-Type": "application/json" },
     });
   } catch (e) {
