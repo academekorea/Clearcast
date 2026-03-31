@@ -97,14 +97,14 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 
 /* Story list */
 .story-list{display:flex;flex-direction:column}
-.story-row{display:flex;gap:0;border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+.story-row{display:flex;gap:0;border-bottom:0.5px solid var(--border);transition:background .1s;cursor:pointer;position:relative}
 .story-row:hover{background:var(--bg3)}
-.story-img-wrap{width:100px;height:80px;flex-shrink:0;overflow:hidden}
+.story-img-wrap{width:120px;height:90px;flex-shrink:0;overflow:hidden}
 .story-img{width:100%;height:100%;object-fit:cover}
 .story-img-ph{width:100%;height:100%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:20px}
 .story-body{flex:1;padding:12px 14px;min-width:0}
 .story-show{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
-.story-title{font-size:14px;font-weight:500;line-height:1.35;color:var(--text);margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;letter-spacing:-0.01em}
+.story-title{font-size:15px;font-weight:500;line-height:1.35;color:var(--text);margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;letter-spacing:-0.01em}
 .story-cov{display:flex;height:4px;border-radius:2px;overflow:hidden;gap:1px;margin-bottom:4px}
 .scl{background:var(--left-bar)}.scc{background:var(--center-bar)}.scr{background:var(--right-bar)}
 .story-counts{display:flex;gap:8px}
@@ -131,7 +131,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .rp-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:12px}
 
 /* Unheard (formerly Blindspot) */
-.unheard-card{background:linear-gradient(135deg,var(--purple-bg),var(--bg2));border:1px solid var(--purple-border);border-radius:var(--r-xl);padding:16px;margin-bottom:12px}
+.unheard-card{background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--r-xl);padding:16px;margin-bottom:12px}
 .unheard-eye{font-size:20px;margin-bottom:6px}
 .unheard-title{font-family:var(--ffs);font-size:16px;font-weight:400;color:var(--text);margin-bottom:4px;font-style:italic}
 .unheard-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px}
@@ -407,7 +407,10 @@ footer p{font-size:11px;color:var(--text3)}
 
     <!-- MAIN FEED -->
     <div class="mkt-feed">
-      <div class="feed-tabs">
+      <div style="padding:14px 20px 0;background:var(--bg2);border-bottom:0.5px solid var(--border)">
+  <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:10px">Podcast intelligence</div>
+</div>
+<div class="feed-tabs">
         <button class="ft on" id="ft-stories" onclick="switchFeed('stories',this)">For you</button>
         <button class="ft" id="ft-browse" onclick="switchFeed('browse',this)">Top shows</button>
         <button class="ft" id="ft-unheard" onclick="switchFeed('unheard',this)">Unheard</button>
@@ -832,21 +835,30 @@ async function loadBrowse(genre) {
 }
 
 async function loadTopShows() {
-  try {
-    const data = await fetch('/api/marketplace?genre=news').then(r=>r.json());
-    const list = document.getElementById('top-shows-list');
-    if (!data.podcasts?.length) { list.innerHTML=''; return; }
-    list.innerHTML = data.podcasts.slice(0,6).map(function(p) {
-      const art = p.artwork
-        ?'<img class="ts-art" src="'+p.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+'<div class="ts-art-ph" style="display:none">🎙</div>'
-        :'<div class="ts-art-ph">🎙</div>';
-      const q = encodeURIComponent(p.name);
-      const azBtn = p.feedUrl?'<button class="plt az" style="font-size:10px;padding:2px 7px" onclick="analyzeShow(\''+p.feedUrl.replace(/'/g,"\\'")+'\')" >Analyze</button>':'';
-      return '<div class="top-show">'+art+'<div><div class="ts-name">'+p.name+'</div><div class="ts-author">'+p.artist+'</div>' +
-        '<div class="ts-plts"><a class="plt yt" href="https://www.youtube.com/results?search_query='+q+'+podcast" target="_blank" rel="noopener" style="font-size:10px;padding:2px 7px">YT</a>'+
-        '<a class="plt sp" href="https://open.spotify.com/search/'+q+'/shows" target="_blank" rel="noopener" style="font-size:10px;padding:2px 7px">Spotify</a>'+azBtn+'</div></div></div>';
-    }).join('');
-  } catch {}
+  const CURATED = [
+    {name:'The Daily',artist:'The New York Times',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/71/cd/94/71cd9435-de69-6254-f329-b8ef4e0bd2e4/mza_16830576572061832205.jpg/300x300bb.jpg',feedUrl:'https://feeds.simplecast.com/54nAGcIl'},
+    {name:'Pod Save America',artist:'Crooked Media',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/2b/aa/84/2baa8432-81c0-1a20-7bbf-2ee81b4ef293/mza_12979092553960538479.jpg/300x300bb.jpg',feedUrl:'https://feeds.megaphone.fm/pod-save-america'},
+    {name:'Lex Fridman Podcast',artist:'Lex Fridman',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/03/dc/cb/03dccb52-4087-ae0c-fa7f-5e0ab1c5e1cd/mza_2733415673219272476.jpg/300x300bb.jpg',feedUrl:'https://lexfridman.com/feed/podcast/'},
+    {name:'NPR Politics',artist:'NPR',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/0a/44/62/0a4462c5-6c5a-b5e3-7c57-a7c6e6bc6c0e/mza_6985833205595065928.jpg/300x300bb.jpg',feedUrl:'https://feeds.npr.org/510310/podcast.xml'},
+    {name:'The Ben Shapiro Show',artist:'Daily Wire',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/41/97/01/41970122-d970-3de7-0cfc-0b2958b7e0c2/mza_12154807429261989379.jpg/300x300bb.jpg',feedUrl:'https://feeds.megaphone.fm/WWO3519750917'},
+    {name:'Planet Money',artist:'NPR',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/58/96/56/58965665-7e50-2bb4-7f7a-92bd1882e27a/mza_12661574892354567111.jpg/300x300bb.jpg',feedUrl:'https://feeds.npr.org/510289/podcast.xml'},
+  ];
+  const list = document.getElementById('top-shows-list');
+  list.innerHTML = CURATED.map(function(p) {
+    const art = p.artwork
+      ? '<img class="ts-art" src="'+p.artwork+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+      : '<div class="ts-art-ph">&#127897;</div>';
+    const q = encodeURIComponent(p.name);
+    const safeUrl = p.feedUrl.replace(/"/g,'&quot;');
+    return '<div class="top-show">'+art+'<div>'+
+      '<div class="ts-name">'+p.name+'</div>'+
+      '<div class="ts-author">'+p.artist+'</div>'+
+      '<div class="ts-plts">'+
+      '<a class="plt yt" href="https://www.youtube.com/results?search_query='+q+'+podcast" target="_blank" rel="noopener" style="font-size:10px;padding:2px 7px">YT</a>'+
+      '<a class="plt sp" href="https://open.spotify.com/search/'+q+'/shows" target="_blank" rel="noopener" style="font-size:10px;padding:2px 7px">Spotify</a>'+
+      '<button class="plt az" style="font-size:10px;padding:2px 7px" onclick="analyzeShow(&quot;'+safeUrl+'&quot;)">Analyze</button>'+
+      '</div></div></div>';
+  }).join('');
 }
 
 async function loadUnheard() {
