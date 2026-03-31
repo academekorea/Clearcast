@@ -40,8 +40,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .nl.on{background:var(--bg3);color:var(--text);font-weight:500}
 .nl:hover:not(.on){background:var(--bg3)}
 .nav-r{display:flex;align-items:center;gap:8px;margin-left:auto}
-.lang-btn{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff);transition:all .1s}
-.lang-btn.on{background:var(--bg3);color:var(--text)}
+
+
 .sub-btn{font-size:12px;padding:5px 14px;border-radius:20px;background:var(--text);color:var(--bg);border:none;cursor:pointer;font-family:var(--ff);font-weight:500}
 .sub-btn:hover{opacity:.85}
 
@@ -371,8 +371,6 @@ footer p{font-size:11px;color:var(--text3)}
     <button class="nl" id="nl-analyze" onclick="switchView('analyze')">Analyze</button>
   </div>
   <div class="nav-r">
-    <button class="lang-btn on" id="lang-en" onclick="setLang('en',this)">EN</button>
-    <button class="lang-btn" id="lang-ko" onclick="setLang('ko',this)">한국어</button>
     <button class="sub-btn" onclick="showUpgrade()">Get Pro</button>
   </div>
 </nav>
@@ -579,25 +577,15 @@ footer p{font-size:11px;color:var(--text3)}
 </footer>
 
 <script>
-// ── LANGUAGE ──
+// ── LANG ──
 let _lang = 'en';
-const TOPICS_EN = ['Israel-Gaza','Iran war','Fed rates','AI regulation','Trump tariffs','Ukraine','Climate change','Supreme Court','Immigration','Economy'];
-const TOPICS_KO = ['이스라엘-가자','이란 전쟁','금리 정책','AI 규제','트럼프 관세','우크라이나','기후변화','대법원','이민 정책','경제'];
-
-function setLang(lang, el) {
-  _lang = lang;
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
-  el.classList.add('on');
-  buildTopicStrip();
-  if (_currentFeed === 'stories') doTopicSearch(_currentTopic || 'news politics');
-}
 
 // ── TIPS ──
 const TIPS = {
-  bias:"<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p><h4>Scale</h4><p>-100 to -60 Far left · -59 to -20 Lean left<br>-19 to +19 Center · +20 to +59 Lean right<br>+60 to +100 Far right</p>",
-  factuality:"<p>How well claims hold up against publicly verifiable information.</p><h4>Ratings</h4><p><strong>Mostly factual</strong> — Generally accurate.<br><strong>Mixed</strong> — Some claims overstated.<br><strong>Unreliable</strong> — Significant false claims.</p>",
-  omission:"<p>How much important context or opposing perspectives appear missing.</p><h4>Levels</h4><p><strong>Low</strong> — Multiple perspectives present.<br><strong>Med</strong> — Some absent.<br><strong>High</strong> — Significant viewpoints missing.</p>",
-  trust:"<p>How strongly the host uses language that builds personal trust rather than presenting facts neutrally.</p><h4>Examples</h4><p>'Trust me', 'everyone knows', 'I've been saying this for years', 'my listeners know'</p><p>High scores mean the host relies heavily on parasocial relationship to convey credibility.</p>"
+  bias:"<p>A score from <strong>-100 to +100</strong> measuring political lean based on language, framing, and source selection.</p><h4>Scale</h4><p>-100 to -60 Far left &middot; -59 to -20 Lean left<br>-19 to +19 Center &middot; +20 to +59 Lean right<br>+60 to +100 Far right</p>",
+  factuality:"<p>How well claims hold up against publicly verifiable information.</p><h4>Ratings</h4><p><strong>Mostly factual</strong> &mdash; Generally accurate.<br><strong>Mixed</strong> &mdash; Some claims overstated.<br><strong>Unreliable</strong> &mdash; Significant false claims.</p>",
+  omission:"<p>How much important context or opposing perspectives appear missing.</p><h4>Levels</h4><p><strong>Low</strong> &mdash; Multiple perspectives present.<br><strong>Med</strong> &mdash; Some absent.<br><strong>High</strong> &mdash; Significant viewpoints missing.</p>",
+  trust:"<p>How strongly the host uses language that builds personal trust rather than presenting facts neutrally.</p><h4>Examples</h4><p>Phrases like &ldquo;trust me&rdquo;, &ldquo;everyone knows&rdquo;, &ldquo;I&rsquo;ve been saying this for years&rdquo; signal high parasocial influence.</p>"
 };
 const isMob = () => window.matchMedia('(hover:none)').matches;
 function tipBtn(k) {
@@ -605,8 +593,9 @@ function tipBtn(k) {
   return '<span class="tip-wrap"><button class="info-btn">?</button><div class="tip-box">'+TIPS[k]+'</div></span>';
 }
 function showTip(k) {
-  document.getElementById('modal-title').textContent={bias:'Bias score',factuality:'Factuality',omission:'Omission risk',trust:'Host trust score'}[k]||k;
-  document.getElementById('modal-body').innerHTML=TIPS[k];
+  var labels = {bias:'Bias score',factuality:'Factuality',omission:'Omission risk',trust:'Host trust score'};
+  document.getElementById('modal-title').textContent = labels[k] || k;
+  document.getElementById('modal-body').innerHTML = TIPS[k];
   document.getElementById('info-modal').classList.add('on');
 }
 
@@ -640,12 +629,12 @@ function initMkt() {
 function buildTopicStrip() {
   const topics = _lang === 'ko' ? TOPICS_KO : TOPICS_EN;
   const strip = document.getElementById('topic-strip');
-  strip.innerHTML = '<span class="strip-lbl">' + (_lang==='ko'?'트렌딩':'Trending') + '</span>';
+  strip.innerHTML = '<span class="strip-lbl">' + ('Trending') + '</span>';
   const all = document.createElement('button');
   all.className = 'topic-chip on';
   all.id = 'tc-all';
-  all.textContent = _lang==='ko'?'전체':'All topics';
-  all.onclick = () => setTopic('', all, _lang==='ko'?'정치 뉴스':'news politics');
+  all.textContent = 'All topics';
+  all.onclick = () => setTopic('', all, 'news politics');
   strip.appendChild(all);
   topics.forEach((t,i) => {
     const btn = document.createElement('button');
@@ -700,20 +689,26 @@ function makeAnalyzeCta(ep, dark) {
   var al = ep.audioLean;
   if (al && typeof al.leftPct !== 'undefined') {
     var lp = al.leftPct, cp = al.centerPct, rp = al.rightPct;
-    var bar = '<div class="story-cov"><div class="scl" style="width:'+lp+'%"></div><div class="scc" style="width:'+cp+'%"></div>'+(rp?'<div class="scr" style="width:'+rp+'%"></div>':'')+'</div>';
+    var bar = '<div class="story-cov">'
+      + (lp ? '<div class="scl" style="width:'+lp+'%"></div>' : '')
+      + (cp ? '<div class="scc" style="width:'+cp+'%"></div>' : '')
+      + (rp ? '<div class="scr" style="width:'+rp+'%"></div>' : '')
+      + '</div>';
     var counts = '<div class="story-counts">'
-      +(lp?'<span class="sc"><span class="scd" style="background:var(--left-bar)"></span>'+lp+'% left</span>':'')
-      +(cp?'<span class="sc"><span class="scd" style="background:var(--center-bar)"></span>'+cp+'% center</span>':'')
-      +(rp?'<span class="sc"><span class="scd" style="background:var(--right-bar)"></span>'+rp+'% right</span>':'')
-      +'<span style="font-size:9px;opacity:.5;margin-left:4px">· verified</span></div>';
-    if (al.basis) counts += '<div style="font-size:10px;color:'+(dark?'rgba(255,255,255,.5)':'var(--text3)')+'margin-top:2px">' + al.basis + '</div>';
+      + (lp ? '<span class="sc"><span class="scd" style="background:var(--left-bar)"></span>'+lp+'% left</span>' : '')
+      + (cp ? '<span class="sc"><span class="scd" style="background:var(--center-bar)"></span>'+cp+'% center</span>' : '')
+      + (rp ? '<span class="sc"><span class="scd" style="background:var(--right-bar)"></span>'+rp+'% right</span>' : '')
+      + '</div>';
     return bar + counts;
   }
-  // No analysis yet — show honest CTA
-  var style = dark
-    ? 'font-size:11px;color:rgba(255,255,255,.65);padding:4px 0;'
-    : 'font-size:11px;color:var(--text3);padding:4px 0;';
-  return '<div style="'+style+'">Bias data not yet available · <span style="text-decoration:underline;cursor:pointer" onclick="event.stopPropagation();'+(ep.feedUrl?'analyzeShow(\\''+ep.feedUrl.replace(/'/g,"\\'")+'\\')':'void(0)')+'">Analyze this show ↗</span></div>';
+  var col = dark ? 'rgba(255,255,255,.6)' : 'var(--text3)';
+  var html = '<div style="font-size:11px;color:'+col+';padding:4px 0">Bias data unavailable';
+  if (ep.feedUrl) {
+    var safeUrl = ep.feedUrl.replace(/"/g, '&quot;');
+    html += ' · <span style="text-decoration:underline;cursor:pointer" onclick="event.stopPropagation();analyzeShow(&quot;'+safeUrl+'&quot;)">Analyze</span>';
+  }
+  html += '</div>';
+  return html;
 }
 
 // ── STORIES ──
