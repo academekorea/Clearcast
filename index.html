@@ -589,7 +589,7 @@ function setLang(lang, el) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
   el.classList.add('on');
   buildTopicStrip();
-  if (_currentFeed === 'stories') doTopicSearch(_currentTopic || 'top podcast news');
+  if (_currentFeed === 'stories') doTopicSearch(_currentTopic || 'news politics');
 }
 
 // ── TIPS ──
@@ -633,7 +633,7 @@ function initMkt() {
   if (_mktInit) return;
   _mktInit = true;
   buildTopicStrip();
-  doTopicSearch('top podcast news today');
+  doTopicSearch('news politics');
   loadTopShows();
 }
 
@@ -645,7 +645,7 @@ function buildTopicStrip() {
   all.className = 'topic-chip on';
   all.id = 'tc-all';
   all.textContent = _lang==='ko'?'전체':'All topics';
-  all.onclick = () => setTopic('', all, _lang==='ko'?'top podcast news':'top podcast news today');
+  all.onclick = () => setTopic('', all, _lang==='ko'?'정치 뉴스':'news politics');
   strip.appendChild(all);
   topics.forEach((t,i) => {
     const btn = document.createElement('button');
