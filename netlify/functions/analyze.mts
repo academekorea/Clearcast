@@ -67,17 +67,19 @@ export default async (req: Request) => {
 
     let audioUrl = url;
 
-    // If it doesn't look like a direct audio file, try to extract audio URL
-    if (!url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
+    // YouTube URLs are supported natively by AssemblyAI — pass them through directly
+    const isYouTube = /(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(url);
+
+    if (!isYouTube && !url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
       const extracted = await extractAudioUrl(url);
       if (extracted) {
         audioUrl = extracted;
       } else if (!isAudioUrl(url)) {
         return new Response(JSON.stringify({
-          error: "Could not find audio. Please paste a direct MP3 link or RSS feed URL."
+          error: "Could not find audio. Please paste a YouTube URL, direct MP3/M4A link, or RSS feed URL."
         }), { status: 400, headers: { "Content-Type": "application/json" } });
       }
-      // If isAudioUrl but no extension matched, try the URL directly
+      // isAudioUrl matched (CDN/podcast URL pattern) — try the URL directly with AssemblyAI
     }
 
     // Submit to AssemblyAI v2
@@ -94,9 +96,14 @@ export default async (req: Request) => {
     });
 
     if (!aaiRes.ok) {
-      const err = await aaiRes.text();
-      console.error("AssemblyAI error:", err);
-      return new Response(JSON.stringify({ error: "Transcription service error. Please try again." }), {
+      const errText = await aaiRes.text();
+      console.error("AssemblyAI error:", errText);
+      let errMsg = "Transcription service error. Please try again.";
+      try {
+        const errJson = JSON.parse(errText);
+        if (errJson.error) errMsg = errJson.error;
+      } catch { /* keep default message */ }
+      return new Response(JSON.stringify({ error: errMsg }), {
         status: 500, headers: { "Content-Type": "application/json" },
       });
     }
