@@ -28,7 +28,7 @@
   --amber-bg:#1c0a00;--purple-bg:#1e1b4b;--purple-border:#4c1d95;
 }}
 html{scroll-behavior:smooth}
-body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
 /* NAV */
 .nav{display:flex;align-items:center;padding:0 20px;height:50px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:200;gap:4px}
@@ -186,7 +186,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .analyze-hero p{font-size:13px;color:var(--text2);line-height:1.6;max-width:400px;margin:0 auto}
 .input-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-xl);padding:12px;margin-bottom:8px;max-width:680px;margin-left:auto;margin-right:auto}
 .input-row{display:flex;gap:8px}
-.url-field{flex:1;padding:9px 12px;font-size:13px;font-family:var(--ff);border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none}
+.url-field{flex:1;min-width:0;padding:9px 12px;font-size:13px;font-family:var(--ff);border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none}
 .url-field:focus{border-color:var(--text3)}
 .url-field::placeholder{color:var(--text3)}
 .go-btn{padding:9px 18px;font-size:13px;font-weight:500;font-family:var(--ff);border:none;background:var(--text);color:var(--bg);border-radius:var(--r);cursor:pointer;white-space:nowrap}
@@ -613,13 +613,13 @@ function buildTopicStrip() {
   var all = document.createElement('button');
   all.className = 't-chip on';
   all.textContent = 'Top shows';
-  all.onclick = function() { setChip(all); fetchStories('news'); };
+  all.onclick = function() { setChip(all); showView('marketplace'); showFeed('foryou'); fetchStories('news'); };
   strip.appendChild(all);
   TOPICS.forEach(function(t) {
     var btn = document.createElement('button');
     btn.className = 't-chip';
     btn.textContent = t;
-    btn.onclick = function() { setChip(btn); fetchStories(t); };
+    btn.onclick = function() { setChip(btn); showView('marketplace'); showFeed('foryou'); fetchStories(t); };
     strip.appendChild(btn);
   });
 }
@@ -938,6 +938,8 @@ function pollStatus(jobId,audioUrl){
         clearInterval(_poll);
         document.getElementById('loading').classList.remove('on');
         document.getElementById('atabs').classList.add('on');
+        document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');});
+        document.querySelectorAll('.atab')[0].classList.add('on');
         document.getElementById('apanel-results').classList.add('on');
         resetBtn();
         d.url=audioUrl;
@@ -955,6 +957,8 @@ function resetBtn(){var b=document.getElementById('go-btn');b.disabled=false;b.t
 function showAnalyzeErr(msg){
   document.getElementById('loading').classList.remove('on');
   document.getElementById('atabs').classList.add('on');
+  document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.atab')[0].classList.add('on');
   document.getElementById('apanel-results').classList.add('on');
   document.getElementById('results').innerHTML='<div class="err-card">'+msg+'</div>';
 }
