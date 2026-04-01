@@ -1,55 +1,102 @@
 import type { Config } from "@netlify/functions";
 
-function formatDuration(ms: number): string {
-  if (!ms) return "";
-  const totalMin = Math.round(ms / 60000);
+function parseIsoDuration(iso: string): string {
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return "";
+  const h = parseInt(match[1] || "0");
+  const m = parseInt(match[2] || "0");
+  const s = parseInt(match[3] || "0");
+  const totalMin = h * 60 + m + Math.round(s / 60);
   if (totalMin < 60) return `${totalMin} min`;
-  const h = Math.floor(totalMin / 60);
-  const m = totalMin % 60;
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  const hours = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
 }
 
 export default async (req: Request) => {
   const url = new URL(req.url);
   const query = url.searchParams.get("q") || "news";
 
-  try {
-    const searchUrl = new URL("https://itunes.apple.com/search");
-    searchUrl.searchParams.set("term", query + " podcast");
-    searchUrl.searchParams.set("media", "podcast");
-    searchUrl.searchParams.set("entity", "podcastEpisode");
-    searchUrl.searchParams.set("limit", "20");
-    searchUrl.searchParams.set("country", "us");
+  const apiKey = Netlify.env.get("YOUTUBE_API_KEY");
+  if (!apiKey) {
+    return new Response(
+      JSON.stringify({ error: "YouTube API not configured", results: [] }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
-    const res = await fetch(searchUrl.toString());
-    if (!res.ok) throw new Error(`iTunes search failed: ${res.status}`);
-    const data = await res.json();
-    const items: any[] = data.results || [];
+  try {
+    // Search YouTube for podcast-length videos (20+ min = "long")
+    const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
+    searchUrl.searchParams.set("part", "snippet");
+    searchUrl.searchParams.set("type", "video");
+    searchUrl.searchParams.set("q", query + " podcast");
+    searchUrl.searchParams.set("maxResults", "20");
+    searchUrl.searchParams.set("order", "date");
+    searchUrl.searchParams.set("videoDuration", "long");
+    searchUrl.searchParams.set("key", apiKey);
+
+    const searchRes = await fetch(searchUrl.toString());
+    if (!searchRes.ok) {
+      const errBody = await searchRes.text();
+      throw new Error(`YouTube search failed: ${searchRes.status} — ${errBody}`);
+    }
+    const searchData = await searchRes.json();
+    const items: any[] = searchData.items || [];
+
+    // Batch-fetch video durations in one call
+    const videoIds = items
+      .map((it: any) => it.id?.videoId)
+      .filter(Boolean)
+      .join(",");
+
+    const durations: Record<string, string> = {};
+    if (videoIds) {
+      const detailUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
+      detailUrl.searchParams.set("part", "contentDetails");
+      detailUrl.searchParams.set("id", videoIds);
+      detailUrl.searchParams.set("key", apiKey);
+      const detailRes = await fetch(detailUrl.toString());
+      if (detailRes.ok) {
+        const detailData = await detailRes.json();
+        for (const v of detailData.items || []) {
+          durations[v.id] = parseIsoDuration(v.contentDetails?.duration || "");
+        }
+      }
+    }
 
     const results = items.map((it: any) => {
-      const releaseDate = it.releaseDate
-        ? new Date(it.releaseDate).toLocaleDateString("en-US", {
+      const snippet = it.snippet || {};
+      const videoId = it.id?.videoId || "";
+      const releaseDate = snippet.publishedAt
+        ? new Date(snippet.publishedAt).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",
           })
         : "";
-      const spotifyUrl =
-        "https://open.spotify.com/search/" +
-        encodeURIComponent(it.trackName || "") +
-        "/episodes";
+      const spotifyUrl = snippet.title
+        ? "https://open.spotify.com/search/" +
+          encodeURIComponent(snippet.title) +
+          "/episodes"
+        : "";
 
       return {
-        showName: it.collectionName || "Unknown show",
-        epTitle: it.trackName || "Untitled",
-        artwork: it.artworkUrl600 || it.artworkUrl160 || "",
+        showName: snippet.channelTitle || "Unknown channel",
+        epTitle: snippet.title || "Untitled",
+        artwork:
+          snippet.thumbnails?.maxres?.url ||
+          snippet.thumbnails?.high?.url ||
+          snippet.thumbnails?.medium?.url ||
+          snippet.thumbnails?.default?.url ||
+          "",
         releaseDate,
-        duration: formatDuration(it.trackTimeMillis || 0),
-        youtubeUrl: "",
+        duration: durations[videoId] || "",
+        youtubeUrl: videoId ? `https://www.youtube.com/watch?v=${videoId}` : "",
         spotifyUrl,
-        appleUrl: it.trackViewUrl || "",
-        feedUrl: it.episodeUrl || "",
-        description: it.shortDescription || it.description || "",
+        appleUrl: "",
+        feedUrl: "",
+        description: snippet.description || "",
       };
     });
 
@@ -58,8 +105,9 @@ export default async (req: Request) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (e) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: "Search failed", results: [] }),
+      JSON.stringify({ error: msg, results: [] }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
