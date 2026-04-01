@@ -50,7 +50,7 @@ export default async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { url } = body;
+    const { url, showName, showSlug, showArtwork, showFeedUrl } = body;
 
     if (!url) {
       return new Response(JSON.stringify({ error: "URL is required" }), {
@@ -124,6 +124,10 @@ export default async (req: Request) => {
       url,
       audioUrl,
       createdAt: Date.now(),
+      showName: showName || null,
+      showSlug: showSlug || null,
+      showArtwork: showArtwork || null,
+      showFeedUrl: showFeedUrl || null,
     });
 
     return new Response(JSON.stringify({ jobId: transcriptId, status: "transcribing" }), {

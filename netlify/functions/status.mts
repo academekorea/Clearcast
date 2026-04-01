@@ -174,6 +174,23 @@ export default async (req: Request) => {
 
     await store.setJSON(jobId, result);
 
+    // Index this episode under its show for show profiles
+    if (job.showSlug) {
+      try {
+        const showStore = getStore("clearcast-shows");
+        const existing = await showStore.get(job.showSlug, { type: "json" }).catch(() => null) as any;
+        const episodeIds: string[] = existing?.episodeIds || [];
+        if (!episodeIds.includes(jobId)) episodeIds.unshift(jobId);
+        await showStore.setJSON(job.showSlug, {
+          name: job.showName || existing?.name || job.showSlug,
+          artwork: job.showArtwork || existing?.artwork || "",
+          feedUrl: job.showFeedUrl || existing?.feedUrl || "",
+          episodeIds: episodeIds.slice(0, 100),
+          updatedAt: Date.now(),
+        });
+      } catch { /* non-critical */ }
+    }
+
     return new Response(JSON.stringify(result), {
       status: 200, headers: { "Content-Type": "application/json" },
     });
