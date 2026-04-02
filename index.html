@@ -114,22 +114,30 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .s-btn:hover{opacity:.85}
 
 /* ── HERO ── */
-.hero{position:relative;width:100%;background:#1a1a2e;overflow:hidden;cursor:pointer}
-.hero-img-wrap{width:100%;aspect-ratio:16/6;overflow:hidden}
+.hero{position:relative;width:100%;background:#111;overflow:hidden;cursor:pointer}
+.hero-img-wrap{width:100%;aspect-ratio:16/7;overflow:hidden}
 .hero-img{width:100%;height:100%;object-fit:cover;display:block;opacity:.65}
-.hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.45) 55%,transparent 100%)}
-.hero-body{position:absolute;bottom:0;left:0;right:0;padding:18px 20px}
-.hero-badge{position:absolute;top:12px;right:12px;font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,.5);color:rgba(255,255,255,.8);backdrop-filter:blur(4px)}
-.hero-show{font-size:10px;font-weight:600;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-.hero-title{font-family:var(--ffs);font-size:clamp(17px,2.6vw,26px);color:#fff;line-height:1.2;margin-bottom:10px;font-weight:400}
+.hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.4) 50%,transparent 100%)}
+.hero-body{position:absolute;bottom:0;left:0;right:0;padding:16px 18px}
+.hero-badge{position:absolute;top:10px;right:10px;font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,.55);color:rgba(255,255,255,.8);backdrop-filter:blur(4px)}
+.hero-play-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:22px;pointer-events:none}
+.hero-show{font-size:9px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px}
+.hero-title{font-family:var(--ffs);font-size:clamp(16px,2.4vw,24px);color:#fff;line-height:1.2;margin-bottom:4px;font-weight:400;font-style:italic}
+.hero-host{font-size:11px;font-weight:500;color:rgba(255,255,255,.75);margin-bottom:8px}
 .hero-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;margin-bottom:6px}
 .hero-counts{display:flex;gap:10px;margin-bottom:10px}
 .hc{font-size:10px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:3px}
 .hcd{width:6px;height:6px;border-radius:50%}
-.hero-plts{display:flex;gap:5px;flex-wrap:wrap}
-.hero-plt{font-size:11px;padding:4px 11px;border-radius:5px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;font-family:var(--ff);text-decoration:none;backdrop-filter:blur(4px);transition:background .1s}
+.hero-plts{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.hero-plt{font-size:11px;padding:5px 13px;border-radius:5px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;font-family:var(--ff);text-decoration:none;backdrop-filter:blur(4px);transition:background .1s;font-weight:500}
 .hero-plt:hover{background:rgba(255,255,255,.22)}
-.hero-nophoto{width:100%;aspect-ratio:16/6;background:linear-gradient(135deg,#1a2a4a,#2d1b3d);display:flex;align-items:center;justify-content:center;font-size:56px}
+.hero-nophoto{width:100%;aspect-ratio:16/7;background:linear-gradient(135deg,#1a2a4a,#2d1b3d);display:flex;align-items:center;justify-content:center;font-size:56px}
+/* Hero-below: info strip below YouTube embed */
+.hero-below{padding:11px 14px 13px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.hb-show{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
+.hb-title{font-family:var(--ffs);font-size:clamp(15px,2vw,20px);font-weight:400;font-style:italic;line-height:1.2;color:var(--text);margin-bottom:3px}
+.hb-meta{font-size:10px;color:var(--text3);margin-bottom:7px}
+.hb-plts{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
 
 /* ── YT EMBED ── */
 .yt-wrap{position:relative;padding-top:56.25%;background:#000}
@@ -142,15 +150,15 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .story-img-wrap{width:120px;flex-shrink:0;overflow:hidden;aspect-ratio:4/3}
 .story-img{width:100%;height:100%;object-fit:cover;display:block}
 .story-img-ph{width:100%;height:100%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:22px;min-height:90px}
-.story-body{flex:1;padding:10px 12px;min-width:0;display:flex;flex-direction:column;gap:3px}
-.story-show{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
-.story-title{font-size:14px;font-weight:500;line-height:1.3;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;letter-spacing:-.01em}
+.story-body{flex:1;padding:10px 12px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.story-show{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.11em}
+.story-title{font-family:var(--ffs);font-size:15px;font-weight:400;font-style:italic;line-height:1.25;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1px}
+.story-meta{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);flex-wrap:wrap}
+.story-plts{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}
 .cov-bar{display:flex;height:4px;border-radius:2px;overflow:hidden;margin-top:3px}
 .cov-counts{display:flex;gap:8px;margin-top:2px}
 .cc{font-size:9px;color:var(--text3);display:flex;align-items:center;gap:2px}
 .ccd{width:5px;height:5px;border-radius:50%}
-.story-meta{font-size:10px;color:var(--text3)}
-.story-plts{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}
 
 /* ── PLATFORM BTNS ── */
 .plt{font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff);text-decoration:none;display:inline-flex;align-items:center;gap:2px;white-space:nowrap;transition:background .08s}
@@ -492,8 +500,12 @@ footer p{font-size:10px;color:var(--text3)}
         <button class="rpa-btn" onclick="showView('analyze')">Analyze an episode &rarr;</button>
       </div>
       <div class="rp-section">
-        <div class="rp-lbl">Trending shows</div>
+        <div class="rp-lbl">Top shows this week</div>
         <div id="top-shows"></div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-lbl">Recently analyzed</div>
+        <div id="rp-recent"><div style="font-size:11px;color:var(--text3);padding:2px 0">No analyses yet — paste any podcast URL</div></div>
       </div>
       <div class="rp-unheard">
         <div class="rpu-title">Unheard</div>
@@ -781,6 +793,7 @@ function initFeed() {
   buildTopicStrip();
   fetchStories('news');
   renderTopShows();
+  renderRecentlyAnalyzed();
 }
 
 // ── YOUTUBE ──
@@ -860,39 +873,46 @@ function renderHero(ep) {
     + (ep.spotifyUrl ? '<a class="hero-plt" href="' + ep.spotifyUrl + '" target="_blank" rel="noopener">Spotify</a>' : '')
     + (ep.feedUrl ? '<button class="hero-plt" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>' : '');
 
+  var metaLine = [ep.duration, ep.releaseDate].filter(Boolean).join(' · ');
   if (vid) {
     hero.innerHTML = '<div>'
       + ytEmbed(vid)
-      + '<div style="padding:10px 14px 0;border-bottom:1px solid var(--border)">'
-      + '<div class="hero-show">' + ep.showName + '</div>'
-      + '<div style="font-family:var(--ffs);font-size:16px;font-weight:400;margin:4px 0 8px;line-height:1.3">' + ep.epTitle + '</div>'
+      + '<div class="hero-below">'
+      + '<div class="hb-show">' + ep.showName + '</div>'
+      + '<div class="hb-title">' + ep.epTitle + '</div>'
+      + (metaLine ? '<div class="hb-meta">' + metaLine + '</div>' : '')
       + covBar(ep, false)
-      + '<div style="display:flex;gap:5px;margin-top:8px;margin-bottom:12px">'
-      + (ep.spotifyUrl ? '<a class="plt sp" href="' + ep.spotifyUrl + '" target="_blank" rel="noopener">Spotify</a>' : '')
-      + (ep.appleUrl ? '<a class="plt ap" href="' + ep.appleUrl + '" target="_blank" rel="noopener">Apple</a>' : '')
-      + (ep.feedUrl ? '<button class="plt az" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>' : '')
+      + '<div class="hb-plts">'
+      + (ep.youtubeUrl ? '<a class="plt yt" href="' + ep.youtubeUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">YouTube</a>' : '')
+      + (ep.spotifyUrl ? '<a class="plt sp" href="' + ep.spotifyUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>' : '')
+      + (ep.appleUrl ? '<a class="plt ap" href="' + ep.appleUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>' : '')
+      + (ep.feedUrl ? '<button class="plt az" onclick="event.stopPropagation();goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>' : '')
       + '</div></div></div>';
   } else if (ep.artwork) {
-    hero.innerHTML = '<div class="hero">'
+    hero.innerHTML = '<div class="hero" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">'
       + '<div class="hero-img-wrap"><img class="hero-img" src="' + ep.artwork + '" alt="" onerror="this.style.display=\'none\'"></div>'
       + '<div class="hero-grad"></div>'
+      + '<div class="hero-play-overlay">&#9654;</div>'
       + '<div class="hero-badge">Clearcast</div>'
       + '<div class="hero-body">'
       + '<div class="hero-show">' + ep.showName + '</div>'
       + '<div class="hero-title">' + ep.epTitle + '</div>'
+      + (metaLine ? '<div class="hero-host">' + metaLine + '</div>' : '')
       + covBar(ep, true)
-      + '<div class="hero-plts" style="margin-top:10px">' + plts + '</div>'
+      + '<div class="hero-plts">' + plts + '</div>'
       + '</div></div>';
   } else {
-    hero.innerHTML = '<div class="hero">'
+    hero.innerHTML = '<div class="hero" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">'
       + '<div class="hero-nophoto">&#127897;</div>'
       + '<div class="hero-grad"></div>'
+      + '<div class="hero-play-overlay">&#9654;</div>'
       + '<div class="hero-badge">Clearcast</div>'
       + '<div class="hero-body">'
       + '<div class="hero-show">' + ep.showName + '</div>'
       + '<div class="hero-title">' + ep.epTitle + '</div>'
+      + (metaLine ? '<div class="hero-host">' + metaLine + '</div>' : '')
       + covBar(ep, true)
-      + '<div class="hero-plts" style="margin-top:10px">' + plts + '</div>'
+      + '<div class="hero-plts">' + plts + '</div>'
       + '</div></div>';
   }
 }
@@ -904,15 +924,16 @@ function renderStoryRow(ep) {
   var art = ep.artwork
     ? '<img class="story-img" src="' + ep.artwork + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=story-img-ph>&#127897;</div>\'">'
     : '<div class="story-img-ph">&#127897;</div>';
+  var meta = [ep.duration, ep.releaseDate].filter(Boolean).join(' · ');
   return '<div class="story-row" onclick="expandStory(this)" data-vid="' + (vid || '') + '" data-ep="' + safeEp + '">'
     + '<div class="story-img-wrap">' + art + '</div>'
     + '<div class="story-body">'
     + '<div class="story-show">' + ep.showName + '</div>'
     + '<div class="story-title">' + ep.epTitle + '</div>'
+    + (meta ? '<div class="story-meta">' + meta + '</div>' : '')
     + covBar(ep, false)
-    + (ep.releaseDate ? '<div class="story-meta">' + ep.releaseDate + '</div>' : '')
     + '<div class="story-plts">'
-    + (ep.youtubeUrl ? '<a class="plt yt" href="' + ep.youtubeUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">YouTube</a>' : '')
+    + (ep.youtubeUrl ? '<a class="plt yt" href="' + ep.youtubeUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">YT</a>' : '')
     + (ep.spotifyUrl ? '<a class="plt sp" href="' + ep.spotifyUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>' : '')
     + (ep.appleUrl ? '<a class="plt ap" href="' + ep.appleUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>' : '')
     + (ep.feedUrl ? '<button class="plt az" onclick="event.stopPropagation();goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>' : '')
@@ -977,13 +998,16 @@ function renderTopShows() {
   el.innerHTML = CURATED_SHOWS.map(function(p) {
     var q = encodeURIComponent(p.name);
     var safeUrl = p.feedUrl.replace(/"/g, '&quot;');
-    var art = '<img class="ts-art" src="' + p.artwork + '" alt="" onerror="this.style.display=\'none\'">';
+    var art = p.artwork
+      ? '<img class="ts-art" src="' + p.artwork + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+      : '<div class="ts-art-ph">&#127897;</div>';
     return '<div class="top-show">' + art
-      + '<div><div class="ts-name">' + p.name + '</div><div class="ts-author">' + p.artist + '</div>'
+      + '<div><div class="ts-name">' + p.name + '</div>'
+      + '<div class="ts-author">' + p.artist + '</div>'
       + '<div class="ts-plts">'
       + '<a class="plt yt" href="https://www.youtube.com/results?search_query=' + q + '+podcast" target="_blank" rel="noopener" style="font-size:9px;padding:2px 6px">YT</a>'
       + '<a class="plt sp" href="https://open.spotify.com/search/' + q + '/shows" target="_blank" rel="noopener" style="font-size:9px;padding:2px 6px">Spotify</a>'
-      + '<button class="plt az" style="font-size:9px;padding:2px 6px" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze</button>'
+      + '<button class="plt az" style="font-size:9px;padding:2px 6px" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>'
       + '</div></div></div>';
   }).join('');
 }
@@ -1098,6 +1122,7 @@ function pollStatus(jobId, audioUrl) {
         document.getElementById('apanel-results').classList.add('on');
         resetBtn();
         d.url = audioUrl;
+        trackAnalysis(d);
         renderResults(d);
       } else if (d.status === 'error') {
         clearInterval(_poll);
@@ -1258,6 +1283,37 @@ function renderResults(data) {
   } else {
     document.getElementById('results').innerHTML = '<div style="max-width:680px;margin:0 auto">' + card + '</div>';
   }
+}
+
+// ── RECENTLY ANALYZED ──
+function trackAnalysis(data) {
+  try {
+    var recent = JSON.parse(localStorage.getItem('cc-recent') || '[]');
+    recent.unshift({
+      title: data.episodeTitle || 'Episode',
+      biasLabel: data.biasLabel || '',
+      url: data.url || ''
+    });
+    recent = recent.slice(0, 3);
+    localStorage.setItem('cc-recent', JSON.stringify(recent));
+    renderRecentlyAnalyzed();
+  } catch(e) {}
+}
+
+function renderRecentlyAnalyzed() {
+  var el = document.getElementById('rp-recent');
+  if (!el) { return; }
+  try {
+    var recent = JSON.parse(localStorage.getItem('cc-recent') || '[]');
+    if (!recent.length) { return; }
+    el.innerHTML = recent.map(function(r) {
+      var safeUrl = (r.url || '').replace(/"/g, '&quot;');
+      return '<div style="padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">'
+        + '<div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">' + r.title + '</div>'
+        + (r.biasLabel ? '<div style="font-size:10px;color:var(--text3);margin-top:1px">' + r.biasLabel + '</div>' : '')
+        + '</div>';
+    }).join('');
+  } catch(e) {}
 }
 
 // ── UPGRADE / PLAN ──
