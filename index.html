@@ -217,7 +217,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── ANALYZE VIEW ── */
-.analyze-outer{max-width:1300px;margin:0 auto;padding:0 20px 60px;display:flex;flex-direction:column;align-items:center}
+.analyze-outer{max-width:700px;margin:0 auto;padding:0 20px 60px;display:flex;flex-direction:column;align-items:center}
 .analyze-hero{padding:40px 0 24px;text-align:center;width:100%;max-width:680px}
 .analyze-hero h1{font-family:var(--ffs);font-size:clamp(24px,4vw,38px);letter-spacing:-.02em;line-height:1.1;margin-bottom:8px;font-weight:400;font-style:italic}
 .analyze-hero p{font-size:13px;color:var(--text2);line-height:1.6;max-width:400px;margin:0 auto}
@@ -239,10 +239,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .ep-row-title{font-size:12px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ep-row-meta{font-size:10px;color:var(--text3);white-space:nowrap}
 .ep-row-btn{font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff)}
-.analyze-sidebyside{display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:start;margin-top:20px;width:100%}
-.analyze-player{position:sticky;top:108px}
+.analyze-sidebyside{display:flex;flex-direction:column;gap:16px;margin-top:20px;width:100%}
 .analyze-player p{font-size:11px;color:var(--text3);text-align:center;margin-top:6px}
-@media(max-width:900px){.analyze-sidebyside{grid-template-columns:1fr}.analyze-player{position:static}}
 .loading-state{display:none;text-align:center;padding:48px 20px;width:100%;max-width:680px}.loading-state.on{display:block}
 .spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
 .ld-title{font-size:14px;font-weight:500;margin-bottom:4px}.ld-msg{font-size:12px;color:var(--text2)}
@@ -366,6 +364,17 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 /* ── FOOTER ── */
 footer{border-top:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
 footer p{font-size:10px;color:var(--text3)}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:54px;background:var(--bg2);border-top:1px solid var(--border);z-index:300;align-items:center;justify-content:space-around}
+.mob-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:transparent;color:var(--text3);font-family:var(--ff);font-size:10px;cursor:pointer;padding:6px 0;height:100%;transition:color .1s}
+.mob-btn.on{color:var(--text)}
+.mob-icon{font-size:20px;line-height:1}
+@media(max-width:960px){
+  .mob-nav{display:flex}
+  body{padding-bottom:54px}
+  .nl,.nav-sep{display:none}
+}
 </style>
 </head>
 <body>
@@ -590,6 +599,19 @@ footer p{font-size:10px;color:var(--text3)}
   <p>clearcast-app.netlify.app</p>
 </footer>
 
+<!-- MOBILE BOTTOM NAV -->
+<div class="mob-nav" id="mob-nav">
+  <button class="mob-btn on" id="mob-marketplace" onclick="showView('marketplace')">
+    <span class="mob-icon">&#127968;</span>Home
+  </button>
+  <button class="mob-btn" id="mob-search" onclick="showView('marketplace');showFeed('foryou');setTimeout(function(){document.getElementById('story-q').focus()},100)">
+    <span class="mob-icon">&#128269;</span>Search
+  </button>
+  <button class="mob-btn" id="mob-analyze" onclick="showView('analyze')">
+    <span class="mob-icon">&#127897;</span>Analyze
+  </button>
+</div>
+
 <script>
 // ── THEME INIT (runs first to prevent flash) ──
 (function() {
@@ -645,7 +667,11 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('on'); });
   document.getElementById('view-' + name).classList.add('on');
   document.querySelectorAll('.nl').forEach(function(b) { b.classList.remove('on'); });
-  document.getElementById('nl-' + name).classList.add('on');
+  var nl = document.getElementById('nl-' + name);
+  if (nl) { nl.classList.add('on'); }
+  document.querySelectorAll('.mob-btn').forEach(function(b) { b.classList.remove('on'); });
+  var mb = document.getElementById('mob-' + name);
+  if (mb) { mb.classList.add('on'); }
   if (name === 'marketplace' && !_feedInit) { initFeed(); }
 }
 
@@ -848,7 +874,7 @@ function renderHero(ep) {
       + '</div></div></div>';
   } else if (ep.artwork) {
     hero.innerHTML = '<div class="hero">'
-      + '<div class="hero-img-wrap"><img class="hero-img" src="' + ep.artwork + '" alt=""></div>'
+      + '<div class="hero-img-wrap"><img class="hero-img" src="' + ep.artwork + '" alt="" onerror="this.style.display=\'none\'"></div>'
       + '<div class="hero-grad"></div>'
       + '<div class="hero-badge">Clearcast</div>'
       + '<div class="hero-body">'
