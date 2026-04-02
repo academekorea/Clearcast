@@ -77,7 +77,9 @@ export default async (req: Request) => {
       // YouTube captions path — no AssemblyAI needed
       transcriptText = job.transcript || "";
       transcriptDuration = job.duration || "";
-      transcriptTitle = transcriptText.split(/[.!?]/)[0]?.slice(0, 80) || "YouTube episode";
+      transcriptTitle = job.episodeTitle
+        || transcriptText.split(/[.!?]/)[0]?.slice(0, 80)
+        || "YouTube episode";
     } else {
       // AssemblyAI polling path
       const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
@@ -103,9 +105,10 @@ export default async (req: Request) => {
       transcriptText = transcript.text || "";
       transcriptDuration = transcript.audio_duration
         ? `${Math.round(transcript.audio_duration / 60)} min` : "";
-      transcriptTitle = transcript.chapters?.[0]?.headline ||
-        transcript.utterances?.[0]?.text?.split(".")[0]?.slice(0, 80) ||
-        "Podcast episode";
+      transcriptTitle = job.episodeTitle
+        || transcript.chapters?.[0]?.headline
+        || transcript.utterances?.[0]?.text?.split(".")[0]?.slice(0, 80)
+        || "Podcast episode";
     }
 
     const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
@@ -182,6 +185,7 @@ export default async (req: Request) => {
       jobId,
       url: job.url,
       episodeTitle: title,
+      showName: job.showName || null,
       duration,
       wordCount: transcriptText.split(" ").length,
       ...analysis,

@@ -100,7 +100,14 @@ export default async (req: Request) => {
       };
     });
 
-    return new Response(JSON.stringify({ results, query }), {
+    // Deduplicate: max 2 results per channel for variety
+    const channelCounts: Record<string, number> = {};
+    const deduped = results.filter((r) => {
+      channelCounts[r.showName] = (channelCounts[r.showName] || 0) + 1;
+      return channelCounts[r.showName] <= 2;
+    });
+
+    return new Response(JSON.stringify({ results: deduped, query }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

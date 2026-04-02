@@ -928,10 +928,10 @@ function covBar(ep, dark) {
     return bar + counts;
   }
   var col = dark ? 'rgba(255,255,255,.5)' : 'var(--text3)';
-  var feedUrl = ep.feedUrl || '';
-  var safeUrl = feedUrl.replace(/"/g, '&quot;');
+  var analyzeUrl = ep.youtubeUrl || ep.feedUrl || '';
+  var safeAnalyze = analyzeUrl.replace(/"/g, '&quot;');
   return '<div style="font-size:10px;color:' + col + ';margin-top:3px">Analyze to see bias'
-    + (feedUrl ? ' &rarr; <span style="text-decoration:underline;cursor:pointer" onclick="event.stopPropagation();goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</span>' : '')
+    + (analyzeUrl ? ' &rarr; <span style="text-decoration:underline;cursor:pointer" onclick="event.stopPropagation();analyzeEp(event,&quot;' + safeAnalyze + '&quot;,&quot;' + (ep.epTitle||'').replace(/"/g,'').replace(/'/g,'') + '&quot;,&quot;' + (ep.showName||'').replace(/"/g,'').replace(/'/g,'') + '&quot;)">Analyze &#8599;</span>' : '')
     + '</div>';
 }
 
@@ -977,6 +977,10 @@ function renderHero(ep) {
     + (ep.feedUrl ? '<button class="hero-plt" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>' : '');
 
   var metaLine = [ep.duration, ep.releaseDate].filter(Boolean).join(' · ');
+  var heroAnalyzeUrl = ep.feedUrl || ep.youtubeUrl || '';
+  var safeHeroAnalyze = heroAnalyzeUrl.replace(/"/g, '&quot;');
+  var safeHeroTitle = (ep.epTitle || '').replace(/"/g, '').replace(/'/g, '');
+  var safeHeroShow = (ep.showName || '').replace(/"/g, '').replace(/'/g, '');
   if (vid) {
     hero.innerHTML = '<div>'
       + ytEmbed(vid)
@@ -989,7 +993,7 @@ function renderHero(ep) {
       + (ep.youtubeUrl ? '<a class="plt yt" href="' + ep.youtubeUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">YouTube</a>' : '')
       + (ep.spotifyUrl ? '<a class="plt sp" href="' + ep.spotifyUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>' : '')
       + (ep.appleUrl ? '<a class="plt ap" href="' + ep.appleUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>' : '')
-      + (ep.feedUrl ? '<button class="plt az" onclick="event.stopPropagation();goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>' : '')
+      + (heroAnalyzeUrl ? '<button class="plt az" onclick="event.stopPropagation();analyzeEp(event,&quot;' + safeHeroAnalyze + '&quot;,&quot;' + safeHeroTitle + '&quot;,&quot;' + safeHeroShow + '&quot;)">Analyze &#8599;</button>' : '')
       + '</div></div></div>';
   } else if (ep.artwork) {
     hero.innerHTML = '<div class="hero" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">'
@@ -1022,7 +1026,10 @@ function renderHero(ep) {
 
 function renderStoryRow(ep) {
   var vid = ytId(ep.youtubeUrl);
-  var safeUrl = (ep.feedUrl || '').replace(/"/g, '&quot;');
+  var analyzeTarget = ep.feedUrl || ep.youtubeUrl || '';
+  var safeUrl = analyzeTarget.replace(/"/g, '&quot;');
+  var safeTitle = (ep.epTitle || '').replace(/"/g, '').replace(/'/g, '');
+  var safeShow = (ep.showName || '').replace(/"/g, '').replace(/'/g, '');
   var safeEp = JSON.stringify({t:ep.epTitle,s:ep.showName,yt:ep.youtubeUrl||'',sp:ep.spotifyUrl||'',ap:ep.appleUrl||'',feed:ep.feedUrl||''}).replace(/"/g, '&quot;');
   var art = ep.artwork
     ? '<img class="story-img" src="' + ep.artwork + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=story-img-ph>&#127897;</div>\'">'
@@ -1039,7 +1046,7 @@ function renderStoryRow(ep) {
     + (ep.youtubeUrl ? '<a class="plt yt" href="' + ep.youtubeUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">YT</a>' : '')
     + (ep.spotifyUrl ? '<a class="plt sp" href="' + ep.spotifyUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>' : '')
     + (ep.appleUrl ? '<a class="plt ap" href="' + ep.appleUrl + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>' : '')
-    + (ep.feedUrl ? '<button class="plt az" onclick="event.stopPropagation();goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>' : '')
+    + (analyzeTarget ? '<button class="plt az" onclick="event.stopPropagation();analyzeEp(event,&quot;' + safeUrl + '&quot;,&quot;' + safeTitle + '&quot;,&quot;' + safeShow + '&quot;)">Analyze &#8599;</button>' : '')
     + '</div></div></div>';
 }
 
@@ -1178,7 +1185,7 @@ async function loadEpisodes(feedUrl) {
     if (d.error || !d.episodes || !d.episodes.length) { startAnalysis(feedUrl); return; }
     _episodes = d.episodes;
     document.getElementById('ep-list').innerHTML = _episodes.map(function(ep, i) {
-      return '<div class="ep-row" onclick="startAnalysis(_episodes[' + i + '].audioUrl)">'
+      return '<div class="ep-row" onclick="startAnalysis(_episodes[' + i + '].audioUrl,_episodes[' + i + '].title)">'
         + '<div style="flex:1;min-width:0"><div class="ep-row-title">' + ep.title + '</div></div>'
         + '<div class="ep-row-meta">' + [ep.date, ep.duration].filter(Boolean).join(' \u00B7 ') + '</div>'
         + '<button class="ep-row-btn">Analyze</button></div>';
@@ -1188,7 +1195,17 @@ async function loadEpisodes(feedUrl) {
   finally { btn.disabled = false; btn.textContent = 'Analyze'; }
 }
 
-function startAnalysis(audioUrl) {
+// analyzeEp — called from story rows and hero buttons with full metadata
+function analyzeEp(e, url, epTitle, showName) {
+  if (e) { e.stopPropagation(); }
+  showView('analyze');
+  document.getElementById('url-input').value = url;
+  startAnalysis(url, epTitle || '', showName || '');
+}
+
+function startAnalysis(audioUrl, epTitle, showName) {
+  epTitle = epTitle || '';
+  showName = showName || '';
   document.getElementById('ep-picker').classList.remove('on');
   document.getElementById('results').innerHTML = '';
   document.getElementById('empty-state').style.display = 'none';
@@ -1200,7 +1217,7 @@ function startAnalysis(audioUrl) {
   btn.disabled = true;
   btn.textContent = 'Analyzing…';
 
-  fetch('/api/analyze', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url:audioUrl})})
+  fetch('/api/analyze', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url:audioUrl, episodeTitle:epTitle||undefined, showName:showName||undefined})})
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (d.error) { showAnalyzeErr(d.error); resetBtn(); return; }
@@ -1297,7 +1314,9 @@ function renderResults(data) {
   var vid = ytId(data.url || '');
 
   var card = '<div class="rcard">';
-  card += '<div class="rcard-head"><div class="rcard-title">' + (data.episodeTitle || 'Episode analysis') + '</div>';
+  card += '<div class="rcard-head">';
+  if (data.showName) { card += '<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">' + data.showName + '</div>'; }
+  card += '<div class="rcard-title">' + (data.episodeTitle || 'Episode analysis') + '</div>';
   card += '<div class="rcard-sub">' + (data.duration || '') + (data.wordCount ? ' &middot; ~' + Math.round(data.wordCount / 130) + ' min read' : '') + '</div>';
   card += '<div class="badges"><span class="bpill ' + bpClass(data.biasLabel || 'Center') + '"><span class="dot"></span>' + (data.biasLabel || 'Center') + '</span>';
   card += '<span class="bpill ' + bfClass(data.factualityLabel || 'Mostly factual') + '"><span class="dot"></span>' + (data.factualityLabel || 'Mostly factual') + '</span></div></div>';

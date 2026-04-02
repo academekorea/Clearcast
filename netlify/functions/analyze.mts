@@ -31,69 +31,102 @@ async function extractAudioUrl(url: string): Promise<string | null> {
   }
 }
 
-// Fetch YouTube captions by scraping the watch page for caption track URLs
+async function fetchCaptionsFromBaseUrl(baseUrl: string): Promise<{ text: string; duration: string } | null> {
+  const capRes = await fetch(`${baseUrl}&fmt=json3`, { signal: AbortSignal.timeout(10000) });
+  if (!capRes.ok) return null;
+  const capData = await capRes.json() as any;
+  const events: any[] = capData.events || [];
+  if (events.length === 0) return null;
+
+  const text = events
+    .filter((e) => e.segs)
+    .map((e) => e.segs.map((s: any) => s.utf8 || "").join(""))
+    .join(" ")
+    .replace(/\n/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!text || text.length < 100) return null;
+
+  const last = events[events.length - 1];
+  const totalMs = (last?.tStartMs || 0) + (last?.dDurationMs || 0);
+  const duration = totalMs > 0 ? `${Math.round(totalMs / 60000)} min` : "";
+  return { text, duration };
+}
+
 async function getYouTubeTranscript(videoId: string): Promise<{ text: string; duration: string } | null> {
   try {
-    // Fetch the YouTube watch page with browser headers
+    // Fetch the YouTube watch page — add CONSENT cookie to bypass geo/GDPR gate
     const pageRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         "Accept-Language": "en-US,en;q=0.9",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Cookie": "CONSENT=YES+cb.20210328-17-p0.en+FX+999; SOCS=CAESEwgDEgk2MDIzMDEwMRoCZW4gAQ==",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
       },
       signal: AbortSignal.timeout(15000),
     });
     const html = await pageRes.text();
 
-    // Extract ytInitialPlayerResponse JSON using bracket counting
+    // ── Strategy 1: extract captionTracks directly via regex (faster, more resilient) ──
+    const ctMatch = html.match(/"captionTracks":\s*(\[.*?\])\s*,\s*"audioTracks"/s);
+    if (ctMatch) {
+      try {
+        const tracks: any[] = JSON.parse(ctMatch[1]);
+        const track =
+          tracks.find((t) => t.languageCode === "en" && !t.kind) ||
+          tracks.find((t) => t.languageCode === "en") ||
+          tracks.find((t) => t.languageCode?.startsWith("en")) ||
+          tracks[0];
+        if (track?.baseUrl) {
+          const result = await fetchCaptionsFromBaseUrl(track.baseUrl);
+          if (result) return result;
+        }
+      } catch { /* fall through */ }
+    }
+
+    // ── Strategy 2: full ytInitialPlayerResponse bracket parse ──
     const marker = "ytInitialPlayerResponse = ";
     const markerIdx = html.indexOf(marker);
-    if (markerIdx === -1) return null;
-
-    const jsonStart = markerIdx + marker.length;
-    let depth = 0, jsonEnd = -1;
-    for (let i = jsonStart; i < Math.min(jsonStart + 600000, html.length); i++) {
-      if (html[i] === "{") depth++;
-      else if (html[i] === "}") { depth--; if (depth === 0) { jsonEnd = i; break; } }
+    if (markerIdx !== -1) {
+      const jsonStart = markerIdx + marker.length;
+      let depth = 0, jsonEnd = -1;
+      for (let i = jsonStart; i < Math.min(jsonStart + 600000, html.length); i++) {
+        if (html[i] === "{") depth++;
+        else if (html[i] === "}") { depth--; if (depth === 0) { jsonEnd = i; break; } }
+      }
+      if (jsonEnd !== -1) {
+        try {
+          const pr = JSON.parse(html.slice(jsonStart, jsonEnd + 1));
+          const tracks: any[] = pr?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+          const track =
+            tracks.find((t: any) => t.languageCode === "en" && !t.kind) ||
+            tracks.find((t: any) => t.languageCode === "en") ||
+            tracks.find((t: any) => t.languageCode?.startsWith("en")) ||
+            tracks[0];
+          if (track?.baseUrl) {
+            const result = await fetchCaptionsFromBaseUrl(track.baseUrl);
+            if (result) return result;
+          }
+        } catch { /* fall through */ }
+      }
     }
-    if (jsonEnd === -1) return null;
 
-    const pr = JSON.parse(html.slice(jsonStart, jsonEnd + 1));
-    const tracks: any[] = pr?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
-    if (tracks.length === 0) return null;
+    // ── Strategy 3: loose baseUrl regex scan ──
+    const urlMatches = [...html.matchAll(/"baseUrl":"(https:\/\/www\.youtube\.com\/api\/timedtext[^"]+)"/g)];
+    for (const m of urlMatches) {
+      try {
+        const baseUrl = m[1].replace(/\\u0026/g, "&");
+        const result = await fetchCaptionsFromBaseUrl(baseUrl);
+        if (result) return result;
+      } catch { /* try next */ }
+    }
 
-    // Prefer manual English, then any English, then first available
-    const track =
-      tracks.find((t) => t.languageCode === "en" && !t.kind) ||
-      tracks.find((t) => t.languageCode === "en") ||
-      tracks.find((t) => t.languageCode?.startsWith("en")) ||
-      tracks[0];
-    if (!track?.baseUrl) return null;
-
-    // Fetch captions in JSON3 format
-    const capRes = await fetch(`${track.baseUrl}&fmt=json3`, {
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!capRes.ok) return null;
-
-    const capData = await capRes.json() as any;
-    const events: any[] = capData.events || [];
-    if (events.length === 0) return null;
-
-    const text = events
-      .filter((e) => e.segs)
-      .map((e) => e.segs.map((s: any) => s.utf8 || "").join(""))
-      .join(" ")
-      .replace(/\n/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    if (!text || text.length < 100) return null;
-
-    const last = events[events.length - 1];
-    const totalMs = (last?.tStartMs || 0) + (last?.dDurationMs || 0);
-    const duration = totalMs > 0 ? `${Math.round(totalMs / 60000)} min` : "";
-    return { text, duration };
+    return null;
   } catch {
     return null;
   }
@@ -118,7 +151,7 @@ export default async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { url, showName, showSlug, showArtwork, showFeedUrl } = body;
+    const { url, showName, showSlug, showArtwork, showFeedUrl, episodeTitle } = body;
 
     if (!url) {
       return new Response(JSON.stringify({ error: "URL is required" }), {
@@ -128,13 +161,13 @@ export default async (req: Request) => {
 
     const store = getStore("clearcast-jobs");
 
-    // YouTube: use captions instead of AssemblyAI (faster, no audio extraction needed)
+    // YouTube: use captions instead of AssemblyAI
     const ytMatch = url.match(/(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     if (ytMatch) {
       const cap = await getYouTubeTranscript(ytMatch[1]);
       if (!cap) {
         return new Response(JSON.stringify({
-          error: "No captions found for this YouTube video. Try a video that has auto-generated or manual captions enabled.",
+          error: "Could not retrieve captions for this YouTube video. The video may have captions disabled, or YouTube is temporarily blocking access. Try a different video or paste an MP3/RSS URL instead.",
         }), { status: 400, headers: { "Content-Type": "application/json" } });
       }
       const jobId = `yt-${ytMatch[1]}-${Date.now()}`;
@@ -145,6 +178,7 @@ export default async (req: Request) => {
         transcript: cap.text,
         duration: cap.duration,
         createdAt: Date.now(),
+        episodeTitle: episodeTitle || null,
         showName: showName || null,
         showSlug: showSlug || null,
         showArtwork: showArtwork || null,
@@ -178,7 +212,7 @@ export default async (req: Request) => {
     const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
       method: "POST",
       headers: { "authorization": assemblyKey, "content-type": "application/json" },
-      body: JSON.stringify({ audio_url: audioUrl, speech_models: ["universal-3-pro"] }),
+      body: JSON.stringify({ audio_url: audioUrl, speech_model: "universal-2" }),
     });
 
     if (!aaiRes.ok) {
@@ -205,6 +239,7 @@ export default async (req: Request) => {
       url,
       audioUrl,
       createdAt: Date.now(),
+      episodeTitle: episodeTitle || null,
       showName: showName || null,
       showSlug: showSlug || null,
       showArtwork: showArtwork || null,
