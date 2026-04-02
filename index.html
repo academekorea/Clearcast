@@ -142,8 +142,9 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 /* ── YT EMBED ── */
 .yt-wrap{position:relative;padding-top:56.25%;background:#000}
 .yt-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
-/* Hero YouTube embed — shorter and narrower than full width */
-#hero-wrap .yt-wrap{padding-top:42%;margin:0 16px;border-radius:6px;overflow:hidden}
+/* Hero YouTube embed */
+#hero-wrap .yt-wrap{padding-top:42%}
+.hero-yt-sizer{padding:12px 40px 0;background:var(--bg3)}
 
 /* ── STORY ROWS ── */
 .story-list{display:flex;flex-direction:column}
@@ -983,7 +984,7 @@ function renderHero(ep) {
   var safeHeroShow = (ep.showName || '').replace(/"/g, '').replace(/'/g, '');
   if (vid) {
     hero.innerHTML = '<div>'
-      + ytEmbed(vid)
+      + '<div class="hero-yt-sizer">' + ytEmbed(vid) + '</div>'
       + '<div class="hero-below">'
       + '<div class="hb-show">' + ep.showName + '</div>'
       + '<div class="hb-title">' + ep.epTitle + '</div>'
