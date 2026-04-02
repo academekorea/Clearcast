@@ -91,7 +91,7 @@ export default async (req: Request) => {
       },
       body: JSON.stringify({
         audio_url: audioUrl,
-        speech_model: "best",
+        speech_models: ["best"],
       }),
     });
 
