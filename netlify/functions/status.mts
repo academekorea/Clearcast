@@ -68,29 +68,48 @@ export default async (req: Request) => {
       });
     }
 
-    const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
-    const aaiRes = await fetch(`https://api.assemblyai.com/v2/transcript/${job.transcriptId}`, {
-      headers: { "authorization": assemblyKey! },
-    });
+    // Resolve transcript text — either from pre-fetched captions or AssemblyAI
+    let transcriptText = "";
+    let transcriptDuration = "";
+    let transcriptTitle = "";
 
-    const transcript = await aaiRes.json();
-
-    if (transcript.status === "error") {
-      const updated = { ...job, status: "error", error: transcript.error || "Transcription failed" };
-      await store.setJSON(jobId, updated);
-      return new Response(JSON.stringify(updated), {
-        status: 200, headers: { "Content-Type": "application/json" },
+    if (job.status === "transcribed") {
+      // YouTube captions path — no AssemblyAI needed
+      transcriptText = job.transcript || "";
+      transcriptDuration = job.duration || "";
+      transcriptTitle = transcriptText.split(/[.!?]/)[0]?.slice(0, 80) || "YouTube episode";
+    } else {
+      // AssemblyAI polling path
+      const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
+      const aaiRes = await fetch(`https://api.assemblyai.com/v2/transcript/${job.transcriptId}`, {
+        headers: { "authorization": assemblyKey! },
       });
-    }
+      const transcript = await aaiRes.json();
 
-    if (transcript.status !== "completed") {
-      return new Response(JSON.stringify({ ...job, status: "transcribing" }), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
+      if (transcript.status === "error") {
+        const updated = { ...job, status: "error", error: transcript.error || "Transcription failed" };
+        await store.setJSON(jobId, updated);
+        return new Response(JSON.stringify(updated), {
+          status: 200, headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      if (transcript.status !== "completed") {
+        return new Response(JSON.stringify({ ...job, status: "transcribing" }), {
+          status: 200, headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      transcriptText = transcript.text || "";
+      transcriptDuration = transcript.audio_duration
+        ? `${Math.round(transcript.audio_duration / 60)} min` : "";
+      transcriptTitle = transcript.chapters?.[0]?.headline ||
+        transcript.utterances?.[0]?.text?.split(".")[0]?.slice(0, 80) ||
+        "Podcast episode";
     }
 
     const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
-    const text = (transcript.text || "").split(" ").slice(0, 10000).join(" ");
+    const text = transcriptText.split(" ").slice(0, 10000).join(" ");
 
     const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -130,12 +149,8 @@ export default async (req: Request) => {
       };
     }
 
-    const duration = transcript.audio_duration
-      ? `${Math.round(transcript.audio_duration / 60)} min` : "";
-
-    const title = transcript.chapters?.[0]?.headline ||
-      transcript.utterances?.[0]?.text?.split(".")[0]?.slice(0, 80) ||
-      "Podcast episode";
+    const duration = transcriptDuration;
+    const title = transcriptTitle;
 
     // Compute audioLean from biasScore as fallback if Claude didn't return it
     const score = analysis.biasScore ?? 0;
@@ -168,7 +183,7 @@ export default async (req: Request) => {
       url: job.url,
       episodeTitle: title,
       duration,
-      wordCount: (transcript.text || "").split(" ").length,
+      wordCount: transcriptText.split(" ").length,
       ...analysis,
     };
 

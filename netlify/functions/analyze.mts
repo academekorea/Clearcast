@@ -31,42 +31,42 @@ async function extractAudioUrl(url: string): Promise<string | null> {
   }
 }
 
-async function getYouTubeAudioUrl(videoId: string): Promise<string | null> {
-  try {
-    const res = await fetch("https://www.youtube.com/youtubei/v1/player", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent": "com.google.android.youtube/17.31.35 (Linux; U; Android 11)",
-        "X-YouTube-Client-Name": "3",
-        "X-YouTube-Client-Version": "17.31.35",
-      },
-      body: JSON.stringify({
-        videoId,
-        context: {
-          client: {
-            clientName: "ANDROID",
-            clientVersion: "17.31.35",
-            androidSdkVersion: 30,
-            hl: "en",
-            gl: "US",
-          },
-        },
-      }),
-      signal: AbortSignal.timeout(10000),
-    });
-    const data = await res.json();
-    const formats: any[] = [
-      ...(data?.streamingData?.adaptiveFormats || []),
-      ...(data?.streamingData?.formats || []),
-    ];
-    // Prefer m4a audio-only, fall back to any audio
-    const audio = formats.find((f) => f.mimeType?.startsWith("audio/mp4"))
-      || formats.find((f) => f.mimeType?.startsWith("audio/"));
-    return audio?.url || null;
-  } catch {
-    return null;
-  }
+// Fetch YouTube captions via the timedtext API (no auth required for public videos)
+async function getYouTubeTranscript(videoId: string): Promise<{ text: string; duration: string } | null> {
+  const tryFetch = async (url: string) => {
+    try {
+      const res = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!res.ok) return null;
+      const data = await res.json() as any;
+      const events: any[] = data.events || [];
+      if (events.length === 0) return null;
+      const text = events
+        .filter((e) => e.segs)
+        .map((e) => e.segs.map((s: any) => s.utf8 || "").join(""))
+        .join(" ")
+        .replace(/\n/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (!text || text.length < 100) return null;
+      const last = events[events.length - 1];
+      const totalMs = (last?.tStartMs || 0) + (last?.dDurationMs || 0);
+      const duration = totalMs > 0 ? `${Math.round(totalMs / 60000)} min` : "";
+      return { text, duration };
+    } catch {
+      return null;
+    }
+  };
+
+  // Try manual English captions first, then auto-generated
+  return (
+    await tryFetch(`https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&fmt=json3`) ||
+    await tryFetch(`https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&kind=asr&fmt=json3`) ||
+    await tryFetch(`https://www.youtube.com/api/timedtext?v=${videoId}&lang=en-US&fmt=json3`) ||
+    null
+  );
 }
 
 function isAudioUrl(url: string): boolean {
@@ -96,6 +96,36 @@ export default async (req: Request) => {
       });
     }
 
+    const store = getStore("clearcast-jobs");
+
+    // YouTube: use captions instead of AssemblyAI (faster, no audio extraction needed)
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (ytMatch) {
+      const cap = await getYouTubeTranscript(ytMatch[1]);
+      if (!cap) {
+        return new Response(JSON.stringify({
+          error: "No captions found for this YouTube video. Try a video that has auto-generated or manual captions enabled.",
+        }), { status: 400, headers: { "Content-Type": "application/json" } });
+      }
+      const jobId = `yt-${ytMatch[1]}-${Date.now()}`;
+      await store.setJSON(jobId, {
+        status: "transcribed",
+        jobId,
+        url,
+        transcript: cap.text,
+        duration: cap.duration,
+        createdAt: Date.now(),
+        showName: showName || null,
+        showSlug: showSlug || null,
+        showArtwork: showArtwork || null,
+        showFeedUrl: showFeedUrl || null,
+      });
+      return new Response(JSON.stringify({ jobId, status: "transcribed" }), {
+        status: 200, headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Non-YouTube: extract audio URL then send to AssemblyAI
     const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
     if (!assemblyKey) {
       return new Response(JSON.stringify({ error: "Transcription service not configured" }), {
@@ -104,51 +134,28 @@ export default async (req: Request) => {
     }
 
     let audioUrl = url;
-
-    const ytMatch = url.match(/(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    const isYouTube = !!ytMatch;
-
-    if (isYouTube && ytMatch) {
-      const ytAudio = await getYouTubeAudioUrl(ytMatch[1]);
-      if (!ytAudio) {
-        return new Response(JSON.stringify({
-          error: "Could not extract audio from this YouTube video. Make sure it's a public video and try again."
-        }), { status: 400, headers: { "Content-Type": "application/json" } });
-      }
-      audioUrl = ytAudio;
-    } else if (!url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
+    if (!url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
       const extracted = await extractAudioUrl(url);
       if (extracted) {
         audioUrl = extracted;
       } else if (!isAudioUrl(url)) {
         return new Response(JSON.stringify({
-          error: "Could not find audio. Please paste a YouTube URL, direct MP3/M4A link, or RSS feed URL."
+          error: "Could not find audio. Please paste a YouTube URL, direct MP3/M4A link, or RSS feed URL.",
         }), { status: 400, headers: { "Content-Type": "application/json" } });
       }
-      // isAudioUrl matched (CDN/podcast URL pattern) — try the URL directly with AssemblyAI
     }
 
-    // Submit to AssemblyAI v2
     const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
       method: "POST",
-      headers: {
-        "authorization": assemblyKey,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        audio_url: audioUrl,
-        speech_models: ["universal-3-pro"],
-      }),
+      headers: { "authorization": assemblyKey, "content-type": "application/json" },
+      body: JSON.stringify({ audio_url: audioUrl, speech_models: ["universal-3-pro"] }),
     });
 
     if (!aaiRes.ok) {
       const errText = await aaiRes.text();
       console.error("AssemblyAI error:", errText);
       let errMsg = "Transcription service error. Please try again.";
-      try {
-        const errJson = JSON.parse(errText);
-        if (errJson.error) errMsg = errJson.error;
-      } catch { /* keep default message */ }
+      try { const j = JSON.parse(errText); if (j.error) errMsg = j.error; } catch { /**/ }
       return new Response(JSON.stringify({ error: errMsg }), {
         status: 500, headers: { "Content-Type": "application/json" },
       });
@@ -156,14 +163,12 @@ export default async (req: Request) => {
 
     const aaiData = await aaiRes.json();
     const transcriptId = aaiData.id;
-
     if (!transcriptId) {
       return new Response(JSON.stringify({ error: "Failed to start transcription. Please try again." }), {
         status: 500, headers: { "Content-Type": "application/json" },
       });
     }
 
-    const store = getStore("clearcast-jobs");
     await store.setJSON(transcriptId, {
       status: "transcribing",
       transcriptId,
