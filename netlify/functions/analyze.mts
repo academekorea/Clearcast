@@ -31,42 +31,72 @@ async function extractAudioUrl(url: string): Promise<string | null> {
   }
 }
 
-// Fetch YouTube captions via the timedtext API (no auth required for public videos)
+// Fetch YouTube captions by scraping the watch page for caption track URLs
 async function getYouTubeTranscript(videoId: string): Promise<{ text: string; duration: string } | null> {
-  const tryFetch = async (url: string) => {
-    try {
-      const res = await fetch(url, {
-        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
-        signal: AbortSignal.timeout(10000),
-      });
-      if (!res.ok) return null;
-      const data = await res.json() as any;
-      const events: any[] = data.events || [];
-      if (events.length === 0) return null;
-      const text = events
-        .filter((e) => e.segs)
-        .map((e) => e.segs.map((s: any) => s.utf8 || "").join(""))
-        .join(" ")
-        .replace(/\n/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-      if (!text || text.length < 100) return null;
-      const last = events[events.length - 1];
-      const totalMs = (last?.tStartMs || 0) + (last?.dDurationMs || 0);
-      const duration = totalMs > 0 ? `${Math.round(totalMs / 60000)} min` : "";
-      return { text, duration };
-    } catch {
-      return null;
-    }
-  };
+  try {
+    // Fetch the YouTube watch page with browser headers
+    const pageRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      },
+      signal: AbortSignal.timeout(15000),
+    });
+    const html = await pageRes.text();
 
-  // Try manual English captions first, then auto-generated
-  return (
-    await tryFetch(`https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&fmt=json3`) ||
-    await tryFetch(`https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&kind=asr&fmt=json3`) ||
-    await tryFetch(`https://www.youtube.com/api/timedtext?v=${videoId}&lang=en-US&fmt=json3`) ||
-    null
-  );
+    // Extract ytInitialPlayerResponse JSON using bracket counting
+    const marker = "ytInitialPlayerResponse = ";
+    const markerIdx = html.indexOf(marker);
+    if (markerIdx === -1) return null;
+
+    const jsonStart = markerIdx + marker.length;
+    let depth = 0, jsonEnd = -1;
+    for (let i = jsonStart; i < Math.min(jsonStart + 600000, html.length); i++) {
+      if (html[i] === "{") depth++;
+      else if (html[i] === "}") { depth--; if (depth === 0) { jsonEnd = i; break; } }
+    }
+    if (jsonEnd === -1) return null;
+
+    const pr = JSON.parse(html.slice(jsonStart, jsonEnd + 1));
+    const tracks: any[] = pr?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+    if (tracks.length === 0) return null;
+
+    // Prefer manual English, then any English, then first available
+    const track =
+      tracks.find((t) => t.languageCode === "en" && !t.kind) ||
+      tracks.find((t) => t.languageCode === "en") ||
+      tracks.find((t) => t.languageCode?.startsWith("en")) ||
+      tracks[0];
+    if (!track?.baseUrl) return null;
+
+    // Fetch captions in JSON3 format
+    const capRes = await fetch(`${track.baseUrl}&fmt=json3`, {
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!capRes.ok) return null;
+
+    const capData = await capRes.json() as any;
+    const events: any[] = capData.events || [];
+    if (events.length === 0) return null;
+
+    const text = events
+      .filter((e) => e.segs)
+      .map((e) => e.segs.map((s: any) => s.utf8 || "").join(""))
+      .join(" ")
+      .replace(/\n/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!text || text.length < 100) return null;
+
+    const last = events[events.length - 1];
+    const totalMs = (last?.tStartMs || 0) + (last?.dDurationMs || 0);
+    const duration = totalMs > 0 ? `${Math.round(totalMs / 60000)} min` : "";
+    return { text, duration };
+  } catch {
+    return null;
+  }
 }
 
 function isAudioUrl(url: string): boolean {
