@@ -369,6 +369,97 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .upgrade-cta:hover{opacity:.88}
 .upgrade-note{font-size:10px;color:var(--text3);text-align:center;margin-top:8px;line-height:1.5}
 
+/* ── SHOW PROFILE ── */
+.sp-wrap{max-width:860px;margin:0 auto;padding:16px 20px 80px}
+.sp-back{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);cursor:pointer;margin-bottom:14px;border:none;background:none;font-family:var(--ff);padding:4px 0}
+.sp-back:hover{color:var(--text)}
+.sp-header{display:flex;gap:20px;align-items:flex-start;padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-xl);margin-bottom:14px}
+.sp-art{width:160px;height:160px;border-radius:12px;object-fit:cover;flex-shrink:0;background:var(--bg4)}
+.sp-art-ph{width:160px;height:160px;border-radius:12px;background:var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:52px}
+.sp-header-body{flex:1;min-width:0}
+.sp-show-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.11em;margin-bottom:5px}
+.sp-name{font-family:var(--ffs);font-size:clamp(20px,3vw,28px);font-weight:400;font-style:italic;line-height:1.1;margin-bottom:4px}
+.sp-category{font-size:11px;color:var(--text3);margin-bottom:8px}
+.sp-badges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.sp-actions{display:flex;gap:8px;flex-wrap:wrap}
+.sp-analyze-btn{padding:7px 16px;font-size:12px;font-weight:500;font-family:var(--ff);border:none;background:var(--text);color:var(--bg);border-radius:var(--r);cursor:pointer}
+.sp-analyze-btn:hover{opacity:.85}
+.sp-share-btn{padding:7px 14px;font-size:12px;font-family:var(--ff);border:1px solid var(--border2);background:transparent;color:var(--text2);border-radius:var(--r);cursor:pointer;font-weight:500}
+.sp-share-btn:hover{background:var(--bg3)}
+@media(max-width:580px){.sp-header{flex-direction:column;align-items:center;text-align:center}.sp-art,.sp-art-ph{width:120px;height:120px}.sp-badges,.sp-actions{justify-content:center}}
+
+/* Intel metrics grid */
+.sp-intel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:680px){.sp-intel-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:380px){.sp-intel-grid{grid-template-columns:1fr}}
+.sp-metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px}
+.sp-metric-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px}
+.sp-metric-val{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1;margin-bottom:3px}
+.sp-metric-sub{font-size:10px;color:var(--text3);line-height:1.4}
+.sp-metric-bar{height:5px;border-radius:3px;background:var(--bg4);margin-top:6px;overflow:hidden}
+.sp-metric-fill{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* Sections */
+.sp-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:12px}
+.sp-section-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px}
+
+/* Drift chart */
+.sp-drift-svg{width:100%;overflow:visible;display:block}
+
+/* Topic map */
+.sp-topic-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.sp-topic-name{font-size:11px;color:var(--text2);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-topic-track{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.sp-topic-fill{height:100%;border-radius:3px}
+.sp-topic-count{font-size:10px;color:var(--text3);width:24px;text-align:right;flex-shrink:0}
+
+/* Episode list */
+.sp-ep-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.sp-ep-row:last-child{border-bottom:none}
+.sp-ep-row:hover{background:var(--bg3);margin:0 -16px;padding:9px 16px}
+.sp-ep-title{font-size:13px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.sp-ep-date{font-size:10px;color:var(--text3);white-space:nowrap;flex-shrink:0}
+.sp-ep-lean{display:flex;width:44px;height:4px;border-radius:2px;overflow:hidden;flex-shrink:0}
+
+/* Empty state */
+.sp-empty{text-align:center;padding:48px 20px}
+.sp-empty h3{font-family:var(--ffs);font-size:22px;font-weight:400;font-style:italic;margin-bottom:8px}
+.sp-empty p{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6}
+.sp-empty-eps{display:flex;flex-direction:column;gap:8px;max-width:480px;margin:0 auto}
+.sp-empty-row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);text-align:left}
+.sp-empty-title{font-size:12px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-empty-btn{font-size:11px;padding:4px 10px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff);white-space:nowrap}
+.sp-empty-btn:hover{background:var(--bg3)}
+
+/* Compare section */
+.sp-compare-trigger{width:100%;padding:14px;border:1px dashed var(--border2);border-radius:var(--r-lg);background:transparent;color:var(--text2);font-size:13px;font-family:var(--ff);cursor:pointer;margin-bottom:12px;transition:all .12s;display:flex;align-items:center;justify-content:center;gap:8px}
+.sp-compare-trigger:hover{border-color:var(--text3);background:var(--bg3);color:var(--text)}
+.sp-compare-search{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-lg);padding:14px;margin-bottom:14px}
+.sp-compare-input{width:100%;padding:9px 12px;font-size:13px;font-family:var(--ff);border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);outline:none;margin-bottom:10px}
+.sp-compare-input:focus{border-color:var(--text3)}
+.sp-compare-opts{display:flex;flex-direction:column;gap:5px}
+.sp-compare-opt{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;background:var(--bg);transition:border-color .1s}
+.sp-compare-opt:hover{border-color:var(--text3);background:var(--bg3)}
+.sp-compare-art{width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--bg4)}
+.sp-compare-optname{font-size:12px;font-weight:500}
+.sp-compare-optauthor{font-size:10px;color:var(--text3)}
+
+/* Compare panel */
+.sp-cmp-panel{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:580px){.sp-cmp-panel{grid-template-columns:1fr}}
+.sp-cmp-col{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px}
+.sp-cmp-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.sp-cmp-art{width:32px;height:32px;border-radius:6px;object-fit:cover;background:var(--bg4)}
+.sp-cmp-name{font-size:12px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-cmp-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.sp-cmp-row:last-child{border-bottom:none}
+.sp-cmp-key{color:var(--text3);font-size:11px}
+.sp-cmp-val{font-weight:600;font-size:15px}
+.sp-cmp-win{color:var(--center)}
+
+/* Share canvas (hidden) */
+#sp-canvas{display:none}
+
 /* ── FOOTER ── */
 footer{border-top:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
 footer p{font-size:10px;color:var(--text3)}
@@ -568,6 +659,16 @@ footer p{font-size:10px;color:var(--text3)}
     </div>
   </div>
 </div>
+
+<!-- SHOW PROFILE VIEW -->
+<div class="view" id="view-show">
+  <div class="sp-wrap" id="sp-wrap">
+    <button class="sp-back" onclick="goBack()">&#8592; Back</button>
+    <div id="sp-content"></div>
+  </div>
+</div>
+
+<canvas id="sp-canvas" width="1200" height="630"></canvas>
 
 <!-- Info modal -->
 <div class="overlay" id="info-modal" onclick="if(event.target===this)this.classList.remove('on')">
@@ -979,12 +1080,13 @@ async function loadBrowse(genre, el) {
       var art = p.artwork
         ? '<img class="show-art" src="' + p.artwork + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
         : '<div class="show-art-ph">&#127897;</div>';
-      return '<div class="show-card">'
+      var showSlug = slugify(p.name);
+      return '<div class="show-card" style="cursor:pointer" onclick="openShowProfile(&quot;' + showSlug + '&quot;)">'
         + '<div class="show-top">' + art + '<div><div class="show-name">' + p.name + '</div><div class="show-author">' + p.artist + '</div></div></div>'
         + '<div class="show-plts">'
-        + '<a class="plt yt" href="https://www.youtube.com/results?search_query=' + q + '+podcast" target="_blank" rel="noopener">YT</a>'
-        + '<a class="plt sp" href="https://open.spotify.com/search/' + q + '/shows" target="_blank" rel="noopener">Spotify</a>'
-        + (p.feedUrl ? '<button class="plt az" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>' : '')
+        + '<a class="plt yt" href="https://www.youtube.com/results?search_query=' + q + '+podcast" target="_blank" rel="noopener" onclick="event.stopPropagation()">YT</a>'
+        + '<a class="plt sp" href="https://open.spotify.com/search/' + q + '/shows" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>'
+        + (p.feedUrl ? '<button class="plt az" onclick="event.stopPropagation();goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>' : '')
         + '</div></div>';
     }).join('');
     loading.style.display = 'none';
@@ -1001,13 +1103,14 @@ function renderTopShows() {
     var art = p.artwork
       ? '<img class="ts-art" src="' + p.artwork + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
       : '<div class="ts-art-ph">&#127897;</div>';
-    return '<div class="top-show">' + art
-      + '<div><div class="ts-name">' + p.name + '</div>'
+    var tSlug = slugify(p.name);
+    return '<div class="top-show" style="cursor:pointer" onclick="openShowProfile(&quot;' + tSlug + '&quot;)">'
+      + art + '<div><div class="ts-name">' + p.name + '</div>'
       + '<div class="ts-author">' + p.artist + '</div>'
       + '<div class="ts-plts">'
-      + '<a class="plt yt" href="https://www.youtube.com/results?search_query=' + q + '+podcast" target="_blank" rel="noopener" style="font-size:9px;padding:2px 6px">YT</a>'
-      + '<a class="plt sp" href="https://open.spotify.com/search/' + q + '/shows" target="_blank" rel="noopener" style="font-size:9px;padding:2px 6px">Spotify</a>'
-      + '<button class="plt az" style="font-size:9px;padding:2px 6px" onclick="goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>'
+      + '<a class="plt yt" href="https://www.youtube.com/results?search_query=' + q + '+podcast" target="_blank" rel="noopener" style="font-size:9px;padding:2px 6px" onclick="event.stopPropagation()">YT</a>'
+      + '<a class="plt sp" href="https://open.spotify.com/search/' + q + '/shows" target="_blank" rel="noopener" style="font-size:9px;padding:2px 6px" onclick="event.stopPropagation()">Spotify</a>'
+      + '<button class="plt az" style="font-size:9px;padding:2px 6px" onclick="event.stopPropagation();goAnalyze(&quot;' + safeUrl + '&quot;)">Analyze &#8599;</button>'
       + '</div></div></div>';
   }).join('');
 }
@@ -1285,6 +1388,566 @@ function renderResults(data) {
   }
 }
 
+// ── SLUGIFY ──
+function slugify(s) {
+  return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+// ── URL ROUTING ──
+function handleUrlRouting() {
+  var path = window.location.pathname;
+  var m = path.match(/^\/show\/([^/?]+)/);
+  if (m) {
+    var slug = decodeURIComponent(m[1]);
+    var params = new URLSearchParams(window.location.search);
+    var compareSlug = params.get('compare') || null;
+    showView('show');
+    loadShowProfile(slug, compareSlug);
+    return true;
+  }
+  return false;
+}
+
+function goBack() {
+  history.back();
+}
+
+// ── SHOW PROFILE ──
+var _spSlug = null;
+var _spData = null;
+var _spCompareSlug = null;
+var _spCompareData = null;
+
+function openShowProfile(slug, compareSlug) {
+  _spSlug = slug;
+  _spCompareSlug = compareSlug || null;
+  var path = '/show/' + encodeURIComponent(slug) + (_spCompareSlug ? '?compare=' + encodeURIComponent(_spCompareSlug) : '');
+  history.pushState({ show: slug, compare: compareSlug || null }, '', path);
+  showView('show');
+  loadShowProfile(slug, compareSlug || null);
+}
+
+async function loadShowProfile(slug, compareSlug) {
+  _spSlug = slug;
+  _spCompareSlug = compareSlug || null;
+  var el = document.getElementById('sp-content');
+  el.innerHTML = '<div style="padding:60px 20px;text-align:center;color:var(--text3);font-size:12px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading show intelligence&hellip;</div>';
+  try {
+    var data = await fetch('/api/show-profile?id=' + encodeURIComponent(slug)).then(function(r) { return r.json(); });
+    _spData = data;
+    renderShowProfile(data, slug, compareSlug);
+    if (compareSlug) {
+      renderCompareLoading();
+      var cdata = await fetch('/api/show-profile?id=' + encodeURIComponent(compareSlug)).then(function(r) { return r.json(); });
+      _spCompareData = cdata;
+      renderComparePanel(data, cdata);
+    }
+  } catch(e) {
+    el.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text3)">Failed to load show profile. Please try again.</div>';
+  }
+}
+
+function renderShowProfile(data, slug, compareSlug) {
+  var show = data.show || {};
+  var m = data.metrics || {};
+  var episodes = data.episodes || [];
+  var driftData = data.driftData || [];
+  var el = document.getElementById('sp-content');
+
+  var artHtml = show.artwork
+    ? '<img class="sp-art" src="' + show.artwork + '" alt="" onerror="this.className=\'sp-art-ph\';this.textContent=\'🎙\'">'
+    : '<div class="sp-art-ph">&#127897;</div>';
+
+  var biasClass = {['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[m.biasLabel] || 'bp-center';
+  var biasBadge = m.biasLabel ? '<span class="bpill ' + biasClass + '"><span class="dot"></span>' + m.biasLabel + '</span>' : '';
+
+  var html = '';
+
+  // Header
+  html += '<div class="sp-header">' + artHtml;
+  html += '<div class="sp-header-body">';
+  html += '<div class="sp-show-label">Podcast</div>';
+  html += '<div class="sp-name">' + (show.name || slug) + '</div>';
+  if (show.feedUrl) { html += '<div class="sp-category">Feed available</div>'; }
+  html += '<div class="sp-badges">' + biasBadge;
+  if (data.episodeCount > 0) { html += '<span class="bpill" style="background:var(--bg3);border-color:var(--border2);color:var(--text2)">' + data.episodeCount + ' episode' + (data.episodeCount === 1 ? '' : 's') + ' analyzed</span>'; }
+  html += '</div>';
+  html += '<div class="sp-actions">';
+  html += '<button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
+  if (data.episodeCount > 0) { html += '<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share card &#8599;</button>'; }
+  html += '</div></div></div>';
+
+  // No episodes yet
+  if (data.episodeCount === 0) {
+    html += '<div class="sp-empty"><h3>No episodes analyzed yet</h3>';
+    html += '<p>Be the first to analyze an episode from ' + (show.name || 'this show') + '.<br>Paste a YouTube URL or RSS feed above.</p>';
+    if (show.feedUrl) {
+      html += '<button class="sp-analyze-btn" onclick="goAnalyze(&quot;' + show.feedUrl.replace(/"/g, '&quot;') + '&quot;)">Load episodes from RSS &rarr;</button>';
+    }
+    html += '</div>';
+    html += buildCompareTrigger(slug, null);
+    el.innerHTML = html;
+    return;
+  }
+
+  // Intelligence grid
+  html += '<div class="sp-intel-grid">';
+  html += spMetric('Bias score', m.avgBiasScore !== null ? m.avgBiasScore : '—', '-100 to +100 · left to right',
+    m.avgBiasScore !== null ? Math.round((m.avgBiasScore + 100) / 2) : 0,
+    m.avgBiasScore < 0 ? 'var(--left-bar)' : m.avgBiasScore > 0 ? 'var(--right-bar)' : 'var(--center-bar)');
+  html += spMetric('Host trust', m.avgTrustScore !== null ? m.avgTrustScore : '—', 'How much parasocial language the host uses',
+    m.avgTrustScore || 0,
+    m.avgTrustScore > 60 ? 'var(--right-bar)' : m.avgTrustScore > 30 ? 'var(--amber)' : 'var(--center-bar)');
+  html += spMetric('Consistency', m.consistencyScore !== null ? m.consistencyScore : '—', 'How stable the bias is episode to episode',
+    m.consistencyScore || 0, 'var(--center-bar)');
+  html += spMetric('Factual rate', m.factualPct !== null ? m.factualPct + '%' : '—', 'Episodes rated Mostly factual',
+    m.factualPct || 0, 'var(--center-bar)');
+  html += spMetric('Sponsor rate', m.sponsorRate !== null ? m.sponsorRate + '%' : '—', 'Episodes with detected sponsor influence',
+    m.sponsorRate || 0, m.sponsorRate > 50 ? 'var(--amber)' : 'var(--center-bar)');
+  html += spMetric('Episodes', data.episodeCount, 'Analyzed by Clearcast users', 100, 'var(--border2)');
+  html += '</div>';
+
+  // Audio lean bar
+  if (m.avgAudioLean) {
+    var al = m.avgAudioLean;
+    html += '<div class="sp-section">';
+    html += '<div class="sp-section-lbl">Aggregate audio lean — based on language &amp; framing across all episodes</div>';
+    html += '<div class="al-track" style="height:10px;border-radius:5px;margin-bottom:6px">';
+    if (al.leftPct) { html += '<div class="al-l" style="width:' + al.leftPct + '%;border-radius:5px 0 0 5px"></div>'; }
+    if (al.centerPct) { html += '<div class="al-c" style="width:' + al.centerPct + '%"></div>'; }
+    if (al.rightPct) { html += '<div class="al-r" style="width:' + al.rightPct + '%;border-radius:0 5px 5px 0"></div>'; }
+    html += '</div><div class="al-labels"><span>Left</span><span>Center</span><span>Right</span></div>';
+    html += '<div class="al-counts" style="margin-top:6px">';
+    if (al.leftPct) { html += '<span class="alc"><span class="alcd" style="background:var(--left-bar)"></span>' + al.leftPct + '% left</span>'; }
+    if (al.centerPct) { html += '<span class="alc"><span class="alcd" style="background:var(--center-bar)"></span>' + al.centerPct + '% center</span>'; }
+    if (al.rightPct) { html += '<span class="alc"><span class="alcd" style="background:var(--right-bar)"></span>' + al.rightPct + '% right</span>'; }
+    html += '</div></div>';
+  }
+
+  // Topic map
+  if (m.topicMap && m.topicMap.length) {
+    html += '<div class="sp-section"><div class="sp-section-lbl">Topics covered — frequency across analyzed episodes</div>';
+    var maxCount = m.topicMap[0].count || 1;
+    m.topicMap.forEach(function(t) {
+      var col = t.lean === 'left' ? 'var(--left-bar)' : t.lean === 'right' ? 'var(--right-bar)' : 'var(--center-bar)';
+      html += '<div class="sp-topic-row"><div class="sp-topic-name">' + t.topic + '</div>';
+      html += '<div class="sp-topic-track"><div class="sp-topic-fill" style="width:' + Math.round((t.count / maxCount) * 100) + '%;background:' + col + '"></div></div>';
+      html += '<div class="sp-topic-count">' + t.count + '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  // Bias drift chart
+  if (driftData.length >= 3) {
+    html += '<div class="sp-section"><div class="sp-section-lbl">Bias drift — score over time</div>';
+    html += buildDriftSvg(driftData);
+    html += '</div>';
+  }
+
+  // Episode list
+  if (episodes.length) {
+    html += '<div class="sp-section"><div class="sp-section-lbl">Analyzed episodes (' + episodes.length + ')</div>';
+    episodes.forEach(function(ep) {
+      var bpCls = {['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[ep.biasLabel] || 'bp-center';
+      var dateStr = ep.createdAt ? new Date(ep.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+      var lean = ep.audioLean;
+      var leanBar = lean ? '<div class="sp-ep-lean">'
+        + (lean.leftPct ? '<div style="background:var(--left-bar);width:' + lean.leftPct + '%"></div>' : '')
+        + (lean.centerPct ? '<div style="background:var(--center-bar);width:' + lean.centerPct + '%"></div>' : '')
+        + (lean.rightPct ? '<div style="background:var(--right-bar);width:' + lean.rightPct + '%"></div>' : '')
+        + '</div>' : '';
+      html += '<div class="sp-ep-row" onclick="viewAnalysis(&quot;' + ep.jobId + '&quot;)">';
+      html += '<div class="sp-ep-title">' + (ep.episodeTitle || 'Untitled') + '</div>';
+      if (leanBar) { html += leanBar; }
+      if (ep.biasLabel) { html += '<span class="bpill ' + bpCls + '" style="font-size:9px;padding:1px 6px">' + ep.biasLabel + '</span>'; }
+      html += '<div class="sp-ep-date">' + dateStr + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Compare section
+  html += '<div id="sp-compare-wrap">' + buildCompareTrigger(_spSlug, compareSlug) + '</div>';
+
+  el.innerHTML = html;
+
+  // Render compare panel if already loaded
+  if (compareSlug && _spCompareData) {
+    renderComparePanel(data, _spCompareData);
+  }
+}
+
+function spMetric(label, val, sub, barPct, barColor) {
+  return '<div class="sp-metric">'
+    + '<div class="sp-metric-lbl">' + label + '</div>'
+    + '<div class="sp-metric-val">' + val + '</div>'
+    + '<div class="sp-metric-sub">' + sub + '</div>'
+    + '<div class="sp-metric-bar"><div class="sp-metric-fill" style="width:' + Math.min(100, Math.max(0, barPct)) + '%;background:' + barColor + '"></div></div>'
+    + '</div>';
+}
+
+function buildDriftSvg(driftData) {
+  var W = 600, H = 80, pad = 10;
+  var scores = driftData.map(function(d) { return d.biasScore; });
+  var minS = Math.min.apply(null, scores), maxS = Math.max.apply(null, scores);
+  var range = Math.max(1, maxS - minS);
+  var pts = driftData.map(function(d, i) {
+    var x = pad + (i / Math.max(1, driftData.length - 1)) * (W - pad * 2);
+    var y = H - pad - ((d.biasScore - minS) / range) * (H - pad * 2);
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  });
+  var col = scores[scores.length - 1] < -20 ? 'var(--left-bar)' : scores[scores.length - 1] > 20 ? 'var(--right-bar)' : 'var(--center-bar)';
+  return '<svg class="sp-drift-svg" viewBox="0 0 ' + W + ' ' + H + '" height="80">'
+    + '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+    + driftData.map(function(d, i) {
+        var x = pad + (i / Math.max(1, driftData.length - 1)) * (W - pad * 2);
+        var y = H - pad - ((d.biasScore - minS) / range) * (H - pad * 2);
+        return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3" fill="' + col + '" opacity=".7"><title>' + (d.episodeTitle || '') + ' · ' + d.biasScore + '</title></circle>';
+      }).join('')
+    + '<text x="' + pad + '" y="' + (H - 2) + '" font-size="9" fill="var(--text3)">' + new Date(driftData[0].createdAt).toLocaleDateString('en-US',{month:'short',year:'numeric'}) + '</text>'
+    + '<text x="' + (W - pad) + '" y="' + (H - 2) + '" font-size="9" fill="var(--text3)" text-anchor="end">' + new Date(driftData[driftData.length - 1].createdAt).toLocaleDateString('en-US',{month:'short',year:'numeric'}) + '</text>'
+    + '</svg>';
+}
+
+function goAnalyzeShow() {
+  var show = (_spData && _spData.show) || {};
+  var feedUrl = show.feedUrl || '';
+  if (feedUrl) { goAnalyze(feedUrl); } else { showView('analyze'); }
+}
+
+function viewAnalysis(jobId) {
+  showView('analyze');
+  document.getElementById('url-input').value = '';
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('loading').classList.add('on');
+  document.getElementById('atabs').classList.remove('on');
+  document.querySelectorAll('.apanel').forEach(function(p) { p.classList.remove('on'); });
+  fetch('/api/status/' + jobId).then(function(r) { return r.json(); }).then(function(d) {
+    document.getElementById('loading').classList.remove('on');
+    if (d.status === 'complete') {
+      document.getElementById('atabs').classList.add('on');
+      document.querySelectorAll('.atab').forEach(function(t) { t.classList.remove('on'); });
+      document.querySelectorAll('.atab')[0].classList.add('on');
+      document.getElementById('apanel-results').classList.add('on');
+      renderResults(d);
+    }
+  }).catch(function() { document.getElementById('loading').classList.remove('on'); });
+}
+
+// ── COMPARE ──
+function buildCompareTrigger(slug, compareSlug) {
+  if (compareSlug) { return ''; }
+  return '<button class="sp-compare-trigger" onclick="showCompareSearch()">'
+    + '<span style="font-size:18px">&#9878;</span> Compare with another show'
+    + '</button>'
+    + '<div id="sp-compare-search-box" style="display:none">'
+    + '<div class="sp-compare-search">'
+    + '<div style="font-size:12px;font-weight:500;margin-bottom:8px">Search a show to compare</div>'
+    + '<input class="sp-compare-input" id="sp-compare-q" type="text" placeholder="Joe Rogan, Pod Save America, NPR Politics…" oninput="filterCompareOptions(this.value)">'
+    + '<div class="sp-compare-opts" id="sp-compare-opts">' + buildCompareOptions() + '</div>'
+    + '</div></div>';
+}
+
+function buildCompareOptions() {
+  return CURATED_SHOWS.map(function(p) {
+    var slug2 = slugify(p.name);
+    if (slug2 === _spSlug) { return ''; }
+    var art = p.artwork ? '<img class="sp-compare-art" src="' + p.artwork + '" alt="" onerror="this.style.display=\'none\'">' : '<div class="sp-compare-art"></div>';
+    return '<div class="sp-compare-opt" onclick="startCompare(&quot;' + slug2 + '&quot;)">'
+      + art + '<div><div class="sp-compare-optname">' + p.name + '</div><div class="sp-compare-optauthor">' + p.artist + '</div></div></div>';
+  }).join('');
+}
+
+function filterCompareOptions(q) {
+  var opts = document.getElementById('sp-compare-opts');
+  if (!opts) { return; }
+  if (!q.trim()) { opts.innerHTML = buildCompareOptions(); return; }
+  var filtered = CURATED_SHOWS.filter(function(p) {
+    return p.name.toLowerCase().includes(q.toLowerCase()) || p.artist.toLowerCase().includes(q.toLowerCase());
+  });
+  if (!filtered.length) {
+    opts.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0">No matches. Try another name.</div>';
+    return;
+  }
+  opts.innerHTML = filtered.map(function(p) {
+    var slug2 = slugify(p.name);
+    var art = p.artwork ? '<img class="sp-compare-art" src="' + p.artwork + '" alt="" onerror="this.style.display=\'none\'">' : '<div class="sp-compare-art"></div>';
+    return '<div class="sp-compare-opt" onclick="startCompare(&quot;' + slug2 + '&quot;)">'
+      + art + '<div><div class="sp-compare-optname">' + p.name + '</div><div class="sp-compare-optauthor">' + p.artist + '</div></div></div>';
+  }).join('');
+}
+
+function showCompareSearch() {
+  var box = document.getElementById('sp-compare-search-box');
+  if (box) { box.style.display = box.style.display === 'none' ? 'block' : 'none'; }
+}
+
+async function startCompare(compareSlug) {
+  _spCompareSlug = compareSlug;
+  var newUrl = '/show/' + encodeURIComponent(_spSlug) + '?compare=' + encodeURIComponent(compareSlug);
+  history.pushState({ show: _spSlug, compare: compareSlug }, '', newUrl);
+  var wrap = document.getElementById('sp-compare-wrap');
+  if (wrap) { wrap.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px"><div class="feed-spin" style="margin:0 auto 8px"></div>Loading comparison&hellip;</div>'; }
+  try {
+    var cdata = await fetch('/api/show-profile?id=' + encodeURIComponent(compareSlug)).then(function(r) { return r.json(); });
+    _spCompareData = cdata;
+    renderComparePanel(_spData, cdata);
+  } catch(e) {
+    if (wrap) { wrap.innerHTML = '<div style="padding:16px;color:var(--text3);font-size:12px">Failed to load comparison data.</div>'; }
+  }
+}
+
+function renderCompareLoading() {
+  var wrap = document.getElementById('sp-compare-wrap');
+  if (wrap) { wrap.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px"><div class="feed-spin" style="margin:0 auto 8px"></div>Loading comparison&hellip;</div>'; }
+}
+
+function renderComparePanel(dataA, dataB) {
+  var wrap = document.getElementById('sp-compare-wrap');
+  if (!wrap) { return; }
+  var mA = dataA.metrics || {}, mB = dataB.metrics || {};
+  var showA = dataA.show || {}, showB = dataB.show || {};
+
+  function cmpVal(a, b, lowerWins) {
+    if (a === null || a === undefined || b === null || b === undefined) { return [false, false]; }
+    var numA = parseFloat(a), numB = parseFloat(b);
+    if (isNaN(numA) || isNaN(numB)) { return [false, false]; }
+    if (lowerWins) { return [numA < numB, numB < numA]; }
+    return [numA > numB, numB > numA];
+  }
+
+  function cmpBias(a, b) {
+    // Closer to 0 = more center = neither wins, just show values
+    return [false, false];
+  }
+
+  var artA = showA.artwork ? '<img class="sp-cmp-art" src="' + showA.artwork + '" alt="" onerror="this.style.display=\'none\'">' : '<div class="sp-cmp-art"></div>';
+  var artB = showB.artwork ? '<img class="sp-cmp-art" src="' + showB.artwork + '" alt="" onerror="this.style.display=\'none\'">' : '<div class="sp-cmp-art"></div>';
+
+  var leanA = mA.avgAudioLean, leanB = mB.avgAudioLean;
+  var leanBarA = leanA ? buildMiniLeanBar(leanA) : '<span style="font-size:10px;color:var(--text3)">No data</span>';
+  var leanBarB = leanB ? buildMiniLeanBar(leanB) : '<span style="font-size:10px;color:var(--text3)">No data</span>';
+
+  var rows = [
+    { key: 'Bias score', a: mA.avgBiasScore !== null ? mA.avgBiasScore : '—', b: mB.avgBiasScore !== null ? mB.avgBiasScore : '—', wins: [false,false] },
+    { key: 'Bias label', a: mA.biasLabel || '—', b: mB.biasLabel || '—', wins: [false,false] },
+    { key: 'Host trust', a: mA.avgTrustScore !== null ? mA.avgTrustScore : '—', b: mB.avgTrustScore !== null ? mB.avgTrustScore : '—', wins: cmpVal(mA.avgTrustScore, mB.avgTrustScore, true) },
+    { key: 'Consistency', a: mA.consistencyScore !== null ? mA.consistencyScore : '—', b: mB.consistencyScore !== null ? mB.consistencyScore : '—', wins: cmpVal(mA.consistencyScore, mB.consistencyScore, false) },
+    { key: 'Factual rate', a: mA.factualPct !== null ? mA.factualPct + '%' : '—', b: mB.factualPct !== null ? mB.factualPct + '%' : '—', wins: cmpVal(mA.factualPct, mB.factualPct, false) },
+    { key: 'Sponsor rate', a: mA.sponsorRate !== null ? mA.sponsorRate + '%' : '—', b: mB.sponsorRate !== null ? mB.sponsorRate + '%' : '—', wins: cmpVal(mA.sponsorRate, mB.sponsorRate, true) },
+    { key: 'Episodes', a: dataA.episodeCount || 0, b: dataB.episodeCount || 0, wins: [false,false] },
+  ];
+
+  var colA = '<div class="sp-cmp-col"><div class="sp-cmp-head">' + artA + '<div class="sp-cmp-name">' + (showA.name || _spSlug) + '</div></div>';
+  rows.forEach(function(r) {
+    colA += '<div class="sp-cmp-row"><span class="sp-cmp-key">' + r.key + '</span>'
+      + '<span class="sp-cmp-val' + (r.wins[0] ? ' sp-cmp-win' : '') + '">' + r.a + '</span></div>';
+  });
+  colA += '<div class="sp-cmp-row"><span class="sp-cmp-key">Audio lean</span><span>' + leanBarA + '</span></div>';
+  colA += '</div>';
+
+  var colB = '<div class="sp-cmp-col"><div class="sp-cmp-head">' + artB + '<div class="sp-cmp-name">' + (showB.name || _spCompareSlug) + '</div></div>';
+  rows.forEach(function(r) {
+    colB += '<div class="sp-cmp-row"><span class="sp-cmp-key">' + r.key + '</span>'
+      + '<span class="sp-cmp-val' + (r.wins[1] ? ' sp-cmp-win' : '') + '">' + r.b + '</span></div>';
+  });
+  colB += '<div class="sp-cmp-row"><span class="sp-cmp-key">Audio lean</span><span>' + leanBarB + '</span></div>';
+  colB += '</div>';
+
+  var shareUrl = window.location.origin + '/show/' + encodeURIComponent(_spSlug) + '?compare=' + encodeURIComponent(_spCompareSlug);
+  wrap.innerHTML = '<div class="sp-section" style="margin-bottom:14px">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+    + '<div class="sp-section-lbl" style="margin-bottom:0">Show comparison</div>'
+    + '<button class="sp-share-btn" onclick="copyCompareLink()" style="font-size:11px;padding:4px 10px">Copy link &#128279;</button>'
+    + '</div>'
+    + '<div class="sp-cmp-panel">' + colA + colB + '</div>'
+    + '<div style="font-size:10px;color:var(--text3);text-align:center;word-break:break-all;margin-top:8px;padding:6px;background:var(--bg3);border-radius:var(--r)">' + shareUrl + '</div>'
+    + '</div>';
+}
+
+function buildMiniLeanBar(lean) {
+  return '<div style="display:flex;height:6px;width:80px;border-radius:3px;overflow:hidden">'
+    + (lean.leftPct ? '<div style="background:var(--left-bar);width:' + lean.leftPct + '%"></div>' : '')
+    + (lean.centerPct ? '<div style="background:var(--center-bar);width:' + lean.centerPct + '%"></div>' : '')
+    + (lean.rightPct ? '<div style="background:var(--right-bar);width:' + lean.rightPct + '%"></div>' : '')
+    + '</div>';
+}
+
+function copyCompareLink() {
+  var url = window.location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() { alert('Link copied!'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('Link copied!');
+  }
+}
+
+// ── SHARE CARD (canvas) ──
+async function generateShareCard() {
+  var btn = document.getElementById('sp-share-btn');
+  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
+  try {
+    var canvas = document.getElementById('sp-canvas');
+    var ctx = canvas.getContext('2d');
+    var W = 1200, H = 630;
+    canvas.width = W; canvas.height = H;
+    var show = (_spData && _spData.show) || {};
+    var m = (_spData && _spData.metrics) || {};
+    var episodeCount = (_spData && _spData.episodeCount) || 0;
+
+    // Background
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+      || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme:dark)').matches);
+    ctx.fillStyle = isDark ? '#111110' : '#f8f7f4';
+    ctx.fillRect(0, 0, W, H);
+
+    // Artwork (left side)
+    var artSize = 220;
+    var artX = 60, artY = H / 2 - artSize / 2;
+    ctx.fillStyle = isDark ? '#2c2c28' : '#e6e4dc';
+    roundRect(ctx, artX, artY, artSize, artSize, 20);
+    ctx.fill();
+
+    if (show.artwork) {
+      try {
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        await new Promise(function(res) { img.onload = res; img.onerror = res; img.src = show.artwork; });
+        if (img.naturalWidth) {
+          ctx.save();
+          roundRect(ctx, artX, artY, artSize, artSize, 20);
+          ctx.clip();
+          ctx.drawImage(img, artX, artY, artSize, artSize);
+          ctx.restore();
+        }
+      } catch(e) {}
+    }
+
+    var tx = artX + artSize + 60;
+    var textColor = isDark ? '#eae8de' : '#111110';
+    var mutedColor = isDark ? '#88877f' : '#57564f';
+    var dimColor = isDark ? '#525248' : '#96958e';
+
+    // "Analyzed by Clearcast" label
+    ctx.fillStyle = dimColor;
+    ctx.font = '600 13px DM Sans, sans-serif';
+    ctx.fillText('ANALYZED BY CLEARCAST', tx, 130);
+
+    // Show name
+    ctx.fillStyle = textColor;
+    ctx.font = 'italic 400 48px "DM Serif Display", serif';
+    wrapText(ctx, show.name || 'Show Profile', tx, 200, W - tx - 60, 56);
+
+    // Divider
+    ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(tx, 260); ctx.lineTo(W - 60, 260); ctx.stroke();
+
+    // Metrics
+    var metrics = [
+      { label: 'Bias Score', val: m.avgBiasScore !== null && m.avgBiasScore !== undefined ? String(m.avgBiasScore) : '—' },
+      { label: 'Host Trust', val: m.avgTrustScore !== null && m.avgTrustScore !== undefined ? String(m.avgTrustScore) : '—' },
+      { label: 'Consistency', val: m.consistencyScore !== null && m.consistencyScore !== undefined ? String(m.consistencyScore) : '—' },
+      { label: 'Factual Rate', val: m.factualPct !== null && m.factualPct !== undefined ? m.factualPct + '%' : '—' },
+    ];
+    var colW = (W - tx - 60) / metrics.length;
+    metrics.forEach(function(met, i) {
+      var mx = tx + i * colW;
+      ctx.fillStyle = dimColor;
+      ctx.font = '600 11px DM Sans, sans-serif';
+      ctx.fillText(met.label.toUpperCase(), mx, 300);
+      ctx.fillStyle = textColor;
+      ctx.font = '600 40px DM Sans, sans-serif';
+      ctx.fillText(met.val, mx, 355);
+    });
+
+    // Audio lean bar
+    if (m.avgAudioLean) {
+      var al = m.avgAudioLean;
+      var barY = 395, barH = 12, barW = W - tx - 60;
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillRect(tx, barY, barW * al.leftPct / 100, barH);
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(tx + barW * al.leftPct / 100, barY, barW * al.centerPct / 100, barH);
+      ctx.fillStyle = '#b91c1c';
+      ctx.fillRect(tx + barW * (al.leftPct + al.centerPct) / 100, barY, barW * al.rightPct / 100, barH);
+      ctx.fillStyle = dimColor;
+      ctx.font = '11px DM Sans, sans-serif';
+      ctx.fillText(al.leftPct + '% left', tx, barY + barH + 18);
+      ctx.textAlign = 'center';
+      ctx.fillText(al.centerPct + '% center', tx + barW / 2, barY + barH + 18);
+      ctx.textAlign = 'right';
+      ctx.fillText(al.rightPct + '% right', tx + barW, barY + barH + 18);
+      ctx.textAlign = 'left';
+    }
+
+    // Bias label badge
+    if (m.biasLabel) {
+      ctx.fillStyle = isDark ? '#172554' : '#eff6ff';
+      roundRect(ctx, tx, 450, 140, 28, 14);
+      ctx.fill();
+      ctx.fillStyle = '#1d4ed8';
+      ctx.font = '500 12px DM Sans, sans-serif';
+      ctx.fillText('● ' + m.biasLabel, tx + 14, 469);
+    }
+
+    // Episodes analyzed
+    ctx.fillStyle = mutedColor;
+    ctx.font = '12px DM Sans, sans-serif';
+    ctx.fillText(episodeCount + ' episode' + (episodeCount !== 1 ? 's' : '') + ' analyzed', tx, 510);
+
+    // Clearcast wordmark bottom-right
+    ctx.fillStyle = dimColor;
+    ctx.font = 'italic 400 22px "DM Serif Display", serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('clearcast-app.netlify.app', W - 60, H - 40);
+    ctx.textAlign = 'left';
+
+    canvas.toBlob(function(blob) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'clearcast-' + (_spSlug || 'show') + '.png';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }, 'image/png');
+  } catch(e) {
+    alert('Share card generation failed. Try again.');
+  } finally {
+    if (btn) { btn.textContent = 'Share card ↗'; btn.disabled = false; }
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+function wrapText(ctx, text, x, y, maxW, lineH) {
+  var words = (text || '').split(' ');
+  var line = '';
+  for (var i = 0; i < words.length; i++) {
+    var test = line + words[i] + ' ';
+    if (ctx.measureText(test).width > maxW && i > 0) {
+      ctx.fillText(line.trim(), x, y);
+      line = words[i] + ' ';
+      y += lineH;
+    } else { line = test; }
+  }
+  ctx.fillText(line.trim(), x, y);
+}
+
 // ── RECENTLY ANALYZED ──
 function trackAnalysis(data) {
   try {
@@ -1324,8 +1987,18 @@ function selPlan(el) { document.querySelectorAll('.price-opt').forEach(function(
 document.getElementById('url-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') { handleAnalyze(); } });
 document.getElementById('story-q').addEventListener('keydown', function(e) { if (e.key === 'Enter') { doSearch(); } });
 
+// ── POPSTATE (browser back/forward) ──
+window.addEventListener('popstate', function(e) {
+  var path = window.location.pathname;
+  if (path.match(/^\/show\//)) {
+    handleUrlRouting();
+  } else {
+    showView('marketplace');
+  }
+});
+
 // ── AUTO INIT ──
-initFeed();
+if (!handleUrlRouting()) { initFeed(); }
 </script>
 </body>
 </html>
