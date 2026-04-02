@@ -31,6 +31,44 @@ async function extractAudioUrl(url: string): Promise<string | null> {
   }
 }
 
+async function getYouTubeAudioUrl(videoId: string): Promise<string | null> {
+  try {
+    const res = await fetch("https://www.youtube.com/youtubei/v1/player", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "com.google.android.youtube/17.31.35 (Linux; U; Android 11)",
+        "X-YouTube-Client-Name": "3",
+        "X-YouTube-Client-Version": "17.31.35",
+      },
+      body: JSON.stringify({
+        videoId,
+        context: {
+          client: {
+            clientName: "ANDROID",
+            clientVersion: "17.31.35",
+            androidSdkVersion: 30,
+            hl: "en",
+            gl: "US",
+          },
+        },
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+    const data = await res.json();
+    const formats: any[] = [
+      ...(data?.streamingData?.adaptiveFormats || []),
+      ...(data?.streamingData?.formats || []),
+    ];
+    // Prefer m4a audio-only, fall back to any audio
+    const audio = formats.find((f) => f.mimeType?.startsWith("audio/mp4"))
+      || formats.find((f) => f.mimeType?.startsWith("audio/"));
+    return audio?.url || null;
+  } catch {
+    return null;
+  }
+}
+
 function isAudioUrl(url: string): boolean {
   return !!(
     url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i) ||
@@ -67,10 +105,18 @@ export default async (req: Request) => {
 
     let audioUrl = url;
 
-    // YouTube URLs are supported natively by AssemblyAI — pass them through directly
-    const isYouTube = /(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(url);
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    const isYouTube = !!ytMatch;
 
-    if (!isYouTube && !url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
+    if (isYouTube && ytMatch) {
+      const ytAudio = await getYouTubeAudioUrl(ytMatch[1]);
+      if (!ytAudio) {
+        return new Response(JSON.stringify({
+          error: "Could not extract audio from this YouTube video. Make sure it's a public video and try again."
+        }), { status: 400, headers: { "Content-Type": "application/json" } });
+      }
+      audioUrl = ytAudio;
+    } else if (!url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
       const extracted = await extractAudioUrl(url);
       if (extracted) {
         audioUrl = extracted;
