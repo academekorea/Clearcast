@@ -323,7 +323,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .search-btn:hover{background:var(--bg3)}
 
 /* ── ANALYZE VIEW ── */
-.analyze-wrap{max-width:860px;margin:0 auto;padding:40px 24px}
+.analyze-wrap{max-width:1400px;margin:0 auto;padding:40px 80px}
 .analyze-url-row{display:flex;gap:8px;margin-bottom:16px}
 .url-input{flex:1;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);font-size:14px;color:var(--text);font-family:var(--ff);outline:none;transition:border-color .15s}
 .url-input:focus{border-color:var(--text)}
@@ -416,11 +416,11 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 /* ── TOPICS / QUOTES / MISSING ── */
 .topics-wrap,.quotes-wrap,.missing-wrap{padding:14px 20px;border-top:1px solid var(--border)}
 .topic-bars{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.topic-bar-row{display:flex;align-items:center;gap:8px}
-.topic-bar-label{font-size:12px;color:var(--text2);width:100px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.topic-bar-track{flex:1;height:6px;background:var(--bg3);border-radius:2px;overflow:hidden}
-.topic-bar-fill{height:100%;border-radius:2px}
-.topic-bar-pct{font-size:11px;color:var(--text3);width:28px;text-align:right;flex-shrink:0}
+.topic-bar-row{display:flex;align-items:flex-start;gap:8px}
+.topic-bar-label{font-size:12px;color:var(--text2);min-width:0;flex:1 1 120px;white-space:normal;word-break:break-word;line-height:1.35;padding-right:6px}
+.topic-bar-track{flex:2;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:4px}
+.topic-bar-fill{height:100%;border-radius:4px}
+.topic-bar-pct{font-size:11px;color:var(--text3);width:32px;text-align:right;flex-shrink:0;margin-top:3px}
 .quote-item{padding:10px 12px;border-left:3px solid var(--border2);background:var(--bg3);border-radius:0 var(--r) var(--r) 0;margin-bottom:8px}
 .quote-item.concern-high{border-left-color:var(--left)}
 .quote-item.concern-med{border-left-color:var(--amber)}
@@ -544,8 +544,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .sp-metric-sub{font-size:10px;color:var(--text3);line-height:1.3;margin-bottom:8px}
 .sp-metric-bar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
 .sp-metric-fill{height:100%;border-radius:2px}
-.sp-topic-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.sp-topic-name{font-size:12px;color:var(--text2);width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-topic-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.sp-topic-name{font-size:12px;color:var(--text2);min-width:0;flex:1 1 110px;white-space:normal;word-break:break-word;line-height:1.35;padding-right:6px}
 .sp-topic-track{flex:1;height:6px;background:var(--bg3);border-radius:2px;overflow:hidden}
 .sp-topic-fill{height:100%;border-radius:2px}
 .sp-topic-count{font-size:11px;color:var(--text3);width:20px;text-align:right;flex-shrink:0}
@@ -769,6 +769,91 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 .mob-btn.on,.mob-btn:hover{color:var(--text)}
 .mob-icon{font-size:20px;line-height:1}
 
+/* ── RESULTS HEADER BAR ── */
+.res-header{display:flex;align-items:center;gap:14px;padding:16px 0 18px;border-bottom:2px solid var(--border);margin-bottom:24px}
+.res-header-art{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px}
+.res-header-ep{flex:1;min-width:0}
+.res-header-title{font-family:var(--ffs);font-size:18px;font-weight:600;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.res-header-show{font-size:13px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.res-header-center{flex-shrink:0}
+.res-header-right{display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.res-plat-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;font-family:var(--ff);text-decoration:none;transition:all .1s;white-space:nowrap}
+.res-plat-btn:hover{border-color:var(--text);color:var(--text)}
+.res-act-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;font-family:var(--ff);transition:all .1s;white-space:nowrap}
+.res-act-btn:hover{border-color:var(--text);color:var(--text)}
+
+/* ── RESULTS 2-COL GRID ── */
+.res-grid{display:grid;grid-template-columns:58fr 42fr;gap:24px;align-items:start}
+.res-left-col{}
+.res-right-col{position:sticky;top:100px}
+
+/* ── RESULT PANELS ── */
+.res-panel{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--bg2);margin-bottom:16px}
+.res-panel-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.res-panel-body{padding:16px}
+
+/* ── FINDINGS 2×2 ── */
+.findings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.finding-cell{background:var(--bg2);padding:14px 16px}
+.finding-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px}
+.finding-val{font-family:var(--ffs);font-size:22px;font-weight:700;margin-bottom:6px;line-height:1}
+.finding-why{border:none;background:none;cursor:pointer;font-size:11px;color:var(--text3);padding:0;font-family:var(--ff);text-decoration:underline;text-decoration-color:var(--border2);display:block}
+.finding-why:hover{color:var(--text2)}
+.finding-expand{display:none;margin-top:8px;font-size:12px;color:var(--text2);line-height:1.4;padding:8px;background:var(--bg3);border-radius:var(--r)}
+.finding-expand.on{display:block}
+
+/* ── KEY QUOTES ── */
+.kq-item{padding:12px;border-left:3px solid var(--border2);background:var(--bg3);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px}
+.kq-item.kq-left{border-left-color:var(--left)}
+.kq-item.kq-right{border-left-color:var(--right-bar)}
+.kq-item.kq-neutral{border-left-color:var(--center-bar)}
+.kq-text{font-size:13px;font-style:italic;line-height:1.55;color:var(--text);margin-bottom:6px}
+.kq-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.kq-ts{display:inline-block;padding:2px 8px;background:var(--bg4);border-radius:10px;font-size:10px;color:var(--text3);font-weight:600}
+.kq-label{font-size:10px;color:var(--text2)}
+
+/* ── LIVE ANALYSIS FEED ── */
+.laf-wrap{padding:32px 0;max-width:560px;margin:0 auto}
+.laf-header{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:16px}
+.laf-progress-rail{height:3px;background:var(--border2);border-radius:2px;margin-bottom:24px}
+.laf-progress-fill{height:100%;background:var(--right-bar);border-radius:2px;width:0;transition:width .6s ease}
+.laf-step{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);opacity:0;animation:none;font-size:13px;color:var(--text2)}
+.laf-step.done{opacity:1;animation:fadeStep .4s ease forwards}
+.laf-step.active{opacity:1;animation:fadeStep .4s ease forwards;color:var(--text)}
+.laf-step-icon{font-size:16px;flex-shrink:0;line-height:1.5}
+.laf-step-text{line-height:1.5}
+.laf-step-tick{margin-left:auto;color:var(--right-bar);font-size:14px;flex-shrink:0;line-height:1.5}
+.laf-eta{font-size:12px;color:var(--text3);margin-top:12px;text-align:center}
+@keyframes fadeStep{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TRANSCRIPT HIGHLIGHTS ── */
+.th-search{display:flex;gap:8px;margin-bottom:14px}
+.th-search-input{flex:1;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);font-size:13px;color:var(--text);font-family:var(--ff);outline:none}
+.th-search-input:focus{border-color:var(--text)}
+.th-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.th-filter{padding:4px 12px;border:1px solid var(--border2);border-radius:12px;background:transparent;color:var(--text2);cursor:pointer;font-size:11px;font-family:var(--ff);transition:all .1s}
+.th-filter.on,.th-filter:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.th-quote{padding:14px;border-left:3px solid var(--border2);background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--border2);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px}
+.th-quote.th-left{border-left-color:var(--left)}
+.th-quote.th-right{border-left-color:var(--right-bar)}
+.th-quote.th-neutral{border-left-color:var(--center-bar)}
+.th-quote-text{font-size:13px;font-style:italic;line-height:1.6;color:var(--text);margin-bottom:8px}
+.th-quote-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.th-ts{display:inline-block;padding:2px 8px;background:var(--bg4);border-radius:10px;font-size:10px;color:var(--text3);font-weight:600}
+.th-label{font-size:10px;color:var(--text3)}
+.th-finding{font-size:10px;color:var(--text2);padding:2px 8px;background:var(--bg3);border-radius:10px}
+
+/* ── MISSING VOICES LIST ── */
+.mv-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.mv-item:last-child{border-bottom:none}
+.mv-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px}
+.mv-body{}
+.mv-voice{font-size:13px;font-weight:500;margin-bottom:2px}
+.mv-why{font-size:11px;color:var(--text3)}
+
+/* ── AL TRACK FIX ── */
+.al-track{height:14px!important;border-radius:7px!important}
+
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   .home-hero{padding:72px 20px 60px}
@@ -781,6 +866,10 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
   footer.site-footer{padding:60px 20px 48px}
   .nav{padding:0 16px;gap:4px}
   .analyze-wrap{padding:24px 16px}
+  .res-grid{grid-template-columns:1fr}
+  .res-right-col{position:static}
+  .res-header{flex-wrap:wrap;gap:10px}
+  .res-header-right{width:100%}
   .sp-content{padding:24px 16px}
 }
 </style>
@@ -1105,21 +1194,27 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <div id="ep-list"></div>
     </div>
     <div class="loading" id="loading">
-      <div class="feed-spin"></div>
-      <div class="ld-title" id="ld-title">Checking cache&hellip;</div>
-      <div class="ld-msg" id="ld-msg">Looking up previous results&hellip;</div>
-      <div class="ld-progress-wrap" id="ld-progress-wrap"><div class="ld-progress-bar" id="ld-progress-bar"></div></div>
+      <div class="laf-wrap">
+        <div class="laf-header">Live Analysis Feed</div>
+        <div class="laf-progress-rail"><div class="laf-progress-fill" id="laf-progress"></div></div>
+        <div id="laf-steps"></div>
+        <div class="laf-eta" id="laf-eta">&nbsp;</div>
+      </div>
+      <!-- keep hidden legacy elements for startTranscriptionFallback compat -->
+      <div id="ld-title" style="display:none"></div>
+      <div id="ld-msg" style="display:none"></div>
+      <div id="ld-progress-wrap" style="display:none"><div class="ld-progress-bar" id="ld-progress-bar"></div></div>
     </div>
     <div class="atabs" id="atabs">
       <button class="atab on" onclick="switchATab('results',this)">Analysis</button>
-      <button class="atab" onclick="switchATab('transcript',this)">Transcript</button>
+      <button class="atab" id="atab-transcript" onclick="switchATab('transcript',this)">Transcript Highlights</button>
     </div>
     <div class="apanel on" id="apanel-results">
       <div class="empty-state" id="empty-state">Paste a URL above and click Analyze to get started.</div>
       <div id="results"></div>
     </div>
     <div class="apanel" id="apanel-transcript">
-      <div id="transcript-content" style="font-size:13px;color:var(--text2);line-height:1.7;max-width:680px;white-space:pre-wrap"></div>
+      <div id="transcript-content"></div>
     </div>
   </div>
 </div><!-- /view-analyze -->
@@ -2011,11 +2106,11 @@ function ytEmbed(id) { return '<div class="yt-wrap"><iframe src="https://www.you
 
 // ── BIAS BAR HELPERS ──
 function biasPlainLabel(leftPct, rightPct) {
-  var dom = Math.max(leftPct || 0, rightPct || 0);
-  if (dom <= 19) return 'Mostly balanced';
-  if (dom <= 39) return 'Lightly one-sided';
-  if (dom <= 59) return 'Moderately biased';
-  if (dom <= 79) return 'Heavily one-sided';
+  var diff = Math.abs((leftPct||0) - (rightPct||0));
+  if (diff < 20) return 'Mostly balanced';
+  if (diff < 40) return 'Lightly one-sided';
+  if (diff < 60) return 'Moderately biased';
+  if (diff < 80) return 'Heavily one-sided';
   return 'Extremely one-sided';
 }
 
@@ -2253,6 +2348,9 @@ function startAnalysis(audioUrl, epTitle, showName) {
   document.getElementById('atabs').classList.remove('on');
   document.querySelectorAll('.apanel').forEach(function(p){ p.classList.remove('on'); });
   document.getElementById('loading').classList.add('on');
+  document.getElementById('laf-steps').innerHTML='';
+  document.getElementById('laf-progress').style.width='0%';
+  document.getElementById('laf-eta').textContent='\u00a0';
   document.getElementById('ld-title').textContent='Checking cache\u2026';
   document.getElementById('ld-msg').textContent='Looking up previous results\u2026';
   var btn=document.getElementById('go-btn');
@@ -2279,16 +2377,44 @@ function startAnalysis(audioUrl, epTitle, showName) {
     .catch(function(){ clearInterval(_analyzeStages); showAnalyzeErr('Network error. Please try again.'); resetBtn(); });
 }
 
+var _lafSteps=[
+  {icon:'\uD83D\uDD0D',text:'Extracting audio transcript\u2026'},
+  {icon:'\uD83D\uDCCA',text:'Identifying topics and themes\u2026'},
+  {icon:'\u2696\uFE0F',text:'Analyzing political framing patterns\u2026'},
+  {icon:'\uD83D\uDC64',text:'Evaluating host trust indicators\u2026'},
+  {icon:'\uD83D\uDD0E',text:'Detecting missing perspectives\u2026'},
+  {icon:'\u270D\uFE0F',text:'Generating audio briefing\u2026'},
+  {icon:'\u2705',text:'Analysis complete'}
+];
+function lafAddStep(idx, isDone) {
+  var s=_lafSteps[idx]; if (!s) return;
+  var cls=isDone?'done':'active';
+  var stepsEl=document.getElementById('laf-steps'); if (!stepsEl) return;
+  var el=document.createElement('div'); el.className='laf-step '+cls; el.id='laf-step-'+idx;
+  el.innerHTML='<span class="laf-step-icon">'+s.icon+'</span><span class="laf-step-text">'+s.text+'</span>'+(isDone?'<span class="laf-step-tick">\u2713</span>':'');
+  stepsEl.appendChild(el);
+  var pct=Math.round(((idx+1)/_lafSteps.length)*100);
+  var progEl=document.getElementById('laf-progress'); if (progEl) progEl.style.width=pct+'%';
+  var secLeft=Math.max(0,Math.round((_lafSteps.length-idx-1)*7));
+  var etaEl=document.getElementById('laf-eta'); if (etaEl) etaEl.textContent=secLeft>0?'~'+secLeft+' seconds remaining':'\u00a0';
+}
+function lafCompleteStep(idx) {
+  var el=document.getElementById('laf-step-'+idx); if (!el) return;
+  el.classList.remove('active'); el.classList.add('done');
+  if (!el.querySelector('.laf-step-tick')) { var t=document.createElement('span'); t.className='laf-step-tick'; t.textContent='\u2713'; el.appendChild(t); }
+}
+
 function pollStatus(jobId, audioUrl) {
-  var stages=['Transcribing audio\u2026','Reading transcript\u2026','Checking claims\u2026','Detecting framing\u2026','Analyzing host patterns\u2026','Building your report\u2026'];
   var si=0; var shownPartial=false;
   if (_poll) clearInterval(_poll);
+  lafAddStep(si, false);
   _poll=setInterval(async function(){
-    si=Math.min(si+1,stages.length-1);
-    if (!shownPartial) document.getElementById('ld-title').textContent=stages[si];
     try {
       var d=await fetch('/api/status/'+jobId).then(function(r){return r.json();});
       if (d.status==='partial'&&!shownPartial) {
+        lafCompleteStep(si);
+        si=Math.min(si+1,5);
+        lafAddStep(si, false);
         shownPartial=true;
         document.getElementById('loading').classList.remove('on');
         document.getElementById('atabs').classList.add('on');
@@ -2297,6 +2423,11 @@ function pollStatus(jobId, audioUrl) {
         d.url=audioUrl; renderResults(d);
       } else if (d.status==='complete') {
         clearInterval(_poll);
+        if (!shownPartial) {
+          for (var k=0;k<=5;k++) { if (document.getElementById('laf-step-'+k)) lafCompleteStep(k); else lafAddStep(k,true); }
+        }
+        lafAddStep(6, true);
+        var progEl=document.getElementById('laf-progress'); if (progEl) progEl.style.width='100%';
         document.getElementById('loading').classList.remove('on');
         document.getElementById('atabs').classList.add('on');
         document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
@@ -2304,9 +2435,14 @@ function pollStatus(jobId, audioUrl) {
         resetBtn(); d.url=audioUrl;
         if (!shownPartial) trackAnalysis(d);
         renderResults(d);
-        if (d.transcript) { document.getElementById('transcript-content').textContent=d.transcript; }
+        renderTranscriptHighlights(d);
       } else if (d.status==='error') {
         clearInterval(_poll); showAnalyzeErr(d.error||'Analysis failed.'); resetBtn();
+      } else {
+        // still pending — advance step
+        lafCompleteStep(si);
+        si=Math.min(si+1,4);
+        if (!document.getElementById('laf-step-'+si)) lafAddStep(si, false);
       }
     } catch(e){}
   },4000);
@@ -2612,161 +2748,270 @@ function setBilling(mode) {
   });
 }
 
+// ── RENDER TRANSCRIPT HIGHLIGHTS ──
+function renderTranscriptHighlights(data) {
+  var quotes=[];
+  // Collect from keyQuotes
+  if (data.keyQuotes) data.keyQuotes.forEach(function(q){
+    var dir=q.concern==='high'?'left':q.concern==='medium'?'right':'neutral';
+    quotes.push({text:q.quote,ts:'',label:q.note||'',dir:dir,finding:'Notable'});
+  });
+  // Collect from lean citations
+  var al=data.audioLean||{};
+  if (al.citations) al.citations.forEach(function(c){
+    var dir=al.leftPct>al.rightPct?'left':al.rightPct>al.leftPct?'right':'neutral';
+    quotes.push({text:c.quote,ts:c.timestamp||'',label:c.explanation||'',dir:dir,finding:'Political lean'});
+  });
+  // Collect from flag citations
+  if (data.flags) data.flags.forEach(function(f){
+    (f.citations||[]).forEach(function(c){
+      var dir=f.type==='framing'||f.type==='omission'?'left':'neutral';
+      quotes.push({text:c.quote,ts:c.timestamp||'',label:c.explanation||'',dir:dir,finding:ftLabel(f.type)});
+    });
+  });
+  var u=plUser(); var plan=(u&&u.plan||'').toLowerCase();
+  var canFull=plan==='operator'||plan==='studio';
+  var shown=canFull?quotes:quotes.slice(0,10);
+  var html='<div style="padding:0 0 24px">';
+  html+='<div style="margin-bottom:16px;font-size:13px;color:var(--text2)">Significant moments extracted from the transcript — color-coded by framing direction.</div>';
+  if (shown.length===0) { html+='<div style="color:var(--text3);font-size:13px;padding:24px 0;text-align:center">No transcript highlights available for this episode.</div></div>'; document.getElementById('transcript-content').innerHTML=html; return; }
+  html+='<div class="th-filters"><button class="th-filter on" onclick="thFilter(this,\'all\')">All</button><button class="th-filter" onclick="thFilter(this,\'left\')">Left-leaning</button><button class="th-filter" onclick="thFilter(this,\'right\')">Right-leaning</button><button class="th-filter" onclick="thFilter(this,\'neutral\')">Notable</button></div>';
+  shown.forEach(function(q,i){
+    html+='<div class="th-quote th-'+q.dir+'" data-dir="'+q.dir+'">';
+    html+='<div class="th-quote-text">&ldquo;'+q.text+'&rdquo;</div>';
+    html+='<div class="th-quote-meta">';
+    if (q.ts) html+='<span class="th-ts">'+q.ts+'</span>';
+    if (q.finding) html+='<span class="th-finding">'+q.finding+'</span>';
+    if (q.label) html+='<span class="th-label">'+q.label+'</span>';
+    html+='</div></div>';
+  });
+  if (!canFull && quotes.length>10) {
+    html+='<div class="citations-gate" style="margin-top:16px"><div class="citations-gate-text">'+quotes.length+' total moments found. See all with full search on Operator.</div><button class="citations-gate-btn" onclick="showUpgrade()">Unlock &mdash; $39/mo</button></div>';
+  }
+  html+='</div>';
+  document.getElementById('transcript-content').innerHTML=html;
+}
+function thFilter(btn, dir) {
+  document.querySelectorAll('.th-filter').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  document.querySelectorAll('.th-quote').forEach(function(q){
+    q.style.display=(dir==='all'||q.dataset.dir===dir)?'':'none';
+  });
+}
+
+// ── RENDER RESULTS (2-col dashboard) ──
 function renderResults(data) {
-  var oc=data.omissionRisk==='High'?'var(--left)':data.omissionRisk==='Med'?'var(--amber)':'var(--center-bar)';
-  var tc=data.hostTrustScore>60?'var(--left)':data.hostTrustScore>30?'var(--amber)':'var(--center-bar)';
   var vid=ytId(data.url||'');
+  var u=plUser(); var plan=(u&&u.plan||'').toLowerCase();
+  var canPlay=plan==='creator'||plan==='operator'||plan==='studio'||plan==='trial';
+  var isPartial=data.status==='partial';
 
-  var card='<div class="rcard">';
-  card+='<div class="rcard-head">';
-  if (data.showName) card+='<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">'+data.showName+'</div>';
-  card+='<div class="rcard-title">'+(data.episodeTitle||'Episode analysis')+'</div>';
-  card+='<div class="rcard-sub">'+(data.duration||'')+(data.wordCount?' &middot; ~'+Math.round(data.wordCount/130)+' min read':'')+'</div>';
-  card+='<div class="badges"><span class="bpill '+bpClass(data.biasLabel||'Center')+'"><span class="dot"></span>'+(data.biasLabel||'Center')+'</span>';
-  card+='<span class="bpill '+bfClass(data.factualityLabel||'Mostly factual')+'"><span class="dot"></span>'+(data.factualityLabel||'Mostly factual')+'</span></div></div>';
+  // ── HEADER BAR ──
+  var header='<div class="res-header">';
+  header+='<div class="res-header-art">';
+  if (data.artworkUrl) header+='<img src="'+data.artworkUrl+'" style="width:48px;height:48px;border-radius:50%;object-fit:cover" onerror="this.style.display=\'none\'">';
+  else header+='\uD83C\uDFA7';
+  header+='</div>';
+  header+='<div class="res-header-ep">';
+  header+='<div class="res-header-title">'+(data.episodeTitle||'Episode Analysis')+'</div>';
+  if (data.showName) header+='<div class="res-header-show">'+data.showName+(data.duration?' &middot; '+data.duration:'')+'</div>';
+  header+='</div>';
+  if (data.biasLabel) header+='<div class="res-header-center"><span class="bpill '+bpClass(data.biasLabel||'Center')+'" style="font-size:12px;padding:4px 12px"><span class="dot"></span>'+data.biasLabel+'</span></div>';
+  header+='<div class="res-header-right">';
+  if (vid) header+='<a class="res-plat-btn" href="https://youtube.com/watch?v='+vid+'" target="_blank" rel="noopener">&#9654; YouTube</a>';
+  header+='<button class="res-act-btn" onclick="shareAnalysis(\''+data.jobId+'\')">&#8599; Share</button>';
+  header+='<button class="res-act-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button>';
+  header+='</div></div>';
 
-  if (data.summary) card+='<div class="r-summary">&ldquo;'+data.summary+'&rdquo;</div>';
+  // ── LEFT COLUMN ──
+  var left='';
 
-  // Audio Briefing Player
+  // Panel: Audio Briefing Player
   if (data.audioScript) {
     var safeScript=data.audioScript.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-    var u=plUser(); var plan=(u&&u.plan||'').toLowerCase();
-    var canPlay=plan==='creator'||plan==='operator'||plan==='studio';
     var clickHandler='toggleAudioSummary(\''+data.jobId+'\',\''+safeScript+'\')';
-    card+='<div class="audio-player" id="audio-player-'+data.jobId+'">';
-    card+='<div class="audio-player-inner">';
-    card+='<button class="audio-play-btn" id="audio-play-btn-'+data.jobId+'" onclick="'+clickHandler+'" title="Listen to briefing">';
-    card+='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>';
-    card+='<div class="audio-player-info">';
-    card+='<div class="audio-player-title">Audio Briefing</div>';
-    card+='<div class="audio-player-meta" id="audio-status-'+data.jobId+'">'+(canPlay?'Listen to briefing &middot; ~1 min 30 sec':'Preview &middot; first 10 seconds free')+'</div>';
-    card+='<div class="audio-player-sub">'+(canPlay?'AI-generated context for your listening':'Hear the full briefing on Creator plan')+'</div>';
-    card+='</div>';
-    card+='<div class="audio-waveform" id="audio-wave-'+data.jobId+'">';
-    card+='<span></span><span></span><span></span><span></span><span></span>';
-    card+='</div></div>';
-    card+='<div class="audio-progress-rail"><div class="audio-progress-fill" id="audio-prog-'+data.jobId+'"></div></div>';
-    card+='</div>';
+    left+='<div class="audio-player" id="audio-player-'+data.jobId+'" style="margin-bottom:16px">';
+    left+='<div class="audio-player-inner">';
+    left+='<button class="audio-play-btn" id="audio-play-btn-'+data.jobId+'" onclick="'+clickHandler+'" title="Listen to briefing">';
+    left+='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>';
+    left+='<div class="audio-player-info">';
+    left+='<div class="audio-player-title">Analysis Briefing &middot; ~1 min 30 sec</div>';
+    left+='<div class="audio-player-meta" id="audio-status-'+data.jobId+'">'+(canPlay?'Play briefing':'Preview &middot; first 10 seconds free')+'</div>';
+    left+='<div class="audio-player-sub">'+(canPlay?'AI-generated context':'Full briefing on Creator plan')+'</div>';
+    left+='</div>';
+    left+='<div class="audio-waveform" id="audio-wave-'+data.jobId+'"><span></span><span></span><span></span><span></span><span></span></div>';
+    left+='</div>';
+    left+='<div class="audio-progress-rail"><div class="audio-progress-fill" id="audio-prog-'+data.jobId+'"></div></div>';
+    left+='</div>';
   }
 
-  // Political lean bar (renamed from "Audio lean")
+  // Panel: Political Lean
   if (data.audioLean && typeof data.audioLean.leftPct !== 'undefined') {
     var al=data.audioLean;
-    var plainLabel = biasPlainLabel(al.leftPct, al.rightPct);
-    card+='<div class="audio-lean-wrap"><div class="section-lbl">Political Lean &mdash; how this episode frames issues '+tipBtn('bias')+'</div>';
-    card+='<div class="al-track">';
-    if (al.leftPct) card+='<div class="al-l" style="width:'+al.leftPct+'%"></div>';
-    if (al.centerPct) card+='<div class="al-c" style="width:'+al.centerPct+'%"></div>';
-    if (al.rightPct) card+='<div class="al-r" style="width:'+al.rightPct+'%"></div>';
-    card+='</div><div class="al-labels"><span>Left</span><span>Center</span><span>Right</span></div>';
-    card+='<div class="al-counts">';
-    if (al.leftPct) card+='<span class="alc"><span class="alcd" style="background:var(--left-bar)"></span>'+al.leftPct+'% left</span>';
-    if (al.centerPct) card+='<span class="alc"><span class="alcd" style="background:var(--center-bar)"></span>'+al.centerPct+'% center</span>';
-    if (al.rightPct) card+='<span class="alc"><span class="alcd" style="background:var(--right-bar)"></span>'+al.rightPct+'% right</span>';
-    card+='</div>';
-    card+='<div class="al-plain-label">'+plainLabel+'</div>';
-    if (al.basis) card+='<div class="al-basis">'+al.basis+'</div>';
-    card+='<div class="al-footnote">Based on language patterns and framing choices &mdash; not the host&rsquo;s personal politics</div>';
-
-    // Citations for lean — Operator+ only
+    var plainLabel=biasPlainLabel(al.leftPct, al.rightPct);
+    var plainColor=al.leftPct>60||al.rightPct>60?'var(--left)':al.leftPct>39||al.rightPct>39?'var(--amber)':'var(--right)';
+    if (Math.abs((al.leftPct||0)-(al.rightPct||0))<20) plainColor='green';
+    left+='<div class="res-panel">';
+    left+='<div class="res-panel-hd">Political Lean &mdash; how this episode frames issues '+tipBtn('bias')+'</div>';
+    left+='<div class="res-panel-body">';
+    left+='<div class="al-track" style="margin-bottom:8px">';
+    if (al.leftPct) left+='<div class="al-l" style="width:'+al.leftPct+'%"></div>';
+    if (al.centerPct) left+='<div class="al-c" style="width:'+al.centerPct+'%"></div>';
+    if (al.rightPct) left+='<div class="al-r" style="width:'+al.rightPct+'%"></div>';
+    left+='</div>';
+    left+='<div class="al-counts" style="margin-bottom:8px">';
+    if (al.leftPct) left+='<span class="alc"><span class="alcd" style="background:var(--left-bar)"></span>&#128308; '+al.leftPct+'% left</span>';
+    if (al.centerPct) left+='<span class="alc"><span class="alcd" style="background:var(--center-bar)"></span>&#9726; '+al.centerPct+'% center</span>';
+    if (al.rightPct) left+='<span class="alc"><span class="alcd" style="background:var(--right-bar)"></span>&#128309; '+al.rightPct+'% right</span>';
+    left+='</div>';
+    left+='<span class="bpill" style="font-size:12px;padding:4px 12px;background:var(--bg3);color:'+plainColor+';border-color:var(--border2)">'+plainLabel+'</span>';
+    if (al.basis) left+='<div class="al-basis" style="margin-top:8px">'+al.basis+'</div>';
+    left+='<div class="al-footnote" style="margin-top:8px">Based on language patterns and framing choices &mdash; not the host&rsquo;s personal politics</div>';
     var leanCits=al.citations||[];
     if (leanCits.length) {
       if (canSeeCitations()) {
         var leanDir=al.leftPct>al.rightPct?'lean-left':al.rightPct>al.leftPct?'lean-right':'lean-center';
-        card+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')">Why this lean? ('+leanCits.length+' source'+(leanCits.length>1?'s':'')+') &#9660;</button>';
-        card+='<div class="citations-panel">';
+        left+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')" style="margin-top:10px">Why this lean? ('+leanCits.length+' source'+(leanCits.length>1?'s':'')+') &#9660;</button>';
+        left+='<div class="citations-panel">';
         leanCits.forEach(function(c){
-          card+='<div class="citation-item '+leanDir+'">';
-          if (c.timestamp) card+='<div class="citation-ts">'+c.timestamp+'</div>';
-          card+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
-          if (c.explanation) card+='<div class="citation-exp">'+c.explanation+'</div>';
-          card+='</div>';
+          left+='<div class="citation-item '+leanDir+'">';
+          if (c.timestamp) left+='<div class="citation-ts">'+c.timestamp+'</div>';
+          left+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
+          if (c.explanation) left+='<div class="citation-exp">'+c.explanation+'</div>';
+          left+='</div>';
         });
-        card+='<div class="citations-confidence">Based on '+leanCits.length+' instance'+(leanCits.length>1?'s':'')+'  in transcript</div>';
-        card+='</div>';
+        left+='<div class="citations-confidence">Based on '+leanCits.length+' instance'+(leanCits.length>1?'s':'')+'</div></div>';
       } else {
-        card+='<div class="citations-gate">'
-          +'<div class="citations-gate-text">See the exact transcript quotes that support this lean score. <strong>Operator</strong> feature &mdash; this is how we show our work.</div>'
-          +'<button class="citations-gate-btn" onclick="showUpgrade()">Unlock \u2014 $39/mo</button>'
-          +'</div>';
+        left+='<div class="citations-gate" style="margin-top:8px"><div class="citations-gate-text">See exact transcript quotes that support this lean. <strong>Operator</strong> feature.</div><button class="citations-gate-btn" onclick="showUpgrade()">Unlock &mdash; $39/mo</button></div>';
       }
     }
-    card+='</div>';
+    left+='</div></div>';
   }
 
-  card+='<div class="score-row">';
-  card+='<div class="score-cell"><div class="score-lbl">Fact flags</div><div class="score-val" style="color:var(--left)">'+((data.flags||[]).filter(function(f){return f.type==='fact-check';}).length)+'</div><div class="score-hint">claims to verify</div></div>';
-  card+='<div class="score-cell"><div class="score-lbl">Omission risk</div><div class="score-val" style="color:'+oc+'">'+(data.omissionRisk||'Low')+'</div><div class="score-hint">key views missing</div></div>';
-  card+='<div class="score-cell"><div class="score-lbl">Factuality</div><div class="score-val" style="font-size:14px;padding-top:4px">'+(data.factualityLabel||'—')+'</div><div class="score-hint">content rating</div></div>';
-  card+='</div>';
+  // Panel: Findings 2×2
+  var oc=data.omissionRisk==='High'?'var(--left)':data.omissionRisk==='Med'?'var(--amber)':'green';
+  var tc=data.hostTrustScore>60?'var(--left)':data.hostTrustScore>30?'var(--amber)':'var(--right)';
+  var mvCount=(data.missingVoices||[]).length;
+  var factFlags=(data.flags||[]).filter(function(f){return f.type==='fact-check';}).length;
+  left+='<div class="findings-grid">';
+  left+='<div class="finding-cell"><div class="finding-lbl">Host Trust</div>';
+  left+='<div class="finding-val" style="color:'+tc+'">'+(data.hostTrustScore!==undefined?data.hostTrustScore+'/100':'&mdash;')+'</div>';
+  if (data.hostTrustLabel) left+='<div style="font-size:11px;color:var(--text3);margin-bottom:4px">'+data.hostTrustLabel+'</div>';
+  left+='</div>';
+  left+='<div class="finding-cell"><div class="finding-lbl">Missing Voices</div>';
+  left+='<div class="finding-val" style="color:'+oc+'">'+mvCount+' absent</div>';
+  left+='<div style="font-size:11px;color:var(--text3);margin-bottom:4px">'+data.omissionRisk+' omission risk</div>';
+  left+='</div>';
+  left+='<div class="finding-cell"><div class="finding-lbl">Sponsor Flags</div>';
+  left+='<div class="finding-val" style="color:'+(factFlags>0?'var(--amber)':'var(--text3)')+'">'+factFlags+' detected</div>';
+  left+='</div>';
+  left+='<div class="finding-cell"><div class="finding-lbl">Factuality</div>';
+  left+='<div class="finding-val" style="font-size:16px;padding-top:2px">'+(data.factualityLabel||'&mdash;')+'</div></div>';
+  left+='</div>';
 
-  if (data.hostTrustScore!==undefined) {
-    card+='<div class="trust-wrap"><div class="section-lbl">Host trust &amp; influence '+tipBtn('trust')+'</div>';
-    card+='<div class="trust-meter"><div class="trust-track"><div class="trust-fill" style="width:'+data.hostTrustScore+'%;background:'+tc+'"></div></div>';
-    card+='<div class="trust-score-val" style="color:'+tc+'">'+data.hostTrustScore+'</div>';
-    card+='<div style="font-size:11px;color:var(--text2)">'+(data.hostTrustLabel||'')+'</div></div></div>';
+  if (data.summary) left+='<div class="r-summary" style="border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;padding:14px 16px">&ldquo;'+data.summary+'&rdquo;</div>';
+
+  // Panel: Key Quotes
+  if (data.keyQuotes&&data.keyQuotes.length) {
+    left+='<div class="res-panel"><div class="res-panel-hd">Key Transcript Moments</div><div class="res-panel-body">';
+    data.keyQuotes.forEach(function(q){
+      var dir=q.concern==='high'?'left':q.concern==='medium'?'right':'neutral';
+      var dirLabel=dir==='left'?'Left-leaning framing':dir==='right'?'Right-leaning framing':'Notable';
+      left+='<div class="kq-item kq-'+dir+'">';
+      left+='<div class="kq-text">&ldquo;'+q.quote+'&rdquo;</div>';
+      left+='<div class="kq-meta"><span class="kq-label">'+dirLabel+'</span>'+(q.note?'<span class="kq-label" style="color:var(--text3)">'+q.note+'</span>':'')+'</div>';
+      left+='</div>';
+    });
+    left+='</div></div>';
   }
 
-  var isPartial=data.status==='partial';
-  if (isPartial) {
-    card+='<div class="details-loading"><div class="feed-spin"></div>Finishing deep analysis&hellip;</div>';
-    card+='<div style="padding:12px 16px 16px"><div class="skel skel-line" style="width:40%"></div><div class="skel skel-block"></div></div>';
-    card+='<div style="padding:12px 16px 16px;border-top:1px solid var(--border)"><div class="skel skel-line" style="width:30%"></div><div class="skel skel-line" style="width:90%"></div><div class="skel skel-line" style="width:75%"></div></div>';
-  } else {
-    if (data.topicBreakdown&&data.topicBreakdown.length) {
-      card+='<div class="topics-wrap"><div class="section-lbl">Topic breakdown</div><div class="topic-bars">';
-      data.topicBreakdown.forEach(function(t){ card+='<div class="topic-bar-row"><div class="topic-bar-label">'+t.topic+'</div><div class="topic-bar-track"><div class="topic-bar-fill" style="width:'+t.percentage+'%;background:'+leanColor(t.lean)+'"></div></div><div class="topic-bar-pct">'+t.percentage+'%</div></div>'; });
-      card+='</div></div>';
-    }
-    if (data.keyQuotes&&data.keyQuotes.length) {
-      card+='<div class="quotes-wrap"><div class="section-lbl">Key quotes</div>';
-      data.keyQuotes.forEach(function(q){ card+='<div class="quote-item concern-'+(q.concern||'low')+'"><div class="quote-text">&ldquo;'+q.quote+'&rdquo;</div>'+(q.note?'<div class="quote-note">'+q.note+'</div>':'')+'</div>'; });
-      card+='</div>';
-    }
-    if (data.missingVoices&&data.missingVoices.length) {
-      card+='<div class="missing-wrap"><div class="section-lbl">Missing voices</div><div class="missing-tags">'+data.missingVoices.map(function(v){return '<span class="missing-tag">'+v+'</span>';}).join('')+'</div></div>';
-    }
-    if (data.sponsorConflicts&&data.sponsorConflicts.length) {
-      card+='<div style="padding:12px 16px;border-bottom:1px solid var(--border)"><div class="section-lbl">Sponsor conflicts</div>';
-      data.sponsorConflicts.forEach(function(s){ card+='<div style="font-size:12px;color:var(--amber);margin-top:5px;display:flex;gap:5px"><span style="background:var(--amber-bg);padding:1px 7px;border-radius:var(--r);font-size:10px;font-weight:500;flex-shrink:0">Sponsor</span>'+s+'</div>'; });
-      card+='</div>';
-    }
-    var flags=(data.flags||[]).map(function(f){
-      var cits=f.citations||[];
-      var citHtml='';
-      if (cits.length) {
-        if (canSeeCitations()) {
-          var flagLeanDir=f.type==='framing'||f.type==='omission'?'lean-left':'lean-center';
-          citHtml+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')" style="margin-top:6px">Why? ('+cits.length+' source'+(cits.length>1?'s':'')+') &#9660;</button>';
-          citHtml+='<div class="citations-panel">';
-          cits.forEach(function(c){
-            citHtml+='<div class="citation-item '+flagLeanDir+'">';
-            if (c.timestamp) citHtml+='<div class="citation-ts">'+c.timestamp+'</div>';
-            citHtml+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
-            if (c.explanation) citHtml+='<div class="citation-exp">'+c.explanation+'</div>';
-            citHtml+='</div>';
-          });
-          citHtml+='<div class="citations-confidence">Based on '+cits.length+' instance'+(cits.length>1?'s':'')+'  in transcript</div>';
+  // Flags
+  var flags=(data.flags||[]).map(function(f){
+    var cits=f.citations||[];
+    var citHtml='';
+    if (cits.length) {
+      if (canSeeCitations()) {
+        var flagDir=f.type==='framing'||f.type==='omission'?'lean-left':'lean-center';
+        citHtml+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')" style="margin-top:6px">Why? ('+cits.length+' source'+(cits.length>1?'s':'')+') &#9660;</button>';
+        citHtml+='<div class="citations-panel">';
+        cits.forEach(function(c){
+          citHtml+='<div class="citation-item '+flagDir+'">';
+          if (c.timestamp) citHtml+='<div class="citation-ts">'+c.timestamp+'</div>';
+          citHtml+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
+          if (c.explanation) citHtml+='<div class="citation-exp">'+c.explanation+'</div>';
           citHtml+='</div>';
-        } else {
-          citHtml='<div class="citations-gate" style="margin-top:6px">'
-            +'<div class="citations-gate-text">See exactly which quotes support this finding. <strong>Operator</strong> feature.</div>'
-            +'<button class="citations-gate-btn" onclick="showUpgrade()">Unlock</button>'
-            +'</div>';
-        }
+        });
+        citHtml+='<div class="citations-confidence">Based on '+cits.length+' instance'+(cits.length>1?'s':'')+'</div></div>';
+      } else {
+        citHtml='<div class="citations-gate" style="margin-top:6px"><div class="citations-gate-text">See exact quotes supporting this finding. <strong>Operator</strong> feature.</div><button class="citations-gate-btn" onclick="showUpgrade()">Unlock</button></div>';
       }
-      return '<div class="flag-item"><span class="ftag '+ftClass(f.type)+'">'+ftLabel(f.type)+'</span><div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div>'+citHtml+'</div></div>';
-    }).join('');
-    if (flags) card+='<div><div class="flags-head">Worth knowing before you listen</div>'+flags+'</div>';
-  }
-  card+='<div class="rcard-foot"><button class="ghost-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button></div>';
-  card+='</div>';
+    }
+    return '<div class="flag-item"><span class="ftag '+ftClass(f.type)+'">'+ftLabel(f.type)+'</span><div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div>'+citHtml+'</div></div>';
+  }).join('');
+  if (flags&&!isPartial) left+='<div class="res-panel"><div class="res-panel-hd">Worth Knowing Before You Listen</div><div>'+flags+'</div></div>';
 
-  if (vid) {
-    document.getElementById('results').innerHTML='<div class="analyze-sidebyside"><div class="analyze-player">'+ytEmbed(vid)+'<p>Analysis runs alongside this episode</p></div><div>'+card+'</div></div>';
-  } else {
-    document.getElementById('results').innerHTML='<div style="max-width:680px;margin:0 auto">'+card+'</div>';
+  if (isPartial) {
+    left+='<div class="details-loading" style="margin-top:16px"><div class="feed-spin"></div>Finishing deep analysis&hellip;</div>';
+    left+='<div style="padding:12px 0"><div class="skel skel-line" style="width:40%"></div><div class="skel skel-block"></div></div>';
   }
+
+  // ── RIGHT COLUMN ──
+  var right='';
+
+  // Panel: Topic Breakdown
+  if (data.topicBreakdown&&data.topicBreakdown.length) {
+    var topics=data.topicBreakdown.slice().sort(function(a,b){return b.percentage-a.percentage;});
+    var maxPct=topics[0].percentage||1;
+    var showAll=topics.length<=8;
+    right+='<div class="res-panel"><div class="res-panel-hd">Topic Breakdown</div><div class="res-panel-body">';
+    right+='<div class="topic-bars" id="topic-bars-main">';
+    topics.forEach(function(t,i){
+      var propWidth=Math.round((t.percentage/maxPct)*100);
+      var hidden=(!showAll&&i>=8)?'style="display:none"':'';
+      right+='<div class="topic-bar-row topic-row-item" '+hidden+' title="This topic appeared in '+t.percentage+'% of content">';
+      right+='<div class="topic-bar-label">'+t.topic+'</div>';
+      right+='<div class="topic-bar-track"><div class="topic-bar-fill" style="width:'+propWidth+'%;background:var(--navy)"></div></div>';
+      right+='<div class="topic-bar-pct">'+t.percentage+'%</div></div>';
+    });
+    right+='</div>';
+    if (!showAll) right+='<button class="ghost-btn" style="margin-top:10px;font-size:11px" onclick="document.querySelectorAll(\'.topic-row-item\').forEach(function(r){r.style.display=\'\'});this.style.display=\'none\'">Show all '+topics.length+' topics</button>';
+    right+='</div></div>';
+  }
+
+  // Panel: Missing Voices
+  if (data.missingVoices&&data.missingVoices.length) {
+    right+='<div class="res-panel"><div class="res-panel-hd">Missing Voices</div><div class="res-panel-body">';
+    data.missingVoices.forEach(function(v){
+      right+='<div class="mv-item"><div class="mv-dot"></div><div class="mv-body"><div class="mv-voice">'+v+'</div></div></div>';
+    });
+    right+='</div></div>';
+  }
+
+  // Panel: Episode Info
+  right+='<div class="res-panel"><div class="res-panel-hd">Episode Info</div><div class="res-panel-body" style="font-size:13px;color:var(--text2)">';
+  if (data.showName) right+='<div style="font-weight:600;color:var(--text);margin-bottom:4px">'+data.showName+'</div>';
+  if (data.duration) right+='<div>Duration: '+data.duration+'</div>';
+  if (data.wordCount) right+='<div>~'+Math.round(data.wordCount/130)+' min read</div>';
+  if (vid) right+='<a href="https://youtube.com/watch?v='+vid+'" target="_blank" rel="noopener" style="color:var(--right);text-decoration:none;font-size:12px;display:block;margin-top:8px">&#9654; Watch on YouTube</a>';
+  right+='</div></div>';
+
+  // Panel: Sponsor Conflicts (if any)
+  if (data.sponsorConflicts&&data.sponsorConflicts.length) {
+    right+='<div class="res-panel"><div class="res-panel-hd">Sponsor Notes</div><div class="res-panel-body">';
+    data.sponsorConflicts.forEach(function(s){ right+='<div style="font-size:12px;color:var(--amber);display:flex;gap:6px;margin-bottom:6px"><span style="background:var(--amber-bg);padding:1px 7px;border-radius:var(--r);font-size:10px;font-weight:500;flex-shrink:0">Sponsor</span>'+s+'</div>'; });
+    right+='</div></div>';
+  }
+
+  // ── ASSEMBLE ──
+  var html=header+'<div class="res-grid"><div class="res-left-col">'+left+'</div><div class="res-right-col">'+right+'</div></div>';
+  document.getElementById('results').innerHTML=html;
+}
+
+function shareAnalysis(jobId) {
+  var url=window.location.origin+'/analysis/'+jobId;
+  if (navigator.share) { navigator.share({title:'Podlens Analysis',url:window.location.href}); }
+  else if (navigator.clipboard) { navigator.clipboard.writeText(window.location.href).then(function(){ plToast('Link copied!'); }); }
+  else { plToast('Copy URL from your address bar'); }
 }
 
 // ── SLUGIFY ──

@@ -36,12 +36,12 @@ const PROMPT_2 = `You are a media literacy expert analyzing a podcast transcript
 Return ONLY a valid JSON object (no markdown, no explanation, no preamble):
 {
   "topicBreakdown": [
-    {"topic": <string 2-4 words>, "percentage": <0-100>, "lean": <"left"|"center"|"right"|"neutral">}
+    {"topic": <descriptive topic name, can be up to 8 words — use full natural phrasing, never abbreviate>, "percentage": <0-100>, "lean": <"left"|"center"|"right"|"neutral">}
   ],
   "keyQuotes": [
     {"quote": <under 30 words>, "concern": <"low"|"medium"|"high">, "note": <1 sentence why this is notable>}
   ],
-  "missingVoices": [<string: perspective conspicuously absent, 3-5 words each>],
+  "missingVoices": [<string: perspective conspicuously absent — write as a full noun phrase, e.g. "Healthcare workers directly affected", "Conservative economists", "Immigrant community voices">],
   "sponsorConflicts": [<string: sponsor/content conflict if detected>],
   "flags": [
     {
@@ -56,7 +56,7 @@ Return ONLY a valid JSON object (no markdown, no explanation, no preamble):
 }
 
 Rules:
-- topicBreakdown: max 5 topics, percentages sum to 100
+- topicBreakdown: 5-8 topics, percentages sum to 100, sort descending by percentage, use full descriptive names
 - keyQuotes: max 3, only if genuinely notable
 - missingVoices: max 4
 - flags: max 6, high confidence only; each flag should have 1-2 citations
