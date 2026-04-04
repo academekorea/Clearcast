@@ -1,7 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
-const MAX_AUDIO_BYTES = 100 * 1024 * 1024; // 100 MB
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 function sleep(ms: number) {
@@ -100,16 +99,6 @@ export default async (req: Request) => {
     }
 
     const audioBuffer = await audioRes.arrayBuffer();
-
-    // Step 2b: Size check — reject files over 100 MB
-    if (audioBuffer.byteLength > MAX_AUDIO_BYTES) {
-      const msg = "TOO_LARGE";
-      await transcripts.setJSON(jobId, { status: "error", message: msg });
-      await jobs.setJSON(jobId, { status: "error", error: msg, code: "TOO_LARGE" });
-      return new Response(JSON.stringify({ error: msg, code: "TOO_LARGE" }), {
-        status: 400, headers: { "Content-Type": "application/json" },
-      });
-    }
 
     // Step 3: Upload audio buffer to AssemblyAI
     const uploadRes = await fetch("https://api.assemblyai.com/v2/upload", {

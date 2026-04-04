@@ -57,9 +57,6 @@ async function preflightCheck(videoId: string, apiKey: string): Promise<Prefligh
     }
 
     const durationSec = parseIsoDuration(contentDetails?.duration || "");
-    if (durationSec > 5400) {
-      return { ok: false, code: "TOO_LONG", message: "Video exceeds 90 minutes.", duration: durationSec };
-    }
 
     // Published within last 30 minutes — auto-captions may not be ready yet
     const publishedAt = snippet?.publishedAt ? new Date(snippet.publishedAt).getTime() : 0;
