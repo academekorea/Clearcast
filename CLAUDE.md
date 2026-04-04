@@ -542,3 +542,266 @@ git add . && git commit -m "[description]" && git push origin main
 
 *Podlens — Know what you're actually listening to*
 *podlens.app | Netlify: podlens | Vanilla JS + Netlify Functions*
+
+---
+
+## Branding — Logo, Typography & Visual Identity
+
+### The Core Problem to Fix
+The PODLENS wordmark is currently plain text in a default font.
+This signals "prototype" not "platform." Fix this everywhere.
+
+### Wordmark Treatment
+Use Playfair Display (already imported) with weight contrast:
+
+```html
+<span class="podlens-wordmark">
+  <span class="pod">POD</span><span class="lens">LENS</span>
+</span>
+```
+
+```css
+.podlens-wordmark {
+  font-family: 'Playfair Display', Georgia, serif;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+.podlens-wordmark .pod  { font-weight: 400; color: inherit; }
+.podlens-wordmark .lens { font-weight: 700; color: inherit; }
+```
+
+Apply to: main nav, mobile nav, footer, auth modals, extension sidebar,
+PDF report headers, shareable cards, loading screens, browser tab title.
+
+Color treatments:
+- On navy (#0f2027): white wordmark
+- On white/cream: navy (#0f2027) wordmark
+- On cards/print: #1a1a1a wordmark
+
+### Favicon + Meta Images
+
+favicon.svg (place in project root):
+```svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#0f2027"/>
+  <text x="50%" y="50%" dominant-baseline="central"
+        text-anchor="middle" fill="white"
+        font-family="Georgia, serif" font-weight="700"
+        font-size="18" letter-spacing="0">PL</text>
+</svg>
+```
+
+In <head> of ALL HTML files:
+```html
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:image" content="https://podlens.app/og-image.jpg">
+<meta name="theme-color" content="#0f2027">
+```
+
+OG image (og-image.jpg, 1200×630):
+Navy #0f2027 background, PODLENS wordmark large centered (white),
+"Know what you're actually listening to" below in Inter white/70%,
+"podlens.app" bottom right white/50%.
+Generate via HTML Canvas and save as static file.
+
+### Branded Loading Screen
+
+Replace any generic spinner with:
+```html
+<div class="pl-splash">
+  <span class="podlens-wordmark large">
+    <span class="pod">POD</span><span class="lens">LENS</span>
+  </span>
+  <div class="pl-tagline">Know what you're actually listening to</div>
+  <div class="pl-loader-bar"></div>
+</div>
+```
+
+```css
+.pl-splash {
+  position: fixed; inset: 0; background: #0f2027;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+  z-index: 99999;
+}
+.podlens-wordmark.large { font-size: 48px; color: white; }
+.pl-tagline { color: rgba(255,255,255,0.5); font-family: Inter; font-size: 16px; }
+.pl-loader-bar {
+  width: 120px; height: 2px; background: rgba(255,255,255,0.2);
+  border-radius: 1px; overflow: hidden; margin-top: 8px;
+}
+.pl-loader-bar::after {
+  content: ''; display: block; height: 100%;
+  background: white; animation: pl-load 1.5s ease-in-out infinite;
+}
+@keyframes pl-load {
+  0%   { width: 0; transform: translateX(0); }
+  50%  { width: 60%; }
+  100% { width: 0; transform: translateX(200px); }
+}
+```
+
+### CSS Variable System — Define in :root on ALL Pages
+
+```css
+:root {
+  /* Brand */
+  --color-navy:     #0f2027;
+  --color-navy-mid: #1a3a4a;
+  --color-cream:    #FAF9F6;
+  --color-text:     #1a1a1a;
+  --color-muted:    #666666;
+  --color-border:   #e0ddd8;
+
+  /* Bias — NEVER change these */
+  --color-left:     #E24B4A;
+  --color-center:   #D1CFC9;
+  --color-right:    #378ADD;
+
+  /* Tier accents */
+  --color-creator:  #7C6AF7;
+  --color-operator: #0f2027;
+  --color-studio:   #B8860B;
+
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Type scale */
+  --text-xs:   11px;
+  --text-sm:   13px;
+  --text-base: 15px;
+  --text-lg:   18px;
+  --text-xl:   24px;
+  --text-2xl:  32px;
+  --text-3xl:  48px;
+  --text-hero: 56px;
+}
+```
+
+Replace ALL hardcoded hex values throughout the codebase with these variables.
+
+### Button System — Standardize Everywhere
+
+```css
+/* Primary */
+.btn-primary {
+  background: var(--color-navy); color: white;
+  border: none; border-radius: 4px;
+  padding: 12px 24px;
+  font-family: var(--font-body); font-size: var(--text-sm); font-weight: 500;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-primary:hover { background: var(--color-navy-mid); }
+
+/* Secondary */
+.btn-secondary {
+  background: transparent; color: var(--color-navy);
+  border: 1px solid var(--color-navy); border-radius: 4px;
+  padding: 11px 24px;
+  font-family: var(--font-body); font-size: var(--text-sm); font-weight: 500;
+  cursor: pointer;
+}
+
+/* Platform */
+.btn-spotify { background: #1DB954; color: white; border-radius: 4px; }
+.btn-youtube { background: #FF0000; color: white; border-radius: 4px; }
+.btn-apple   { background: #FC3C44; color: white; border-radius: 4px; }
+.btn-kakao   { background: #FEE500; color: #1a1a1a; border-radius: 4px; }
+```
+
+All buttons use border-radius: 4px — NOT 8px+ — keeps the editorial feel.
+
+### Brand Voice — Apply to ALL UI Copy
+
+Podlens sounds like a smart friend who reads everything and tells you
+what matters. Not an algorithm. Not a judge. Not a lecturer.
+
+```
+❌ "This episode contains 14 instances of right-wing framing"
+✅ "This episode leans right — here's what shaped that"
+
+❌ "Warning: heavily biased content detected"
+✅ "Lightly one-sided — worth knowing going in"
+
+❌ "Your podcast diet is dangerously one-sided"
+✅ "Your listening leans 68% right — here's what that means"
+
+❌ "Bias score: -73"
+✅ "Heavily one-sided — but here are 3 great counterpoints"
+```
+
+Apply this voice to: every empty state, every error message,
+every upgrade CTA, every onboarding step, every toast notification.
+
+### What to Build Now vs Later
+
+| Element | Now (Claude Code) | Later (Designer) |
+|---|---|---|
+| Wordmark typography | ✅ Implement now | — |
+| CSS variable system | ✅ Implement now | — |
+| Favicon (SVG) | ✅ Implement now | — |
+| OG image | ✅ Generate via Canvas | — |
+| Branded loading screen | ✅ Implement now | — |
+| Button system | ✅ Implement now | — |
+| Custom logo file | After first revenue | Fiverr $50-200 |
+| App icon (iOS/Android) | Phase 3 | Designer |
+| Marketing illustrations | Phase 2 | Midjourney or designer |
+
+---
+
+## GTM Strategy — Go-To-Market Rollout
+
+### Phase 0 — Private Alpha (Now, 0 users)
+Complete Prompts 4-10. Test yourself on 20+ real episodes.
+Fix every broken state before anyone sees the product.
+One bad first impression from a friend = lost evangelist.
+
+### Phase 1 — Inner Circle Beta (10-20 people)
+Personal invites only. Must be actual podcast listeners (5+ hrs/week).
+Ask for brutal honesty. Give them the password (lens2026).
+Watch: do they analyze more than 1 episode? That's the signal.
+
+### Phase 2 — Controlled Beta (50-100 people)
+Offer free Operator for life in exchange for:
+- 5+ analyzed episodes
+- 5-question feedback form
+- One honest testimonial quote
+
+Channels:
+- Personal network post: "Beta access limited to 100 people, comment 'in'"
+- Reddit seeding (r/podcasts, r/mediaskepticism) — one genuine comment per thread
+- Direct outreach to 10 journalists/academics who write about media bias
+- Korean community outreach (Facebook groups, KakaoTalk communities)
+
+Goal: 500 analyzed episodes in database before public launch.
+
+### Phase 3 — Waitlist (Before public launch)
+Remove password. Add waitlist landing page.
+Show beta testimonials + real bias cards + episode count.
+"Join X people waiting for full access"
+Build email list before charging anyone.
+
+### Phase 4 — Public Launch
+Channels in priority order:
+1. Product Hunt (Tuesday/Wednesday — get 20+ supporters lined up)
+2. Twitter/X thread with real surprising bias data from major shows
+3. Reddit data post (r/podcasts, r/DataIsBeautiful)
+4. Korean community launch (simultaneous — separate KakaoTalk outreach)
+
+Launch when 80% of beta users say they would pay for it.
+
+### Solo Founder Scaling Limits
+- 0-100 paying users: fully manageable alone
+- 100-500 users: need Intercom/Crisp + Sentry + good FAQ
+- 500+ users: need Supabase migration (Netlify Identity hits 1K limit at ~800)
+- 1,500+ users: need first hire
+- 2,000+ users: need a team
+
+### Critical Before Launch
+- [ ] Test Stripe checkout with card 4242 4242 4242 4242
+- [ ] Verify trial → free downgrade works correctly
+- [ ] Verify Unheard returns no data server-side for free users
+- [ ] Mobile layout works on 375px screen
+- [ ] 20+ personal analyses without hitting a broken state
