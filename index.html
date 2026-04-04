@@ -255,6 +255,12 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .loading-state{display:none;text-align:center;padding:48px 20px;width:100%;max-width:680px}.loading-state.on{display:block}
 .spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
 .ld-title{font-size:14px;font-weight:500;margin-bottom:4px}.ld-msg{font-size:12px;color:var(--text2)}
+.skel{background:var(--border2);border-radius:4px;animation:skel-pulse 1.4s ease-in-out infinite}
+.skel-line{height:12px;margin-bottom:8px;border-radius:4px}
+.skel-block{height:80px;border-radius:6px;margin-top:8px}
+.details-loading{display:flex;align-items:center;gap:8px;padding:16px;font-size:12px;color:var(--text3)}
+.details-loading .feed-spin{flex-shrink:0}
+@keyframes skel-pulse{0%,100%{opacity:.4}50%{opacity:.9}}
 .empty-state{text-align:center;padding:48px 20px;max-width:680px;margin:0 auto}
 .empty-state h3{font-family:var(--ffs);font-size:20px;font-weight:400;margin-bottom:7px;font-style:italic}
 .empty-state p{font-size:13px;color:var(--text2)}
@@ -641,7 +647,7 @@ footer p{font-size:10px;color:var(--text3)}
     <div class="loading-state" id="loading">
       <div class="spinner"></div>
       <div class="ld-title" id="ld-title">Starting analysis…</div>
-      <p class="ld-msg">Takes 2–5 minutes for a full episode</p>
+      <p class="ld-msg">First results appear in ~30 seconds</p>
     </div>
     <div class="apanel on" id="apanel-results">
       <div class="empty-state" id="empty-state">
@@ -1230,13 +1236,23 @@ function startAnalysis(audioUrl, epTitle, showName) {
 function pollStatus(jobId, audioUrl) {
   var stages = ['Transcribing audio…','Reading transcript…','Checking claims…','Detecting framing…','Analyzing host patterns…','Building your report…'];
   var si = 0;
+  var shownPartial = false;
   if (_poll) { clearInterval(_poll); }
   _poll = setInterval(async function() {
     si = Math.min(si + 1, stages.length - 1);
-    document.getElementById('ld-title').textContent = stages[si];
+    if (!shownPartial) document.getElementById('ld-title').textContent = stages[si];
     try {
       var d = await fetch('/api/status/' + jobId).then(function(r) { return r.json(); });
-      if (d.status === 'complete') {
+      if (d.status === 'partial' && !shownPartial) {
+        shownPartial = true;
+        document.getElementById('loading').classList.remove('on');
+        document.getElementById('atabs').classList.add('on');
+        document.querySelectorAll('.atab').forEach(function(t) { t.classList.remove('on'); });
+        document.querySelectorAll('.atab')[0].classList.add('on');
+        document.getElementById('apanel-results').classList.add('on');
+        d.url = audioUrl;
+        renderResults(d);
+      } else if (d.status === 'complete') {
         clearInterval(_poll);
         document.getElementById('loading').classList.remove('on');
         document.getElementById('atabs').classList.add('on');
@@ -1245,7 +1261,7 @@ function pollStatus(jobId, audioUrl) {
         document.getElementById('apanel-results').classList.add('on');
         resetBtn();
         d.url = audioUrl;
-        trackAnalysis(d);
+        if (!shownPartial) trackAnalysis(d);
         renderResults(d);
       } else if (d.status === 'error') {
         clearInterval(_poll);
@@ -1356,45 +1372,53 @@ function renderResults(data) {
     card += '<div style="font-size:11px;color:var(--text2)">' + (data.hostTrustLabel || '') + '</div></div></div>';
   }
 
-  if (data.topicBreakdown && data.topicBreakdown.length) {
-    card += '<div class="topics-wrap"><div class="section-lbl">Topic breakdown</div><div class="topic-bars">';
-    data.topicBreakdown.forEach(function(t) {
-      card += '<div class="topic-bar-row"><div class="topic-bar-label">' + t.topic + '</div>';
-      card += '<div class="topic-bar-track"><div class="topic-bar-fill" style="width:' + t.percentage + '%;background:' + leanColor(t.lean) + '"></div></div>';
-      card += '<div class="topic-bar-pct">' + t.percentage + '%</div></div>';
-    });
-    card += '</div></div>';
-  }
+  var isPartial = data.status === 'partial';
 
-  if (data.keyQuotes && data.keyQuotes.length) {
-    card += '<div class="quotes-wrap"><div class="section-lbl">Key quotes</div>';
-    data.keyQuotes.forEach(function(q) {
-      card += '<div class="quote-item concern-' + (q.concern || 'low') + '">';
-      card += '<div class="quote-text">&ldquo;' + q.quote + '&rdquo;</div>';
-      if (q.note) { card += '<div class="quote-note">' + q.note + '</div>'; }
+  if (isPartial) {
+    card += '<div class="details-loading"><div class="feed-spin"></div>Finishing deep analysis&hellip;</div>';
+    card += '<div style="padding:12px 16px 16px"><div class="skel skel-line" style="width:40%"></div><div class="skel skel-block"></div></div>';
+    card += '<div style="padding:12px 16px 16px;border-top:1px solid var(--border)"><div class="skel skel-line" style="width:30%"></div><div class="skel skel-line" style="width:90%"></div><div class="skel skel-line" style="width:75%"></div></div>';
+  } else {
+    if (data.topicBreakdown && data.topicBreakdown.length) {
+      card += '<div class="topics-wrap"><div class="section-lbl">Topic breakdown</div><div class="topic-bars">';
+      data.topicBreakdown.forEach(function(t) {
+        card += '<div class="topic-bar-row"><div class="topic-bar-label">' + t.topic + '</div>';
+        card += '<div class="topic-bar-track"><div class="topic-bar-fill" style="width:' + t.percentage + '%;background:' + leanColor(t.lean) + '"></div></div>';
+        card += '<div class="topic-bar-pct">' + t.percentage + '%</div></div>';
+      });
+      card += '</div></div>';
+    }
+
+    if (data.keyQuotes && data.keyQuotes.length) {
+      card += '<div class="quotes-wrap"><div class="section-lbl">Key quotes</div>';
+      data.keyQuotes.forEach(function(q) {
+        card += '<div class="quote-item concern-' + (q.concern || 'low') + '">';
+        card += '<div class="quote-text">&ldquo;' + q.quote + '&rdquo;</div>';
+        if (q.note) { card += '<div class="quote-note">' + q.note + '</div>'; }
+        card += '</div>';
+      });
       card += '</div>';
-    });
-    card += '</div>';
-  }
+    }
 
-  if (data.missingVoices && data.missingVoices.length) {
-    card += '<div class="missing-wrap"><div class="section-lbl">Missing voices</div>';
-    card += '<div class="missing-tags">' + data.missingVoices.map(function(v) { return '<span class="missing-tag">' + v + '</span>'; }).join('') + '</div></div>';
-  }
+    if (data.missingVoices && data.missingVoices.length) {
+      card += '<div class="missing-wrap"><div class="section-lbl">Missing voices</div>';
+      card += '<div class="missing-tags">' + data.missingVoices.map(function(v) { return '<span class="missing-tag">' + v + '</span>'; }).join('') + '</div></div>';
+    }
 
-  if (data.sponsorConflicts && data.sponsorConflicts.length) {
-    card += '<div style="padding:12px 16px;border-bottom:1px solid var(--border)"><div class="section-lbl">Sponsor conflicts</div>';
-    data.sponsorConflicts.forEach(function(s) {
-      card += '<div style="font-size:12px;color:var(--amber);margin-top:5px;display:flex;gap:5px"><span style="background:var(--amber-bg);padding:1px 7px;border-radius:4px;font-size:10px;font-weight:500;flex-shrink:0">Sponsor</span>' + s + '</div>';
-    });
-    card += '</div>';
-  }
+    if (data.sponsorConflicts && data.sponsorConflicts.length) {
+      card += '<div style="padding:12px 16px;border-bottom:1px solid var(--border)"><div class="section-lbl">Sponsor conflicts</div>';
+      data.sponsorConflicts.forEach(function(s) {
+        card += '<div style="font-size:12px;color:var(--amber);margin-top:5px;display:flex;gap:5px"><span style="background:var(--amber-bg);padding:1px 7px;border-radius:4px;font-size:10px;font-weight:500;flex-shrink:0">Sponsor</span>' + s + '</div>';
+      });
+      card += '</div>';
+    }
 
-  var flags = (data.flags || []).map(function(f) {
-    return '<div class="flag-item"><span class="ftag ' + ftClass(f.type) + '">' + ftLabel(f.type) + '</span>'
-      + '<div><div class="flag-title">' + f.title + '</div><div class="flag-detail">' + f.detail + '</div></div></div>';
-  }).join('');
-  if (flags) { card += '<div><div class="flags-head">Things to be aware of</div>' + flags + '</div>'; }
+    var flags = (data.flags || []).map(function(f) {
+      return '<div class="flag-item"><span class="ftag ' + ftClass(f.type) + '">' + ftLabel(f.type) + '</span>'
+        + '<div><div class="flag-title">' + f.title + '</div><div class="flag-detail">' + f.detail + '</div></div></div>';
+    }).join('');
+    if (flags) { card += '<div><div class="flags-head">Things to be aware of</div>' + flags + '</div>'; }
+  }
 
   card += '<div class="rcard-foot"><button class="ghost-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button></div>';
   card += '</div>';
