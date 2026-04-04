@@ -161,35 +161,33 @@ export default async (req: Request) => {
 
     const store = getStore("clearcast-jobs");
 
-    // YouTube: use captions instead of AssemblyAI
+    // YouTube: try captions first, fall back to AssemblyAI if unavailable
     const ytMatch = url.match(/(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     if (ytMatch) {
       const cap = await getYouTubeTranscript(ytMatch[1]);
-      if (!cap) {
-        return new Response(JSON.stringify({
-          error: "Could not retrieve captions for this YouTube video. The video may have captions disabled, or YouTube is temporarily blocking access. Try a different video or paste an MP3/RSS URL instead.",
-        }), { status: 400, headers: { "Content-Type": "application/json" } });
+      if (cap) {
+        const jobId = `yt-${ytMatch[1]}-${Date.now()}`;
+        await store.setJSON(jobId, {
+          status: "transcribed",
+          jobId,
+          url,
+          transcript: cap.text,
+          duration: cap.duration,
+          createdAt: Date.now(),
+          episodeTitle: episodeTitle || null,
+          showName: showName || null,
+          showSlug: showSlug || null,
+          showArtwork: showArtwork || null,
+          showFeedUrl: showFeedUrl || null,
+        });
+        return new Response(JSON.stringify({ jobId, status: "transcribed" }), {
+          status: 200, headers: { "Content-Type": "application/json" },
+        });
       }
-      const jobId = `yt-${ytMatch[1]}-${Date.now()}`;
-      await store.setJSON(jobId, {
-        status: "transcribed",
-        jobId,
-        url,
-        transcript: cap.text,
-        duration: cap.duration,
-        createdAt: Date.now(),
-        episodeTitle: episodeTitle || null,
-        showName: showName || null,
-        showSlug: showSlug || null,
-        showArtwork: showArtwork || null,
-        showFeedUrl: showFeedUrl || null,
-      });
-      return new Response(JSON.stringify({ jobId, status: "transcribed" }), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
+      // Captions unavailable — fall through to AssemblyAI transcription using the YouTube URL directly
     }
 
-    // Non-YouTube: extract audio URL then send to AssemblyAI
+    // YouTube (captions failed) or non-YouTube: send to AssemblyAI
     const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
     if (!assemblyKey) {
       return new Response(JSON.stringify({ error: "Transcription service not configured" }), {
@@ -198,7 +196,8 @@ export default async (req: Request) => {
     }
 
     let audioUrl = url;
-    if (!url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
+    const isYouTube = !!ytMatch;
+    if (!isYouTube && !url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
       const extracted = await extractAudioUrl(url);
       if (extracted) {
         audioUrl = extracted;
