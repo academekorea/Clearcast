@@ -647,7 +647,7 @@ footer p{font-size:10px;color:var(--text3)}
     <div class="loading-state" id="loading">
       <div class="spinner"></div>
       <div class="ld-title" id="ld-title">Starting analysis…</div>
-      <p class="ld-msg">First results appear in ~30 seconds</p>
+      <p class="ld-msg" id="ld-msg">First results appear in ~30 seconds</p>
     </div>
     <div class="apanel on" id="apanel-results">
       <div class="empty-state" id="empty-state">
@@ -1219,7 +1219,8 @@ function startAnalysis(audioUrl, epTitle, showName) {
   document.getElementById('atabs').classList.remove('on');
   document.querySelectorAll('.apanel').forEach(function(p) { p.classList.remove('on'); });
   document.getElementById('loading').classList.add('on');
-  document.getElementById('ld-title').textContent = 'Submitting for transcription…';
+  document.getElementById('ld-title').textContent = 'Submitting for transcription\u2026';
+  document.getElementById('ld-msg').textContent = 'First results appear in \u223030 seconds';
   var btn = document.getElementById('go-btn');
   btn.disabled = true;
   btn.textContent = 'Analyzing…';
@@ -1227,7 +1228,14 @@ function startAnalysis(audioUrl, epTitle, showName) {
   fetch('/api/analyze', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url:audioUrl, episodeTitle:epTitle||undefined, showName:showName||undefined})})
     .then(function(r) { return r.json(); })
     .then(function(d) {
-      if (d.error) { showAnalyzeErr(d.error); resetBtn(); return; }
+      if (d.error) {
+        if (d.code === 'CAPTIONS_UNAVAILABLE' && audioUrl.match(/youtube\.com\/watch|youtu\.be\//)) {
+          startTranscriptionFallback(audioUrl, epTitle, showName);
+        } else {
+          showAnalyzeErr(d.error); resetBtn();
+        }
+        return;
+      }
       pollStatus(d.jobId, audioUrl);
     })
     .catch(function() { showAnalyzeErr('Network error. Please try again.'); resetBtn(); });
@@ -1270,6 +1278,47 @@ function pollStatus(jobId, audioUrl) {
       }
     } catch(e) {}
   }, 4000);
+}
+
+function startTranscriptionFallback(youtubeUrl, epTitle, showName) {
+  document.getElementById('ld-title').textContent = 'Transcribing audio\u2026 this takes 2\u20133 minutes';
+  document.getElementById('ld-msg').textContent = 'No captions found \u2014 extracting audio directly';
+  document.getElementById('loading').classList.add('on');
+  fetch('/api/transcribe/start', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({youtubeUrl:youtubeUrl})})
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) { showAnalyzeErr(d.error); resetBtn(); return; }
+      pollTranscription(d.jobId, youtubeUrl);
+    })
+    .catch(function() { showAnalyzeErr('Network error. Please try again.'); resetBtn(); });
+}
+
+function pollTranscription(jobId, audioUrl) {
+  var elapsed = 0;
+  var TIMEOUT_MS = 5 * 60 * 1000;
+  var INTERVAL_MS = 4000;
+  if (_poll) { clearInterval(_poll); }
+  _poll = setInterval(async function() {
+    elapsed += INTERVAL_MS;
+    if (elapsed >= TIMEOUT_MS) {
+      clearInterval(_poll);
+      showAnalyzeErr('Transcription is taking longer than expected. Please try again in a few minutes.');
+      resetBtn();
+      return;
+    }
+    try {
+      var d = await fetch('/api/transcribe/status?jobId=' + jobId).then(function(r) { return r.json(); });
+      if (d.status === 'complete') {
+        clearInterval(_poll);
+        document.getElementById('ld-title').textContent = 'Transcription complete \u2014 analyzing\u2026';
+        pollStatus(d.jobId, audioUrl);
+      } else if (d.status === 'error') {
+        clearInterval(_poll);
+        showAnalyzeErr(d.error || 'Transcription failed. Please try again.');
+        resetBtn();
+      }
+    } catch(e) {}
+  }, INTERVAL_MS);
 }
 
 function resetBtn() {

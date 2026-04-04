@@ -184,9 +184,10 @@ export default async (req: Request) => {
           status: 200, headers: { "Content-Type": "application/json" },
         });
       }
-      // Captions unavailable — can't transcribe YouTube audio directly
+      // Captions unavailable — signal frontend to try audio transcription fallback
       return new Response(JSON.stringify({
-        error: "This video doesn't have captions enabled. Try a video with auto-generated or manual captions, or paste a direct MP3/podcast RSS URL instead.",
+        error: "This video doesn't have captions enabled.",
+        code: "CAPTIONS_UNAVAILABLE",
       }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
