@@ -914,9 +914,9 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
           <div style="font-size:12px;color:var(--text3)">No shows followed yet.</div>
         </div>
         <div class="dash-section-lbl" style="margin-top:20px">Unheard Preview</div>
-        <div style="background:var(--bg3);border-radius:var(--r);padding:12px;font-size:12px;color:var(--text2)">
-          <div style="filter:blur(4px);margin-bottom:8px">Stories only one side is covering this week&hellip;</div>
-          <button onclick="showUpgrade()" style="width:100%;padding:8px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--ff)">Upgrade for full access</button>
+        <div id="sb-unheard-preview" style="background:var(--bg3);border-radius:var(--r);padding:12px;font-size:12px;color:var(--text2)">
+          <!-- populated by renderDashUnheardPreview() on login -->
+          <div style="color:var(--text3)">Loading&hellip;</div>
         </div>
       </div>
     </div>
@@ -984,23 +984,8 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
         </div>
       </div>
 
-      <!-- Unheard panel -->
-      <div class="fp" id="fp-unheard">
-        <div style="padding:12px 0">
-          <div id="unheard-gate" style="display:none;padding:24px;text-align:center">
-            <div style="font-size:32px;margin-bottom:12px">&#128274;</div>
-            <div style="font-family:var(--ffs);font-size:22px;font-weight:600;margin-bottom:8px">Unheard requires Pro</div>
-            <div style="font-size:14px;color:var(--text2);margin-bottom:16px">Subscribe to Operator or Studio to access the weekly Unheard report.</div>
-            <button onclick="showUpgrade()" class="unheard-unlock-btn">Unlock with Pro &rarr;</button>
-          </div>
-          <div id="unheard-data" style="display:none">
-            <div class="uh-wrap">
-              <div class="uh-col"><div class="uh-col-title"><span class="bias-dot" style="background:var(--left-bar);display:inline-block"></span>Left-leaning only</div><div id="uh-left"></div></div>
-              <div class="uh-col"><div class="uh-col-title"><span class="bias-dot" style="background:var(--right-bar);display:inline-block"></span>Right-leaning only</div><div id="uh-right"></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Unheard panel — populated by loadUnheard() which gates on Pro status -->
+      <div class="fp" id="fp-unheard"></div>
 
       <!-- Compare panel -->
       <div class="fp" id="fp-compare">
@@ -1406,7 +1391,32 @@ function renderHomeState() {
     document.getElementById('dash-greeting').innerHTML = greeting + (first ? ', <em>' + first + '</em>' : '') + '.';
     renderDashRecent();
     renderBiasFingerprint();
+    renderDashUnheardPreview(u);
   }
+}
+
+function renderDashUnheardPreview(u) {
+  var el = document.getElementById('sb-unheard-preview');
+  if (!el) return;
+  var plan = (u && u.plan || '').toLowerCase();
+  var isPro = plan === 'operator' || plan === 'studio';
+  if (!isPro) {
+    el.innerHTML = '<div style="margin-bottom:8px;color:var(--text2)">Stories only one side is covering this week&hellip;</div>'
+      + '<button onclick="showUpgrade()" style="width:100%;padding:8px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--ff)">Get Pro &rarr;</button>';
+    return;
+  }
+  // Pro: fetch a lightweight preview (first 2 left-only flags)
+  el.innerHTML = '<div style="color:var(--text3)">Loading&hellip;</div>';
+  fetch('/api/blindspot', { headers: { 'x-pl-plan': plan } })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.locked || !data.leftLeaning) { el.innerHTML = '<div style="color:var(--text3)">No data yet.</div>'; return; }
+      var items = (data.leftLeaning.topFlags || []).slice(0, 2).concat((data.rightLeaning.topFlags || []).slice(0, 1));
+      if (!items.length) { el.innerHTML = '<div style="color:var(--text3)">Analyze more episodes to populate.</div>'; return; }
+      el.innerHTML = items.map(function(t) { return '<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:11px">' + t + '</div>'; }).join('')
+        + '<a href="#" onclick="showView(\'discover\');showFeed(\'unheard\');return false" style="display:block;margin-top:8px;font-size:11px;font-weight:600;color:var(--navy);text-decoration:none">See full Unheard report &rarr;</a>';
+    })
+    .catch(function() { el.innerHTML = '<div style="color:var(--text3)">Unable to load.</div>'; });
 }
 
 function renderDashRecent() {
@@ -1776,15 +1786,40 @@ function renderTopShows() {
 
 // ── UNHEARD ──
 async function loadUnheard() {
+  var el=document.getElementById('fp-unheard');
+  var u=plUser();
+  var plan=(u&&u.plan||'').toLowerCase();
+  var isPro=plan==='operator'||plan==='studio';
+
+  if (!isPro) {
+    // Never fetch — render locked state immediately
+    el.innerHTML=unheardLockedHtml();
+    return;
+  }
+
+  // Pro user: fetch with plan header so server can verify
+  el.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3);font-size:13px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading Unheard report&hellip;</div>';
   try {
-    var data=await fetch('/api/blindspot').then(function(r){return r.json();});
-    document.getElementById('unheard-gate').style.display='none';
-    document.getElementById('unheard-data').style.display='block';
-    var left=data.leftLeaning&&data.leftLeaning.topFlags&&data.leftLeaning.topFlags.length?data.leftLeaning.topFlags.map(function(t){return '<div class="uh-item">'+t+'</div>';}).join(''):'<div class="uh-item" style="color:var(--text3)">Analyze more episodes to populate</div>';
-    var right=data.rightLeaning&&data.rightLeaning.topFlags&&data.rightLeaning.topFlags.length?data.rightLeaning.topFlags.map(function(t){return '<div class="uh-item">'+t+'</div>';}).join(''):'<div class="uh-item" style="color:var(--text3)">Analyze more episodes to populate</div>';
-    document.getElementById('uh-left').innerHTML=left;
-    document.getElementById('uh-right').innerHTML=right;
-  } catch(e){}
+    var data=await fetch('/api/blindspot',{headers:{'x-pl-plan':plan}}).then(function(r){return r.json();});
+    if (data.locked) { el.innerHTML=unheardLockedHtml(); return; }
+    var left=data.leftLeaning&&data.leftLeaning.topFlags&&data.leftLeaning.topFlags.length
+      ?data.leftLeaning.topFlags.map(function(t){return '<div class="uh-item">'+t+'</div>';}).join('')
+      :'<div class="uh-item" style="color:var(--text3)">Analyze more episodes to populate</div>';
+    var right=data.rightLeaning&&data.rightLeaning.topFlags&&data.rightLeaning.topFlags.length
+      ?data.rightLeaning.topFlags.map(function(t){return '<div class="uh-item">'+t+'</div>';}).join('')
+      :'<div class="uh-item" style="color:var(--text3)">Analyze more episodes to populate</div>';
+    el.innerHTML='<div style="padding:12px 0"><div class="uh-wrap"><div class="uh-col"><div class="uh-col-title"><span class="bias-dot" style="background:var(--left-bar);display:inline-block"></span>Left-leaning only</div><div id="uh-left">'+left+'</div></div><div class="uh-col"><div class="uh-col-title"><span class="bias-dot" style="background:var(--right-bar);display:inline-block"></span>Right-leaning only</div><div id="uh-right">'+right+'</div></div></div></div>';
+  } catch(e){ el.innerHTML=unheardLockedHtml(); }
+}
+
+function unheardLockedHtml() {
+  return '<div style="padding:32px 20px;text-align:center">'
+    +'<div style="font-size:32px;margin-bottom:14px">&#128274;</div>'
+    +'<div style="font-family:var(--ffs);font-size:22px;font-weight:600;margin-bottom:10px">Unlock Unheard</div>'
+    +'<div style="font-size:14px;color:var(--text2);margin-bottom:6px;max-width:280px;margin-left:auto;margin-right:auto">Stories one side ignores. Available on Operator &amp; Studio plans.</div>'
+    +'<div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);border-radius:var(--r);font-size:11px;font-weight:600;margin:10px 0 16px">&#9733; Operator &amp; Studio</div><br>'
+    +'<button onclick="showUpgrade()" style="padding:11px 26px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)">Get Pro &rarr;</button>'
+    +'</div>';
 }
 
 // ── ANALYZE ──

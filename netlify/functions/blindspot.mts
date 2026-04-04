@@ -1,7 +1,20 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
+const PRO_PLANS = new Set(["operator", "studio"]);
+
 export default async (req: Request) => {
+  // Gate: only Pro plans (Operator / Studio) may receive Unheard data.
+  // The client sends the user's plan in the x-pl-plan header.
+  // This is a best-effort server gate — the real guarantee is the
+  // client never calling this endpoint for non-Pro users.
+  const plan = (req.headers.get("x-pl-plan") || "").toLowerCase().trim();
+  if (!PRO_PLANS.has(plan)) {
+    return new Response(JSON.stringify({ locked: true, preview: null }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const store = getStore("podlens-jobs");
     const keys = await store.list();
