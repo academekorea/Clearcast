@@ -10,7 +10,6 @@ function extractVideoId(url: string): string | null {
   return m ? m[1] : null;
 }
 
-/** Returns a clean https://www.youtube.com/watch?v=ID URL, or null if not YouTube. */
 function normalizeYouTubeUrl(url: string): string | null {
   const id = extractVideoId(url);
   return id ? `https://www.youtube.com/watch?v=${id}` : null;
@@ -28,7 +27,6 @@ interface PreflightResult {
   ok: boolean;
   code?: string;
   message?: string;
-  duration?: number;
   pendingCaptions?: boolean;
 }
 
@@ -38,20 +36,17 @@ async function preflightCheck(videoId: string, apiKey: string): Promise<Prefligh
       `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,status&id=${videoId}&key=${apiKey}`,
       { signal: AbortSignal.timeout(8000) }
     );
-    if (!res.ok) return { ok: true }; // API failure → let caption fetch decide
+    if (!res.ok) return { ok: true };
 
     const data = await res.json();
     const item = data.items?.[0];
-    if (!item) {
-      return { ok: false, code: "VIDEO_NOT_FOUND", message: "Video not found or unavailable." };
-    }
+    if (!item) return { ok: false, code: "VIDEO_NOT_FOUND", message: "Video not found or unavailable." };
 
     const { snippet, contentDetails, status } = item;
 
     if (status?.privacyStatus !== "public") {
       return { ok: false, code: "VIDEO_PRIVATE", message: "This video is private." };
     }
-
     if (snippet?.liveBroadcastContent === "live") {
       return { ok: false, code: "IS_LIVESTREAM", message: "This is a live stream." };
     }
@@ -62,23 +57,18 @@ async function preflightCheck(videoId: string, apiKey: string): Promise<Prefligh
       "44": "This looks like a movie trailer, not a podcast.",
     };
     const categoryMsg = wrongContentTypes[snippet?.categoryId];
-    if (categoryMsg) {
-      return { ok: false, code: "WRONG_CONTENT_TYPE", message: categoryMsg };
-    }
+    if (categoryMsg) return { ok: false, code: "WRONG_CONTENT_TYPE", message: categoryMsg };
 
-    const durationSec = parseIsoDuration(contentDetails?.duration || "");
-
-    // Published within last 30 minutes — auto-captions may not be ready yet
     const publishedAt = snippet?.publishedAt ? new Date(snippet.publishedAt).getTime() : 0;
     const pendingCaptions = publishedAt > 0 && Date.now() - publishedAt < 30 * 60 * 1000;
 
-    return { ok: true, duration: durationSec, pendingCaptions };
+    return { ok: true, pendingCaptions };
   } catch {
-    return { ok: true }; // Never block on preflight failure
+    return { ok: true };
   }
 }
 
-// ── CAPTION FETCH ─────────────────────────────────────────────────────────
+// ── YOUTUBE PAGE FETCH (captions + metadata in one request) ───────────────
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -107,7 +97,15 @@ async function fetchCaptionsFromBaseUrl(baseUrl: string): Promise<{ text: string
   return { text, duration };
 }
 
-async function getYouTubeTranscript(videoId: string): Promise<{ text: string; duration: string } | null> {
+interface YouTubePageData {
+  captionResult: { text: string; duration: string } | null;
+  channelTitle: string;
+  videoTitle: string;
+  channelId: string;
+}
+
+async function fetchYouTubePage(videoId: string): Promise<YouTubePageData> {
+  const empty: YouTubePageData = { captionResult: null, channelTitle: "", videoTitle: "", channelId: "" };
   try {
     const pageRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
@@ -124,7 +122,12 @@ async function getYouTubeTranscript(videoId: string): Promise<{ text: string; du
     });
     const html = await pageRes.text();
 
-    // ── Strategy 1: extract captionTracks directly via regex ──
+    let channelTitle = "";
+    let videoTitle = "";
+    let channelId = "";
+    let captionResult: { text: string; duration: string } | null = null;
+
+    // ── Strategy 1: captionTracks regex (fast path) ──
     const ctMatch = html.match(/"captionTracks":\s*(\[.*?\])\s*,\s*"audioTracks"/s);
     if (ctMatch) {
       try {
@@ -134,14 +137,11 @@ async function getYouTubeTranscript(videoId: string): Promise<{ text: string; du
           tracks.find((t) => t.languageCode === "en") ||
           tracks.find((t) => t.languageCode?.startsWith("en")) ||
           tracks[0];
-        if (track?.baseUrl) {
-          const result = await fetchCaptionsFromBaseUrl(track.baseUrl);
-          if (result) return result;
-        }
+        if (track?.baseUrl) captionResult = await fetchCaptionsFromBaseUrl(track.baseUrl);
       } catch { /* fall through */ }
     }
 
-    // ── Strategy 2: full ytInitialPlayerResponse bracket parse ──
+    // ── Strategy 2: full ytInitialPlayerResponse parse (also extracts metadata) ──
     const marker = "ytInitialPlayerResponse = ";
     const markerIdx = html.indexOf(marker);
     if (markerIdx !== -1) {
@@ -154,37 +154,206 @@ async function getYouTubeTranscript(videoId: string): Promise<{ text: string; du
       if (jsonEnd !== -1) {
         try {
           const pr = JSON.parse(html.slice(jsonStart, jsonEnd + 1));
-          const tracks: any[] = pr?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
-          const track =
-            tracks.find((t: any) => t.languageCode === "en" && !t.kind) ||
-            tracks.find((t: any) => t.languageCode === "en") ||
-            tracks.find((t: any) => t.languageCode?.startsWith("en")) ||
-            tracks[0];
-          if (track?.baseUrl) {
-            const result = await fetchCaptionsFromBaseUrl(track.baseUrl);
-            if (result) return result;
+          // Extract video metadata
+          channelTitle = pr?.videoDetails?.author || "";
+          videoTitle = pr?.videoDetails?.title || "";
+          channelId = pr?.videoDetails?.channelId || "";
+          // Try captions if not already found
+          if (!captionResult) {
+            const tracks: any[] = pr?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+            const track =
+              tracks.find((t: any) => t.languageCode === "en" && !t.kind) ||
+              tracks.find((t: any) => t.languageCode === "en") ||
+              tracks.find((t: any) => t.languageCode?.startsWith("en")) ||
+              tracks[0];
+            if (track?.baseUrl) captionResult = await fetchCaptionsFromBaseUrl(track.baseUrl);
           }
         } catch { /* fall through */ }
       }
     }
 
     // ── Strategy 3: loose baseUrl regex scan ──
-    const urlMatches = [...html.matchAll(/"baseUrl":"(https:\/\/www\.youtube\.com\/api\/timedtext[^"]+)"/g)];
-    for (const m of urlMatches) {
-      try {
-        const baseUrl = m[1].replace(/\\u0026/g, "&");
-        const result = await fetchCaptionsFromBaseUrl(baseUrl);
-        if (result) return result;
-      } catch { /* try next */ }
+    if (!captionResult) {
+      for (const m of html.matchAll(/"baseUrl":"(https:\/\/www\.youtube\.com\/api\/timedtext[^"]+)"/g)) {
+        try {
+          const baseUrl = m[1].replace(/\\u0026/g, "&");
+          captionResult = await fetchCaptionsFromBaseUrl(baseUrl);
+          if (captionResult) break;
+        } catch { /* try next */ }
+      }
     }
 
-    return null;
+    return { captionResult, channelTitle, videoTitle, channelId };
+  } catch {
+    return empty;
+  }
+}
+
+// ── PODCAST RSS HELPERS ───────────────────────────────────────────────────
+
+function similarity(a: string, b: string): number {
+  const words = (s: string) =>
+    new Set(s.toLowerCase().replace(/[^\w\s]/g, " ").split(/\s+/).filter(w => w.length > 2));
+  const wa = words(a), wb = words(b);
+  if (!wa.size || !wb.size) return 0;
+  let overlap = 0;
+  for (const w of wa) if (wb.has(w)) overlap++;
+  return overlap / Math.max(wa.size, wb.size);
+}
+
+async function findEpisodeInRss(feedUrl: string, videoTitle: string): Promise<string | null> {
+  try {
+    const res = await fetch(feedUrl, {
+      headers: { "User-Agent": "Clearcast/1.0" },
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!res.ok) return null;
+    const xml = await res.text();
+
+    const items: { title: string; url: string }[] = [];
+    for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)) {
+      const c = m[1];
+      const rawTitle = c.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || "";
+      const title = rawTitle.replace(/^<!\[CDATA\[/, "").replace(/\]\]>$/, "").trim();
+      const url =
+        c.match(/<enclosure[^>]+url="([^"]+)"/i)?.[1] ||
+        c.match(/<enclosure[^>]+url='([^']+)'/i)?.[1] ||
+        c.match(/<media:content[^>]+url="([^"]+)"/i)?.[1] || "";
+      if (url) items.push({ title, url });
+    }
+
+    if (!items.length) return null;
+
+    if (videoTitle) {
+      const best = items
+        .map(item => ({ ...item, score: similarity(item.title, videoTitle) }))
+        .sort((a, b) => b.score - a.score)[0];
+      if (best.score > 0.25) return best.url;
+    }
+    return items[0].url; // Fall back to most recent episode
   } catch {
     return null;
   }
 }
 
-// ── AUDIO URL / RSS HELPERS ───────────────────────────────────────────────
+// ── LAYER 2: Apple Podcasts ───────────────────────────────────────────────
+
+async function searchApplePodcasts(channelTitle: string, videoTitle: string): Promise<string | null> {
+  if (!channelTitle) return null;
+  try {
+    const res = await fetch(
+      `https://itunes.apple.com/search?term=${encodeURIComponent(channelTitle)}&media=podcast&entity=podcast&limit=5`,
+      { signal: AbortSignal.timeout(5000) }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const results: any[] = data.results || [];
+    if (!results.length) return null;
+
+    const cl = channelTitle.toLowerCase();
+    const match =
+      results.find(r =>
+        r.collectionName?.toLowerCase().includes(cl) ||
+        cl.includes(r.collectionName?.toLowerCase() || "") ||
+        r.artistName?.toLowerCase().includes(cl)
+      ) || results[0];
+
+    return match?.feedUrl ? findEpisodeInRss(match.feedUrl, videoTitle) : null;
+  } catch {
+    return null;
+  }
+}
+
+// ── LAYER 3: Podcast Index (open endpoint) ────────────────────────────────
+
+async function searchPodcastIndex(channelTitle: string, videoTitle: string): Promise<string | null> {
+  if (!channelTitle) return null;
+  try {
+    const res = await fetch(
+      `https://podcastindex.org/api/search/byterm?q=${encodeURIComponent(channelTitle)}&max=3`,
+      {
+        headers: { "User-Agent": "Clearcast/1.0" },
+        signal: AbortSignal.timeout(5000),
+      }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const match = (data.feeds || [])[0];
+    return match?.url ? findEpisodeInRss(match.url, videoTitle) : null;
+  } catch {
+    return null;
+  }
+}
+
+// ── LAYER 4: YouTube Channel RSS → caption retry ──────────────────────────
+
+async function retryFromYouTubeChannelRss(
+  channelId: string,
+  videoId: string
+): Promise<{ text: string; duration: string } | null> {
+  if (!channelId) return null;
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`,
+      { signal: AbortSignal.timeout(5000) }
+    );
+    if (!res.ok) return null;
+    const xml = await res.text();
+    if (!xml.includes(videoId)) return null; // Video not in this channel's feed
+
+    // Retry caption fetch — may succeed on transient failures
+    const retry = await fetchYouTubePage(videoId);
+    return retry.captionResult;
+  } catch {
+    return null;
+  }
+}
+
+// ── ASSEMBLYAI SUBMISSION HELPER ──────────────────────────────────────────
+
+async function submitToAssemblyAI(
+  audioUrl: string,
+  sourceUrl: string,
+  meta: { episodeTitle?: string | null; showName?: string | null; showSlug?: string | null; showArtwork?: string | null; showFeedUrl?: string | null },
+  store: ReturnType<typeof getStore>,
+  assemblyKey: string
+): Promise<Response> {
+  const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
+    method: "POST",
+    headers: { "authorization": assemblyKey, "content-type": "application/json" },
+    body: JSON.stringify({ audio_url: audioUrl, speech_models: ["universal"] }),
+  });
+
+  if (!aaiRes.ok) {
+    const errText = await aaiRes.text();
+    console.error("AssemblyAI error:", errText);
+    let errMsg = "Transcription service error. Please try again.";
+    try { const j = JSON.parse(errText); if (j.error) errMsg = j.error; } catch { /**/ }
+    return new Response(JSON.stringify({ error: errMsg }), {
+      status: 500, headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const { id: transcriptId } = await aaiRes.json();
+  if (!transcriptId) {
+    return new Response(JSON.stringify({ error: "Failed to start transcription. Please try again." }), {
+      status: 500, headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  await store.setJSON(transcriptId, {
+    status: "transcribing", transcriptId, url: sourceUrl, audioUrl, createdAt: Date.now(),
+    episodeTitle: meta.episodeTitle || null, showName: meta.showName || null,
+    showSlug: meta.showSlug || null, showArtwork: meta.showArtwork || null,
+    showFeedUrl: meta.showFeedUrl || null,
+  });
+
+  return new Response(JSON.stringify({ jobId: transcriptId, status: "transcribing" }), {
+    status: 200, headers: { "Content-Type": "application/json" },
+  });
+}
+
+// ── AUDIO URL / RSS HELPERS (non-YouTube path) ────────────────────────────
 
 async function extractAudioUrl(url: string): Promise<string | null> {
   try {
@@ -219,11 +388,8 @@ async function extractAudioUrl(url: string): Promise<string | null> {
 function isAudioUrl(url: string): boolean {
   return !!(
     url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i) ||
-    url.includes("audio") ||
-    url.includes("media") ||
-    url.includes("cdn") ||
-    url.includes("podcast") ||
-    url.includes("episode") ||
+    url.includes("audio") || url.includes("media") || url.includes("cdn") ||
+    url.includes("podcast") || url.includes("episode") ||
     url.match(/\/(e|ep|episodes?)\//i)
   );
 }
@@ -251,66 +417,107 @@ export default async (req: Request) => {
     const normalizedYt = normalizeYouTubeUrl(rawUrl);
     if (normalizedYt) {
       const videoId = extractVideoId(normalizedYt)!;
+      const ytCache = getStore("yt-cache");
 
-      // Pre-flight check via YouTube Data API
+      // ── Cache check (Layer 0) ──
+      try {
+        const cached = await ytCache.get(videoId, { type: "json" }) as any;
+        if (cached?.transcript && cached.createdAt && Date.now() - cached.createdAt < 7 * 24 * 60 * 60 * 1000) {
+          const jobId = `yt-${videoId}-cached-${Date.now()}`;
+          await store.setJSON(jobId, {
+            status: "transcribed", jobId, url: normalizedYt,
+            transcript: cached.transcript, duration: cached.duration || "",
+            createdAt: Date.now(),
+            episodeTitle: episodeTitle || null, showName: showName || null,
+            showSlug: showSlug || null, showArtwork: showArtwork || null,
+            showFeedUrl: showFeedUrl || null,
+          });
+          return new Response(JSON.stringify({ jobId, status: "transcribed", cached: true }), {
+            status: 200, headers: { "Content-Type": "application/json" },
+          });
+        }
+      } catch { /* cache miss — continue */ }
+
+      // ── Pre-flight check ──
       const ytApiKey = Netlify.env.get("YOUTUBE_API_KEY");
+      let pendingCaptions = false;
       if (ytApiKey) {
         const pre = await preflightCheck(videoId, ytApiKey);
         if (!pre.ok) {
-          return new Response(JSON.stringify({ error: pre.message, code: pre.code, duration: pre.duration }), {
+          return new Response(JSON.stringify({ error: pre.message, code: pre.code }), {
             status: 400, headers: { "Content-Type": "application/json" },
           });
         }
+        pendingCaptions = pre.pendingCaptions || false;
+      }
 
-        // Caption retry loop for recently published videos
-        if (pre.pendingCaptions) {
-          let cap = null;
-          for (let attempt = 0; attempt < 3; attempt++) {
-            if (attempt > 0) await sleep(10000);
-            cap = await getYouTubeTranscript(videoId);
-            if (cap) break;
-          }
-          if (cap) {
-            const jobId = `yt-${videoId}-${Date.now()}`;
-            await store.setJSON(jobId, {
-              status: "transcribed", jobId, url: normalizedYt,
-              transcript: cap.text, duration: cap.duration, createdAt: Date.now(),
-              episodeTitle: episodeTitle || null, showName: showName || null,
-              showSlug: showSlug || null, showArtwork: showArtwork || null,
-              showFeedUrl: showFeedUrl || null,
-            });
-            return new Response(JSON.stringify({ jobId, status: "transcribed" }), {
-              status: 200, headers: { "Content-Type": "application/json" },
-            });
-          }
-          // After retries, fall through to CAPTIONS_UNAVAILABLE
-          return new Response(JSON.stringify({
-            error: "Captions aren't ready yet for this video. Try again in a few minutes.",
-            code: "CAPTIONS_UNAVAILABLE",
-          }), { status: 400, headers: { "Content-Type": "application/json" } });
+      // ── Layer 1: YouTube captions (also extracts channel metadata) ──
+      let pageData = await fetchYouTubePage(videoId);
+
+      if (!pageData.captionResult && pendingCaptions) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+          await sleep(10000);
+          const retry = await fetchYouTubePage(videoId);
+          if (retry.captionResult) { pageData = { ...pageData, captionResult: retry.captionResult }; break; }
         }
       }
 
-      // Standard caption fetch (single attempt)
-      const cap = await getYouTubeTranscript(videoId);
-      if (cap) {
+      const saveCaption = async (cap: { text: string; duration: string }, source: string) => {
         const jobId = `yt-${videoId}-${Date.now()}`;
         await store.setJSON(jobId, {
           status: "transcribed", jobId, url: normalizedYt,
           transcript: cap.text, duration: cap.duration, createdAt: Date.now(),
-          episodeTitle: episodeTitle || null, showName: showName || null,
-          showSlug: showSlug || null, showArtwork: showArtwork || null,
-          showFeedUrl: showFeedUrl || null,
+          episodeTitle: episodeTitle || pageData.videoTitle || null,
+          showName: showName || pageData.channelTitle || null,
+          showSlug: showSlug || null, showArtwork: showArtwork || null, showFeedUrl: showFeedUrl || null,
+        });
+        await ytCache.setJSON(videoId, {
+          transcript: cap.text, duration: cap.duration, source, createdAt: Date.now(),
         });
         return new Response(JSON.stringify({ jobId, status: "transcribed" }), {
           status: 200, headers: { "Content-Type": "application/json" },
         });
+      };
+
+      if (pageData.captionResult) return saveCaption(pageData.captionResult, "captions");
+
+      const { channelTitle, videoTitle, channelId } = pageData;
+
+      // ── Layers 2-4: run in parallel ──
+      const [appleResult, podcastIndexResult, rssRetryResult] = await Promise.allSettled([
+        searchApplePodcasts(channelTitle, videoTitle),     // Layer 2
+        searchPodcastIndex(channelTitle, videoTitle),       // Layer 3
+        retryFromYouTubeChannelRss(channelId, videoId),    // Layer 4
+      ]);
+
+      // Layer 4: caption retry succeeded
+      if (rssRetryResult.status === "fulfilled" && rssRetryResult.value) {
+        return saveCaption(rssRetryResult.value, "rss-retry");
       }
 
-      // Signal frontend to try audio transcription fallback
+      // Layers 2-3: podcast MP3 found → submit to AssemblyAI
+      const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
+      if (assemblyKey) {
+        const podcastAudioUrl =
+          (appleResult.status === "fulfilled" && appleResult.value) ||
+          (podcastIndexResult.status === "fulfilled" && podcastIndexResult.value) ||
+          null;
+
+        if (podcastAudioUrl) {
+          return submitToAssemblyAI(podcastAudioUrl, normalizedYt, {
+            episodeTitle: episodeTitle || videoTitle,
+            showName: showName || channelTitle,
+            showSlug, showArtwork, showFeedUrl,
+          }, store, assemblyKey);
+        }
+      }
+
+      // All layers failed → signal frontend for Layer 5 (yt-dlp) or Layer 6 (recovery UI)
       return new Response(JSON.stringify({
-        error: "This video doesn't have captions enabled.",
+        error: "Captions not found.",
         code: "CAPTIONS_UNAVAILABLE",
+        channelTitle: channelTitle || "",
+        videoTitle: videoTitle || "",
       }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
@@ -335,40 +542,10 @@ export default async (req: Request) => {
       }
     }
 
-    const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
-      method: "POST",
-      headers: { "authorization": assemblyKey, "content-type": "application/json" },
-      body: JSON.stringify({ audio_url: audioUrl, speech_models: ["universal"] }),
-    });
-
-    if (!aaiRes.ok) {
-      const errText = await aaiRes.text();
-      console.error("AssemblyAI error:", errText);
-      let errMsg = "Transcription service error. Please try again.";
-      try { const j = JSON.parse(errText); if (j.error) errMsg = j.error; } catch { /**/ }
-      return new Response(JSON.stringify({ error: errMsg }), {
-        status: 500, headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const aaiData = await aaiRes.json();
-    const transcriptId = aaiData.id;
-    if (!transcriptId) {
-      return new Response(JSON.stringify({ error: "Failed to start transcription. Please try again." }), {
-        status: 500, headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    await store.setJSON(transcriptId, {
-      status: "transcribing", transcriptId, url, audioUrl, createdAt: Date.now(),
+    return submitToAssemblyAI(audioUrl, url, {
       episodeTitle: episodeTitle || null, showName: showName || null,
-      showSlug: showSlug || null, showArtwork: showArtwork || null,
-      showFeedUrl: showFeedUrl || null,
-    });
-
-    return new Response(JSON.stringify({ jobId: transcriptId, status: "transcribing" }), {
-      status: 200, headers: { "Content-Type": "application/json" },
-    });
+      showSlug: showSlug || null, showArtwork: showArtwork || null, showFeedUrl: showFeedUrl || null,
+    }, store, assemblyKey);
 
   } catch (e: any) {
     console.error("Analyze error:", e);

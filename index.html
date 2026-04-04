@@ -344,6 +344,21 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .ghost-btn{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:var(--r);font-size:12px;font-family:var(--ff);cursor:pointer}
 .ghost-btn:hover{background:var(--bg3)}
 .err-card{background:var(--right-bg);border:1px solid rgba(185,28,28,.2);border-radius:var(--r-lg);padding:12px 14px;color:var(--right);font-size:12px;margin-bottom:12px}
+.recovery-card{max-width:580px;margin:0 auto;padding:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-xl)}
+.recovery-title{font-size:15px;font-weight:500;margin-bottom:6px}
+.recovery-sub{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.5}
+.recovery-opts{display:flex;flex-direction:column;gap:12px}
+.recovery-opt{padding:14px;background:var(--bg3);border-radius:var(--r)}
+.recovery-opt-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px}
+.recovery-row{display:flex;gap:8px}
+.recovery-input{flex:1;padding:8px 10px;font-size:12px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-family:var(--ff);outline:none}
+.recovery-input:focus{border-color:var(--text2)}
+.recovery-btn{padding:8px 14px;font-size:12px;font-weight:500;border:none;background:var(--text);color:var(--bg);border-radius:6px;cursor:pointer;font-family:var(--ff);white-space:nowrap}
+.recovery-links{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.recovery-link{font-size:12px;color:var(--text2);text-decoration:none}
+.recovery-link:hover{color:var(--text);text-decoration:underline}
+.recovery-note{font-size:11px;color:var(--text3);margin-top:10px}
+.link-btn{background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:0;font-family:var(--ff);text-decoration:underline}
 
 /* ── TOOLTIPS ── */
 .tip-wrap{position:relative;display:inline-flex}
@@ -752,6 +767,8 @@ var _browseInit = false;
 var _currentTopic = 'news';
 var _followedTopics = [];
 var _poll = null;
+var _analyzeStages = null;
+var _currentChannelTitle = '';
 var _episodes = [];
 
 var TOPICS = ['Israel-Gaza','Iran war','Fed rates','AI regulation','Trump tariffs','Ukraine','Climate','Supreme Court','Immigration','Economy'];
@@ -1222,15 +1239,30 @@ function startAnalysis(audioUrl, epTitle, showName) {
   document.getElementById('atabs').classList.remove('on');
   document.querySelectorAll('.apanel').forEach(function(p) { p.classList.remove('on'); });
   document.getElementById('loading').classList.add('on');
-  document.getElementById('ld-title').textContent = 'Submitting for transcription\u2026';
-  document.getElementById('ld-msg').textContent = 'First results appear in \u223030 seconds';
+  document.getElementById('ld-title').textContent = 'Checking cache\u2026';
+  document.getElementById('ld-msg').textContent = 'Looking up previous results\u2026';
   var btn = document.getElementById('go-btn');
   btn.disabled = true;
-  btn.textContent = 'Analyzing…';
+  btn.textContent = 'Analyzing\u2026';
+
+  // Animate loading stages while waiting for analyze response
+  if (_analyzeStages) clearInterval(_analyzeStages);
+  var _stageIdx = 0;
+  var _stages = [
+    ['Checking cache\u2026', 'Looking up previous results\u2026'],
+    ['Reading captions\u2026', 'Fetching YouTube auto-captions\u2026'],
+    ['Searching podcast directories\u2026', 'Checking Apple Podcasts and Podcast Index\u2026'],
+  ];
+  _analyzeStages = setInterval(function() {
+    _stageIdx = Math.min(_stageIdx + 1, _stages.length - 1);
+    document.getElementById('ld-title').textContent = _stages[_stageIdx][0];
+    document.getElementById('ld-msg').textContent = _stages[_stageIdx][1];
+  }, 3500);
 
   fetch('/api/analyze', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url:audioUrl, episodeTitle:epTitle||undefined, showName:showName||undefined})})
     .then(function(r) { return r.json(); })
     .then(function(d) {
+      clearInterval(_analyzeStages);
       if (d.error) {
         var code = d.code || '';
         if (code === 'VIDEO_PRIVATE') {
@@ -1239,9 +1271,8 @@ function startAnalysis(audioUrl, epTitle, showName) {
           showAnalyzeErr('Live streams can\u2019t be analyzed yet. Try after the stream ends.'); resetBtn();
         } else if (code === 'WRONG_CONTENT_TYPE') {
           showAnalyzeErr(d.error); resetBtn();
-        } else if (code === 'TOO_LONG') {
-          showAnalyzeErr('This video is over 90 minutes. Try a shorter clip or paste a direct MP3 URL.'); resetBtn();
-        } else if (code === 'CAPTIONS_UNAVAILABLE' && audioUrl.match(/youtube\.com\/watch|youtu\.be\//)) {
+        } else if (code === 'CAPTIONS_UNAVAILABLE') {
+          _currentChannelTitle = d.channelTitle || '';
           startTranscriptionFallback(audioUrl, epTitle, showName);
         } else {
           showAnalyzeErr(d.error); resetBtn();
@@ -1250,7 +1281,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
       }
       pollStatus(d.jobId, audioUrl);
     })
-    .catch(function() { showAnalyzeErr('Network error. Please try again.'); resetBtn(); });
+    .catch(function() { clearInterval(_analyzeStages); showAnalyzeErr('Network error. Please try again.'); resetBtn(); });
 }
 
 function pollStatus(jobId, audioUrl) {
@@ -1321,8 +1352,7 @@ function pollTranscription(jobId, audioUrl) {
     if (elapsed >= TIMEOUT_MS) {
       clearInterval(_poll);
       hideProgressBar();
-      showAnalyzeErr('Transcription is taking longer than expected. Please try again in a few minutes.');
-      resetBtn();
+      showRecoveryPanel(_currentChannelTitle);
       return;
     }
     // Progress bar: fills to ~90% over 3 minutes, then holds
@@ -1349,14 +1379,7 @@ function pollTranscription(jobId, audioUrl) {
       } else if (d.status === 'error') {
         clearInterval(_poll);
         hideProgressBar();
-        var code = d.code || '';
-        var msg = code === 'TOO_LARGE'
-          ? 'Audio file too large to process. Try a shorter video.'
-          : code === 'AUDIO_EXTRACTION_FAILED'
-          ? 'Couldn\u2019t extract audio from this video. Try a direct MP3 or RSS URL.'
-          : (d.error || 'Transcription failed. Please try again.');
-        showAnalyzeErr(msg);
-        resetBtn();
+        showRecoveryPanel(_currentChannelTitle);
       }
     } catch(e) {}
   }, INTERVAL_MS);
@@ -1375,6 +1398,55 @@ function showAnalyzeErr(msg) {
   document.querySelectorAll('.atab')[0].classList.add('on');
   document.getElementById('apanel-results').classList.add('on');
   document.getElementById('results').innerHTML = '<div class="err-card">' + msg + '</div>';
+}
+
+function showRecoveryPanel(channelTitle) {
+  document.getElementById('loading').classList.remove('on');
+  hideProgressBar();
+  document.getElementById('atabs').classList.add('on');
+  document.querySelectorAll('.atab').forEach(function(t) { t.classList.remove('on'); });
+  document.querySelectorAll('.atab')[0].classList.add('on');
+  document.getElementById('apanel-results').classList.add('on');
+  resetBtn();
+  var ct = channelTitle || '';
+  var ctEnc = encodeURIComponent(ct);
+  document.getElementById('results').innerHTML =
+    '<div class="recovery-card">' +
+    '<div class="recovery-title">We need a little help with this one</div>' +
+    '<p class="recovery-sub">We couldn\u2019t auto-detect this podcast feed. Try one of these:</p>' +
+    '<div class="recovery-opts">' +
+    '<div class="recovery-opt">' +
+    '<div class="recovery-opt-label">Paste the RSS feed URL</div>' +
+    '<div class="recovery-row">' +
+    '<input class="recovery-input" id="recovery-rss" type="text" placeholder="https://feeds.example.com/podcast.rss" />' +
+    '<button class="recovery-btn" onclick="tryRecoveryUrl(\'rss\')">Analyze</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="recovery-opt">' +
+    '<div class="recovery-opt-label">Paste a direct MP3 URL</div>' +
+    '<div class="recovery-row">' +
+    '<input class="recovery-input" id="recovery-mp3" type="text" placeholder="https://example.com/episode.mp3" />' +
+    '<button class="recovery-btn" onclick="tryRecoveryUrl(\'mp3\')">Analyze</button>' +
+    '</div>' +
+    '</div>' +
+    '</div>' +
+    (ct
+      ? '<div class="recovery-links">' +
+        '<a class="recovery-link" href="https://podcasts.apple.com/search?term=' + ctEnc + '" target="_blank" rel="noopener">Find on Apple Podcasts \u2192</a>' +
+        '<a class="recovery-link" href="https://open.spotify.com/search/' + ctEnc + '/podcasts" target="_blank" rel="noopener">Find on Spotify \u2192</a>' +
+        '</div>'
+      : '') +
+    '<p class="recovery-note">Or try our browser extension (coming soon) for any video \u2014 ' +
+    '<button class="link-btn" onclick="document.querySelector(\'.ghost-btn\').click()">join waitlist</button></p>' +
+    '</div>';
+}
+
+function tryRecoveryUrl(type) {
+  var input = document.getElementById('recovery-' + type);
+  var url = input ? input.value.trim() : '';
+  if (!url) { if (input) input.focus(); return; }
+  document.getElementById('url-input').value = url;
+  startAnalysis(url);
 }
 
 function switchATab(name, el) {
