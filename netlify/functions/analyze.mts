@@ -452,7 +452,9 @@ export default async (req: Request) => {
       }
 
       // ── Layer 1: YouTube captions (also extracts channel metadata) ──
+      console.log(`[analyze] Layer 1: fetching YouTube page for ${videoId}`);
       let pageData = await fetchYouTubePage(videoId);
+      console.log(`[analyze] Layer 1 result: captionResult=${!!pageData.captionResult}, channelTitle="${pageData.channelTitle}", videoTitle="${pageData.videoTitle}", channelId="${pageData.channelId}"`);
 
       if (!pageData.captionResult && pendingCaptions) {
         for (let attempt = 0; attempt < 2; attempt++) {
@@ -479,19 +481,29 @@ export default async (req: Request) => {
         });
       };
 
-      if (pageData.captionResult) return saveCaption(pageData.captionResult, "captions");
+      if (pageData.captionResult) {
+        console.log(`[analyze] Layer 1 SUCCESS: captions found, length=${pageData.captionResult.text.length}`);
+        return saveCaption(pageData.captionResult, "captions");
+      }
+
+      console.log(`[analyze] Layer 1 FAILED: no captions`);
 
       const { channelTitle, videoTitle, channelId } = pageData;
 
       // ── Layers 2-4: run in parallel ──
+      console.log(`[analyze] Layers 2-4 parallel: channelTitle="${channelTitle}", videoTitle="${videoTitle}", channelId="${channelId}"`);
       const [appleResult, podcastIndexResult, rssRetryResult] = await Promise.allSettled([
         searchApplePodcasts(channelTitle, videoTitle),     // Layer 2
         searchPodcastIndex(channelTitle, videoTitle),       // Layer 3
         retryFromYouTubeChannelRss(channelId, videoId),    // Layer 4
       ]);
+      console.log(`[analyze] Layer 2 (Apple): ${appleResult.status} value=${appleResult.status === "fulfilled" ? appleResult.value : appleResult.reason}`);
+      console.log(`[analyze] Layer 3 (PodcastIndex): ${podcastIndexResult.status} value=${podcastIndexResult.status === "fulfilled" ? podcastIndexResult.value : podcastIndexResult.reason}`);
+      console.log(`[analyze] Layer 4 (RSS retry): ${rssRetryResult.status} value=${rssRetryResult.status === "fulfilled" ? !!rssRetryResult.value : rssRetryResult.reason}`);
 
       // Layer 4: caption retry succeeded
       if (rssRetryResult.status === "fulfilled" && rssRetryResult.value) {
+        console.log(`[analyze] Layer 4 SUCCESS: caption retry worked`);
         return saveCaption(rssRetryResult.value, "rss-retry");
       }
 
@@ -504,6 +516,7 @@ export default async (req: Request) => {
           null;
 
         if (podcastAudioUrl) {
+          console.log(`[analyze] Layers 2-3 SUCCESS: podcast MP3 found, submitting to AssemblyAI: ${podcastAudioUrl}`);
           return submitToAssemblyAI(podcastAudioUrl, normalizedYt, {
             episodeTitle: episodeTitle || videoTitle,
             showName: showName || channelTitle,
@@ -513,6 +526,7 @@ export default async (req: Request) => {
       }
 
       // All layers failed → signal frontend for Layer 5 (yt-dlp) or Layer 6 (recovery UI)
+      console.log(`[analyze] All layers failed → returning CAPTIONS_UNAVAILABLE`);
       return new Response(JSON.stringify({
         error: "Captions not found.",
         code: "CAPTIONS_UNAVAILABLE",

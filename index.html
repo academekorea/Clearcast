@@ -1329,13 +1329,11 @@ function startTranscriptionFallback(youtubeUrl, epTitle, showName) {
   document.getElementById('ld-progress-wrap').style.display = 'block';
   document.getElementById('ld-progress-bar').style.width = '0%';
   document.getElementById('loading').classList.add('on');
-  fetch('/api/transcribe/start', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({youtubeUrl:youtubeUrl})})
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (d.error) { hideProgressBar(); showAnalyzeErr(d.error); resetBtn(); return; }
-      pollTranscription(d.jobId, youtubeUrl);
-    })
-    .catch(function() { hideProgressBar(); showAnalyzeErr('Network error. Please try again.'); resetBtn(); });
+  var jobId = 'yt-bg-' + Date.now();
+  // Fire-and-forget: background function returns 202 immediately, we poll for status
+  fetch('/api/transcribe/background', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({jobId:jobId, youtubeUrl:youtubeUrl})})
+    .catch(function() { /* background function may return 202 or network error — we poll regardless */ });
+  pollTranscription(jobId, youtubeUrl);
 }
 
 function hideProgressBar() {
