@@ -39,23 +39,23 @@ export default async (req: Request) => {
     try {
       const rssUrl = `https://itunes.apple.com/us/rss/toppodcasts/limit=20/genre=${genreId}/json`;
       const rssRes = await fetch(rssUrl, {
-        headers: { "User-Agent": "Mozilla/5.0 Clearcast/1.0" }
+        headers: { "User-Agent": "Mozilla/5.0 Podlens/1.0" }
       });
-      
+
       if (rssRes.ok) {
         const rssData = await rssRes.json();
         const entries = rssData?.feed?.entry || [];
-        
+
         if (entries.length > 0) {
           // Batch lookup for feed URLs
           const ids = entries.map((e: any) => e.id?.attributes?.["im:id"]).filter(Boolean);
           let feedUrls: Record<string, string> = {};
           let itunesUrls: Record<string, string> = {};
-          
+
           if (ids.length) {
             try {
               const lookupRes = await fetch(`https://itunes.apple.com/lookup?id=${ids.join(",")}&entity=podcast`, {
-                headers: { "User-Agent": "Mozilla/5.0 Clearcast/1.0" }
+                headers: { "User-Agent": "Mozilla/5.0 Podlens/1.0" }
               });
               if (lookupRes.ok) {
                 const lookupData = await lookupRes.json();
@@ -89,7 +89,7 @@ export default async (req: Request) => {
     if (!podcasts.length) {
       const searchUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=podcast&entity=podcast&limit=20&country=us`;
       const searchRes = await fetch(searchUrl, {
-        headers: { "User-Agent": "Mozilla/5.0 Clearcast/1.0" }
+        headers: { "User-Agent": "Mozilla/5.0 Podlens/1.0" }
       });
       
       if (searchRes.ok) {

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Profile — Podlens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --navy:#0f2027;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15);
+  --left:#E24B4A;--left-bar:#E24B4A;--left-bg:#FEF2F2;
+  --center:#9E9E9E;--center-bar:#9E9E9E;--center-bg:#F5F5F5;
+  --right:#378ADD;--right-bar:#378ADD;--right-bg:#EFF6FF;
+  --amber:#B45309;--amber-bg:#FFFBEB;
+  --ff:'Inter',-apple-system,sans-serif;
+  --ffs:'Playfair Display',Georgia,serif;
+  --r:4px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --left-bg:#2D1515;--center-bg:#1F1F1F;--right-bg:#131C2A;--amber-bg:#1C0A00;
+}}
+[data-theme="dark"]{--bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;--text:#FAF9F6;--text2:#888;--text3:#555;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--left-bg:#2D1515;--center-bg:#1F1F1F;--right-bg:#131C2A;--amber-bg:#1C0A00}
+[data-theme="light"]{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;--text:#1a1a1a;--text2:#555;--text3:#999;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15);--left-bg:#FEF2F2;--center-bg:#F5F5F5;--right-bg:#EFF6FF;--amber-bg:#FFFBEB}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.6}
+a{color:var(--navy);text-decoration:none}
+[data-theme="dark"] a{color:var(--text)}
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+.logo{font-family:var(--ffs);font-size:20px;font-weight:700;color:var(--navy);text-decoration:none;flex-shrink:0;margin-right:auto}
+[data-theme="dark"] .logo{color:var(--text)}
+.nl{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:var(--r);text-decoration:none}
+.nl:hover{background:var(--bg3);color:var(--text)}
+.nav-btn{padding:7px 16px;font-size:13px;font-weight:600;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-family:var(--ff)}
+
+/* ── PROFILE LAYOUT ── */
+.profile-wrap{max-width:960px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:300px 1fr;gap:32px;align-items:start}
+@media(max-width:720px){.profile-wrap{grid-template-columns:1fr}}
+
+/* ── LEFT SIDEBAR ── */
+.profile-sidebar{}
+.avatar-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:32px 24px;text-align:center;margin-bottom:16px}
+.avatar-circle{width:80px;height:80px;border-radius:50%;background:var(--navy);color:#fff;font-size:32px;font-weight:700;font-family:var(--ffs);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.profile-name{font-family:var(--ffs);font-size:22px;font-weight:700;margin-bottom:4px}
+.profile-email{font-size:13px;color:var(--text3);margin-bottom:16px}
+.profile-plan{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:4px 12px;border-radius:var(--r);background:var(--navy);color:#fff;margin-bottom:20px}
+.edit-btn{display:block;width:100%;padding:8px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:13px;font-family:var(--ff);transition:all .1s;margin-bottom:8px}
+.edit-btn:hover{border-color:var(--text);color:var(--text)}
+.settings-link{display:block;width:100%;padding:8px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:13px;font-family:var(--ff);transition:all .1s;text-align:center}
+.settings-link:hover{border-color:var(--text);color:var(--text)}
+
+/* ── STATS GRID ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.stat-cell{background:var(--bg2);padding:16px;text-align:center}
+.stat-num{font-family:var(--ffs);font-size:28px;font-weight:700;color:var(--text);line-height:1}
+.stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+
+/* ── FINGERPRINT CARD ── */
+.fp-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px}
+.fp-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:14px}
+.fp-bar{display:flex;height:10px;border-radius:2px;overflow:hidden;margin-bottom:10px}
+.fp-l{background:var(--left-bar)}
+.fp-c{background:var(--center-bar)}
+.fp-r{background:var(--right-bar)}
+.fp-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:10px}
+.fp-counts{display:flex;gap:10px;flex-wrap:wrap}
+.fpc{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}
+.fpcd{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* ── MAIN CONTENT ── */
+.profile-main{}
+.section-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px;overflow:hidden}
+.section-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.section-head-title{font-size:13px;font-weight:600}
+.section-head-sub{font-size:11px;color:var(--text3)}
+.ep-row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border)}
+.ep-row:last-child{border-bottom:none}
+.ep-art{width:40px;height:40px;border-radius:var(--r);background:var(--bg3);flex-shrink:0;object-fit:cover}
+.ep-body{flex:1;min-width:0}
+.ep-show{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.ep-title{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.ep-mini-bar{display:flex;height:4px;border-radius:1px;overflow:hidden;width:80px}
+.ep-date{font-size:11px;color:var(--text3);flex-shrink:0}
+.show-row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border)}
+.show-row:last-child{border-bottom:none}
+.show-art{width:44px;height:44px;border-radius:var(--r);background:var(--bg3);flex-shrink:0;object-fit:cover}
+.show-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.show-meta{font-size:11px;color:var(--text3)}
+.empty-state{padding:40px 20px;text-align:center;color:var(--text3);font-size:13px}
+.empty-state a{color:var(--navy);text-decoration:underline}
+[data-theme="dark"] .empty-state a{color:var(--text)}
+footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2)}
+.footer-bottom{max-width:960px;margin:0 auto;font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">Podlens</a>
+  <a class="nl" href="/">Home</a>
+  <span style="flex:1"></span>
+  <a class="nl" href="/settings.html">Settings</a>
+  <button class="nav-btn" onclick="doLogout()">Log out</button>
+</nav>
+
+<div class="profile-wrap" id="profile-wrap">
+  <div class="profile-sidebar">
+    <div class="avatar-card">
+      <div class="avatar-circle" id="prof-avatar">?</div>
+      <div class="profile-name" id="prof-name">Loading&hellip;</div>
+      <div class="profile-email" id="prof-email"></div>
+      <div class="profile-plan" id="prof-plan">Listener</div>
+      <button class="edit-btn" onclick="window.location='/settings.html'">Edit profile</button>
+      <a class="settings-link" href="/settings.html">Account settings</a>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-cell"><div class="stat-num" id="stat-analyzed">0</div><div class="stat-lbl">Analyzed</div></div>
+      <div class="stat-cell"><div class="stat-num" id="stat-shows">0</div><div class="stat-lbl">Shows</div></div>
+      <div class="stat-cell"><div class="stat-num" id="stat-streak">0</div><div class="stat-lbl">Day streak</div></div>
+      <div class="stat-cell"><div class="stat-num" id="stat-saved">0</div><div class="stat-lbl">Saved</div></div>
+    </div>
+
+    <div class="fp-card">
+      <div class="fp-title">Bias Fingerprint</div>
+      <div class="fp-bar" id="fp-bar">
+        <div class="fp-l" style="width:33%"></div>
+        <div class="fp-c" style="width:34%"></div>
+        <div class="fp-r" style="width:33%"></div>
+      </div>
+      <div class="fp-labels"><span>Left</span><span>Center</span><span>Right</span></div>
+      <div class="fp-counts" id="fp-counts">
+        <span class="fpc"><span class="fpcd" style="background:#E24B4A"></span><span id="fp-l">—%</span> left</span>
+        <span class="fpc"><span class="fpcd" style="background:#9E9E9E"></span><span id="fp-c">—%</span> center</span>
+        <span class="fpc"><span class="fpcd" style="background:#378ADD"></span><span id="fp-r">—%</span> right</span>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-top:10px;font-style:italic">Based on your last <span id="fp-count">0</span> analyses</div>
+    </div>
+  </div>
+
+  <div class="profile-main">
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-title">Recent analyses</div>
+        <div class="section-head-sub" id="recent-count"></div>
+      </div>
+      <div id="recent-list"><div class="empty-state">No analyses yet. <a href="/">Analyze your first episode &rarr;</a></div></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-title">Shows you follow</div>
+        <div class="section-head-sub" id="shows-count"></div>
+      </div>
+      <div id="shows-list"><div class="empty-state">No shows followed yet. Browse shows on the <a href="/">home page</a>.</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-bottom"><span>&copy; 2026 Podlens &middot; podlens.app</span><span><a href="mailto:hello@podlens.app">hello@podlens.app</a></span></div>
+</footer>
+
+<script>
+function plUser() {
+  try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch { return null; }
+}
+function doLogout() {
+  localStorage.removeItem('pl-user');
+  window.location.href = '/';
+}
+
+function renderProfile() {
+  var u = plUser();
+  if (!u) { window.location.href = '/'; return; }
+
+  var initials = (u.name || u.email || '?').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
+  document.getElementById('prof-avatar').textContent = initials;
+  document.getElementById('prof-name').textContent = u.name || u.email || 'My Account';
+  document.getElementById('prof-email').textContent = u.email || '';
+  document.getElementById('prof-plan').textContent = (u.plan || 'Listener').charAt(0).toUpperCase() + (u.plan || 'listener').slice(1);
+
+  // Recent analyses
+  var recent = [];
+  try { recent = JSON.parse(localStorage.getItem('pl-recent') || '[]'); } catch {}
+  document.getElementById('stat-analyzed').textContent = recent.length;
+  document.getElementById('recent-count').textContent = recent.length + ' episodes';
+
+  if (recent.length) {
+    var html = '';
+    recent.slice(0, 10).forEach(function(ep) {
+      var al = ep.audioLean || {};
+      var lp = al.leftPct || 0, cp = al.centerPct || 0, rp = al.rightPct || 0;
+      var date = ep.analyzedAt ? new Date(ep.analyzedAt).toLocaleDateString('en-US', {month:'short',day:'numeric'}) : '';
+      html += '<div class="ep-row">';
+      if (ep.showArtwork) html += '<img class="ep-art" src="'+ep.showArtwork+'" alt="" onerror="this.style.display=\'none\'">';
+      else html += '<div class="ep-art"></div>';
+      html += '<div class="ep-body">';
+      if (ep.showName) html += '<div class="ep-show">'+ep.showName+'</div>';
+      html += '<div class="ep-title">'+(ep.episodeTitle||'Episode')+'</div>';
+      html += '<div class="ep-mini-bar"><div style="width:'+lp+'%;background:#E24B4A"></div><div style="width:'+cp+'%;background:#9E9E9E"></div><div style="width:'+rp+'%;background:#378ADD"></div></div>';
+      html += '</div>';
+      if (date) html += '<div class="ep-date">'+date+'</div>';
+      html += '</div>';
+    });
+    document.getElementById('recent-list').innerHTML = html;
+  }
+
+  // Followed shows
+  var followed = [];
+  try { followed = JSON.parse(localStorage.getItem('pl-followed') || '[]'); } catch {}
+  document.getElementById('stat-shows').textContent = followed.length;
+  document.getElementById('shows-count').textContent = followed.length + ' shows';
+
+  if (followed.length) {
+    var shtml = '';
+    followed.slice(0, 8).forEach(function(show) {
+      shtml += '<div class="show-row">';
+      if (show.artwork) shtml += '<img class="show-art" src="'+show.artwork+'" alt="" onerror="this.style.display=\'none\'">';
+      else shtml += '<div class="show-art"></div>';
+      shtml += '<div><div class="show-name">'+(show.name||'Show')+'</div>';
+      shtml += '<div class="show-meta">'+(show.category||'Podcast')+'</div></div>';
+      shtml += '</div>';
+    });
+    document.getElementById('shows-list').innerHTML = shtml;
+  }
+
+  // Bias fingerprint
+  if (recent.length) {
+    var validLeans = recent.filter(function(e){return e.audioLean && typeof e.audioLean.leftPct==='number';});
+    if (validLeans.length) {
+      var avgL = Math.round(validLeans.reduce(function(s,e){return s+e.audioLean.leftPct;},0)/validLeans.length);
+      var avgC = Math.round(validLeans.reduce(function(s,e){return s+e.audioLean.centerPct;},0)/validLeans.length);
+      var avgR = 100-avgL-avgC;
+      document.getElementById('fp-bar').innerHTML =
+        '<div class="fp-l" style="width:'+avgL+'%"></div>'+
+        '<div class="fp-c" style="width:'+avgC+'%"></div>'+
+        '<div class="fp-r" style="width:'+avgR+'%"></div>';
+      document.getElementById('fp-l').textContent = avgL + '%';
+      document.getElementById('fp-c').textContent = avgC + '%';
+      document.getElementById('fp-r').textContent = avgR + '%';
+      document.getElementById('fp-count').textContent = validLeans.length;
+    }
+  }
+}
+
+renderProfile();
+</script>
+</body>
+</html>

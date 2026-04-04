@@ -204,7 +204,7 @@ function similarity(a: string, b: string): number {
 async function findEpisodeInRss(feedUrl: string, videoTitle: string): Promise<string | null> {
   try {
     const res = await fetch(feedUrl, {
-      headers: { "User-Agent": "Clearcast/1.0" },
+      headers: { "User-Agent": "Podlens/1.0" },
       signal: AbortSignal.timeout(6000),
     });
     if (!res.ok) return null;
@@ -272,7 +272,7 @@ async function searchPodcastIndex(channelTitle: string, videoTitle: string): Pro
     const res = await fetch(
       `https://podcastindex.org/api/search/byterm?q=${encodeURIComponent(channelTitle)}&max=3`,
       {
-        headers: { "User-Agent": "Clearcast/1.0" },
+        headers: { "User-Agent": "Podlens/1.0" },
         signal: AbortSignal.timeout(5000),
       }
     );
@@ -359,7 +359,7 @@ async function extractAudioUrl(url: string): Promise<string | null> {
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; Clearcast/1.0)",
+        "User-Agent": "Mozilla/5.0 (compatible; Podlens/1.0)",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       },
       signal: AbortSignal.timeout(8000),
@@ -411,7 +411,7 @@ export default async (req: Request) => {
       });
     }
 
-    const store = getStore("clearcast-jobs");
+    const store = getStore("podlens-jobs");
 
     // ── YouTube path ──────────────────────────────────────────────────────
     const normalizedYt = normalizeYouTubeUrl(rawUrl);

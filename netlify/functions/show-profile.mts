@@ -12,8 +12,8 @@ export default async (req: Request) => {
   }
 
   try {
-    const showStore = getStore("clearcast-shows");
-    const jobStore = getStore("clearcast-jobs");
+    const showStore = getStore("podlens-shows");
+    const jobStore = getStore("podlens-jobs");
 
     const show = await showStore.get(slug, { type: "json" }).catch(() => null) as any;
     if (!show) {

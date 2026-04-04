@@ -15,7 +15,7 @@ function extractVideoId(url: string): string | null {
 export default async (req: Request) => {
   const transcripts = getStore("transcripts");
   const cache = getStore("transcript-cache");
-  const jobs = getStore("clearcast-jobs");
+  const jobs = getStore("podlens-jobs");
 
   let jobId: string;
   let youtubeUrl: string;

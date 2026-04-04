@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pricing — Podlens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --navy:#0f2027;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15);
+  --ff:'Inter',-apple-system,sans-serif;
+  --ffs:'Playfair Display',Georgia,serif;
+  --r:4px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+}}
+[data-theme="dark"]{--bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--text:#FAF9F6;--text2:#888;--text3:#555;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14)}
+[data-theme="light"]{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--text:#1a1a1a;--text2:#555;--text3:#999;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15)}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.6}
+a{color:var(--navy);text-decoration:none}
+[data-theme="dark"] a{color:var(--text)}
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+.logo{font-family:var(--ffs);font-size:20px;font-weight:700;color:var(--navy);text-decoration:none;flex-shrink:0;margin-right:auto}
+[data-theme="dark"] .logo{color:var(--text)}
+.nl{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:var(--r);text-decoration:none}
+.nl:hover{background:var(--bg3);color:var(--text)}
+.hero{padding:80px 24px 60px;text-align:center}
+.hero h1{font-family:var(--ffs);font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:16px;letter-spacing:-.02em}
+.hero p{font-size:17px;color:var(--text2);max-width:480px;margin:0 auto;line-height:1.7}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;max-width:960px;margin:48px auto;padding:0 24px}
+.plan{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:32px 28px;display:flex;flex-direction:column}
+.plan.featured{border-color:var(--navy);border-width:2px}
+.plan-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#fff;background:var(--navy);padding:3px 10px;border-radius:var(--r);align-self:flex-start;margin-bottom:16px}
+.plan-name{font-family:var(--ffs);font-size:24px;font-weight:700;margin-bottom:8px}
+.plan-price{font-size:36px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px;font-family:var(--ffs)}
+.plan-price span{font-size:14px;font-weight:400;color:var(--text3)}
+.plan-desc{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.plan-features{flex:1;margin-bottom:24px}
+.pf{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:13px;color:var(--text2)}
+.pf-check{color:var(--navy);font-weight:700;flex-shrink:0;margin-top:2px}
+[data-theme="dark"] .pf-check{color:var(--text)}
+.pf.dim{color:var(--text3)}
+.pf.dim .pf-check{color:var(--text3)}
+.plan-btn{display:block;width:100%;padding:12px;text-align:center;font-size:14px;font-weight:600;border:2px solid var(--navy);color:var(--navy);border-radius:var(--r);cursor:pointer;background:transparent;font-family:var(--ff);transition:all .15s;text-decoration:none}
+.plan-btn:hover{background:var(--navy);color:#fff}
+.plan.featured .plan-btn{background:var(--navy);color:#fff}
+.plan.featured .plan-btn:hover{opacity:.85}
+.compare{max-width:900px;margin:40px auto 80px;padding:0 24px}
+.compare h2{font-family:var(--ffs);font-size:28px;font-weight:600;margin-bottom:24px;text-align:center;letter-spacing:-.01em}
+.compare-table{width:100%;border-collapse:collapse;font-size:13px}
+.compare-table th{text-align:left;padding:10px 14px;border-bottom:2px solid var(--border);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
+.compare-table th:first-child{width:220px}
+.compare-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
+.compare-table td:first-child{font-weight:500;color:var(--text)}
+.compare-table tr:last-child td{border-bottom:none}
+.check-y{color:var(--navy);font-weight:700}
+[data-theme="dark"] .check-y{color:var(--text)}
+.check-n{color:var(--text3)}
+.trial-note{text-align:center;font-size:13px;color:var(--text3);margin-bottom:60px}
+footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2)}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:32px;max-width:960px;margin:0 auto}
+.footer-col h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px}
+.footer-col a{display:block;font-size:13px;color:var(--text2);margin-bottom:8px;text-decoration:none}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{max-width:960px;margin:24px auto 0;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">Podlens</a>
+  <a class="nl" href="/about.html">About</a>
+  <a class="nl" href="/how-it-works.html">How it works</a>
+</nav>
+
+<div class="hero">
+  <h1>Simple, transparent pricing</h1>
+  <p>Start free. Upgrade when you need the full intelligence layer.</p>
+</div>
+
+<div class="plans">
+  <div class="plan">
+    <div class="plan-name">Listener</div>
+    <div class="plan-price">Free</div>
+    <div class="plan-desc">For casual listeners who want occasional insight without commitment.</div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-check">&#10003;</span>5 analyses per month</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Bias bar + plain-English label</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Audio summary (Web Speech)</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Factuality + omission rating</div>
+      <div class="pf dim"><span class="pf-check">&mdash;</span>Source citations</div>
+      <div class="pf dim"><span class="pf-check">&mdash;</span>Deep topic breakdown</div>
+      <div class="pf dim"><span class="pf-check">&mdash;</span>Bias fingerprint</div>
+      <div class="pf dim"><span class="pf-check">&mdash;</span>Show intelligence profiles</div>
+    </div>
+    <a class="plan-btn" href="/">Start free</a>
+  </div>
+
+  <div class="plan featured">
+    <div class="plan-badge">Most popular</div>
+    <div class="plan-name">Creator</div>
+    <div class="plan-price">$12 <span>/mo</span></div>
+    <div class="plan-desc">For researchers, journalists, and engaged listeners who analyze regularly.</div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-check">&#10003;</span>50 analyses per month</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Everything in Listener</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Source citations on all findings</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Deep topic breakdown</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Key quotes + missing voices</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Bias fingerprint</div>
+      <div class="pf dim"><span class="pf-check">&mdash;</span>Show intelligence profiles</div>
+      <div class="pf dim"><span class="pf-check">&mdash;</span>API access</div>
+    </div>
+    <a class="plan-btn" href="/">Start 7-day trial &rarr;</a>
+  </div>
+
+  <div class="plan">
+    <div class="plan-name">Operator</div>
+    <div class="plan-price">$39 <span>/mo</span></div>
+    <div class="plan-desc">For founders, policy teams, and professionals who need the full picture.</div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-check">&#10003;</span>Unlimited analyses</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Everything in Creator</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Show intelligence profiles</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Sponsor conflict detection</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Bias drift tracking</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Share cards + export</div>
+      <div class="pf dim"><span class="pf-check">&mdash;</span>API access</div>
+      <div class="pf dim"><span class="pf-check">&mdash;</span>Team seats</div>
+    </div>
+    <a class="plan-btn" href="/">Start 7-day trial &rarr;</a>
+  </div>
+
+  <div class="plan">
+    <div class="plan-name">Studio</div>
+    <div class="plan-price">Custom</div>
+    <div class="plan-desc">For media companies, newsrooms, and academic institutions.</div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-check">&#10003;</span>Everything in Operator</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>API access</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Multiple team seats</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Custom integrations</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Priority support</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>SLA</div>
+    </div>
+    <a class="plan-btn" href="mailto:hello@podlens.app">Contact us</a>
+  </div>
+</div>
+
+<p class="trial-note">All paid plans include a 7-day free trial. No credit card required to start.</p>
+
+<div class="compare">
+  <h2>Feature comparison</h2>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Listener</th>
+        <th>Creator</th>
+        <th>Operator</th>
+        <th>Studio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Analyses per month</td><td>5</td><td>50</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>Bias bar (Left/Center/Right)</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Plain-English bias label</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Audio summary player</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Source citations</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Topic breakdown</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Key quotes + missing voices</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Bias fingerprint</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Show intelligence profiles</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Sponsor conflict detection</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>API access</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Team seats</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h4>Discover</h4><a href="/">Home</a><a href="/#discover">Browse shows</a></div>
+    <div class="footer-col"><h4>Company</h4><a href="/about.html">About</a><a href="/pricing.html">Pricing</a><a href="mailto:hello@podlens.app">Contact</a></div>
+    <div class="footer-col"><h4>Help</h4><a href="/how-it-works.html">How it works</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+    <div class="footer-col"><h4>Tools</h4><a href="/extension.html">Browser extension</a></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 Podlens &middot; podlens.app</span><span><a href="mailto:hello@podlens.app">hello@podlens.app</a></span></div>
+</footer>
+</body>
+</html>

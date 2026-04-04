@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Browser Extension — Podlens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --navy:#0f2027;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15);
+  --left:#E24B4A;--right:#378ADD;
+  --ff:'Inter',-apple-system,sans-serif;
+  --ffs:'Playfair Display',Georgia,serif;
+  --r:4px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+}}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.6}
+a{color:var(--navy);text-decoration:none}
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+.logo{font-family:var(--ffs);font-size:20px;font-weight:700;color:var(--navy);text-decoration:none;flex-shrink:0;margin-right:auto}
+[data-theme="dark"] .logo{color:var(--text)}
+.nl{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:var(--r);text-decoration:none}
+.nl:hover{background:var(--bg3);color:var(--text)}
+.hero{background:var(--navy);color:#fff;padding:100px 24px 80px;text-align:center}
+.hero-badge{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;background:rgba(255,255,255,.12);padding:5px 14px;border-radius:var(--r);margin-bottom:24px;color:rgba(255,255,255,.8)}
+.hero h1{font-family:var(--ffs);font-size:clamp(36px,5vw,56px);font-weight:700;line-height:1.1;margin-bottom:20px;letter-spacing:-.02em}
+.hero p{font-size:18px;opacity:.75;max-width:520px;margin:0 auto 40px;line-height:1.7}
+.waitlist-form{max-width:440px;margin:0 auto;display:flex;gap:8px;flex-wrap:wrap}
+.waitlist-input{flex:1;padding:14px 18px;border:none;border-radius:var(--r);font-size:15px;font-family:var(--ff);min-width:0;background:#fff;color:#1a1a1a}
+.waitlist-input:focus{outline:2px solid rgba(255,255,255,.4);outline-offset:2px}
+.waitlist-btn{padding:14px 24px;background:#fff;color:var(--navy);border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--ff);white-space:nowrap;transition:opacity .15s}
+.waitlist-btn:hover{opacity:.85}
+.success-msg{display:none;margin-top:16px;font-size:14px;color:rgba(255,255,255,.8)}
+.features{max-width:800px;margin:80px auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px}
+.feature-card{padding:28px 24px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border)}
+.feature-icon{font-size:28px;margin-bottom:14px}
+.feature-title{font-family:var(--ffs);font-size:18px;font-weight:600;margin-bottom:8px}
+.feature-body{font-size:13px;color:var(--text2);line-height:1.6}
+.coming-soon{max-width:600px;margin:0 auto 80px;padding:0 24px;text-align:center}
+.coming-soon h2{font-family:var(--ffs);font-size:28px;font-weight:600;margin-bottom:16px;letter-spacing:-.01em}
+.coming-soon p{font-size:15px;color:var(--text2);line-height:1.7}
+.browser-badges{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+.browser-badge{padding:10px 20px;border:1px solid var(--border2);border-radius:var(--r);font-size:13px;font-weight:500;color:var(--text3);display:flex;align-items:center;gap:8px}
+footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2)}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:32px;max-width:960px;margin:0 auto}
+.footer-col h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px}
+.footer-col a{display:block;font-size:13px;color:var(--text2);margin-bottom:8px;text-decoration:none}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{max-width:960px;margin:24px auto 0;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">Podlens</a>
+  <a class="nl" href="/about.html">About</a>
+  <a class="nl" href="/pricing.html">Pricing</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Coming soon</div>
+  <h1>Bias intelligence,<br><em>right in your browser</em></h1>
+  <p>The Podlens extension adds a live bias bar to every YouTube video — before you even press play.</p>
+
+  <form class="waitlist-form" name="extension-waitlist" method="POST" data-netlify="true" onsubmit="handleWaitlist(event)">
+    <input type="hidden" name="form-name" value="extension-waitlist">
+    <input class="waitlist-input" type="email" name="email" placeholder="your@email.com" required>
+    <button class="waitlist-btn" type="submit">Join waitlist</button>
+  </form>
+  <div class="success-msg" id="waitlist-success">You're on the list. We'll email you when the extension launches.</div>
+</div>
+
+<div class="features">
+  <div class="feature-card">
+    <div class="feature-icon">&#9654;</div>
+    <div class="feature-title">One-click analysis</div>
+    <div class="feature-body">Analyze any YouTube episode without leaving the page. Results appear in a sidebar alongside the video.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">&#9646;</div>
+    <div class="feature-title">Live bias bar overlay</div>
+    <div class="feature-body">A subtle Left / Center / Right bar appears below video thumbnails in search results and recommendations.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">&#9673;</div>
+    <div class="feature-title">Cached results</div>
+    <div class="feature-body">If someone has already analyzed this episode, results load instantly from the Podlens cache — no wait required.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">&#9881;</div>
+    <div class="feature-title">Works with your account</div>
+    <div class="feature-body">Sign in once and your full analysis history and bias fingerprint travel with you.</div>
+  </div>
+</div>
+
+<div class="coming-soon">
+  <h2>Targeting launch for Chrome, Firefox, and Safari</h2>
+  <p>The extension is currently in development. Join the waitlist above to be notified when it's available.</p>
+  <div class="browser-badges">
+    <div class="browser-badge">&#128504; Chrome</div>
+    <div class="browser-badge">&#128504; Firefox</div>
+    <div class="browser-badge">&#128504; Safari</div>
+    <div class="browser-badge">&#128504; Edge</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h4>Discover</h4><a href="/">Home</a><a href="/#discover">Browse shows</a><a href="/#analyze">Analyze episode</a></div>
+    <div class="footer-col"><h4>Company</h4><a href="/about.html">About</a><a href="/pricing.html">Pricing</a><a href="mailto:hello@podlens.app">Contact</a></div>
+    <div class="footer-col"><h4>Help</h4><a href="/how-it-works.html">How it works</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+    <div class="footer-col"><h4>Tools</h4><a href="/extension.html">Browser extension</a></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 Podlens &middot; podlens.app</span><span><a href="mailto:hello@podlens.app">hello@podlens.app</a></span></div>
+</footer>
+
+<script>
+function handleWaitlist(e) {
+  e.preventDefault();
+  var form = e.target;
+  fetch('/', { method:'POST', body: new FormData(form) })
+    .then(function(){ form.style.display='none'; document.getElementById('waitlist-success').style.display='block'; })
+    .catch(function(){ document.getElementById('waitlist-success').textContent="Something went wrong. Email hello@podlens.app to join the waitlist."; document.getElementById('waitlist-success').style.display='block'; });
+}
+</script>
+</body>
+</html>

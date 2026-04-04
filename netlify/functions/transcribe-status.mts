@@ -12,10 +12,10 @@ export default async (req: Request) => {
   }
 
   try {
-    const jobs = getStore("clearcast-jobs");
+    const jobs = getStore("podlens-jobs");
     const transcripts = getStore("transcripts");
 
-    // Check clearcast-jobs first (transcribe-start path + background function updates)
+    // Check podlens-jobs first (transcribe-start path + background function updates)
     let job = await jobs.get(jobId, { type: "json" }).catch(() => null) as any;
 
     // Fall back to the "transcripts" store (written directly by transcribe-background)
@@ -43,7 +43,7 @@ export default async (req: Request) => {
       });
     }
 
-    // Already resolved in clearcast-jobs
+    // Already resolved in podlens-jobs
     if (job.status === "transcribed") {
       return new Response(JSON.stringify({ status: "complete", jobId }), {
         status: 200, headers: { "Content-Type": "application/json" },

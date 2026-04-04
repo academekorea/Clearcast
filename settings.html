@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settings — Podlens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --navy:#0f2027;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15);
+  --left:#E24B4A;--right:#378ADD;
+  --ff:'Inter',-apple-system,sans-serif;
+  --ffs:'Playfair Display',Georgia,serif;
+  --r:4px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+}}
+[data-theme="dark"]{--bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;--text:#FAF9F6;--text2:#888;--text3:#555;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14)}
+[data-theme="light"]{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;--text:#1a1a1a;--text2:#555;--text3:#999;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15)}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.6}
+a{color:var(--navy);text-decoration:none}
+[data-theme="dark"] a{color:var(--text)}
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+.logo{font-family:var(--ffs);font-size:20px;font-weight:700;color:var(--navy);text-decoration:none;flex-shrink:0;margin-right:auto}
+[data-theme="dark"] .logo{color:var(--text)}
+.nl{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:var(--r);text-decoration:none}
+.nl:hover{background:var(--bg3);color:var(--text)}
+.nav-btn{padding:7px 16px;font-size:13px;font-weight:600;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-family:var(--ff)}
+
+/* ── SETTINGS LAYOUT ── */
+.settings-wrap{max-width:780px;margin:40px auto;padding:0 24px 80px;display:grid;grid-template-columns:180px 1fr;gap:32px;align-items:start}
+@media(max-width:620px){.settings-wrap{grid-template-columns:1fr}}
+
+/* ── TABS SIDEBAR ── */
+.tabs-nav{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.tab-link{display:block;padding:11px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:1px solid var(--border);background:transparent;border-left:3px solid transparent;transition:all .1s}
+.tab-link:last-child{border-bottom:none}
+.tab-link:hover{background:var(--bg3);color:var(--text)}
+.tab-link.on{color:var(--text);background:var(--bg3);border-left-color:var(--navy);font-weight:500}
+
+/* ── TAB PANELS ── */
+.tab-panel{display:none}
+.tab-panel.on{display:block}
+.settings-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--border)}
+.card-head h3{font-size:14px;font-weight:600;margin-bottom:2px}
+.card-head p{font-size:12px;color:var(--text3)}
+.card-body{padding:20px}
+.form-field{margin-bottom:16px}
+.form-field:last-child{margin-bottom:0}
+.field-lbl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.field-input{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);color:var(--text);font-size:14px;font-family:var(--ff);outline:none}
+.field-input:focus{border-color:var(--navy);background:var(--bg2)}
+.field-hint{font-size:11px;color:var(--text3);margin-top:4px}
+.save-btn{padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:opacity .15s}
+.save-btn:hover{opacity:.85}
+.danger-btn{padding:9px 20px;background:transparent;color:var(--left);border:1px solid var(--left);border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:all .1s}
+.danger-btn:hover{background:var(--left);color:#fff}
+
+/* ── TOGGLES ── */
+.toggle-row{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)}
+.toggle-row:last-child{border-bottom:none;padding-bottom:0}
+.toggle-info h4{font-size:13px;font-weight:500;margin-bottom:3px}
+.toggle-info p{font-size:12px;color:var(--text3)}
+.toggle-switch{position:relative;width:40px;height:22px;flex-shrink:0;margin-left:16px;margin-top:2px}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--bg4);border-radius:11px;cursor:pointer;transition:background .2s}
+.toggle-switch input:checked+.toggle-track{background:var(--navy)}
+.toggle-track::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s}
+.toggle-switch input:checked+.toggle-track::after{transform:translateX(18px)}
+
+/* ── THEME OPTIONS ── */
+.theme-options{display:flex;gap:8px}
+.theme-opt{padding:8px 16px;border:1px solid var(--border2);border-radius:var(--r);font-size:13px;cursor:pointer;background:transparent;color:var(--text2);font-family:var(--ff);transition:all .1s}
+.theme-opt:hover{border-color:var(--text);color:var(--text)}
+.theme-opt.on{border-color:var(--navy);color:var(--navy);font-weight:500;background:var(--bg3)}
+[data-theme="dark"] .theme-opt.on{border-color:var(--text);color:var(--text)}
+
+/* ── SUBSCRIPTION ── */
+.plan-badge{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:4px 12px;border-radius:var(--r);background:var(--navy);color:#fff;margin-bottom:12px}
+.plan-features{margin-top:12px;font-size:13px;color:var(--text2)}
+.plan-features li{margin-bottom:6px;list-style:none;display:flex;align-items:center;gap:6px}
+.plan-features li::before{content:'✓';color:var(--navy);font-weight:700}
+[data-theme="dark"] .plan-features li::before{color:var(--text)}
+.upgrade-banner{background:linear-gradient(135deg,var(--navy) 0%,#1a3a4a 100%);color:#fff;border-radius:var(--r);padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.upgrade-banner h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.upgrade-banner p{font-size:13px;opacity:.75}
+.upgrade-cta{padding:10px 20px;background:#fff;color:var(--navy);border:none;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);white-space:nowrap}
+footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2)}
+.footer-bottom{max-width:960px;margin:0 auto;font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">Podlens</a>
+  <a class="nl" href="/profile.html">Profile</a>
+  <span style="flex:1"></span>
+  <button class="nav-btn" onclick="doLogout()">Log out</button>
+</nav>
+
+<div class="settings-wrap">
+  <!-- Tabs nav -->
+  <div class="tabs-nav">
+    <div class="tab-link on" onclick="showTab('account')">Account</div>
+    <div class="tab-link" onclick="showTab('preferences')">Preferences</div>
+    <div class="tab-link" onclick="showTab('privacy')">Privacy</div>
+    <div class="tab-link" onclick="showTab('subscription')">Subscription</div>
+    <div class="tab-link" onclick="showTab('notifications')">Notifications</div>
+  </div>
+
+  <!-- Tab panels -->
+  <div style="min-width:0">
+
+    <!-- ACCOUNT -->
+    <div class="tab-panel on" id="tab-account">
+      <div class="settings-card">
+        <div class="card-head"><h3>Profile information</h3><p>Update your name and email</p></div>
+        <div class="card-body">
+          <div class="form-field">
+            <div class="field-lbl">Display name</div>
+            <input class="field-input" id="field-name" type="text" placeholder="Your name">
+          </div>
+          <div class="form-field">
+            <div class="field-lbl">Email address</div>
+            <input class="field-input" id="field-email" type="email" placeholder="you@example.com">
+          </div>
+          <button class="save-btn" onclick="saveAccount()">Save changes</button>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-head"><h3>Password</h3><p>Change your login password</p></div>
+        <div class="card-body">
+          <div class="form-field">
+            <div class="field-lbl">Current password</div>
+            <input class="field-input" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+          </div>
+          <div class="form-field">
+            <div class="field-lbl">New password</div>
+            <input class="field-input" id="field-newpw" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+          </div>
+          <div class="form-field">
+            <div class="field-lbl">Confirm new password</div>
+            <input class="field-input" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+          </div>
+          <button class="save-btn" onclick="alert('Password change is not available in this version.')">Update password</button>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-head"><h3>Delete account</h3><p>Permanently remove your account and data</p></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px">This action is permanent and cannot be undone. All your data including analysis history, followed shows, and preferences will be deleted.</p>
+          <button class="danger-btn" onclick="if(confirm('Delete your account permanently?')){localStorage.clear();window.location.href='/';}">Delete my account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREFERENCES -->
+    <div class="tab-panel" id="tab-preferences">
+      <div class="settings-card">
+        <div class="card-head"><h3>Appearance</h3><p>Choose your preferred color theme</p></div>
+        <div class="card-body">
+          <div class="field-lbl" style="margin-bottom:10px">Theme</div>
+          <div class="theme-options">
+            <button class="theme-opt" id="theme-light" onclick="setTheme('light')">Light</button>
+            <button class="theme-opt" id="theme-dark" onclick="setTheme('dark')">Dark</button>
+            <button class="theme-opt" id="theme-auto" onclick="setTheme('auto')">Auto</button>
+          </div>
+          <div class="field-hint" style="margin-top:10px">Auto follows your system preference</div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-head"><h3>Analysis defaults</h3><p>Customize how analyses are displayed</p></div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Auto-play audio summary</h4><p>Play the spoken summary automatically when results load</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="pref-autoplay"><div class="toggle-track"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Expand source citations by default</h4><p>Show citations panels open rather than collapsed</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="pref-citations"><div class="toggle-track"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Show YouTube embed</h4><p>Display the video player alongside analysis results</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="pref-embed" checked><div class="toggle-track"></div></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-head"><h3>Preferred categories</h3><p>Used to personalize your feed and recommendations</p></div>
+        <div class="card-body" id="pref-cats">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIVACY -->
+    <div class="tab-panel" id="tab-privacy">
+      <div class="settings-card">
+        <div class="card-head"><h3>Data &amp; privacy</h3><p>Control what data is stored</p></div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Save analysis history</h4><p>Store your analyzed episodes for your profile and fingerprint</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="priv-history" checked><div class="toggle-track"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Contribute to show intelligence</h4><p>Allow your analyses to improve show-level profiles (fully anonymous)</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="priv-contrib" checked><div class="toggle-track"></div></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-head"><h3>Clear local data</h3><p>Remove data stored in your browser</p></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px">This removes your analysis history, followed shows, and preferences from this browser only. Your account and any server-side data are not affected.</p>
+          <button class="danger-btn" onclick="clearLocal()">Clear browser data</button>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-head"><h3>Data requests</h3></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--text2);margin-bottom:12px">To request a copy of all data we hold about you, or to request permanent deletion of your account and data, email:</p>
+          <a href="mailto:hello@podlens.app" style="font-size:13px;font-weight:500">hello@podlens.app</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBSCRIPTION -->
+    <div class="tab-panel" id="tab-subscription">
+      <div class="upgrade-banner" id="upgrade-banner" style="display:none">
+        <div><h4>Upgrade to Creator or Operator</h4><p>Unlock source citations, show profiles, and unlimited analyses.</p></div>
+        <button class="upgrade-cta" onclick="window.location='/pricing.html'">View plans &rarr;</button>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-head"><h3>Current plan</h3></div>
+        <div class="card-body">
+          <div class="plan-badge" id="sub-plan">Listener</div>
+          <div id="sub-details"></div>
+          <ul class="plan-features" id="sub-features"></ul>
+          <div style="margin-top:16px">
+            <a href="/pricing.html" style="font-size:13px;font-weight:500;color:var(--navy)">View all plans &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-head"><h3>Billing</h3></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--text2)">Billing management is coming soon. For billing inquiries, email <a href="mailto:hello@podlens.app">hello@podlens.app</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="tab-panel" id="tab-notifications">
+      <div class="settings-card">
+        <div class="card-head"><h3>Email notifications</h3><p>Control what emails Podlens sends you</p></div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Weekly Unheard report</h4><p>A summary of what the shows you don't follow are covering</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="notif-unheard" checked><div class="toggle-track"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Product updates</h4><p>New features and improvements to Podlens</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="notif-product" checked><div class="toggle-track"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Account alerts</h4><p>Important security and billing notifications (always on)</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked disabled><div class="toggle-track"></div></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-bottom"><span>&copy; 2026 Podlens &middot; podlens.app</span><span><a href="mailto:hello@podlens.app">hello@podlens.app</a></span></div>
+</footer>
+
+<script>
+var CATS = ['News & Politics','Technology','Business','Science','True Crime','Comedy','Education','Health & Wellness','Sports','Culture & Society'];
+
+function plUser() {
+  try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch { return null; }
+}
+function doLogout() {
+  localStorage.removeItem('pl-user');
+  window.location.href = '/';
+}
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab-link').forEach(function(l){l.classList.remove('on');});
+  document.getElementById('tab-'+id).classList.add('on');
+  event.target.classList.add('on');
+}
+function setTheme(t) {
+  localStorage.setItem('pl-theme', t);
+  document.querySelectorAll('.theme-opt').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('theme-'+t).classList.add('on');
+  if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+}
+function saveAccount() {
+  var u = plUser() || {};
+  u.name = document.getElementById('field-name').value.trim() || u.name;
+  u.email = document.getElementById('field-email').value.trim() || u.email;
+  localStorage.setItem('pl-user', JSON.stringify(u));
+  alert('Saved.');
+}
+function clearLocal() {
+  if (!confirm('Clear all browser data? This cannot be undone.')) return;
+  ['pl-recent','pl-followed','pl-theme','pl-prefs'].forEach(function(k){localStorage.removeItem(k);});
+  alert('Browser data cleared.');
+}
+function renderCats() {
+  var prefs = {};
+  try { prefs = JSON.parse(localStorage.getItem('pl-prefs') || '{}'); } catch {}
+  var cats = prefs.categories || [];
+  var html = '<div style="display:flex;flex-wrap:wrap;gap:8px">';
+  CATS.forEach(function(c) {
+    var on = cats.indexOf(c) > -1;
+    html += '<button class="theme-opt'+(on?' on':'')+'" onclick="toggleCat(this,\''+c+'\')" style="margin:0">'+c+'</button>';
+  });
+  html += '</div><div class="field-hint" style="margin-top:12px">Select all that apply</div>';
+  document.getElementById('pref-cats').innerHTML = html;
+}
+function toggleCat(btn, cat) {
+  var prefs = {};
+  try { prefs = JSON.parse(localStorage.getItem('pl-prefs') || '{}'); } catch {}
+  var cats = prefs.categories || [];
+  var idx = cats.indexOf(cat);
+  if (idx > -1) cats.splice(idx, 1); else cats.push(cat);
+  prefs.categories = cats;
+  localStorage.setItem('pl-prefs', JSON.stringify(prefs));
+  btn.classList.toggle('on', cats.indexOf(cat) > -1);
+}
+function init() {
+  var u = plUser();
+  if (!u) { window.location.href = '/'; return; }
+  document.getElementById('field-name').value = u.name || '';
+  document.getElementById('field-email').value = u.email || '';
+
+  // Theme
+  var theme = localStorage.getItem('pl-theme') || 'auto';
+  document.querySelectorAll('.theme-opt').forEach(function(b){b.classList.remove('on');});
+  var tb = document.getElementById('theme-'+theme);
+  if (tb) tb.classList.add('on');
+
+  // Subscription
+  var plan = (u.plan || 'listener').toLowerCase();
+  var planLabel = plan.charAt(0).toUpperCase()+plan.slice(1);
+  document.getElementById('sub-plan').textContent = planLabel;
+  var featureMap = {
+    listener: ['5 analyses per month','Bias bar + plain-English label','Audio summary player','Factuality + omission rating'],
+    creator: ['50 analyses per month','Source citations on all findings','Deep topic breakdown','Key quotes + missing voices','Bias fingerprint'],
+    operator: ['Unlimited analyses','Show intelligence profiles','Sponsor conflict detection','Bias drift tracking','Share cards + export'],
+    studio: ['Everything in Operator','API access','Team seats','Custom integrations','Priority support'],
+  };
+  var features = featureMap[plan] || featureMap.listener;
+  document.getElementById('sub-features').innerHTML = features.map(function(f){return '<li>'+f+'</li>';}).join('');
+  if (plan === 'listener') document.getElementById('upgrade-banner').style.display = 'flex';
+
+  renderCats();
+}
+init();
+</script>
+</body>
+</html>

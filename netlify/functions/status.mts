@@ -14,16 +14,22 @@ Return ONLY a valid JSON object (no markdown, no explanation, no preamble):
     "leftPct": <number 0-100, percentage of audio time that leans left based on language, framing, and positions expressed>,
     "centerPct": <number 0-100, percentage that is factual/neutral/balanced>,
     "rightPct": <number 0-100, percentage that leans right>,
-    "basis": <1 sentence explaining what specific linguistic or positional signals drove this breakdown>
+    "basis": <1 sentence explaining what specific linguistic or positional signals drove this breakdown>,
+    "citations": [
+      {"quote": <verbatim excerpt under 25 words>, "timestamp": <estimated timestamp like "~12:30" or "" if unknown>, "explanation": <1 sentence why this quote supports the lean assessment>}
+    ]
   },
   "hostTrustScore": <number 0-100, how much the host uses parasocial trust-building language>,
-  "hostTrustLabel": <"Low influence"|"Moderate influence"|"High influence">
+  "hostTrustLabel": <"Low influence"|"Moderate influence"|"High influence">,
+  "audioScript": <200-220 word conversational summary written as if a knowledgeable friend is telling you what this episode is really about — include the main takeaway, the political lean, and one or two specific things to watch out for. Tone: direct, informative, no jargon. This will be read aloud by the browser.>
 }
 
 Rules:
 - audioLean percentages MUST sum to exactly 100
 - audioLean must be grounded in specific verifiable signals from the transcript
-- Do NOT guess or average — if the content is genuinely neutral, centerPct should be high`;
+- audioLean.citations: provide 2-3 quotes that best illustrate the lean; use empty array if transcript is genuinely neutral
+- Do NOT guess or average — if the content is genuinely neutral, centerPct should be high
+- audioScript must be 200-220 words, plain prose, no bullet points, no markdown`;
 
 const PROMPT_2 = `You are a media literacy expert analyzing a podcast transcript. Your job is to give listeners honest, verifiable intelligence about what they are actually hearing.
 
@@ -38,7 +44,14 @@ Return ONLY a valid JSON object (no markdown, no explanation, no preamble):
   "missingVoices": [<string: perspective conspicuously absent, 3-5 words each>],
   "sponsorConflicts": [<string: sponsor/content conflict if detected>],
   "flags": [
-    {"type": <"fact-check"|"framing"|"omission"|"sponsor-note"|"context">, "title": <under 15 words>, "detail": <1-2 sentences>}
+    {
+      "type": <"fact-check"|"framing"|"omission"|"sponsor-note"|"context">,
+      "title": <under 15 words>,
+      "detail": <1-2 sentences>,
+      "citations": [
+        {"quote": <verbatim excerpt under 25 words>, "timestamp": <estimated timestamp like "~8:45" or "" if unknown>, "explanation": <1 sentence why this quote supports this flag>}
+      ]
+    }
   ]
 }
 
@@ -46,7 +59,7 @@ Rules:
 - topicBreakdown: max 5 topics, percentages sum to 100
 - keyQuotes: max 3, only if genuinely notable
 - missingVoices: max 4
-- flags: max 6, high confidence only
+- flags: max 6, high confidence only; each flag should have 1-2 citations
 - If something is not detectable, use empty arrays`;
 
 export default async (req: Request) => {
@@ -61,7 +74,7 @@ export default async (req: Request) => {
   }
 
   try {
-    const store = getStore("clearcast-jobs");
+    const store = getStore("podlens-jobs");
     const job = await store.get(jobId, { type: "json" }) as any;
 
     if (!job) {
@@ -112,7 +125,7 @@ export default async (req: Request) => {
 
       if (job.showSlug) {
         try {
-          const showStore = getStore("clearcast-shows");
+          const showStore = getStore("podlens-shows");
           const existing = await showStore.get(job.showSlug, { type: "json" }).catch(() => null) as any;
           const episodeIds: string[] = existing?.episodeIds || [];
           if (!episodeIds.includes(jobId)) episodeIds.unshift(jobId);
@@ -230,6 +243,7 @@ export default async (req: Request) => {
       duration: transcriptDuration,
       wordCount: transcriptText.split(" ").length,
       _transcript: text,
+      audioScript: analysis.audioScript || null,
       ...analysis,
     };
 

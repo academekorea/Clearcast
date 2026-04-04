@@ -3,7 +3,7 @@ import { getStore } from "@netlify/blobs";
 
 export default async (req: Request) => {
   try {
-    const store = getStore("clearcast-jobs");
+    const store = getStore("podlens-jobs");
     const keys = await store.list();
 
     const leftShows: string[] = [];
