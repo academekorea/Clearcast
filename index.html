@@ -1237,6 +1237,8 @@ function startAnalysis(audioUrl, epTitle, showName) {
           showAnalyzeErr('This video is private. Try a public YouTube video or podcast URL.'); resetBtn();
         } else if (code === 'IS_LIVESTREAM') {
           showAnalyzeErr('Live streams can\u2019t be analyzed yet. Try after the stream ends.'); resetBtn();
+        } else if (code === 'WRONG_CONTENT_TYPE') {
+          showAnalyzeErr(d.error); resetBtn();
         } else if (code === 'TOO_LONG') {
           showAnalyzeErr('This video is over 90 minutes. Try a shorter clip or paste a direct MP3 URL.'); resetBtn();
         } else if (code === 'CAPTIONS_UNAVAILABLE' && audioUrl.match(/youtube\.com\/watch|youtu\.be\//)) {

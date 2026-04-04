@@ -56,6 +56,16 @@ async function preflightCheck(videoId: string, apiKey: string): Promise<Prefligh
       return { ok: false, code: "IS_LIVESTREAM", message: "This is a live stream." };
     }
 
+    const wrongContentTypes: Record<string, string> = {
+      "10": "This looks like a music video, not a podcast. Try a talk show or interview instead.",
+      "30": "This looks like a film, not a podcast. Try a talk show or interview instead.",
+      "44": "This looks like a movie trailer, not a podcast.",
+    };
+    const categoryMsg = wrongContentTypes[snippet?.categoryId];
+    if (categoryMsg) {
+      return { ok: false, code: "WRONG_CONTENT_TYPE", message: categoryMsg };
+    }
+
     const durationSec = parseIsoDuration(contentDetails?.duration || "");
 
     // Published within last 30 minutes — auto-captions may not be ready yet
