@@ -1979,13 +1979,59 @@ function showAnalyzeErr(msg) {
   document.getElementById('apanel-results').classList.add('on');
   document.getElementById('results').innerHTML='<div class="err-card">'+msg+'</div>';
 }
-function showRecoveryPanel(channelTitle) {
+// FIX 1: Try to find a matching RSS feed on iTunes before showing recovery panel.
+// If found with high confidence (>= 0.6 word overlap), redirect to episode picker.
+async function showRecoveryPanel(channelTitle) {
   document.getElementById('loading').classList.remove('on');
   hideProgressBar();
   document.getElementById('atabs').classList.add('on');
   document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
   document.getElementById('apanel-results').classList.add('on');
   resetBtn();
+
+  // ── Auto-lookup: search iTunes for matching podcast ──
+  if (channelTitle) {
+    document.getElementById('results').innerHTML=
+      '<div class="recovery-card" style="text-align:center;padding:28px">'
+      +'<div class="feed-spin" style="margin:0 auto 12px"></div>'
+      +'<div style="font-size:13px;color:var(--text2)">Looking for <strong>'+channelTitle+'</strong> on Apple Podcasts&hellip;</div>'
+      +'</div>';
+    try {
+      var itunesRes=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(channelTitle)+'&media=podcast&entity=podcast&limit=5',{signal:AbortSignal.timeout(6000)});
+      if (itunesRes.ok) {
+        var itunesData=await itunesRes.json();
+        var results=itunesData.results||[];
+        // Find best match by word-overlap similarity
+        var cl=channelTitle.toLowerCase().replace(/[^a-z0-9 ]/g,'');
+        var best=null, bestScore=0;
+        results.forEach(function(r){
+          var name=(r.collectionName||r.trackName||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
+          var wa=new Set(cl.split(' ').filter(Boolean)), wb=new Set(name.split(' ').filter(Boolean));
+          var overlap=0; wa.forEach(function(w){if(wb.has(w))overlap++;});
+          var score=overlap/Math.max(wa.size,wb.size,1);
+          if (score>bestScore){bestScore=score;best=r;}
+        });
+        if (best && bestScore>=0.6 && best.feedUrl) {
+          // High-confidence match — redirect to episode picker
+          document.getElementById('url-input').value=best.feedUrl;
+          var showName=best.collectionName||best.trackName||channelTitle;
+          document.getElementById('results').innerHTML=
+            '<div class="recovery-card" style="padding:20px">'
+            +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
+            +(best.artworkUrl100?'<img src="'+best.artworkUrl100+'" style="width:48px;height:48px;border-radius:4px;flex-shrink:0" alt="">':'')
+            +'<div><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Found on Apple Podcasts</div>'
+            +'<div style="font-size:16px;font-weight:600;font-family:var(--ffs)">'+showName+'</div></div></div>'
+            +'<p style="font-size:13px;color:var(--text2);margin-bottom:16px">Select an episode to analyze:</p>'
+            +'<div id="ep-auto-list"><div class="feed-spin" style="margin:0 auto"></div></div>'
+            +'</div>';
+          loadEpisodesInto(best.feedUrl, showName, 'ep-auto-list');
+          return;
+        }
+      }
+    } catch(e) { /* fall through to manual recovery */ }
+  }
+
+  // ── Manual recovery UI ──
   var ct=channelTitle||''; var ctEnc=encodeURIComponent(ct);
   document.getElementById('results').innerHTML=
     '<div class="recovery-card"><div class="recovery-title">We need a little help with this one</div>'
@@ -1994,6 +2040,29 @@ function showRecoveryPanel(channelTitle) {
     +'<div class="recovery-opt"><div class="recovery-opt-label">Paste a direct MP3 URL</div><div class="recovery-row"><input class="recovery-input" id="recovery-mp3" type="text" placeholder="https://example.com/episode.mp3"/><button class="recovery-btn" onclick="tryRecoveryUrl(\'mp3\')">Analyze</button></div></div></div>'
     +(ct?'<div class="recovery-links"><a class="recovery-link" href="https://podcasts.apple.com/search?term='+ctEnc+'" target="_blank" rel="noopener">Find on Apple Podcasts &rarr;</a><a class="recovery-link" href="https://open.spotify.com/search/'+ctEnc+'/podcasts" target="_blank" rel="noopener">Find on Spotify &rarr;</a></div>':'')
     +'<p class="recovery-note">Or try our browser extension (coming soon) for any video &mdash; <a href="/extension.html" class="link-btn">join waitlist</a></p></div>';
+}
+
+// Load episodes from an RSS feed into a target element (used by auto-recovery)
+async function loadEpisodesInto(feedUrl, showName, targetId) {
+  try {
+    var d=await fetch('/api/episodes?url='+encodeURIComponent(feedUrl)).then(function(r){return r.json();});
+    var el=document.getElementById(targetId);
+    if (!el) return;
+    if (d.error||!d.episodes||!d.episodes.length) {
+      el.innerHTML='<div style="font-size:13px;color:var(--text3)">No episodes found. <button class="recovery-btn" style="margin-left:8px" onclick="startAnalysis(\''+feedUrl.replace(/'/g,"\\'")+'\')" >Analyze feed directly</button></div>';
+      return;
+    }
+    _episodes=d.episodes;
+    el.innerHTML=d.episodes.slice(0,10).map(function(ep,i){
+      return '<div class="ep-row" onclick="startAnalysis(_episodes['+i+'].audioUrl,_episodes['+i+'].title)">'
+        +'<div style="flex:1;min-width:0"><div class="ep-row-title">'+ep.title+'</div></div>'
+        +'<div class="ep-row-meta">'+[ep.date,ep.duration].filter(Boolean).join(' \u00B7 ')+'</div>'
+        +'<button class="ep-row-btn">Analyze</button></div>';
+    }).join('');
+  } catch(e) {
+    var el2=document.getElementById(targetId);
+    if (el2) el2.innerHTML='<div style="font-size:13px;color:var(--text3)">Failed to load episodes.</div>';
+  }
 }
 function tryRecoveryUrl(type) {
   var input=document.getElementById('recovery-'+type);
@@ -2215,41 +2284,101 @@ async function loadShowProfile(slug,compareSlug) {
   el.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3);font-size:12px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading show intelligence&hellip;</div>';
   try {
     var data=await fetch('/api/show-profile?id='+encodeURIComponent(slug)).then(function(r){return r.json();});
-    _spData=data; renderShowProfile(data,slug,compareSlug);
+    // FIX 2: Enrich with real iTunes metadata
+    var showName=(data.show&&data.show.name)||slug;
+    var itunesMeta=await fetchItunesMeta(showName);
+    _spData=data; renderShowProfile(data,slug,compareSlug,itunesMeta);
     if (compareSlug) { renderCompareLoading(); var cdata=await fetch('/api/show-profile?id='+encodeURIComponent(compareSlug)).then(function(r){return r.json();}); _spCompareData=cdata; renderComparePanel(data,cdata); }
   } catch(e) { el.innerHTML='<div style="padding:40px 20px;text-align:center;color:var(--text3)">Failed to load show profile. Please try again.</div>'; }
 }
-function renderShowProfile(data,slug,compareSlug) {
+
+// FIX 2: Fetch real artwork + metadata from iTunes
+async function fetchItunesMeta(showName) {
+  if (!showName) return null;
+  try {
+    var res=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(showName)+'&media=podcast&entity=podcast&limit=3',{signal:AbortSignal.timeout(5000)});
+    if (!res.ok) return null;
+    var d=await res.json();
+    var results=d.results||[];
+    if (!results.length) return null;
+    var nl=showName.toLowerCase().replace(/[^a-z0-9 ]/g,'');
+    var best=results[0], bestScore=0;
+    results.forEach(function(r){
+      var name=(r.collectionName||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
+      var wa=new Set(nl.split(' ').filter(Boolean)), wb=new Set(name.split(' ').filter(Boolean));
+      var overlap=0; wa.forEach(function(w){if(wb.has(w))overlap++;});
+      var score=overlap/Math.max(wa.size,wb.size,1);
+      if (score>bestScore){bestScore=score;best=r;}
+    });
+    return {
+      artwork: best.artworkUrl600||best.artworkUrl100||null,
+      name: best.collectionName||best.trackName||null,
+      artist: best.artistName||null,
+      category: best.primaryGenreName||null,
+      trackCount: best.trackCount||null,
+      feedUrl: best.feedUrl||null,
+      itunesUrl: best.collectionViewUrl||best.trackViewUrl||null,
+    };
+  } catch(e) { return null; }
+}
+function renderShowProfile(data,slug,compareSlug,itunes) {
   var show=data.show||{}, m=data.metrics||{}, episodes=data.episodes||[], driftData=data.driftData||[];
   var el=document.getElementById('sp-content');
-  var artHtml=show.artwork?'<img class="sp-art" src="'+show.artwork+'" alt="" onerror="this.className=\'sp-art-ph\';this.textContent=\'🎙\'">':"<div class='sp-art-ph'>&#127897;</div>";
+
+  // FIX 2: prefer real iTunes artwork over stored artwork
+  var artwork=(itunes&&itunes.artwork)||show.artwork||null;
+  var artHtml=artwork?'<img class="sp-art" src="'+artwork+'" alt="" onerror="this.className=\'sp-art-ph\';this.textContent=\'🎙\'">':"<div class='sp-art-ph'>&#127897;</div>";
+
   var biasClass={['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[m.biasLabel]||'bp-center';
   var biasBadge=m.biasLabel?'<span class="bpill '+biasClass+'"><span class="dot"></span>'+m.biasLabel+'</span>':'';
+  var displayName=(itunes&&itunes.name)||show.name||slug;
+  var feedUrl=(itunes&&itunes.feedUrl)||show.feedUrl||null;
   var html='';
   html+='<div class="sp-header">'+artHtml+'<div class="sp-header-body">';
-  html+='<div class="sp-show-label">Podcast</div>';
-  html+='<div class="sp-name">'+(show.name||slug)+'</div>';
-  if (show.feedUrl) html+='<div class="sp-category">Feed available</div>';
+  html+='<div class="sp-show-label">Podcast'+(itunes&&itunes.category?' &middot; '+itunes.category:'')+'</div>';
+  html+='<div class="sp-name">'+displayName+'</div>';
+  if (itunes&&itunes.artist) html+='<div style="font-size:13px;color:var(--text3);margin-bottom:8px">'+itunes.artist+'</div>';
   html+='<div class="sp-badges">'+biasBadge;
   if (data.episodeCount>0) html+='<span class="bpill" style="background:var(--bg3);border-color:var(--border2);color:var(--text2)">'+data.episodeCount+' episode'+(data.episodeCount===1?'':'s')+' analyzed</span>';
   html+='</div>';
+
+  // FIX 4: Platform links from iTunes data
+  var eName=encodeURIComponent(displayName);
+  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">';
+  html+='<a href="https://open.spotify.com/search/'+eName+'/podcasts" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Spotify</a>';
+  if (itunes&&itunes.itunesUrl) html+='<a href="'+itunes.itunesUrl+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Apple Podcasts</a>';
+  html+='<a href="https://youtube.com/results?search_query='+eName+'+podcast" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; YouTube</a>';
+  html+='</div>';
+
   html+='<div class="sp-actions"><button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
   if (data.episodeCount>0) html+='<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share card &#8599;</button>';
   html+='</div></div></div>';
+
   if (data.episodeCount===0) {
-    html+='<div class="sp-empty"><h3>No episodes analyzed yet</h3><p>Be the first to analyze an episode from '+(show.name||'this show')+'.</p>';
-    if (show.feedUrl) html+='<button class="sp-analyze-btn" onclick="goAnalyze(&quot;'+show.feedUrl.replace(/"/g,'&quot;')+'&quot;)">Load episodes from RSS &rarr;</button>';
+    html+='<div class="sp-empty">';
+    html+='<h3>No episodes analyzed yet</h3>';
+    html+='<p style="margin-bottom:20px">Be the first to analyze an episode from '+displayName+'.</p>';
+    if (feedUrl) {
+      html+='<button class="sp-analyze-btn" style="font-size:15px;padding:12px 28px" onclick="goAnalyze(&quot;'+feedUrl.replace(/"/g,'&quot;')+'&quot;)">Analyze an episode &rarr;</button>';
+    } else {
+      html+='<button class="sp-analyze-btn" style="font-size:15px;padding:12px 28px" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
+    }
     html+='</div>'+buildCompareTrigger(slug,null);
-    el.innerHTML=html; return;
+    el.innerHTML=html;
+    // Store enriched feedUrl for goAnalyzeShow()
+    if (!show.feedUrl && feedUrl) { if (!_spData.show) _spData.show={}; _spData.show.feedUrl=feedUrl; }
+    return;
   }
+
+  // FIX 3: Use != null (catches both null and undefined) to avoid rendering "undefined"
   html+='<div class="sp-section"><div class="sp-section-lbl">Intelligence overview</div>';
   html+='<div class="sp-intel-grid">';
-  html+=spMetric('Bias label',m.biasLabel||'Not enough data','based on analyzed episodes',m.biasLabel?60:0,'var(--center-bar)');
-  html+=spMetric('Host trust',m.avgTrustScore!==null?m.avgTrustScore:'Not enough data','How much parasocial language the host uses',m.avgTrustScore||0,m.avgTrustScore>60?'var(--left-bar)':m.avgTrustScore>30?'var(--amber)':'var(--center-bar)');
-  html+=spMetric('Consistency',m.consistencyScore!==null?m.consistencyScore:'Not enough data','How stable the bias is episode to episode',m.consistencyScore||0,'var(--center-bar)');
-  html+=spMetric('Factual rate',m.factualPct!==null?m.factualPct+'%':'Not enough data','Episodes rated Mostly factual',m.factualPct||0,'var(--center-bar)');
-  html+=spMetric('Sponsor rate',m.sponsorRate!==null?m.sponsorRate+'%':'Not enough data','Episodes with detected sponsor influence',m.sponsorRate||0,m.sponsorRate>50?'var(--amber)':'var(--center-bar)');
-  html+=spMetric('Episodes analyzed',data.episodeCount||'0','Analyzed by Podlens users',100,'var(--border2)');
+  html+=spMetric('Bias label',m.biasLabel||'&mdash;','based on analyzed episodes',m.biasLabel?60:0,'var(--center-bar)');
+  html+=spMetric('Host trust',m.avgTrustScore!=null?m.avgTrustScore:'&mdash;','How much parasocial language the host uses',m.avgTrustScore!=null?m.avgTrustScore:0,m.avgTrustScore>60?'var(--left-bar)':m.avgTrustScore>30?'var(--amber)':'var(--center-bar)');
+  html+=spMetric('Consistency',m.consistencyScore!=null?m.consistencyScore:'&mdash;','How stable the bias is episode to episode',m.consistencyScore!=null?m.consistencyScore:0,'var(--center-bar)');
+  html+=spMetric('Factual rate',m.factualPct!=null?m.factualPct+'%':'&mdash;','Episodes rated Mostly factual',m.factualPct!=null?m.factualPct:0,'var(--center-bar)');
+  html+=spMetric('Sponsor rate',m.sponsorRate!=null?m.sponsorRate+'%':'&mdash;','Episodes with detected sponsor influence',m.sponsorRate!=null?m.sponsorRate:0,m.sponsorRate>50?'var(--amber)':'var(--center-bar)');
+  html+=spMetric('Episodes analyzed',data.episodeCount||0,'Analyzed by Podlens users',100,'var(--border2)');
   html+='</div>';
   if (m.avgAudioLean) {
     var al=m.avgAudioLean;
