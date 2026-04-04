@@ -1250,7 +1250,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
           <div class="tf"><span class="tf-y">✓</span>Shareable bias cards</div>
           <div class="tf"><span class="tf-y">✓</span>Full analysis history</div>
         </div>
-        <button class="tcard-cta" onclick="alert('Stripe coming soon. Contact hello@podlens.app to be first.')">Start 7-day free trial</button>
+        <button class="tcard-cta" onclick="startCheckout('creator','monthly')">Start 7-day free trial</button>
       </div>
 
       <!-- Operator — featured -->
@@ -1269,7 +1269,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
           <div class="tf"><span class="tf-y">✓</span>Show comparison side-by-side</div>
           <div class="tf"><span class="tf-y">✓</span>Chrome extension access</div>
         </div>
-        <button class="tcard-cta" onclick="alert('Stripe coming soon. Contact hello@podlens.app to be first.')">Start 7-day free trial</button>
+        <button class="tcard-cta" onclick="startCheckout('operator','monthly')">Start 7-day free trial</button>
       </div>
 
       <!-- Studio -->
@@ -1480,14 +1480,16 @@ function doLogin() {
   try {
     var acc = JSON.parse(stored);
     if (acc.password !== pass) { errEl.textContent = 'Incorrect password.'; errEl.classList.add('on'); return; }
-    setPlUser({ id: acc.id || ('u-'+Date.now()), name: acc.name, email: acc.email,
+    var loginUser = { id: acc.id || ('u-'+Date.now()), name: acc.name, email: acc.email,
       plan: acc.plan || 'listener', joinedAt: acc.joinedAt,
       signupDate: acc.signupDate, trialEndsAt: acc.trialEndsAt,
-      analysesThisWeek: acc.analysesThisWeek || 0, weekResetDate: acc.weekResetDate });
+      analysesThisWeek: acc.analysesThisWeek || 0, weekResetDate: acc.weekResetDate };
+    setPlUser(loginUser);
     closeModal('login');
     errEl.classList.remove('on');
     renderNavAuth();
     renderHomeState();
+    syncPlanFromStripe(loginUser);
   } catch(e) { errEl.textContent = 'Login failed. Try again.'; errEl.classList.add('on'); }
 }
 
@@ -3084,6 +3086,50 @@ window.addEventListener('popstate',function(e){
   if(path.match(/^\/show\//))handleUrlRouting();
   else showHome();
 });
+
+// ── STRIPE CHECKOUT ──
+var PODLENS_PRICES = {
+  creator_monthly:  '',
+  creator_yearly:   '',
+  operator_monthly: '',
+  operator_yearly:  '',
+};
+
+function startCheckout(planName, billing) {
+  var u = plUser();
+  if (!u) { openSignupGate(); return; }
+  billing = billing || 'monthly';
+  var key = planName + '_' + billing;
+  var priceId = PODLENS_PRICES[key] || '';
+  if (!priceId) {
+    window.location.href = 'mailto:hello@podlens.app?subject=' + encodeURIComponent('Upgrade to ' + planName);
+    return;
+  }
+  fetch('/api/create-checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })
+  .catch(function(){ alert('Could not start checkout. Try again.'); });
+}
+
+function syncPlanFromStripe(u) {
+  if (!u || !u.id) return;
+  fetch('/api/get-plan?userId=' + encodeURIComponent(u.id))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.plan && d.plan !== 'free') {
+        u.plan = d.plan;
+        if (d.currentPeriodEnd) u.trialEndsAt = d.currentPeriodEnd;
+        setPlUser(u);
+        renderNavAuth();
+        renderHomeState();
+      }
+    })
+    .catch(function(){});
+}
 
 // ── AUTO INIT ──
 enforcePlanRules();

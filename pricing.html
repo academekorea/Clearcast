@@ -117,7 +117,7 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
       <div class="pf dim"><span class="pf-check">&mdash;</span>Unheard report</div>
       <div class="pf dim"><span class="pf-check">&mdash;</span>Show comparison</div>
     </div>
-    <a class="plan-btn" href="/">Start 7-day free trial &rarr;</a>
+    <button class="plan-btn" onclick="startCheckout('creator','monthly')">Start 7-day free trial &rarr;</button>
   </div>
 
   <div class="plan featured">
@@ -133,7 +133,7 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
       <div class="pf"><span class="pf-check">&#10003;</span>Show comparison side-by-side</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Chrome extension access</div>
     </div>
-    <a class="plan-btn" href="/">Start 7-day free trial &rarr;</a>
+    <button class="plan-btn" onclick="startCheckout('operator','monthly')">Start 7-day free trial &rarr;</button>
   </div>
 
   <div class="plan">
@@ -191,5 +191,34 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
   </div>
   <div class="footer-bottom"><span>&copy; 2026 Podlens &middot; podlens.app</span><span><a href="mailto:hello@podlens.app">hello@podlens.app</a></span></div>
 </footer>
+<script>
+var PODLENS_PRICES = {
+  creator_monthly:  '',
+  creator_yearly:   '',
+  operator_monthly: '',
+  operator_yearly:  '',
+};
+
+function startCheckout(planName, billing) {
+  billing = billing || 'monthly';
+  var key = planName + '_' + billing;
+  var priceId = PODLENS_PRICES[key] || '';
+  var stored = localStorage.getItem('pl-user');
+  var u = stored ? JSON.parse(stored) : null;
+  if (!u) { window.location.href = '/?upgrade=' + planName; return; }
+  if (!priceId) {
+    window.location.href = 'mailto:hello@podlens.app?subject=' + encodeURIComponent('Upgrade to ' + planName);
+    return;
+  }
+  fetch('/api/create-checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })
+  .catch(function(){ alert('Could not start checkout. Try again.'); });
+}
+</script>
 </body>
 </html>

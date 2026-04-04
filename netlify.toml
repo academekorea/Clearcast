@@ -10,3 +10,8 @@
   from = "/show/*"
   to = "/"
   status = 200
+
+[[redirects]]
+  from = "/account"
+  to = "/account.html"
+  status = 200

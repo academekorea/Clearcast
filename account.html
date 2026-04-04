@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Account — Podlens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --navy:#0f2027;--left:#E24B4A;--right:#378ADD;--amber:#B45309;--amber-bg:#FFFBEB;
+  --purple:#5B21B6;--purple-bg:#F5F3FF;--purple-border:#DDD6FE;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15);
+  --ff:'Inter',-apple-system,sans-serif;
+  --ffs:'Playfair Display',Georgia,serif;
+  --r:4px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --amber-bg:#1C0A00;--purple-bg:#1E1B4B;--purple-border:#4C1D95;
+}}
+[data-theme="dark"]{--bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;--text:#FAF9F6;--text2:#888;--text3:#555;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--amber-bg:#1C0A00;--purple-bg:#1E1B4B;--purple-border:#4C1D95}
+[data-theme="light"]{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--text:#1a1a1a;--text2:#555;--text3:#999;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15)}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.6}
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+.logo{font-family:var(--ffs);font-size:20px;font-weight:700;color:var(--navy);text-decoration:none;flex-shrink:0;margin-right:auto}
+[data-theme="dark"] .logo{color:var(--text)}
+.nl{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:var(--r);text-decoration:none;font-family:var(--ff)}
+.nl:hover{background:var(--bg3);color:var(--text)}
+.wrap{max-width:680px;margin:0 auto;padding:48px 24px}
+.success-banner{background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--r);padding:16px 20px;margin-bottom:32px;display:none}
+.success-banner.on{display:flex;align-items:flex-start;gap:12px}
+.success-icon{font-size:22px;flex-shrink:0}
+.success-title{font-size:14px;font-weight:600;color:var(--purple);margin-bottom:2px}
+.success-sub{font-size:13px;color:var(--text2)}
+.section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:16px}
+.plan-name-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.plan-badge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:var(--r);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.badge-trial{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}
+.badge-creator{background:#EFF6FF;color:#2563EB;border:1px solid rgba(37,99,235,.2)}
+.badge-operator{background:#0f2027;color:#fff;border:1px solid #0f2027}
+.badge-studio{background:#1a1a1a;color:#fff;border:1px solid #1a1a1a}
+.badge-free{background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.plan-name{font-family:var(--ffs);font-size:28px;font-weight:700}
+.plan-meta{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.5}
+.plan-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-primary{padding:10px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff);transition:opacity .15s;text-decoration:none;display:inline-block}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{padding:10px 18px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;font-size:13px;font-family:var(--ff);transition:all .1s;text-decoration:none;display:inline-block}
+.btn-ghost:hover{border-color:var(--text);color:var(--text)}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.feature-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)}
+.feature-row:last-child{border-bottom:none}
+.fcheck{color:var(--right);font-weight:700;font-size:11px;flex-shrink:0}
+.flock{color:var(--text3);font-size:11px;flex-shrink:0}
+.upgrade-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+@media(max-width:540px){.upgrade-grid{grid-template-columns:1fr}}
+.upgrade-card{border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.upgrade-card.featured{border-color:var(--navy);border-width:2px}
+.uc-name{font-family:var(--ffs);font-size:16px;font-weight:700;margin-bottom:4px}
+.uc-price{font-size:22px;font-weight:700;font-family:var(--ffs);margin-bottom:4px}
+.uc-sub{font-size:11px;color:var(--text3);margin-bottom:12px}
+.uc-cta{display:block;width:100%;padding:9px;text-align:center;font-size:13px;font-weight:600;border:1.5px solid var(--navy);color:var(--navy);border-radius:var(--r);cursor:pointer;background:transparent;font-family:var(--ff);transition:all .15s}
+.uc-cta:hover,.upgrade-card.featured .uc-cta{background:var(--navy);color:#fff}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--text2)}
+.info-val{font-weight:500}
+.logout-btn{font-size:12px;color:var(--left);background:none;border:none;cursor:pointer;font-family:var(--ff);padding:0}
+.logout-btn:hover{text-decoration:underline}
+.spin{width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{font-size:13px;color:var(--left);padding:12px 16px;background:rgba(226,75,74,.08);border-radius:var(--r);margin-top:12px;display:none}
+.err.on{display:block}
+footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg);font-size:12px;color:var(--text3);text-align:center;margin-top:40px}
+</style>
+</head>
+<body>
+<script>(function(){var s=localStorage.getItem('pl-theme');if(s)document.documentElement.setAttribute('data-theme',s);})()</script>
+
+<nav>
+  <a class="logo" href="/">PODLENS</a>
+  <a class="nl" href="/">Home</a>
+  <a class="nl" href="/pricing.html">Pricing</a>
+</nav>
+
+<div class="wrap">
+  <!-- Success banner — shown when ?upgraded=true -->
+  <div class="success-banner" id="success-banner">
+    <div class="success-icon">&#127902;&#65039;</div>
+    <div>
+      <div class="success-title" id="success-title">Welcome — your upgrade is active</div>
+      <div class="success-sub" id="success-sub">Your new plan is ready. Enjoy full access.</div>
+    </div>
+  </div>
+
+  <div id="account-content">
+    <div style="padding:60px 0;text-align:center;color:var(--text3)">
+      <div class="spin" style="margin:0 auto 12px"></div>
+      Loading&hellip;
+    </div>
+  </div>
+</div>
+
+<footer>&copy; 2026 Podlens &nbsp;&middot;&nbsp; <a href="mailto:hello@podlens.app" style="color:var(--text3)">hello@podlens.app</a></footer>
+
+<script>
+function plUser() { try { return JSON.parse(localStorage.getItem('pl-user')||'null'); } catch(e) { return null; } }
+function setPlUser(obj) { if(obj) localStorage.setItem('pl-user',JSON.stringify(obj)); else localStorage.removeItem('pl-user'); }
+
+var PLAN_LABELS = { trial:'Trial', creator:'Creator', operator:'Operator', studio:'Studio', free:'Listener (Free)' };
+var PLAN_BADGES = { trial:'badge-trial', creator:'badge-creator', operator:'badge-operator', studio:'badge-studio', free:'badge-free' };
+var PLAN_INCLUDES = {
+  free:    ['3 analyses per week','Browse trending episodes','Bias label & lean bar'],
+  trial:   ['Unlimited analyses (trial)','Full bias scores','Host trust score','Missing voices','Unheard report','Show comparison'],
+  creator: ['Unlimited analyses','Bias fingerprint over time','Audio briefing player','Shareable bias cards','Full analysis history'],
+  operator:['Everything in Creator','Source citations for every finding','Missing voices & Unheard report','Show comparison','Chrome extension access'],
+  studio:  ['Everything in Operator','Bulk/batch episode scanning','API access','White-label reports','Priority support + SLA'],
+};
+
+// ── Price IDs — fill in after creating products in Stripe dashboard ──
+// Set env vars: STRIPE_CREATOR_MONTHLY_ID, STRIPE_CREATOR_ANNUAL_ID, etc.
+// Or update the object below directly once you have the IDs:
+var PODLENS_PRICES = {
+  creator_monthly:  '',  // e.g. 'price_1AbcDef...'
+  creator_annual:   '',
+  operator_monthly: '',
+  operator_annual:  '',
+  studio_monthly:   '',
+  studio_annual:    '',
+};
+
+var _billing = 'monthly';
+
+async function syncPlanFromStripe(u) {
+  if (!u || !u.id) return u;
+  try {
+    var res = await fetch('/api/get-plan?userId=' + encodeURIComponent(u.id));
+    var data = await res.json();
+    if (data.plan && (data.plan !== 'free' || u.plan !== 'trial')) {
+      u.plan = data.plan;
+      if (data.currentPeriodEnd) u.currentPeriodEnd = data.currentPeriodEnd;
+      if (data.stripeCustomerId) u.stripeCustomerId = data.stripeCustomerId;
+      setPlUser(u);
+    }
+  } catch(e) { /* ignore — use cached plan */ }
+  return u;
+}
+
+async function openBillingPortal() {
+  var u = plUser();
+  if (!u || !u.id) { alert('Please log in first.'); return; }
+  var btn = document.getElementById('billing-portal-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Opening\u2026'; }
+  try {
+    var res = await fetch('/api/billing-portal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: u.id }),
+    });
+    var data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      showErr(data.error || 'Unable to open billing portal. Contact hello@podlens.app');
+    }
+  } catch(e) {
+    showErr('Network error. Please try again.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Manage billing \u2197'; }
+  }
+}
+
+async function startCheckout(planName, billing) {
+  var u = plUser();
+  if (!u) { window.location.href = '/?signup=1'; return; }
+  var key = planName + '_' + (billing || _billing);
+  var priceId = PODLENS_PRICES[key];
+  if (!priceId) {
+    window.location.href = 'mailto:hello@podlens.app?subject=' + encodeURIComponent('Interest in ' + planName + ' plan');
+    return;
+  }
+  var btn = event && event.target;
+  if (btn) { btn.disabled = true; btn.textContent = 'Redirecting\u2026'; }
+  try {
+    var res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        priceId: priceId,
+        userEmail: u.email,
+        userId: u.id,
+        planName: planName,
+      }),
+    });
+    var data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      showErr(data.error || 'Unable to start checkout. Please try again.');
+      if (btn) { btn.disabled = false; btn.textContent = 'Upgrade'; }
+    }
+  } catch(e) {
+    showErr('Network error. Please try again.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Upgrade'; }
+  }
+}
+
+function showErr(msg) {
+  var el = document.getElementById('account-err');
+  if (!el) {
+    var wrap = document.getElementById('account-content');
+    var div = document.createElement('div');
+    div.id = 'account-err';
+    div.className = 'err';
+    wrap.prepend(div);
+    el = div;
+  }
+  el.textContent = msg;
+  el.classList.add('on');
+}
+
+function doLogout() {
+  localStorage.removeItem('pl-user');
+  window.location.href = '/';
+}
+
+function planFeatureList(plan) {
+  var items = PLAN_INCLUDES[plan] || PLAN_INCLUDES.free;
+  return items.map(function(f){ return '<div class="feature-row"><span class="fcheck">\u2713</span>'+f+'</div>'; }).join('');
+}
+
+function upgradeCards(plan) {
+  var tiers = [];
+  if (plan === 'free' || plan === 'trial') {
+    tiers = [
+      { key: 'creator', name: 'Creator', monthly: '$12', annual: '$99', sub: '/mo &nbsp;&middot;&nbsp; $99/yr' },
+      { key: 'operator', name: 'Operator', monthly: '$39', annual: '$299', sub: '/mo &nbsp;&middot;&nbsp; $299/yr', featured: true },
+    ];
+  } else if (plan === 'creator') {
+    tiers = [
+      { key: 'operator', name: 'Operator', monthly: '$39', annual: '$299', sub: '/mo &nbsp;&middot;&nbsp; $299/yr', featured: true },
+      { key: 'studio', name: 'Studio', monthly: '$99', annual: '$799', sub: '/mo &nbsp;&middot;&nbsp; $799/yr' },
+    ];
+  }
+  if (!tiers.length) return '';
+  return '<div class="section-title" style="margin-top:24px">Upgrade your plan</div>'
+    + '<div class="upgrade-grid">'
+    + tiers.map(function(t){
+        var hasPrice = PODLENS_PRICES[t.key + '_monthly'];
+        var cta = hasPrice
+          ? '<button class="uc-cta" onclick="startCheckout(\''+t.key+'\',\'monthly\')">Start 7-day trial &rarr;</button>'
+          : '<a class="uc-cta" href="mailto:hello@podlens.app?subject='+encodeURIComponent('Interest in '+t.name+' plan')+'">Contact us &rarr;</a>';
+        return '<div class="upgrade-card'+(t.featured?' featured':'')+'"><div class="uc-name">'+t.name+'</div>'
+          +'<div class="uc-price">'+t.monthly+'<span style="font-size:13px;font-weight:400;color:var(--text3)"> '+t.sub+'</span></div>'
+          +'<div class="uc-sub">7-day free trial included</div>'+cta+'</div>';
+      }).join('')
+    + '</div>';
+}
+
+function formatDate(iso) {
+  if (!iso) return 'Unknown';
+  try { return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); } catch(e) { return iso; }
+}
+
+function renderAccount(u) {
+  var plan = (u.plan || 'free').toLowerCase();
+  var label = PLAN_LABELS[plan] || 'Listener';
+  var badgeCls = PLAN_BADGES[plan] || 'badge-free';
+  var isTrial = plan === 'trial';
+  var isPaid = plan === 'creator' || plan === 'operator' || plan === 'studio';
+  var trialEnd = isTrial && u.trialEndsAt ? formatDate(u.trialEndsAt) : null;
+  var periodEnd = u.currentPeriodEnd ? formatDate(u.currentPeriodEnd) : null;
+
+  var html = '<div class="section">'
+    + '<div class="section-title">Current plan</div>'
+    + '<div class="plan-name-row">'
+    + '<span class="plan-badge '+badgeCls+'">'+label+'</span>'
+    + '</div>'
+    + '<div class="plan-meta">'
+    + (isTrial ? 'Free trial &mdash; full access through <strong>' + trialEnd + '</strong>.' : '')
+    + (isPaid && periodEnd ? 'Renews on <strong>' + periodEnd + '</strong>.' : '')
+    + (plan === 'free' && !isTrial ? '3 analyses per week &mdash; free forever.' : '')
+    + '</div>'
+    + planFeatureList(plan)
+    + '<div class="plan-actions" style="margin-top:16px">'
+    + (isPaid ? '<button class="btn-primary" id="billing-portal-btn" onclick="openBillingPortal()">Manage billing &#8599;</button>' : '')
+    + '<a class="btn-ghost" href="/">Go to dashboard</a>'
+    + '</div>'
+    + upgradeCards(plan)
+    + '</div>';
+
+  html += '<div class="section">'
+    + '<div class="section-title">Account</div>'
+    + '<div class="info-row"><span class="info-label">Name</span><span class="info-val">'+(u.name||'&mdash;')+'</span></div>'
+    + '<div class="info-row"><span class="info-label">Email</span><span class="info-val">'+(u.email||'&mdash;')+'</span></div>'
+    + '<div class="info-row"><span class="info-label">Member since</span><span class="info-val">'+(u.signupDate ? formatDate(u.signupDate) : '&mdash;')+'</span></div>'
+    + '<div class="info-row" style="border-bottom:none"><span class="info-label"></span>'
+    + '<button class="logout-btn" onclick="doLogout()">Log out</button></div>'
+    + '</div>';
+
+  document.getElementById('account-content').innerHTML = html;
+}
+
+function renderNotLoggedIn() {
+  document.getElementById('account-content').innerHTML = '<div class="section" style="text-align:center;padding:40px 24px">'
+    + '<div style="font-family:var(--ffs);font-size:22px;font-weight:700;margin-bottom:8px">Sign in to view your account</div>'
+    + '<div style="font-size:14px;color:var(--text2);margin-bottom:24px">Your plan and billing details live here.</div>'
+    + '<a class="btn-primary" href="/">Go to Podlens &rarr;</a>'
+    + '</div>';
+}
+
+async function init() {
+  var params = new URLSearchParams(window.location.search);
+  var upgraded = params.get('upgraded') === 'true';
+  var sessionId = params.get('session_id');
+
+  var u = plUser();
+  if (!u) { renderNotLoggedIn(); return; }
+
+  // Sync plan from Stripe (especially after checkout redirect)
+  if (upgraded || sessionId) {
+    // Give webhook a moment to process then sync
+    await new Promise(function(r){ setTimeout(r, 1500); });
+    u = await syncPlanFromStripe(u);
+
+    // Show success banner
+    var banner = document.getElementById('success-banner');
+    var planLabel = PLAN_LABELS[u.plan] || u.plan;
+    document.getElementById('success-title').textContent = 'Welcome to ' + planLabel + ' \u2014 your upgrade is active';
+    document.getElementById('success-sub').textContent = 'Your ' + planLabel + ' plan is now active. Enjoy full access.';
+    banner.classList.add('on');
+
+    // Clean URL
+    history.replaceState({}, '', '/account');
+  } else {
+    // Background sync on normal page load
+    syncPlanFromStripe(u).then(function(updated){ renderAccount(updated); });
+  }
+
+  renderAccount(u);
+}
+
+init();
+</script>
+</body>
+</html>

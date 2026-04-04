@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@netlify/blobs": "^8.0.0",
-    "@netlify/functions": "^2.0.0"
+    "@netlify/functions": "^2.0.0",
+    "stripe": "^22.0.0"
   }
 }
