@@ -690,6 +690,42 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .auth-terms a{color:var(--text2);text-decoration:underline}
 .auth-error{font-size:12px;color:var(--left);background:var(--left-bg);padding:8px 12px;border-radius:var(--r);margin-bottom:12px;display:none}
 .auth-error.on{display:block}
+/* Signup gate context variant */
+.signup-heading{font-family:var(--ffs);font-size:22px;font-weight:700;text-align:center;margin-bottom:4px;letter-spacing:-.01em}
+.auth-spotify-btn{width:100%;padding:10px;border:none;border-radius:var(--r);background:#1DB954;color:#fff;cursor:pointer;font-size:13px;font-family:var(--ff);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;margin-bottom:10px}
+.auth-spotify-btn:hover{opacity:.85}
+.auth-apple-btn{width:100%;padding:10px;border:none;border-radius:var(--r);background:#1a1a1a;color:#fff;cursor:pointer;font-size:13px;font-family:var(--ff);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;margin-bottom:0}
+.auth-apple-btn:hover{opacity:.85}
+/* Toast */
+.pl-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:2000;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.pl-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Analysis limit banner */
+.limit-banner{background:var(--amber-bg);border:1px solid rgba(180,83,9,.2);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.limit-banner-title{font-size:13px;font-weight:600;color:var(--amber);margin-bottom:4px}
+.limit-banner-sub{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.4}
+.limit-banner-btns{display:flex;gap:8px;flex-wrap:wrap}
+.lb-upgrade{padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)}
+.lb-later{padding:8px 12px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;font-size:12px;font-family:var(--ff)}
+/* Trial day-6 banner */
+.trial-day6-banner{background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:flex-start;gap:12px;margin:0 24px 0}
+@media(max-width:640px){.trial-day6-banner{margin:0 16px}}
+.tdb-body{flex:1}
+.tdb-title{font-size:13px;font-weight:600;color:var(--purple);margin-bottom:3px}
+.tdb-sub{font-size:12px;color:var(--text2);line-height:1.4;margin-bottom:8px}
+.tdb-btns{display:flex;gap:8px;flex-wrap:wrap}
+.tdb-upgrade{padding:6px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--ff)}
+.tdb-later{padding:6px 12px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;font-size:12px;font-family:var(--ff)}
+/* Trial expiry recap modal */
+.recap-modal{max-width:480px;padding:32px;text-align:left}
+.recap-stat{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)}
+.recap-stat-val{font-weight:700;font-family:var(--ffs);font-size:18px;color:var(--text)}
+.recap-change-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;color:var(--text2)}
+.recap-keep{color:var(--right);font-weight:700;font-size:11px;flex-shrink:0}
+.recap-lose{color:var(--amber);font-weight:700;font-size:11px;flex-shrink:0}
+/* Citations gate */
+.citations-gate{display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--bg3);border-radius:var(--r);margin-top:8px}
+.citations-gate-text{flex:1;font-size:11px;color:var(--text2);line-height:1.4}
+.citations-gate-btn{padding:5px 12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:11px;font-weight:600;font-family:var(--ff);white-space:nowrap;flex-shrink:0}
 
 /* ── ONBOARDING ── */
 .onb-step{display:none}.onb-step.on{display:block}
@@ -854,7 +890,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <section class="hiw-section">
       <div class="section-eyebrow">How it works</div>
       <h2 class="section-h">Three steps to clarity</h2>
-      <p class="section-sub" style="margin-bottom:48px">No accounts required to start. Just paste a URL.</p>
+      <p class="section-sub" style="margin-bottom:48px">Sign up free to start. Your first 7 days give you full access &mdash; no credit card needed.</p>
       <div class="hiw-steps">
         <div class="hiw-step">
           <div class="hiw-num">01</div>
@@ -912,6 +948,8 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 
   <!-- STATE B: Logged in -->
   <div id="home-loggedin" style="display:none">
+    <!-- Trial day-6 banner — shown by JS when within 24h of expiry -->
+    <div id="trial-day6-banner" style="display:none;padding:16px 0 0"></div>
     <div class="dash-hero">
       <div class="dash-greeting" id="dash-greeting">Good morning</div>
       <p class="dash-sub">What are you listening to today?</p>
@@ -1284,17 +1322,38 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <button class="modal-close" style="position:absolute;right:16px;top:16px" onclick="closeModal('signup')">&#x2715;</button>
     <div class="auth-modal-body">
       <div class="auth-logo">PODLENS</div>
-      <div class="auth-sub">Create your account &mdash; it&rsquo;s free</div>
+      <div id="signup-heading" class="signup-heading">Analyze this episode free</div>
+      <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">7 days of full access &mdash; no credit card required</div>
+      <button class="auth-google-btn" onclick="alert('Google login coming soon.')" style="margin-bottom:10px">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <button class="auth-spotify-btn" onclick="alert('Spotify login coming soon.')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        Continue with Spotify
+      </button>
+      <button class="auth-apple-btn" onclick="alert('Apple login coming soon.')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Continue with Apple
+      </button>
+      <div class="auth-divider">or</div>
       <div class="auth-error" id="signup-error"></div>
       <div class="auth-field"><label>Name</label><input type="text" id="signup-name" placeholder="Your name" autocomplete="name"/></div>
       <div class="auth-field"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email"/></div>
       <div class="auth-field"><label>Password</label><input type="password" id="signup-password" placeholder="At least 8 characters" autocomplete="new-password"/></div>
-      <button class="auth-btn" onclick="doSignup()">Create account</button>
-      <div class="auth-divider">or</div>
-      <button class="auth-google-btn" onclick="alert('Google login coming soon.')">&#9654; Continue with Google</button>
-      <div class="auth-terms">By signing up, you agree to our <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</div>
-      <div class="auth-switch" style="margin-top:12px">Already have an account? <button onclick="closeModal('signup');openModal('login')">Log in</button></div>
+      <button class="auth-btn" onclick="doSignup()">Create free account</button>
+      <div class="auth-terms">By signing up you agree to our <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</div>
+      <div class="auth-switch" style="margin-top:10px">Already have an account? <button onclick="closeModal('signup');openModal('login')">Log in</button></div>
     </div>
+  </div>
+</div>
+
+<!-- TRIAL EXPIRY RECAP MODAL -->
+<div class="overlay" id="modal-trial-expiry" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="modal recap-modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" style="position:absolute;right:16px;top:16px" onclick="document.getElementById('modal-trial-expiry').classList.remove('on')">&#x2715;</button>
+    <div id="trial-expiry-body"></div>
   </div>
 </div>
 
@@ -1343,6 +1402,9 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     </div>
   </div>
 </div>
+
+<!-- TOAST -->
+<div id="pl-toast" class="pl-toast"></div>
 
 <script>
 // ── THEME ──
@@ -1418,7 +1480,10 @@ function doLogin() {
   try {
     var acc = JSON.parse(stored);
     if (acc.password !== pass) { errEl.textContent = 'Incorrect password.'; errEl.classList.add('on'); return; }
-    setPlUser({ name: acc.name, email: acc.email, plan: acc.plan || 'listener', joinedAt: acc.joinedAt });
+    setPlUser({ id: acc.id || ('u-'+Date.now()), name: acc.name, email: acc.email,
+      plan: acc.plan || 'listener', joinedAt: acc.joinedAt,
+      signupDate: acc.signupDate, trialEndsAt: acc.trialEndsAt,
+      analysesThisWeek: acc.analysesThisWeek || 0, weekResetDate: acc.weekResetDate });
     closeModal('login');
     errEl.classList.remove('on');
     renderNavAuth();
@@ -1434,15 +1499,49 @@ function doSignup() {
   if (!name) { errEl.textContent = 'Please enter your name.'; errEl.classList.add('on'); return; }
   if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; errEl.classList.add('on'); return; }
   if (pass.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.classList.add('on'); return; }
-  var acc = { name: name, email: email, password: pass, plan: 'listener', joinedAt: Date.now() };
+
+  var now = Date.now();
+  var trialEndsAt = new Date(now + 7*24*60*60*1000).toISOString();
+  var weekResetDate = new Date(now + 7*24*60*60*1000).toISOString();
+  var uid = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'u-' + now;
+
+  var acc = {
+    id: uid, name: name, email: email, password: pass,
+    plan: 'trial',
+    signupDate: new Date(now).toISOString(),
+    trialEndsAt: trialEndsAt,
+    analysesThisWeek: 0,
+    weekResetDate: weekResetDate,
+    analyzedEpisodes: [],
+    followedShows: [],
+    biasFingerprint: { leftPct: 0, centerPct: 0, rightPct: 0, totalEpisodes: 0 },
+    preferredCategories: [],
+    joinedAt: now
+  };
   localStorage.setItem('pl-accounts-' + email, JSON.stringify(acc));
-  setPlUser({ name: name, email: email, plan: 'listener', joinedAt: acc.joinedAt });
+
+  var u = { id: uid, name: name, email: email, plan: 'trial',
+    signupDate: acc.signupDate, trialEndsAt: trialEndsAt,
+    analysesThisWeek: 0, weekResetDate: weekResetDate, joinedAt: now };
+  setPlUser(u);
   closeModal('signup');
   errEl.classList.remove('on');
   renderNavAuth();
-  // Open onboarding
-  openModal('onboarding');
-  showOnbStep(1);
+
+  if (_pendingAnalyze) {
+    var pa = _pendingAnalyze;
+    _pendingAnalyze = null;
+    showToast('Welcome to Podlens \u2014 your 7-day trial has started');
+    setTimeout(function() {
+      document.getElementById('url-input').value = pa.url;
+      showView('analyze');
+      if (pa.isRss || isRss(pa.url)) { loadEpisodes(pa.url); }
+      else { startAnalysis(pa.url, pa.epTitle || '', pa.showName || ''); }
+    }, 400);
+  } else {
+    openModal('onboarding');
+    showOnbStep(1);
+  }
 }
 
 function doLogout() {
@@ -1481,9 +1580,150 @@ function finishOnboarding() {
   renderHomeState();
 }
 
+// ── SIGNUP GATE ──
+function openSignupGate() {
+  var h = document.getElementById('signup-heading');
+  var s = document.getElementById('signup-subtext');
+  if (h) h.textContent = 'Analyze this episode free';
+  if (s) s.textContent = '7 days of full access \u2014 no credit card required';
+  openModal('signup');
+}
+
+// ── TOAST ──
+var _toastTimer = null;
+function showToast(msg, duration) {
+  duration = duration || 4000;
+  var el = document.getElementById('pl-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('on');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { el.classList.remove('on'); }, duration);
+}
+
+// ── PLAN ENFORCEMENT ──
+function enforcePlanRules() {
+  var u = plUser();
+  if (!u) return null;
+  var now = Date.now();
+  var changed = false;
+  // Trial expiry
+  if (u.plan === 'trial' && u.trialEndsAt) {
+    if (now > new Date(u.trialEndsAt).getTime()) {
+      u.plan = 'free';
+      changed = true;
+      setTimeout(function() { showTrialExpiryRecap(u); }, 800);
+    }
+  }
+  // Weekly reset for free plan
+  if (u.plan === 'free' && u.weekResetDate) {
+    if (now > new Date(u.weekResetDate).getTime()) {
+      u.analysesThisWeek = 0;
+      u.weekResetDate = new Date(now + 7*24*60*60*1000).toISOString();
+      changed = true;
+    }
+  }
+  if (changed) setPlUser(u);
+  return u;
+}
+
+// ── ANALYSIS LIMIT CHECK ──
+function checkAnalysisLimit() {
+  var u = plUser();
+  if (!u) return false;
+  var plan = (u.plan || '').toLowerCase();
+  if (plan === 'free' && (u.analysesThisWeek || 0) >= 3) {
+    showAnalysisLimitBanner(u);
+    return true;
+  }
+  return false;
+}
+
+function showAnalysisLimitBanner(u) {
+  showView('analyze');
+  document.getElementById('loading').classList.remove('on');
+  document.getElementById('atabs').classList.add('on');
+  document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.atab')[0].classList.add('on');
+  document.getElementById('apanel-results').classList.add('on');
+  var now = Date.now();
+  var resetMs = u.weekResetDate ? (new Date(u.weekResetDate).getTime() - now) : 0;
+  var resetDays = Math.max(1, Math.ceil(resetMs / (24*60*60*1000)));
+  document.getElementById('results').innerHTML = '<div class="limit-banner">'
+    + '<div class="limit-banner-title">You\'ve used your 3 free analyses this week</div>'
+    + '<div class="limit-banner-sub">Resets in ' + resetDays + ' day' + (resetDays !== 1 ? 's' : '') + ' \u2014 or keep going with Operator.</div>'
+    + '<div class="limit-banner-btns">'
+    + '<button class="lb-upgrade" onclick="showUpgrade()">Upgrade \u2014 $39/mo</button>'
+    + '<button class="lb-later" onclick="this.closest(\'.limit-banner\').remove()">Remind me later</button>'
+    + '</div></div>';
+}
+
+// ── TRIAL DAY-6 BANNER ──
+function showTrialDay6Banner(u) {
+  var el = document.getElementById('trial-day6-banner');
+  if (!el || el.dataset.shown) return;
+  el.dataset.shown = '1';
+  var recent = getRecent();
+  var epCount = recent.length;
+  var leanLabel = '';
+  if (epCount) {
+    var avg = recent.reduce(function(a,r){return{l:a.l+(r.leftPct||0),r:a.r+(r.rightPct||0)};},{l:0,r:0});
+    leanLabel = avg.l/epCount > avg.r/epCount + 10 ? 'left' : avg.r/epCount > avg.l/epCount + 10 ? 'right' : 'center';
+  }
+  el.style.display = 'block';
+  el.innerHTML = '<div class="trial-day6-banner">'
+    + '<div class="tdb-body">'
+    + '<div class="tdb-title">Your full trial access ends tomorrow</div>'
+    + '<div class="tdb-sub">You\'ve analyzed ' + epCount + ' episode' + (epCount !== 1 ? 's' : '')
+    + (leanLabel ? '. Your listening leans <strong>' + leanLabel + '</strong>' : '') + '.</div>'
+    + '<div class="tdb-btns">'
+    + '<button class="tdb-upgrade" onclick="showUpgrade()">Keep full access \u2014 $39/mo</button>'
+    + '<button class="tdb-later" onclick="document.getElementById(\'trial-day6-banner\').style.display=\'none\'">See what changes</button>'
+    + '</div></div></div>';
+}
+
+// ── TRIAL EXPIRY RECAP ──
+function showTrialExpiryRecap(u) {
+  var modal = document.getElementById('modal-trial-expiry');
+  var body = document.getElementById('trial-expiry-body');
+  if (!modal || !body) { showUpgrade(); return; }
+  var recent = getRecent();
+  var epCount = recent.length;
+  var leanLabel = '';
+  if (epCount) {
+    var avg = recent.reduce(function(a,r){return{l:a.l+(r.leftPct||0),r:a.r+(r.rightPct||0)};},{l:0,r:0});
+    leanLabel = avg.l/epCount > avg.r/epCount + 10 ? 'left' : avg.r/epCount > avg.l/epCount + 10 ? 'right' : 'center';
+  }
+  body.innerHTML = '<div style="font-family:var(--ffs);font-size:24px;font-weight:700;margin-bottom:6px">Your 7-day Podlens trial</div>'
+    + '<div style="font-size:13px;color:var(--text2);margin-bottom:20px">Here\'s what you found:</div>'
+    + '<div class="recap-stat"><span>Episodes analyzed</span><span class="recap-stat-val">' + epCount + '</span></div>'
+    + (leanLabel ? '<div class="recap-stat"><span>Your listening leans</span><span class="recap-stat-val">' + leanLabel + '</span></div>' : '')
+    + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:16px 0 8px">What stays free</div>'
+    + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> Your profile, history &amp; bias fingerprint</div>'
+    + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> 3 analyses per week</div>'
+    + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> Browse trending shows and episodes</div>'
+    + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:16px 0 8px">What\'s now locked</div>'
+    + '<div class="recap-change-row"><span class="recap-lose">\u2193</span> Unlimited analyses</div>'
+    + '<div class="recap-change-row"><span class="recap-lose">\u2193</span> Deep analysis &amp; source citations</div>'
+    + '<div class="recap-change-row"><span class="recap-lose">\u2193</span> The Unheard report</div>'
+    + '<div style="display:flex;gap:8px;margin-top:24px">'
+    + '<button style="flex:1;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)" onclick="showUpgrade();document.getElementById(\'modal-trial-expiry\').classList.remove(\'on\')">Upgrade to Operator \u2014 $39/mo</button>'
+    + '<button style="padding:12px 16px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;font-size:13px;font-family:var(--ff)" onclick="document.getElementById(\'modal-trial-expiry\').classList.remove(\'on\')">Continue free</button>'
+    + '</div>';
+  modal.classList.add('on');
+}
+
+// ── CITATIONS GATE ──
+function canSeeCitations() {
+  var u = plUser();
+  var plan = (u && u.plan || '').toLowerCase();
+  return plan === 'operator' || plan === 'studio';
+}
+
 // ── HOME STATE ──
 function renderHomeState() {
   var u = plUser();
+  if (u) u = enforcePlanRules() || u;
   document.getElementById('home-loggedout').style.display = u ? 'none' : 'block';
   document.getElementById('home-loggedin').style.display = u ? 'block' : 'none';
   if (u) {
@@ -1494,6 +1734,11 @@ function renderHomeState() {
     renderDashRecent();
     renderBiasFingerprint();
     renderDashUnheardPreview(u);
+    // Show trial day-6 banner if within last 24h of trial
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      var remaining = new Date(u.trialEndsAt).getTime() - Date.now();
+      if (remaining > 0 && remaining <= 24*60*60*1000) showTrialDay6Banner(u);
+    }
   }
 }
 
@@ -1501,7 +1746,7 @@ function renderDashUnheardPreview(u) {
   var el = document.getElementById('sb-unheard-preview');
   if (!el) return;
   var plan = (u && u.plan || '').toLowerCase();
-  var isPro = plan === 'operator' || plan === 'studio';
+  var isPro = plan === 'operator' || plan === 'studio' || plan === 'trial';
   if (!isPro) {
     el.innerHTML = '<div style="margin-bottom:8px;color:var(--text2)">Stories only one side is covering this week&hellip;</div>'
       + '<button onclick="showUpgrade()" style="width:100%;padding:8px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--ff)">Get Pro &rarr;</button>';
@@ -1563,6 +1808,9 @@ function renderBiasFingerprint() {
       +'<span class="bias-count"><span class="bias-dot" style="background:var(--right-bar)"></span>'+r+'% right</span>';
   });
 }
+
+// ── PENDING ANALYZE (saved when gate intercepts) ──
+var _pendingAnalyze = null; // {url, epTitle, showName, isRss}
 
 // ── STATE ──
 var _feedInit = false;
@@ -1652,6 +1900,11 @@ function handleHeroAnalyze() {
   var u = document.getElementById('hero-url-input').value.trim();
   if (!u) { document.getElementById('hero-url-input').focus(); return; }
   if (!u.startsWith('http')) u = 'https://' + u;
+  if (!plUser()) {
+    _pendingAnalyze = { url: u, epTitle: '', showName: '' };
+    openSignupGate();
+    return;
+  }
   document.getElementById('url-input').value = u;
   showView('analyze');
   handleAnalyze();
@@ -1891,7 +2144,7 @@ async function loadUnheard() {
   var el=document.getElementById('fp-unheard');
   var u=plUser();
   var plan=(u&&u.plan||'').toLowerCase();
-  var isPro=plan==='operator'||plan==='studio';
+  var isPro=plan==='operator'||plan==='studio'||plan==='trial';
 
   if (!isPro) {
     // Never fetch — render locked state immediately
@@ -1926,6 +2179,11 @@ function unheardLockedHtml() {
 
 // ── ANALYZE ──
 function goAnalyze(feedUrl) {
+  if (!plUser()) {
+    _pendingAnalyze = { url: feedUrl, epTitle: '', showName: '', isRss: true };
+    openSignupGate();
+    return;
+  }
   showView('analyze');
   document.getElementById('url-input').value=feedUrl;
   loadEpisodes(feedUrl);
@@ -1943,6 +2201,12 @@ async function handleAnalyze() {
   if (!u) { document.getElementById('url-input').focus(); return; }
   if (!u.startsWith('http')) u='https://'+u;
   document.getElementById('url-input').value=u;
+  if (!plUser()) {
+    _pendingAnalyze = { url: u, epTitle: '', showName: '' };
+    openSignupGate();
+    return;
+  }
+  if (checkAnalysisLimit()) return;
   if (isEpisodeUrl(u)) startAnalysis(u);
   else if (isRss(u)) await loadEpisodes(u);
   else startAnalysis(u);
@@ -1968,6 +2232,12 @@ async function loadEpisodes(feedUrl) {
 
 function analyzeEp(e, url, epTitle, showName) {
   if (e) e.stopPropagation();
+  if (!plUser()) {
+    _pendingAnalyze = { url: url, epTitle: epTitle||'', showName: showName||'' };
+    openSignupGate();
+    return;
+  }
+  if (checkAnalysisLimit()) return;
   showView('analyze');
   document.getElementById('url-input').value=url;
   startAnalysis(url, epTitle||'', showName||'');
@@ -2198,7 +2468,55 @@ var _audioJob=null, _audioUtterance=null, _audioPlaying=false, _audioPaused=fals
 var _audioProgInterval=null, _audioProgStart=0, _audioProgDur=90; // ~90s estimate
 
 function toggleAudioSummary(jobId, script) {
-  // Pause/resume same job
+  // Check if user can play full briefing
+  var cu = plUser();
+  var plan = (cu && cu.plan || '').toLowerCase();
+  var canPlayFull = plan === 'creator' || plan === 'operator' || plan === 'studio';
+
+  // --- Non-Creator: 10-second preview ---
+  if (!canPlayFull) {
+    // If already playing preview, stop it
+    if (_audioJob === jobId && _audioPlaying) {
+      window.speechSynthesis.cancel();
+      _stopProgressTick();
+      _setAudioState(jobId, false, 'Hear the full 90-second briefing &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
+      _resetProgress(jobId);
+      _audioPlaying = false; _audioPaused = false; _audioJob = null; _audioProgDur = 90;
+      return;
+    }
+    // Stop any other job
+    if (_audioJob && _audioJob !== jobId) {
+      window.speechSynthesis.cancel(); _resetProgress(_audioJob); _stopProgressTick();
+      _setAudioState(_audioJob, false, 'Preview &middot; first 10 seconds free');
+    }
+    _audioJob = jobId; _audioPlaying = true; _audioPaused = false;
+    var decodedPreview = script.replace(/&#39;/g,"'").replace(/&quot;/g,'"');
+    var utterPreview = new SpeechSynthesisUtterance(decodedPreview);
+    utterPreview.rate = 0.95; utterPreview.pitch = 1.0; utterPreview.volume = 1.0;
+    function _speakPreview() {
+      var voices = window.speechSynthesis.getVoices();
+      var pref = voices.find(function(v){return v.lang==='en-US'&&(/Natural|Premium|Enhanced/i).test(v.name);})||voices.find(function(v){return v.lang==='en-US';})||voices[0];
+      if (pref) utterPreview.voice = pref;
+      _setAudioState(jobId, true, 'Playing preview \u2014 10 seconds\u2026');
+      _audioProgStart = Date.now(); _audioProgDur = 10;
+      _startProgressTick(jobId);
+      var previewTimer = setTimeout(function() {
+        window.speechSynthesis.cancel();
+        _stopProgressTick(); _resetProgress(jobId); _audioProgDur = 90;
+        _setAudioState(jobId, false, 'Hear the full 90-second briefing &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
+        _audioPlaying = false; _audioPaused = false; _audioJob = null;
+      }, 10000);
+      utterPreview.onend = function() { clearTimeout(previewTimer); _stopProgressTick(); _resetProgress(jobId); _audioProgDur = 90; _audioPlaying = false; _audioPaused = false; _audioJob = null; };
+      utterPreview.onerror = function() { clearTimeout(previewTimer); _stopProgressTick(); _resetProgress(jobId); _audioProgDur = 90; _audioPlaying = false; _audioPaused = false; _audioJob = null; };
+      _audioUtterance = utterPreview;
+      window.speechSynthesis.speak(utterPreview);
+    }
+    if (window.speechSynthesis.getVoices().length) { _speakPreview(); }
+    else { window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.onvoiceschanged = null; _speakPreview(); }; _speakPreview(); }
+    return;
+  }
+
+  // --- Creator+: Full briefing ---
   if (_audioJob===jobId) {
     if (_audioPaused) {
       window.speechSynthesis.resume();
@@ -2215,7 +2533,6 @@ function toggleAudioSummary(jobId, script) {
       return;
     }
   }
-  // Stop any other job
   if (_audioJob && _audioJob!==jobId) {
     window.speechSynthesis.cancel();
     _setAudioState(_audioJob, false, 'Listen to briefing \u00b7 ~1 min 30 sec');
@@ -2226,13 +2543,12 @@ function toggleAudioSummary(jobId, script) {
   var decodedScript=script.replace(/&#39;/g,"'").replace(/&quot;/g,'"');
   var utter=new SpeechSynthesisUtterance(decodedScript);
   utter.rate=0.95; utter.pitch=1.0; utter.volume=1.0;
-  // Pick best English voice, load async if needed
   function _speak() {
     var voices=window.speechSynthesis.getVoices();
     var preferred=voices.find(function(v){return v.lang==='en-US'&&(/Natural|Premium|Enhanced/i).test(v.name);})||voices.find(function(v){return v.lang==='en-US'&&!v.name.includes('Google');})||voices.find(function(v){return v.lang==='en-US';})||voices[0];
     if (preferred) utter.voice=preferred;
     _setAudioState(jobId, true, 'Playing briefing\u2026');
-    _audioProgStart=Date.now();
+    _audioProgStart=Date.now(); _audioProgDur=90;
     _startProgressTick(jobId);
     utter.onend=function(){ _setAudioState(jobId, false, 'Briefing complete \u2014 tap to replay'); _resetProgress(jobId); _stopProgressTick(); _audioPlaying=false; _audioPaused=false; _audioJob=null; };
     utter.onerror=function(){ _setAudioState(jobId, false, 'Listen to briefing \u00b7 ~1 min 30 sec'); _resetProgress(jobId); _stopProgressTick(); _audioPlaying=false; _audioPaused=false; _audioJob=null; };
@@ -2314,17 +2630,15 @@ function renderResults(data) {
     var safeScript=data.audioScript.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
     var u=plUser(); var plan=(u&&u.plan||'').toLowerCase();
     var canPlay=plan==='creator'||plan==='operator'||plan==='studio';
-    var clickHandler=canPlay
-      ?'toggleAudioSummary(\''+data.jobId+'\',\''+safeScript+'\')'
-      :'showAudioGate()';
+    var clickHandler='toggleAudioSummary(\''+data.jobId+'\',\''+safeScript+'\')';
     card+='<div class="audio-player" id="audio-player-'+data.jobId+'">';
     card+='<div class="audio-player-inner">';
     card+='<button class="audio-play-btn" id="audio-play-btn-'+data.jobId+'" onclick="'+clickHandler+'" title="Listen to briefing">';
     card+='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>';
     card+='<div class="audio-player-info">';
     card+='<div class="audio-player-title">Audio Briefing</div>';
-    card+='<div class="audio-player-meta" id="audio-status-'+data.jobId+'">'+(canPlay?'Listen to briefing &middot; ~1 min 30 sec':'Creator plan feature')+'</div>';
-    card+='<div class="audio-player-sub">'+(canPlay?'AI-generated context for your listening':'Hear the analysis before you press play')+'</div>';
+    card+='<div class="audio-player-meta" id="audio-status-'+data.jobId+'">'+(canPlay?'Listen to briefing &middot; ~1 min 30 sec':'Preview &middot; first 10 seconds free')+'</div>';
+    card+='<div class="audio-player-sub">'+(canPlay?'AI-generated context for your listening':'Hear the full briefing on Creator plan')+'</div>';
     card+='</div>';
     card+='<div class="audio-waveform" id="audio-wave-'+data.jobId+'">';
     card+='<span></span><span></span><span></span><span></span><span></span>';
@@ -2352,21 +2666,28 @@ function renderResults(data) {
     if (al.basis) card+='<div class="al-basis">'+al.basis+'</div>';
     card+='<div class="al-footnote">Based on language patterns and framing choices &mdash; not the host&rsquo;s personal politics</div>';
 
-    // Citations for lean
+    // Citations for lean — Operator+ only
     var leanCits=al.citations||[];
     if (leanCits.length) {
-      var leanDir=al.leftPct>al.rightPct?'lean-left':al.rightPct>al.leftPct?'lean-right':'lean-center';
-      card+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')">Why this lean? ('+leanCits.length+' source'+(leanCits.length>1?'s':'')+') &#9660;</button>';
-      card+='<div class="citations-panel">';
-      leanCits.forEach(function(c){
-        card+='<div class="citation-item '+leanDir+'">';
-        if (c.timestamp) card+='<div class="citation-ts">'+c.timestamp+'</div>';
-        card+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
-        if (c.explanation) card+='<div class="citation-exp">'+c.explanation+'</div>';
+      if (canSeeCitations()) {
+        var leanDir=al.leftPct>al.rightPct?'lean-left':al.rightPct>al.leftPct?'lean-right':'lean-center';
+        card+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')">Why this lean? ('+leanCits.length+' source'+(leanCits.length>1?'s':'')+') &#9660;</button>';
+        card+='<div class="citations-panel">';
+        leanCits.forEach(function(c){
+          card+='<div class="citation-item '+leanDir+'">';
+          if (c.timestamp) card+='<div class="citation-ts">'+c.timestamp+'</div>';
+          card+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
+          if (c.explanation) card+='<div class="citation-exp">'+c.explanation+'</div>';
+          card+='</div>';
+        });
+        card+='<div class="citations-confidence">Based on '+leanCits.length+' instance'+(leanCits.length>1?'s':'')+'  in transcript</div>';
         card+='</div>';
-      });
-      card+='<div class="citations-confidence">Based on '+leanCits.length+' instance'+(leanCits.length>1?'s':'')+'  in transcript</div>';
-      card+='</div>';
+      } else {
+        card+='<div class="citations-gate">'
+          +'<div class="citations-gate-text">See the exact transcript quotes that support this lean score. <strong>Operator</strong> feature &mdash; this is how we show our work.</div>'
+          +'<button class="citations-gate-btn" onclick="showUpgrade()">Unlock \u2014 $39/mo</button>'
+          +'</div>';
+      }
     }
     card+='</div>';
   }
@@ -2412,18 +2733,25 @@ function renderResults(data) {
       var cits=f.citations||[];
       var citHtml='';
       if (cits.length) {
-        var flagLeanDir=f.type==='framing'||f.type==='omission'?'lean-left':'lean-center';
-        citHtml+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')" style="margin-top:6px">Why? ('+cits.length+' source'+(cits.length>1?'s':'')+') &#9660;</button>';
-        citHtml+='<div class="citations-panel">';
-        cits.forEach(function(c){
-          citHtml+='<div class="citation-item '+flagLeanDir+'">';
-          if (c.timestamp) citHtml+='<div class="citation-ts">'+c.timestamp+'</div>';
-          citHtml+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
-          if (c.explanation) citHtml+='<div class="citation-exp">'+c.explanation+'</div>';
+        if (canSeeCitations()) {
+          var flagLeanDir=f.type==='framing'||f.type==='omission'?'lean-left':'lean-center';
+          citHtml+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')" style="margin-top:6px">Why? ('+cits.length+' source'+(cits.length>1?'s':'')+') &#9660;</button>';
+          citHtml+='<div class="citations-panel">';
+          cits.forEach(function(c){
+            citHtml+='<div class="citation-item '+flagLeanDir+'">';
+            if (c.timestamp) citHtml+='<div class="citation-ts">'+c.timestamp+'</div>';
+            citHtml+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
+            if (c.explanation) citHtml+='<div class="citation-exp">'+c.explanation+'</div>';
+            citHtml+='</div>';
+          });
+          citHtml+='<div class="citations-confidence">Based on '+cits.length+' instance'+(cits.length>1?'s':'')+'  in transcript</div>';
           citHtml+='</div>';
-        });
-        citHtml+='<div class="citations-confidence">Based on '+cits.length+' instance'+(cits.length>1?'s':'')+'  in transcript</div>';
-        citHtml+='</div>';
+        } else {
+          citHtml='<div class="citations-gate" style="margin-top:6px">'
+            +'<div class="citations-gate-text">See exactly which quotes support this finding. <strong>Operator</strong> feature.</div>'
+            +'<button class="citations-gate-btn" onclick="showUpgrade()">Unlock</button>'
+            +'</div>';
+        }
       }
       return '<div class="flag-item"><span class="ftag '+ftClass(f.type)+'">'+ftLabel(f.type)+'</span><div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div>'+citHtml+'</div></div>';
     }).join('');
@@ -2713,6 +3041,12 @@ function wrapText(ctx,text,x,y,maxW,lineH){var words=(text||'').split(' ');var l
 function getRecent() { try{ return JSON.parse(localStorage.getItem('pl-recent')||'[]'); }catch(e){return[];} }
 function trackAnalysis(data) {
   try {
+    // Increment weekly count for free users
+    var cu = plUser();
+    if (cu && cu.plan === 'free') {
+      cu.analysesThisWeek = (cu.analysesThisWeek || 0) + 1;
+      setPlUser(cu);
+    }
     var recent=getRecent();
     var al=data.audioLean||{};
     recent.unshift({title:data.episodeTitle||'Episode',biasLabel:data.biasLabel||'',url:data.url||'',showName:data.showName||'',leftPct:al.leftPct,centerPct:al.centerPct,rightPct:al.rightPct});
@@ -2752,6 +3086,7 @@ window.addEventListener('popstate',function(e){
 });
 
 // ── AUTO INIT ──
+enforcePlanRules();
 renderNavAuth();
 if (!handleUrlRouting()) {
   renderHomeState();

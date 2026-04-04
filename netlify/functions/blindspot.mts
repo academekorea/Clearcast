@@ -1,7 +1,7 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
-const PRO_PLANS = new Set(["operator", "studio"]);
+const PRO_PLANS = new Set(["operator", "studio", "trial"]);
 
 export default async (req: Request) => {
   // Gate: only Pro plans (Operator / Studio) may receive Unheard data.
