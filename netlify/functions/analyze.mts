@@ -184,10 +184,13 @@ export default async (req: Request) => {
           status: 200, headers: { "Content-Type": "application/json" },
         });
       }
-      // Captions unavailable — fall through to AssemblyAI transcription using the YouTube URL directly
+      // Captions unavailable — can't transcribe YouTube audio directly
+      return new Response(JSON.stringify({
+        error: "This video doesn't have captions enabled. Try a video with auto-generated or manual captions, or paste a direct MP3/podcast RSS URL instead.",
+      }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
-    // YouTube (captions failed) or non-YouTube: send to AssemblyAI
+    // Non-YouTube: send to AssemblyAI
     const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
     if (!assemblyKey) {
       return new Response(JSON.stringify({ error: "Transcription service not configured" }), {
@@ -196,8 +199,7 @@ export default async (req: Request) => {
     }
 
     let audioUrl = url;
-    const isYouTube = !!ytMatch;
-    if (!isYouTube && !url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
+    if (!url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
       const extracted = await extractAudioUrl(url);
       if (extracted) {
         audioUrl = extracted;
