@@ -12,7 +12,7 @@ export default async (req: Request) => {
 
   try {
     const res = await fetch(feedUrl, {
-      headers: { "User-Agent": "Clearcast/1.0", "Accept": "application/rss+xml, application/xml, text/xml, */*" }
+      headers: { "User-Agent": "Podlens/1.0", "Accept": "application/rss+xml, application/xml, text/xml, */*" }
     });
     const text = await res.text();
 

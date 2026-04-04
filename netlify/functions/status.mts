@@ -21,7 +21,7 @@ Return ONLY a valid JSON object (no markdown, no explanation, no preamble):
   },
   "hostTrustScore": <number 0-100, how much the host uses parasocial trust-building language>,
   "hostTrustLabel": <"Low influence"|"Moderate influence"|"High influence">,
-  "audioScript": <200-220 word conversational summary written as if a knowledgeable friend is telling you what this episode is really about — include the main takeaway, the political lean, and one or two specific things to watch out for. Tone: direct, informative, no jargon. This will be read aloud by the browser.>
+  "audioScript": <200-220 word spoken briefing. You are a trusted, curious friend giving context before they listen. Structure: (1) Opening — one sentence on what this episode is and who it is from. (2) The lean — two sentences on which direction it leans and the single clearest reason why, framed as a framing pattern not a flaw — e.g. "the episode consistently frames X as Y" rather than "the host is biased". (3) Key findings — three to four sentences covering the most important things to know going in. (4) Missing perspectives — one to two sentences on what voices or angles are absent, framed as "one thing worth knowing is that..." (5) Sponsor note — one sentence only if sponsors are present, framed as "worth knowing the episode is sponsored by..."; skip entirely if no sponsors detected. (6) Closing — one warm sentence: "overall this episode is worth listening to if..." and complete the thought based on the content. Tone: curious and helpful, never preachy, never alarmist, never judgmental. This is a gift of context, not a verdict. Will be read aloud by a text-to-speech engine — write for the ear, not the eye.>
 }
 
 Rules:
@@ -29,7 +29,7 @@ Rules:
 - audioLean must be grounded in specific verifiable signals from the transcript
 - audioLean.citations: provide 2-3 quotes that best illustrate the lean; use empty array if transcript is genuinely neutral
 - Do NOT guess or average — if the content is genuinely neutral, centerPct should be high
-- audioScript must be 200-220 words, plain prose, no bullet points, no markdown`;
+- audioScript must be 200-220 words, plain prose, no bullet points, no markdown, no section headings`;
 
 const PROMPT_2 = `You are a media literacy expert analyzing a podcast transcript. Your job is to give listeners honest, verifiable intelligence about what they are actually hearing.
 

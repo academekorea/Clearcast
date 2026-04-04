@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Podlens — Know what you're actually listening to</title>
-<meta name="description" content="Paste any podcast or YouTube URL. Podlens surfaces bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript."/>
+<title>Podlens — Understand what you're actually listening to</title>
+<meta name="description" content="Podlens helps you understand what you're actually listening to — bias patterns, missing perspectives, and host influence in any podcast."/>
+<meta property="og:title" content="Podlens — Understand what you're actually listening to"/>
+<meta property="og:description" content="Podlens helps you understand what you're actually listening to — bias patterns, missing perspectives, and host influence in any podcast."/>
+<meta property="og:url" content="https://podlens.app"/>
+<meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -439,16 +443,18 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .ghost-btn{padding:7px 16px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;font-family:var(--ff);transition:all .1s}
 .ghost-btn:hover{border-color:var(--text);color:var(--text)}
 
-/* ── AUDIO SUMMARY PLAYER ── */
-.audio-player{background:#0f2027;border-radius:var(--r);padding:16px 20px;margin:0;display:flex;align-items:center;gap:14px}
-.audio-play-btn{width:40px;height:40px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s}
+/* ── AUDIO BRIEFING PLAYER ── */
+.audio-player{background:#0f2027;border-radius:var(--r);overflow:hidden}
+.audio-player-inner{padding:16px 20px;display:flex;align-items:center;gap:14px}
+.audio-play-btn{width:48px;height:48px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s}
 .audio-play-btn:hover{opacity:.85}
-.audio-play-btn svg{width:16px;height:16px;fill:#0f2027}
+.audio-play-btn svg{width:18px;height:18px;fill:#0f2027}
 .audio-player-info{flex:1;min-width:0}
 .audio-player-title{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-.audio-player-status{font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.audio-player-meta{font-size:13px;color:#fff;font-weight:500;margin-bottom:1px}
+.audio-player-sub{font-size:11px;color:rgba(255,255,255,.45)}
 .audio-waveform{display:flex;align-items:center;gap:2px;height:22px}
-.audio-waveform span{display:block;width:3px;background:rgba(255,255,255,.4);border-radius:2px;animation:none}
+.audio-waveform span{display:block;width:3px;background:rgba(255,255,255,.35);border-radius:2px;animation:none}
 .audio-waveform.playing span{animation:wave .8s ease-in-out infinite}
 .audio-waveform span:nth-child(1){height:8px;animation-delay:0s}
 .audio-waveform span:nth-child(2){height:16px;animation-delay:.1s}
@@ -456,6 +462,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .audio-waveform span:nth-child(4){height:14px;animation-delay:.3s}
 .audio-waveform span:nth-child(5){height:6px;animation-delay:.4s}
 @keyframes wave{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+.audio-progress-rail{height:3px;background:rgba(255,255,255,.15)}
+.audio-progress-fill{height:100%;background:rgba(255,255,255,.7);width:0;transition:width .5s linear}
 
 /* ── SOURCE CITATIONS ── */
 .citations-toggle{font-size:11px;color:var(--text3);border:1px solid var(--border);border-radius:var(--r);background:transparent;cursor:pointer;padding:3px 9px;font-family:var(--ff);margin-top:8px;transition:all .1s}
@@ -616,19 +624,44 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .rp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:10px}
 
 /* ── UPGRADE MODAL ── */
-.umod{max-width:460px;padding:32px;text-align:center}
-.umod-logo{font-family:var(--ffs);font-size:22px;font-weight:700;margin-bottom:8px;letter-spacing:.02em}
-.umod-tag{font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.5}
-.umod-feats{text-align:left;margin-bottom:24px;display:flex;flex-direction:column;gap:8px}
-.uf{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text2)}
-.uf-ic{width:18px;height:18px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--right);flex-shrink:0;margin-top:2px;font-weight:700}
-.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-.price-opt{border:1px solid var(--border2);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .1s;text-align:center}
-.price-opt.sel{border-color:var(--navy);background:var(--bg3)}
-.po-name{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:4px}
-.po-price{font-family:var(--ffs);font-size:28px;font-weight:700}
-.po-period{font-size:11px;color:var(--text3)}
-.po-save{font-size:10px;color:var(--right);font-weight:600;margin-top:4px}
+/* ── PRICING MODAL ── */
+.pmod{max-width:900px;width:95vw;padding:32px 28px 24px;text-align:left}
+.pmod-head{text-align:center;margin-bottom:24px}
+.pmod-title{font-family:var(--ffs);font-size:26px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+.pmod-sub{font-size:14px;color:var(--text2)}
+.billing-toggle{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 24px}
+.bt-opt{font-size:13px;color:var(--text2);cursor:pointer;transition:color .1s}
+.bt-opt.on{color:var(--text);font-weight:600}
+.bt-switch{position:relative;width:42px;height:24px;cursor:pointer}
+.bt-switch input{opacity:0;width:0;height:0}
+.bt-track{position:absolute;inset:0;background:var(--bg4);border-radius:12px;transition:background .2s}
+.bt-switch input:checked+.bt-track{background:var(--navy)}
+.bt-track::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s}
+.bt-switch input:checked+.bt-track::after{transform:translateX(18px)}
+.bt-save{font-size:11px;font-weight:700;padding:2px 8px;background:var(--right-bg,#EFF6FF);color:var(--right);border-radius:var(--r)}
+.tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:700px){.tier-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:440px){.tier-grid{grid-template-columns:1fr}}
+.tcard{border:1px solid var(--border);border-radius:var(--r);padding:20px 16px 16px;display:flex;flex-direction:column;position:relative}
+.tcard.featured{border-color:var(--navy);border-width:2px;box-shadow:0 2px 12px rgba(15,32,39,.1)}
+[data-theme="dark"] .tcard.featured{box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.tcard-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;background:var(--navy);color:#fff;border-radius:var(--r);white-space:nowrap}
+.tcard-use{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.tcard-name{font-family:var(--ffs);font-size:18px;font-weight:700;margin-bottom:10px}
+.tcard-price{font-family:var(--ffs);font-size:28px;font-weight:700;line-height:1;margin-bottom:2px}
+.tcard-period{font-size:11px;color:var(--text3);margin-bottom:14px}
+.tcard-divider{border:none;border-top:1px solid var(--border);margin:0 0 14px}
+.tcard-feats{flex:1;display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.tf{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text2);line-height:1.4}
+.tf-y{color:var(--right);font-weight:700;flex-shrink:0;font-size:11px;margin-top:1px}
+.tcard-cta{display:block;width:100%;padding:10px 0;text-align:center;font-size:13px;font-weight:600;border:1.5px solid var(--navy);color:var(--navy);border-radius:var(--r);cursor:pointer;background:transparent;font-family:var(--ff);transition:all .15s;text-decoration:none}
+.tcard-cta:hover{background:var(--navy);color:#fff}
+.tcard.featured .tcard-cta{background:var(--navy);color:#fff}
+.tcard.featured .tcard-cta:hover{opacity:.85}
+.pmod-foot{text-align:center;font-size:11px;color:var(--text3);line-height:1.6;border-top:1px solid var(--border);padding-top:16px}
+.pmod-foot a{color:inherit;text-decoration:underline}
+/* legacy modal refs kept for JS compat */
+.umod{max-width:460px;padding:32px;text-align:center;display:none}
 .upgrade-cta{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:15px;font-weight:600;font-family:var(--ff);margin-bottom:12px;transition:opacity .15s}
 .upgrade-cta:hover{opacity:.85}
 .upgrade-note{font-size:11px;color:var(--text3);line-height:1.4}
@@ -1132,27 +1165,96 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 
 <!-- UPGRADE MODAL -->
 <div class="overlay" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('on')">
-  <div class="modal umod">
+  <div class="modal pmod">
     <div class="modal-handle"></div>
-    <button class="modal-close" style="position:absolute;right:16px;top:16px" onclick="document.getElementById('upgrade-modal').classList.remove('on')">&#x2715;</button>
-    <div class="umod-logo">Podlens Pro</div>
-    <div class="umod-tag">The full media literacy layer for audio.<br>No ads. No conflicts of interest. Ever.</div>
-    <div class="umod-feats">
-      <div class="uf"><div class="uf-ic">&#10003;</div>Unlimited episode analysis</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Full bias scores, factuality &amp; omission ratings</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Host trust &amp; influence score</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Topic breakdown &amp; key quotes with timestamps</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Missing voices &amp; sponsor conflict detection</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Weekly Unheard report</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Personal audio bias fingerprint</div>
-      <div class="uf"><div class="uf-ic">&#10003;</div>Show comparison side by side</div>
+    <button class="modal-close" style="position:absolute;right:16px;top:16px;z-index:1" onclick="document.getElementById('upgrade-modal').classList.remove('on')">&#x2715;</button>
+
+    <div class="pmod-head">
+      <div class="pmod-title">Choose your plan</div>
+      <div class="pmod-sub">Start free. Upgrade when you need the full picture.</div>
+      <div class="billing-toggle">
+        <span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span>
+        <label class="bt-switch"><input type="checkbox" id="billing-annual-toggle" onchange="setBilling(this.checked?'annual':'monthly')"><div class="bt-track"></div></label>
+        <span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span>
+        <span class="bt-save">Save 33%</span>
+      </div>
     </div>
-    <div class="price-grid">
-      <div class="price-opt" onclick="selPlan(this)"><div class="po-name">Creator</div><div class="po-price">$12</div><div class="po-period">per month</div></div>
-      <div class="price-opt sel" onclick="selPlan(this)"><div class="po-name">Operator</div><div class="po-price">$39</div><div class="po-period">per month</div><div class="po-save">Most popular</div></div>
+
+    <div class="tier-grid">
+      <!-- Listener -->
+      <div class="tcard">
+        <div class="tcard-use">Is this worth my time?</div>
+        <div class="tcard-name">Listener</div>
+        <div class="tcard-price">Free</div>
+        <div class="tcard-period">forever</div>
+        <hr class="tcard-divider">
+        <div class="tcard-feats">
+          <div class="tf"><span class="tf-y">✓</span>Browse pre-analyzed episodes with bias bars</div>
+          <div class="tf"><span class="tf-y">✓</span>3 analyses per week</div>
+          <div class="tf"><span class="tf-y">✓</span>Basic bias label &amp; lean bar</div>
+          <div class="tf"><span class="tf-y">✓</span>Follow shows (read-only feed)</div>
+          <div class="tf"><span class="tf-y">✓</span>Profile stays forever</div>
+        </div>
+        <button class="tcard-cta" onclick="document.getElementById('upgrade-modal').classList.remove('on');openModal('signup')">Start free</button>
+      </div>
+
+      <!-- Creator -->
+      <div class="tcard">
+        <div class="tcard-use">What is my listening doing to me?</div>
+        <div class="tcard-name">Creator</div>
+        <div class="tcard-price" id="tp-creator">$12</div>
+        <div class="tcard-period" id="tpp-creator">per month</div>
+        <hr class="tcard-divider">
+        <div class="tcard-feats">
+          <div class="tf"><span class="tf-y">✓</span>Unlimited quick analyses (~30 sec)</div>
+          <div class="tf"><span class="tf-y">✓</span>Personal bias fingerprint over time</div>
+          <div class="tf"><span class="tf-y">✓</span>Audio briefing player (90-sec context)</div>
+          <div class="tf"><span class="tf-y">✓</span>Shareable bias cards</div>
+          <div class="tf"><span class="tf-y">✓</span>Full analysis history</div>
+        </div>
+        <button class="tcard-cta" onclick="alert('Stripe coming soon. Contact hello@podlens.app to be first.')">Start 7-day free trial</button>
+      </div>
+
+      <!-- Operator — featured -->
+      <div class="tcard featured">
+        <div class="tcard-badge">Most Popular</div>
+        <div class="tcard-use">What am I missing?</div>
+        <div class="tcard-name">Operator</div>
+        <div class="tcard-price" id="tp-operator">$39</div>
+        <div class="tcard-period" id="tpp-operator">per month</div>
+        <hr class="tcard-divider">
+        <div class="tcard-feats">
+          <div class="tf"><span class="tf-y">✓</span>Everything in Creator</div>
+          <div class="tf"><span class="tf-y">✓</span>Unlimited deep analyses (2–5 min)</div>
+          <div class="tf"><span class="tf-y">✓</span>Source citations for every finding</div>
+          <div class="tf"><span class="tf-y">✓</span>Missing voices &amp; Unheard report</div>
+          <div class="tf"><span class="tf-y">✓</span>Show comparison side-by-side</div>
+          <div class="tf"><span class="tf-y">✓</span>Chrome extension access</div>
+        </div>
+        <button class="tcard-cta" onclick="alert('Stripe coming soon. Contact hello@podlens.app to be first.')">Start 7-day free trial</button>
+      </div>
+
+      <!-- Studio -->
+      <div class="tcard">
+        <div class="tcard-use">What is our organization missing?</div>
+        <div class="tcard-name">Studio</div>
+        <div class="tcard-price" id="tp-studio">$99</div>
+        <div class="tcard-period" id="tpp-studio">per month</div>
+        <hr class="tcard-divider">
+        <div class="tcard-feats">
+          <div class="tf"><span class="tf-y">✓</span>Everything in Operator</div>
+          <div class="tf"><span class="tf-y">✓</span>Bulk/batch episode scanning</div>
+          <div class="tf"><span class="tf-y">✓</span>API access for your own tools</div>
+          <div class="tf"><span class="tf-y">✓</span>White-label reports</div>
+          <div class="tf"><span class="tf-y">✓</span>Priority support + SLA</div>
+        </div>
+        <button class="tcard-cta" onclick="window.location.href='mailto:hello@podlens.app?subject=Studio%20plan'">Contact us</button>
+      </div>
     </div>
-    <button class="upgrade-cta" onclick="alert('Stripe coming soon — sign up to be notified.');document.getElementById('upgrade-modal').classList.remove('on')">Start free 7-day trial</button>
-    <div class="upgrade-note">Cancel anytime &middot; No ads ever &middot; Independent analysis only &middot; <a href="/pricing.html" style="color:inherit;text-decoration:underline">View all plans</a></div>
+
+    <div class="pmod-foot">
+      No ads. No conflicts of interest. Ever. &nbsp;&middot;&nbsp; Questions? <a href="mailto:hello@podlens.app">hello@podlens.app</a> &nbsp;&middot;&nbsp; <a href="/pricing.html">Full pricing details</a>
+    </div>
   </div>
 </div>
 
@@ -1893,8 +1995,8 @@ function startAnalysis(audioUrl, epTitle, showName) {
       clearInterval(_analyzeStages);
       if (d.error) {
         var code=d.code||'';
-        if (code==='VIDEO_PRIVATE') { showAnalyzeErr('This video is private. Try a public YouTube video or podcast URL.'); resetBtn(); }
-        else if (code==='IS_LIVESTREAM') { showAnalyzeErr('Live streams can\u2019t be analyzed yet. Try after the stream ends.'); resetBtn(); }
+        if (code==='VIDEO_PRIVATE') { showAnalyzeErr('This episode is private or unavailable. Try a public YouTube URL or podcast RSS link.'); resetBtn(); }
+        else if (code==='IS_LIVESTREAM') { showAnalyzeErr('Live streams can\u2019t be analyzed while they\u2019re live \u2014 try the replay after it ends.'); resetBtn(); }
         else if (code==='WRONG_CONTENT_TYPE') { showAnalyzeErr(d.error); resetBtn(); }
         else if (code==='CAPTIONS_UNAVAILABLE') { _currentChannelTitle=d.channelTitle||''; startTranscriptionFallback(audioUrl,epTitle,showName); }
         else { showAnalyzeErr(d.error); resetBtn(); }
@@ -2034,8 +2136,8 @@ async function showRecoveryPanel(channelTitle) {
   // ── Manual recovery UI ──
   var ct=channelTitle||''; var ctEnc=encodeURIComponent(ct);
   document.getElementById('results').innerHTML=
-    '<div class="recovery-card"><div class="recovery-title">We need a little help with this one</div>'
-    +'<p class="recovery-sub">We couldn\u2019t auto-detect this podcast feed. Try one of these:</p>'
+    '<div class="recovery-card"><div class="recovery-title">Let\u2019s find the right feed</div>'
+    +'<p class="recovery-sub">We couldn\u2019t auto-detect this one \u2014 paste the RSS feed or MP3 URL and we\u2019ll take it from there:</p>'
     +'<div class="recovery-opts"><div class="recovery-opt"><div class="recovery-opt-label">Paste the RSS feed URL</div><div class="recovery-row"><input class="recovery-input" id="recovery-rss" type="text" placeholder="https://feeds.example.com/podcast.rss"/><button class="recovery-btn" onclick="tryRecoveryUrl(\'rss\')">Analyze</button></div></div>'
     +'<div class="recovery-opt"><div class="recovery-opt-label">Paste a direct MP3 URL</div><div class="recovery-row"><input class="recovery-input" id="recovery-mp3" type="text" placeholder="https://example.com/episode.mp3"/><button class="recovery-btn" onclick="tryRecoveryUrl(\'mp3\')">Analyze</button></div></div></div>'
     +(ct?'<div class="recovery-links"><a class="recovery-link" href="https://podcasts.apple.com/search?term='+ctEnc+'" target="_blank" rel="noopener">Find on Apple Podcasts &rarr;</a><a class="recovery-link" href="https://open.spotify.com/search/'+ctEnc+'/podcasts" target="_blank" rel="noopener">Find on Spotify &rarr;</a></div>':'')
@@ -2091,37 +2193,105 @@ function ftClass(t) { return {['fact-check']:'ft-fact',['framing']:'ft-framing',
 function ftLabel(t) { return {['fact-check']:'Fact check',['framing']:'Framing',['omission']:'Omission',['sponsor-note']:'Sponsor',['context']:'Context'}[t]||t; }
 function leanColor(l) { return {left:'var(--left-bar)',center:'var(--center-bar)',right:'var(--right-bar)',neutral:'var(--text3)'}[l]||'var(--text3)'; }
 
-// ── AUDIO SUMMARY PLAYER ──
-var _audioJob=null, _audioUtterance=null, _audioPlaying=false;
+// ── AUDIO BRIEFING PLAYER ──
+var _audioJob=null, _audioUtterance=null, _audioPlaying=false, _audioPaused=false;
+var _audioProgInterval=null, _audioProgStart=0, _audioProgDur=90; // ~90s estimate
+
 function toggleAudioSummary(jobId, script) {
-  // Stop any currently playing summary
-  if (_audioPlaying && _audioJob) {
-    window.speechSynthesis.cancel();
-    _setAudioState(_audioJob, false, 'Tap to hear what this episode is really about');
-    if (_audioJob === jobId) { _audioJob=null; _audioPlaying=false; return; }
+  // Pause/resume same job
+  if (_audioJob===jobId) {
+    if (_audioPaused) {
+      window.speechSynthesis.resume();
+      _audioPaused=false;
+      _setAudioState(jobId, true, 'Playing briefing\u2026');
+      _startProgressTick(jobId);
+      return;
+    }
+    if (_audioPlaying) {
+      window.speechSynthesis.pause();
+      _audioPaused=true;
+      _stopProgressTick();
+      _setAudioState(jobId, false, 'Paused \u2014 tap to resume');
+      return;
+    }
   }
-  _audioJob=jobId; _audioPlaying=true;
+  // Stop any other job
+  if (_audioJob && _audioJob!==jobId) {
+    window.speechSynthesis.cancel();
+    _setAudioState(_audioJob, false, 'Listen to briefing \u00b7 ~1 min 30 sec');
+    _resetProgress(_audioJob);
+    _stopProgressTick();
+  }
+  _audioJob=jobId; _audioPlaying=true; _audioPaused=false;
   var decodedScript=script.replace(/&#39;/g,"'").replace(/&quot;/g,'"');
   var utter=new SpeechSynthesisUtterance(decodedScript);
-  utter.rate=0.95; utter.pitch=1; utter.volume=1;
-  var voices=window.speechSynthesis.getVoices();
-  var preferred=voices.find(function(v){return v.lang==='en-US'&&v.name.includes('Natural');})||voices.find(function(v){return v.lang==='en-US';})||voices[0];
-  if (preferred) utter.voice=preferred;
-  _setAudioState(jobId, true, 'Playing summary\u2026');
-  utter.onend=function(){ _setAudioState(jobId, false, 'Summary complete'); _audioPlaying=false; _audioJob=null; };
-  utter.onerror=function(){ _setAudioState(jobId, false, 'Tap to replay'); _audioPlaying=false; _audioJob=null; };
-  _audioUtterance=utter;
-  window.speechSynthesis.speak(utter);
+  utter.rate=0.95; utter.pitch=1.0; utter.volume=1.0;
+  // Pick best English voice, load async if needed
+  function _speak() {
+    var voices=window.speechSynthesis.getVoices();
+    var preferred=voices.find(function(v){return v.lang==='en-US'&&(/Natural|Premium|Enhanced/i).test(v.name);})||voices.find(function(v){return v.lang==='en-US'&&!v.name.includes('Google');})||voices.find(function(v){return v.lang==='en-US';})||voices[0];
+    if (preferred) utter.voice=preferred;
+    _setAudioState(jobId, true, 'Playing briefing\u2026');
+    _audioProgStart=Date.now();
+    _startProgressTick(jobId);
+    utter.onend=function(){ _setAudioState(jobId, false, 'Briefing complete \u2014 tap to replay'); _resetProgress(jobId); _stopProgressTick(); _audioPlaying=false; _audioPaused=false; _audioJob=null; };
+    utter.onerror=function(){ _setAudioState(jobId, false, 'Listen to briefing \u00b7 ~1 min 30 sec'); _resetProgress(jobId); _stopProgressTick(); _audioPlaying=false; _audioPaused=false; _audioJob=null; };
+    _audioUtterance=utter;
+    window.speechSynthesis.speak(utter);
+  }
+  if (window.speechSynthesis.getVoices().length) { _speak(); }
+  else { window.speechSynthesis.onvoiceschanged=function(){ window.speechSynthesis.onvoiceschanged=null; _speak(); }; _speak(); }
 }
-function _setAudioState(jobId, playing, statusText) {
+
+function showAudioGate() {
+  // Show upgrade prompt inside the player status area without clobbering the card
+  var activePlayer=document.querySelector('.audio-player');
+  if (!activePlayer) { showUpgrade(); return; }
+  var status=activePlayer.querySelector('[id^="audio-status-"]');
+  if (status) {
+    status.innerHTML='Audio briefings are on <strong>Creator plan</strong> &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:13px;padding:0">Start free trial &rarr;</button>';
+  } else { showUpgrade(); }
+}
+
+function _startProgressTick(jobId) {
+  _stopProgressTick();
+  _audioProgInterval=setInterval(function(){
+    var el=document.getElementById('audio-prog-'+jobId);
+    if (!el) { _stopProgressTick(); return; }
+    var elapsed=(Date.now()-_audioProgStart)/1000;
+    var pct=Math.min(100,(elapsed/_audioProgDur)*100);
+    el.style.width=pct+'%';
+  },500);
+}
+function _stopProgressTick() { if (_audioProgInterval){clearInterval(_audioProgInterval);_audioProgInterval=null;} }
+function _resetProgress(jobId) { var el=document.getElementById('audio-prog-'+jobId); if(el)el.style.width='0'; }
+
+function _setAudioState(jobId, playing, statusHtml) {
   var btn=document.getElementById('audio-play-btn-'+jobId);
   var wave=document.getElementById('audio-wave-'+jobId);
   var status=document.getElementById('audio-status-'+jobId);
   if (btn) btn.innerHTML=playing
-    ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="#0f2027"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
-    : '<svg viewBox="0 0 24 24" width="16" height="16" fill="#0f2027"><path d="M8 5v14l11-7z"/></svg>';
+    ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="#0f2027"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="18" height="18" fill="#0f2027"><path d="M8 5v14l11-7z"/></svg>';
   if (wave) { if (playing) wave.classList.add('playing'); else wave.classList.remove('playing'); }
-  if (status) status.textContent=statusText;
+  if (status) status.innerHTML=statusHtml;
+}
+
+// ── PRICING BILLING TOGGLE ──
+var _billing='monthly';
+var _prices={creator:{monthly:'$12',annual:'$99'},operator:{monthly:'$39',annual:'$299'},studio:{monthly:'$99',annual:'$799'}};
+function setBilling(mode) {
+  _billing=mode;
+  var isAnn=mode==='annual';
+  document.getElementById('billing-annual-toggle').checked=isAnn;
+  document.getElementById('bt-monthly').classList.toggle('on',!isAnn);
+  document.getElementById('bt-annual').classList.toggle('on',isAnn);
+  ['creator','operator','studio'].forEach(function(t){
+    var pe=document.getElementById('tp-'+t);
+    var pp=document.getElementById('tpp-'+t);
+    if (pe) pe.textContent=_prices[t][mode];
+    if (pp) pp.textContent=isAnn?'per year':'per month';
+  });
 }
 
 function renderResults(data) {
@@ -2139,17 +2309,28 @@ function renderResults(data) {
 
   if (data.summary) card+='<div class="r-summary">&ldquo;'+data.summary+'&rdquo;</div>';
 
-  // Audio Summary Player
+  // Audio Briefing Player
   if (data.audioScript) {
     var safeScript=data.audioScript.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
+    var u=plUser(); var plan=(u&&u.plan||'').toLowerCase();
+    var canPlay=plan==='creator'||plan==='operator'||plan==='studio';
+    var clickHandler=canPlay
+      ?'toggleAudioSummary(\''+data.jobId+'\',\''+safeScript+'\')'
+      :'showAudioGate()';
     card+='<div class="audio-player" id="audio-player-'+data.jobId+'">';
-    card+='<button class="audio-play-btn" id="audio-play-btn-'+data.jobId+'" onclick="toggleAudioSummary(\''+data.jobId+'\',\''+safeScript+'\')" title="Play audio summary">';
+    card+='<div class="audio-player-inner">';
+    card+='<button class="audio-play-btn" id="audio-play-btn-'+data.jobId+'" onclick="'+clickHandler+'" title="Listen to briefing">';
     card+='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>';
-    card+='<div class="audio-player-info"><div class="audio-player-title">Audio Summary</div>';
-    card+='<div class="audio-player-status" id="audio-status-'+data.jobId+'">Tap to hear what this episode is really about</div></div>';
+    card+='<div class="audio-player-info">';
+    card+='<div class="audio-player-title">Audio Briefing</div>';
+    card+='<div class="audio-player-meta" id="audio-status-'+data.jobId+'">'+(canPlay?'Listen to briefing &middot; ~1 min 30 sec':'Creator plan feature')+'</div>';
+    card+='<div class="audio-player-sub">'+(canPlay?'AI-generated context for your listening':'Hear the analysis before you press play')+'</div>';
+    card+='</div>';
     card+='<div class="audio-waveform" id="audio-wave-'+data.jobId+'">';
     card+='<span></span><span></span><span></span><span></span><span></span>';
     card+='</div></div>';
+    card+='<div class="audio-progress-rail"><div class="audio-progress-fill" id="audio-prog-'+data.jobId+'"></div></div>';
+    card+='</div>';
   }
 
   // Political lean bar (renamed from "Audio lean")
@@ -2246,7 +2427,7 @@ function renderResults(data) {
       }
       return '<div class="flag-item"><span class="ftag '+ftClass(f.type)+'">'+ftLabel(f.type)+'</span><div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div>'+citHtml+'</div></div>';
     }).join('');
-    if (flags) card+='<div><div class="flags-head">Things to be aware of</div>'+flags+'</div>';
+    if (flags) card+='<div><div class="flags-head">Worth knowing before you listen</div>'+flags+'</div>';
   }
   card+='<div class="rcard-foot"><button class="ghost-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button></div>';
   card+='</div>';
@@ -2556,7 +2737,7 @@ function renderRecentlyAnalyzed() {
 
 // ── UPGRADE ──
 function showUpgrade(){ document.getElementById('upgrade-modal').classList.add('on'); }
-function selPlan(el){ document.querySelectorAll('.price-opt').forEach(function(c){c.classList.remove('sel');}); el.classList.add('sel'); }
+// selPlan removed — replaced by 4-tier pricing modal
 
 // ── KEYBOARD ──
 document.getElementById('url-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleAnalyze();});

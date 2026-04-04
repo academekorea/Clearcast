@@ -108,7 +108,7 @@ export default async (req: Request) => {
     }
 
     const jobId = `yt-audio-${videoId}-${Date.now()}`;
-    const store = getStore("clearcast-jobs");
+    const store = getStore("podlens-jobs");
     await store.setJSON(jobId, {
       status: "transcribing",
       jobId,
