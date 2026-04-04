@@ -1,12 +1,22 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
-async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+const MAX_AUDIO_BYTES = 100 * 1024 * 1024; // 100 MB
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function extractVideoId(url: string): string | null {
+  const m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
 }
 
 export default async (req: Request) => {
-  const store = getStore("transcripts");
+  const transcripts = getStore("transcripts");
+  const cache = getStore("transcript-cache");
+  const jobs = getStore("clearcast-jobs");
 
   let jobId: string;
   let youtubeUrl: string;
@@ -24,26 +34,82 @@ export default async (req: Request) => {
   const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
 
   if (!audioServiceUrl || !assemblyKey) {
-    await store.setJSON(jobId, { status: "error", message: "Server configuration error: missing env vars" });
-    return new Response(JSON.stringify({ error: "Server configuration error" }), {
+    const msg = "Server configuration error: missing env vars";
+    await transcripts.setJSON(jobId, { status: "error", message: msg });
+    await jobs.setJSON(jobId, { status: "error", error: msg });
+    return new Response(JSON.stringify({ error: msg }), {
       status: 500, headers: { "Content-Type": "application/json" },
     });
   }
 
+  // ── Result caching — skip re-transcription if we've done this video before ──
+  const videoId = extractVideoId(youtubeUrl);
+  if (videoId) {
+    try {
+      const cached = await cache.get(videoId, { type: "json" }) as any;
+      if (cached?.transcript && cached.createdAt && Date.now() - cached.createdAt < SEVEN_DAYS_MS) {
+        await transcripts.setJSON(jobId, { status: "complete", transcript: cached.transcript });
+        await jobs.setJSON(jobId, { status: "transcribed", transcript: cached.transcript, duration: cached.duration || "" });
+        return new Response(JSON.stringify({ status: "complete", cached: true }), {
+          status: 200, headers: { "Content-Type": "application/json" },
+        });
+      }
+    } catch { /* cache miss — continue */ }
+  }
+
   // Step 1: Mark as processing
-  await store.setJSON(jobId, { status: "processing" });
+  await transcripts.setJSON(jobId, { status: "processing" });
+  await jobs.setJSON(jobId, { status: "transcribing" });
 
   try {
-    // Step 2: Fetch audio from the audio service
-    const audioRes = await fetch(`${audioServiceUrl}/audio?url=${encodeURIComponent(youtubeUrl)}`);
+    // ── Railway health check — wake service if sleeping (cold start) ──
+    const healthOk = await (async () => {
+      try {
+        const h = await fetch(`${audioServiceUrl}/health`, { signal: AbortSignal.timeout(10000) });
+        return h.ok;
+      } catch { return false; }
+    })();
+
+    if (!healthOk) {
+      // Wait 15 s for Railway cold start, then retry once
+      await sleep(15000);
+      try {
+        const h = await fetch(`${audioServiceUrl}/health`, { signal: AbortSignal.timeout(10000) });
+        if (!h.ok) throw new Error("Audio service unavailable after cold-start wait");
+      } catch (e: any) {
+        const msg = "Audio extraction service is unavailable. Please try again in a minute.";
+        await transcripts.setJSON(jobId, { status: "error", message: msg });
+        await jobs.setJSON(jobId, { status: "error", error: msg });
+        return new Response(JSON.stringify({ error: msg }), {
+          status: 502, headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    // Step 2: Fetch audio from Railway (90-second timeout)
+    const audioRes = await fetch(`${audioServiceUrl}/audio?url=${encodeURIComponent(youtubeUrl)}`, {
+      signal: AbortSignal.timeout(90000),
+    });
     if (!audioRes.ok) {
-      const msg = `Audio service error: ${audioRes.status}`;
-      await store.setJSON(jobId, { status: "error", message: msg });
+      const msg = "AUDIO_EXTRACTION_FAILED";
+      await transcripts.setJSON(jobId, { status: "error", message: msg });
+      await jobs.setJSON(jobId, { status: "error", error: msg, code: "AUDIO_EXTRACTION_FAILED" });
       return new Response(JSON.stringify({ error: msg }), {
         status: 502, headers: { "Content-Type": "application/json" },
       });
     }
+
     const audioBuffer = await audioRes.arrayBuffer();
+
+    // Step 2b: Size check — reject files over 100 MB
+    if (audioBuffer.byteLength > MAX_AUDIO_BYTES) {
+      const msg = "TOO_LARGE";
+      await transcripts.setJSON(jobId, { status: "error", message: msg });
+      await jobs.setJSON(jobId, { status: "error", error: msg, code: "TOO_LARGE" });
+      return new Response(JSON.stringify({ error: msg, code: "TOO_LARGE" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // Step 3: Upload audio buffer to AssemblyAI
     const uploadRes = await fetch("https://api.assemblyai.com/v2/upload", {
@@ -53,7 +119,8 @@ export default async (req: Request) => {
     });
     if (!uploadRes.ok) {
       const msg = "Failed to upload audio to transcription service";
-      await store.setJSON(jobId, { status: "error", message: msg });
+      await transcripts.setJSON(jobId, { status: "error", message: msg });
+      await jobs.setJSON(jobId, { status: "error", error: msg });
       return new Response(JSON.stringify({ error: msg }), {
         status: 502, headers: { "Content-Type": "application/json" },
       });
@@ -68,12 +135,13 @@ export default async (req: Request) => {
     });
     if (!transcriptRes.ok) {
       const msg = "Failed to start transcription job";
-      await store.setJSON(jobId, { status: "error", message: msg });
+      await transcripts.setJSON(jobId, { status: "error", message: msg });
+      await jobs.setJSON(jobId, { status: "error", error: msg });
       return new Response(JSON.stringify({ error: msg }), {
         status: 502, headers: { "Content-Type": "application/json" },
       });
     }
-    const { id: transcriptId } = await transcriptRes.json();
+    const { id: transcriptId, audio_duration } = await transcriptRes.json();
 
     // Step 5: Poll until completed or error
     while (true) {
@@ -84,8 +152,17 @@ export default async (req: Request) => {
       const poll = await pollRes.json();
 
       if (poll.status === "completed") {
-        // Step 6: Save complete transcript
-        await store.setJSON(jobId, { status: "complete", transcript: poll.text });
+        const duration = audio_duration ? `${Math.round(audio_duration / 60)} min` : "";
+
+        // Step 6: Save job result
+        await transcripts.setJSON(jobId, { status: "complete", transcript: poll.text });
+        await jobs.setJSON(jobId, { status: "transcribed", transcript: poll.text, duration });
+
+        // Save to cache (keyed by videoId) to avoid re-transcribing same video
+        if (videoId) {
+          await cache.setJSON(videoId, { transcript: poll.text, duration, createdAt: Date.now() });
+        }
+
         return new Response(JSON.stringify({ status: "complete" }), {
           status: 200, headers: { "Content-Type": "application/json" },
         });
@@ -94,7 +171,8 @@ export default async (req: Request) => {
       if (poll.status === "error") {
         // Step 7: Save error
         const message = poll.error || "Transcription failed";
-        await store.setJSON(jobId, { status: "error", message });
+        await transcripts.setJSON(jobId, { status: "error", message });
+        await jobs.setJSON(jobId, { status: "error", error: message });
         return new Response(JSON.stringify({ status: "error", message }), {
           status: 200, headers: { "Content-Type": "application/json" },
         });
@@ -102,7 +180,8 @@ export default async (req: Request) => {
     }
   } catch (e: any) {
     const message = e?.message || "Unknown error";
-    await store.setJSON(jobId, { status: "error", message });
+    await transcripts.setJSON(jobId, { status: "error", message });
+    await jobs.setJSON(jobId, { status: "error", error: message });
     return new Response(JSON.stringify({ error: message }), {
       status: 500, headers: { "Content-Type": "application/json" },
     });

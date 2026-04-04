@@ -1,34 +1,80 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
-async function extractAudioUrl(url: string): Promise<string | null> {
+// ── URL NORMALIZATION ─────────────────────────────────────────────────────
+
+function extractVideoId(url: string): string | null {
+  const m = url.match(
+    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  );
+  return m ? m[1] : null;
+}
+
+/** Returns a clean https://www.youtube.com/watch?v=ID URL, or null if not YouTube. */
+function normalizeYouTubeUrl(url: string): string | null {
+  const id = extractVideoId(url);
+  return id ? `https://www.youtube.com/watch?v=${id}` : null;
+}
+
+// ── PRE-FLIGHT CHECK ──────────────────────────────────────────────────────
+
+function parseIsoDuration(iso: string): number {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return 0;
+  return (parseInt(m[1] || "0") * 3600) + (parseInt(m[2] || "0") * 60) + parseInt(m[3] || "0");
+}
+
+interface PreflightResult {
+  ok: boolean;
+  code?: string;
+  message?: string;
+  duration?: number;
+  pendingCaptions?: boolean;
+}
+
+async function preflightCheck(videoId: string, apiKey: string): Promise<PreflightResult> {
   try {
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; Clearcast/1.0)",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      },
-      signal: AbortSignal.timeout(8000),
-    });
-    const text = await res.text();
-    const patterns = [
-      /<enclosure[^>]+url="([^"]+)"/i,
-      /["'](https?:\/\/[^"']+\.mp3[^"']*?)["']/i,
-      /["'](https?:\/\/[^"']+\.m4a[^"']*?)["']/i,
-      /["'](https?:\/\/[^"']+\.ogg[^"']*?)["']/i,
-      /"audio_url"\s*:\s*"([^"]+)"/i,
-      /content="(https?:\/\/[^"]+\.mp3[^"]*)"/i,
-      /url="([^"]+\.mp3[^"]*)"/i,
-      /src="(https?:\/\/[^"]+\.mp3[^"]*)"/i,
-    ];
-    for (const pattern of patterns) {
-      const match = text.match(pattern);
-      if (match) return match[1].replace(/&amp;/g, "&");
+    const res = await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,status&id=${videoId}&key=${apiKey}`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) return { ok: true }; // API failure → let caption fetch decide
+
+    const data = await res.json();
+    const item = data.items?.[0];
+    if (!item) {
+      return { ok: false, code: "VIDEO_NOT_FOUND", message: "Video not found or unavailable." };
     }
-    return null;
+
+    const { snippet, contentDetails, status } = item;
+
+    if (status?.privacyStatus !== "public") {
+      return { ok: false, code: "VIDEO_PRIVATE", message: "This video is private." };
+    }
+
+    if (snippet?.liveBroadcastContent === "live") {
+      return { ok: false, code: "IS_LIVESTREAM", message: "This is a live stream." };
+    }
+
+    const durationSec = parseIsoDuration(contentDetails?.duration || "");
+    if (durationSec > 5400) {
+      return { ok: false, code: "TOO_LONG", message: "Video exceeds 90 minutes.", duration: durationSec };
+    }
+
+    // Published within last 30 minutes — auto-captions may not be ready yet
+    const publishedAt = snippet?.publishedAt ? new Date(snippet.publishedAt).getTime() : 0;
+    const pendingCaptions = publishedAt > 0 && Date.now() - publishedAt < 30 * 60 * 1000;
+
+    return { ok: true, duration: durationSec, pendingCaptions };
   } catch {
-    return null;
+    return { ok: true }; // Never block on preflight failure
   }
+}
+
+// ── CAPTION FETCH ─────────────────────────────────────────────────────────
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
 }
 
 async function fetchCaptionsFromBaseUrl(baseUrl: string): Promise<{ text: string; duration: string } | null> {
@@ -56,7 +102,6 @@ async function fetchCaptionsFromBaseUrl(baseUrl: string): Promise<{ text: string
 
 async function getYouTubeTranscript(videoId: string): Promise<{ text: string; duration: string } | null> {
   try {
-    // Fetch the YouTube watch page — add CONSENT cookie to bypass geo/GDPR gate
     const pageRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -72,7 +117,7 @@ async function getYouTubeTranscript(videoId: string): Promise<{ text: string; du
     });
     const html = await pageRes.text();
 
-    // ── Strategy 1: extract captionTracks directly via regex (faster, more resilient) ──
+    // ── Strategy 1: extract captionTracks directly via regex ──
     const ctMatch = html.match(/"captionTracks":\s*(\[.*?\])\s*,\s*"audioTracks"/s);
     if (ctMatch) {
       try {
@@ -132,6 +177,38 @@ async function getYouTubeTranscript(videoId: string): Promise<{ text: string; du
   }
 }
 
+// ── AUDIO URL / RSS HELPERS ───────────────────────────────────────────────
+
+async function extractAudioUrl(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; Clearcast/1.0)",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      },
+      signal: AbortSignal.timeout(8000),
+    });
+    const text = await res.text();
+    const patterns = [
+      /<enclosure[^>]+url="([^"]+)"/i,
+      /["'](https?:\/\/[^"']+\.mp3[^"']*?)["']/i,
+      /["'](https?:\/\/[^"']+\.m4a[^"']*?)["']/i,
+      /["'](https?:\/\/[^"']+\.ogg[^"']*?)["']/i,
+      /"audio_url"\s*:\s*"([^"]+)"/i,
+      /content="(https?:\/\/[^"]+\.mp3[^"]*)"/i,
+      /url="([^"]+\.mp3[^"]*)"/i,
+      /src="(https?:\/\/[^"]+\.mp3[^"]*)"/i,
+    ];
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match) return match[1].replace(/&amp;/g, "&");
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function isAudioUrl(url: string): boolean {
   return !!(
     url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i) ||
@@ -144,6 +221,8 @@ function isAudioUrl(url: string): boolean {
   );
 }
 
+// ── HANDLER ───────────────────────────────────────────────────────────────
+
 export default async (req: Request) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
@@ -151,9 +230,9 @@ export default async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { url, showName, showSlug, showArtwork, showFeedUrl, episodeTitle } = body;
+    const { url: rawUrl, showName, showSlug, showArtwork, showFeedUrl, episodeTitle } = body;
 
-    if (!url) {
+    if (!rawUrl) {
       return new Response(JSON.stringify({ error: "URL is required" }), {
         status: 400, headers: { "Content-Type": "application/json" },
       });
@@ -161,37 +240,75 @@ export default async (req: Request) => {
 
     const store = getStore("clearcast-jobs");
 
-    // YouTube: try captions first, fall back to AssemblyAI if unavailable
-    const ytMatch = url.match(/(?:youtube\.com\/watch\?(?:.*&)?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    if (ytMatch) {
-      const cap = await getYouTubeTranscript(ytMatch[1]);
+    // ── YouTube path ──────────────────────────────────────────────────────
+    const normalizedYt = normalizeYouTubeUrl(rawUrl);
+    if (normalizedYt) {
+      const videoId = extractVideoId(normalizedYt)!;
+
+      // Pre-flight check via YouTube Data API
+      const ytApiKey = Netlify.env.get("YOUTUBE_API_KEY");
+      if (ytApiKey) {
+        const pre = await preflightCheck(videoId, ytApiKey);
+        if (!pre.ok) {
+          return new Response(JSON.stringify({ error: pre.message, code: pre.code, duration: pre.duration }), {
+            status: 400, headers: { "Content-Type": "application/json" },
+          });
+        }
+
+        // Caption retry loop for recently published videos
+        if (pre.pendingCaptions) {
+          let cap = null;
+          for (let attempt = 0; attempt < 3; attempt++) {
+            if (attempt > 0) await sleep(10000);
+            cap = await getYouTubeTranscript(videoId);
+            if (cap) break;
+          }
+          if (cap) {
+            const jobId = `yt-${videoId}-${Date.now()}`;
+            await store.setJSON(jobId, {
+              status: "transcribed", jobId, url: normalizedYt,
+              transcript: cap.text, duration: cap.duration, createdAt: Date.now(),
+              episodeTitle: episodeTitle || null, showName: showName || null,
+              showSlug: showSlug || null, showArtwork: showArtwork || null,
+              showFeedUrl: showFeedUrl || null,
+            });
+            return new Response(JSON.stringify({ jobId, status: "transcribed" }), {
+              status: 200, headers: { "Content-Type": "application/json" },
+            });
+          }
+          // After retries, fall through to CAPTIONS_UNAVAILABLE
+          return new Response(JSON.stringify({
+            error: "Captions aren't ready yet for this video. Try again in a few minutes.",
+            code: "CAPTIONS_UNAVAILABLE",
+          }), { status: 400, headers: { "Content-Type": "application/json" } });
+        }
+      }
+
+      // Standard caption fetch (single attempt)
+      const cap = await getYouTubeTranscript(videoId);
       if (cap) {
-        const jobId = `yt-${ytMatch[1]}-${Date.now()}`;
+        const jobId = `yt-${videoId}-${Date.now()}`;
         await store.setJSON(jobId, {
-          status: "transcribed",
-          jobId,
-          url,
-          transcript: cap.text,
-          duration: cap.duration,
-          createdAt: Date.now(),
-          episodeTitle: episodeTitle || null,
-          showName: showName || null,
-          showSlug: showSlug || null,
-          showArtwork: showArtwork || null,
+          status: "transcribed", jobId, url: normalizedYt,
+          transcript: cap.text, duration: cap.duration, createdAt: Date.now(),
+          episodeTitle: episodeTitle || null, showName: showName || null,
+          showSlug: showSlug || null, showArtwork: showArtwork || null,
           showFeedUrl: showFeedUrl || null,
         });
         return new Response(JSON.stringify({ jobId, status: "transcribed" }), {
           status: 200, headers: { "Content-Type": "application/json" },
         });
       }
-      // Captions unavailable — signal frontend to try audio transcription fallback
+
+      // Signal frontend to try audio transcription fallback
       return new Response(JSON.stringify({
         error: "This video doesn't have captions enabled.",
         code: "CAPTIONS_UNAVAILABLE",
       }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
-    // Non-YouTube: send to AssemblyAI
+    // ── Non-YouTube: direct audio / RSS path ──────────────────────────────
+    const url = rawUrl;
     const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
     if (!assemblyKey) {
       return new Response(JSON.stringify({ error: "Transcription service not configured" }), {
@@ -236,15 +353,9 @@ export default async (req: Request) => {
     }
 
     await store.setJSON(transcriptId, {
-      status: "transcribing",
-      transcriptId,
-      url,
-      audioUrl,
-      createdAt: Date.now(),
-      episodeTitle: episodeTitle || null,
-      showName: showName || null,
-      showSlug: showSlug || null,
-      showArtwork: showArtwork || null,
+      status: "transcribing", transcriptId, url, audioUrl, createdAt: Date.now(),
+      episodeTitle: episodeTitle || null, showName: showName || null,
+      showSlug: showSlug || null, showArtwork: showArtwork || null,
       showFeedUrl: showFeedUrl || null,
     });
 

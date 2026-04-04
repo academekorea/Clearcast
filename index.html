@@ -255,6 +255,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .loading-state{display:none;text-align:center;padding:48px 20px;width:100%;max-width:680px}.loading-state.on{display:block}
 .spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
 .ld-title{font-size:14px;font-weight:500;margin-bottom:4px}.ld-msg{font-size:12px;color:var(--text2)}
+.ld-progress-wrap{width:220px;height:3px;background:var(--border2);border-radius:2px;margin:14px auto 0;overflow:hidden;display:none}
+.ld-progress-bar{height:100%;background:var(--left-bar);border-radius:2px;width:0;transition:width 1s ease}
 .skel{background:var(--border2);border-radius:4px;animation:skel-pulse 1.4s ease-in-out infinite}
 .skel-line{height:12px;margin-bottom:8px;border-radius:4px}
 .skel-block{height:80px;border-radius:6px;margin-top:8px}
@@ -648,6 +650,7 @@ footer p{font-size:10px;color:var(--text3)}
       <div class="spinner"></div>
       <div class="ld-title" id="ld-title">Starting analysis…</div>
       <p class="ld-msg" id="ld-msg">First results appear in ~30 seconds</p>
+      <div class="ld-progress-wrap" id="ld-progress-wrap"><div class="ld-progress-bar" id="ld-progress-bar"></div></div>
     </div>
     <div class="apanel on" id="apanel-results">
       <div class="empty-state" id="empty-state">
@@ -1229,7 +1232,14 @@ function startAnalysis(audioUrl, epTitle, showName) {
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (d.error) {
-        if (d.code === 'CAPTIONS_UNAVAILABLE' && audioUrl.match(/youtube\.com\/watch|youtu\.be\//)) {
+        var code = d.code || '';
+        if (code === 'VIDEO_PRIVATE') {
+          showAnalyzeErr('This video is private. Try a public YouTube video or podcast URL.'); resetBtn();
+        } else if (code === 'IS_LIVESTREAM') {
+          showAnalyzeErr('Live streams can\u2019t be analyzed yet. Try after the stream ends.'); resetBtn();
+        } else if (code === 'TOO_LONG') {
+          showAnalyzeErr('This video is over 90 minutes. Try a shorter clip or paste a direct MP3 URL.'); resetBtn();
+        } else if (code === 'CAPTIONS_UNAVAILABLE' && audioUrl.match(/youtube\.com\/watch|youtu\.be\//)) {
           startTranscriptionFallback(audioUrl, epTitle, showName);
         } else {
           showAnalyzeErr(d.error); resetBtn();
@@ -1281,16 +1291,22 @@ function pollStatus(jobId, audioUrl) {
 }
 
 function startTranscriptionFallback(youtubeUrl, epTitle, showName) {
-  document.getElementById('ld-title').textContent = 'Transcribing audio\u2026 this takes 2\u20133 minutes';
-  document.getElementById('ld-msg').textContent = 'No captions found \u2014 extracting audio directly';
+  document.getElementById('ld-title').textContent = 'No captions found \u2014 extracting audio\u2026';
+  document.getElementById('ld-msg').textContent = 'Usually takes 2\u20133 minutes for a 1-hour podcast';
+  document.getElementById('ld-progress-wrap').style.display = 'block';
+  document.getElementById('ld-progress-bar').style.width = '0%';
   document.getElementById('loading').classList.add('on');
   fetch('/api/transcribe/start', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({youtubeUrl:youtubeUrl})})
     .then(function(r) { return r.json(); })
     .then(function(d) {
-      if (d.error) { showAnalyzeErr(d.error); resetBtn(); return; }
+      if (d.error) { hideProgressBar(); showAnalyzeErr(d.error); resetBtn(); return; }
       pollTranscription(d.jobId, youtubeUrl);
     })
-    .catch(function() { showAnalyzeErr('Network error. Please try again.'); resetBtn(); });
+    .catch(function() { hideProgressBar(); showAnalyzeErr('Network error. Please try again.'); resetBtn(); });
+}
+
+function hideProgressBar() {
+  document.getElementById('ld-progress-wrap').style.display = 'none';
 }
 
 function pollTranscription(jobId, audioUrl) {
@@ -1302,19 +1318,42 @@ function pollTranscription(jobId, audioUrl) {
     elapsed += INTERVAL_MS;
     if (elapsed >= TIMEOUT_MS) {
       clearInterval(_poll);
+      hideProgressBar();
       showAnalyzeErr('Transcription is taking longer than expected. Please try again in a few minutes.');
       resetBtn();
       return;
+    }
+    // Progress bar: fills to ~90% over 3 minutes, then holds
+    var pct = Math.min(90, Math.round((elapsed / 180000) * 90));
+    document.getElementById('ld-progress-bar').style.width = pct + '%';
+    // Time-based status messages
+    if (elapsed <= 15000) {
+      document.getElementById('ld-title').textContent = 'No captions found \u2014 extracting audio\u2026';
+    } else if (elapsed <= 120000) {
+      document.getElementById('ld-title').textContent = 'Audio extracted \u2014 transcribing with AI\u2026';
+    } else {
+      document.getElementById('ld-title').textContent = 'Transcribing\u2026 almost done';
     }
     try {
       var d = await fetch('/api/transcribe/status?jobId=' + jobId).then(function(r) { return r.json(); });
       if (d.status === 'complete') {
         clearInterval(_poll);
-        document.getElementById('ld-title').textContent = 'Transcription complete \u2014 analyzing\u2026';
-        pollStatus(d.jobId, audioUrl);
+        document.getElementById('ld-progress-bar').style.width = '100%';
+        setTimeout(function() {
+          hideProgressBar();
+          document.getElementById('ld-title').textContent = 'Transcription complete \u2014 analyzing\u2026';
+          pollStatus(d.jobId, audioUrl);
+        }, 500);
       } else if (d.status === 'error') {
         clearInterval(_poll);
-        showAnalyzeErr(d.error || 'Transcription failed. Please try again.');
+        hideProgressBar();
+        var code = d.code || '';
+        var msg = code === 'TOO_LARGE'
+          ? 'Audio file too large to process. Try a shorter video.'
+          : code === 'AUDIO_EXTRACTION_FAILED'
+          ? 'Couldn\u2019t extract audio from this video. Try a direct MP3 or RSS URL.'
+          : (d.error || 'Transcription failed. Please try again.');
+        showAnalyzeErr(msg);
         resetBtn();
       }
     } catch(e) {}
