@@ -211,7 +211,7 @@ export default async (req: Request) => {
     const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
       method: "POST",
       headers: { "authorization": assemblyKey, "content-type": "application/json" },
-      body: JSON.stringify({ audio_url: audioUrl, speech_model: "universal-2" }),
+      body: JSON.stringify({ audio_url: audioUrl, speech_models: { model: "universal" } }),
     });
 
     if (!aaiRes.ok) {
