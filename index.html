@@ -85,10 +85,6 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .topbar{display:flex;align-items:center;padding:0 24px;height:36px;background:var(--navy);color:#fff;font-size:12px;font-family:var(--ff);gap:12px;position:sticky;top:0;z-index:300}
 .topbar-l{color:rgba(255,255,255,.7);text-decoration:none;flex-shrink:0;transition:color .15s}
 .topbar-l:hover{color:#fff}
-.topbar-c{display:flex;align-items:center;gap:0;margin:0 auto}
-.theme-seg{display:flex;border:1px solid rgba(255,255,255,.2);border-radius:3px;overflow:hidden}
-.theme-btn{padding:2px 10px;font-size:11px;border:none;background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:var(--ff);transition:all .1s}
-.theme-btn.on,.theme-btn:hover{background:rgba(255,255,255,.15);color:#fff}
 .topbar-r{color:rgba(255,255,255,.55);font-size:11px;flex-shrink:0;display:flex;align-items:center;gap:10px}
 /* Region selector */
 .region-sel{position:relative}
@@ -213,6 +209,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 /* Founding banner */
 #founding-banner{display:flex;justify-content:center;align-items:center;width:100%;padding:10px 24px;text-align:center;text-decoration:none;cursor:pointer;transition:opacity .2s ease;background:#FFF8E7;border-bottom:1px solid #F0C040;color:#92400E}
 #founding-banner:hover{opacity:.85}
+body.authenticated #founding-banner,body.app-page #founding-banner{display:none!important}
 .founding-banner-inner{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;max-width:800px}
 .founding-emoji{font-size:16px;flex-shrink:0}
 .founding-sub{margin-left:6px;opacity:.8;font-size:.9em}
@@ -522,6 +519,25 @@ body.player-on .lap{bottom:72px}
 .sb-follow-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);cursor:pointer;transition:color .1s}
 .sb-follow-item:hover{color:var(--text)}
 .sb-follow-art{width:28px;height:28px;border-radius:3px;background:var(--bg4);object-fit:cover;flex-shrink:0}
+
+/* ── DASHBOARD STATE A (new user) ── */
+.dash-connect-card{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:32px;max-width:660px;margin-bottom:40px}
+.dash-connect-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+@media(max-width:540px){.dash-connect-grid{grid-template-columns:1fr}}
+.dash-connect-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--bg);color:var(--text);font-family:var(--ff);transition:all .12s}
+.dash-connect-btn:hover{border-color:var(--navy);background:var(--bg3)}
+.dash-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:660px;margin-bottom:40px}
+@media(max-width:540px){.dash-preview-grid{grid-template-columns:1fr}}
+.dash-preview-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center}
+.dash-preview-blur{filter:blur(6px);opacity:.4;user-select:none;pointer-events:none}
+.dash-preview-label{font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text)}
+.dash-preview-hint{font-size:11px;color:var(--text3);margin-top:10px;filter:none;opacity:1}
+/* ── DASHBOARD STATE B stats boxes ── */
+.dash-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+@media(max-width:540px){.dash-stats-row{grid-template-columns:1fr}}
+.dash-stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;text-align:center}
+.dash-stat-num{font-family:var(--ffs);font-size:28px;font-weight:700;line-height:1;color:var(--text);margin-bottom:4px}
+.dash-stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
 
 /* ── DISCOVER / MARKETPLACE LAYOUT ── */
 .mkt-layout{display:grid;grid-template-columns:200px 1fr 260px;min-height:calc(100vh - 96px)}
@@ -1540,14 +1556,7 @@ body.light-mode,[data-theme="light"]{
 <!-- TOP BAR -->
 <div class="topbar">
   <a href="/extension.html" class="topbar-l">Browser Extension &mdash; Coming Soon</a>
-  <div class="topbar-c">
-    <div class="theme-seg">
-      <button class="theme-btn" data-t="light" onclick="setTheme('light')">Light</button>
-      <button class="theme-btn" data-t="dark" onclick="setTheme('dark')">Dark</button>
-      <button class="theme-btn" data-t="auto" onclick="setTheme('auto')">Auto</button>
-    </div>
-  </div>
-  <div class="topbar-r">
+<div class="topbar-r">
     <div class="region-sel" id="region-sel">
       <button class="region-btn" id="region-btn" onclick="toggleRegionMenu(event)">
         <span id="region-flag">🌍</span>&nbsp;<span id="region-currency-label">International</span>
@@ -1587,9 +1596,9 @@ body.light-mode,[data-theme="light"]{
     <input type="text" id="nav-search-q" class="nav-search" placeholder="Search episodes or shows&hellip;" readonly style="cursor:pointer" onclick="openSearchOverlay()"/>
     <button class="nav-search-btn" onclick="openSearchOverlay()">&#128269;</button>
   </div>
-  <button class="mode-toggle" id="mode-toggle-btn" onclick="toggleMode()" aria-label="Toggle dark/light mode">🌙</button>
-  <div class="nav-r" id="nav-auth-area">
-    <!-- rendered by renderNavAuth() -->
+  <div class="nav-r">
+    <button class="mode-toggle" id="mode-toggle-btn" onclick="toggleMode()" aria-label="Toggle dark/light mode">🌙</button>
+    <div id="nav-auth-area" style="display:contents"><!-- rendered by renderNavAuth() --></div>
   </div>
 </nav>
 
@@ -1869,49 +1878,105 @@ body.light-mode,[data-theme="light"]{
 
   <!-- STATE B: Logged in -->
   <div id="home-loggedin" style="display:none">
-    <!-- Trial day-6 banner — shown by JS when within 24h of expiry -->
+    <!-- Trial day-6 banner -->
     <div id="trial-day6-banner" style="display:none;padding:16px 0 0"></div>
-    <div class="dash-hero">
-      <div class="dash-greeting" id="dash-greeting">Good morning</div>
-      <p class="dash-sub">What are you listening to today?</p>
+
+    <!-- STATE A: New user (0 analyses) -->
+    <div id="dash-state-a" style="display:none;padding:48px 80px 80px;max-width:1400px;margin:0 auto">
+      <div class="dash-greeting" id="dash-greeting-a">Good morning.</div>
+      <p class="dash-sub">Connect your podcasts to get started — we&rsquo;ll take it from there.</p>
+      <div class="dash-connect-card">
+        <div style="font-size:17px;font-weight:700;margin-bottom:6px">🎙 Connect your podcasts</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:24px">We&rsquo;ll analyze what you listen to and show you what you might be missing.</div>
+        <div class="dash-connect-grid">
+          <button class="dash-connect-btn" onclick="heroConnectSpotify()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg>Connect Spotify</button>
+          <button class="dash-connect-btn" onclick="heroConnectYouTube()">▶ Connect YouTube</button>
+          <button class="dash-connect-btn" onclick="heroConnectApple()">🎵 Apple Podcasts</button>
+          <button class="dash-connect-btn" onclick="showView('analyze')">📻 Paste RSS or URL</button>
+        </div>
+        <div style="font-size:12px;color:var(--text3);text-align:center">Or paste any episode URL to try it now ↓</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:16px">What you&rsquo;ll see after connecting</div>
+      <div class="dash-preview-grid">
+        <div class="dash-preview-card">
+          <div class="dash-preview-label">Your bias fingerprint</div>
+          <div class="dash-preview-blur">
+            <div class="bias-bar" style="height:10px"><div class="bias-bar-l" style="width:38%"></div><div class="bias-bar-c" style="width:32%"></div><div class="bias-bar-r" style="width:30%"></div></div>
+            <div style="font-size:11px;margin-top:6px;color:var(--text3)">🔴 38% &nbsp; ⬜ 32% &nbsp; 🔵 30%</div>
+          </div>
+          <div class="dash-preview-hint">Builds as you analyze</div>
+        </div>
+        <div class="dash-preview-card">
+          <div class="dash-preview-label">Most analyzed show</div>
+          <div class="dash-preview-blur">
+            <div style="width:48px;height:48px;background:var(--bg4);border-radius:var(--r);margin:0 auto 8px"></div>
+            <div style="height:10px;background:var(--bg4);border-radius:3px;width:80%;margin:0 auto 6px"></div>
+            <div style="height:8px;background:var(--bg4);border-radius:3px;width:55%;margin:0 auto"></div>
+          </div>
+          <div class="dash-preview-hint">See your top podcasts</div>
+        </div>
+        <div class="dash-preview-card">
+          <div class="dash-preview-label">Unheard stories</div>
+          <div class="dash-preview-blur">
+            <div style="height:10px;background:var(--bg4);border-radius:3px;margin-bottom:6px"></div>
+            <div style="height:10px;background:var(--bg4);border-radius:3px;width:85%;margin-bottom:6px"></div>
+            <div style="height:10px;background:var(--bg4);border-radius:3px;width:70%"></div>
+          </div>
+          <div class="dash-preview-hint">5 stories you haven&rsquo;t heard</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Already have an episode in mind?</div>
       <div class="dash-input-wrap">
         <input type="text" id="dash-url-input" class="dash-input" placeholder="Paste a YouTube, Spotify, or RSS URL&hellip;" autocomplete="off" onkeydown="if(event.key==='Enter')handleDashAnalyze()"/>
         <button class="dash-analyze-btn" onclick="handleDashAnalyze()">Analyze &rarr;</button>
       </div>
-      <div class="dash-fingerprint" id="dash-fingerprint">
-        <div class="dash-fp-label">Your bias fingerprint this week</div>
-        <div class="bias-bar" style="height:10px" id="dash-fp-bar"></div>
-        <div class="bias-counts" id="dash-fp-counts"></div>
-      </div>
-    </div>
-    <div class="dash-layout">
-      <div class="dash-main">
-        <div class="dash-section-lbl">Continue where you left off</div>
-        <div class="recent-list" id="dash-recent-list">
-          <div style="font-size:13px;color:var(--text3);padding:12px 0">No episodes analyzed yet. Paste a URL above to get started.</div>
-        </div>
-        <div style="margin-top:32px">
-          <div class="dash-section-lbl">Trending in your categories</div>
-          <div id="dash-trending-list" style="color:var(--text3);font-size:13px;padding:12px 0">Loading&hellip;</div>
+    </div><!-- /dash-state-a -->
+
+    <!-- STATE B: Returning user (1+ analyses) -->
+    <div id="dash-state-b" style="display:none">
+      <div class="dash-hero">
+        <div class="dash-greeting" id="dash-greeting">Good morning</div>
+        <div class="dash-fingerprint" id="dash-fingerprint" style="margin-top:20px">
+          <div class="dash-fp-label">Your bias fingerprint this week</div>
+          <div class="bias-bar" style="height:10px" id="dash-fp-bar"></div>
+          <div class="bias-counts" id="dash-fp-counts"></div>
         </div>
       </div>
-      <div class="dash-sidebar">
-        <div class="sb-fp-card">
-          <div class="sb-fp-title">My Audio Bias Fingerprint</div>
-          <div class="bias-bar" style="height:10px;margin-bottom:6px" id="sb-fp-bar"></div>
-          <div class="bias-counts" id="sb-fp-counts"></div>
+      <div class="dash-layout">
+        <div class="dash-main">
+          <div class="dash-input-wrap" style="margin-bottom:32px">
+            <input type="text" id="dash-url-input-b" class="dash-input" placeholder="Paste a YouTube, Spotify, or RSS URL&hellip;" autocomplete="off" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
+            <button class="dash-analyze-btn" onclick="handleDashAnalyzeB()">Analyze &rarr;</button>
+          </div>
+          <div class="dash-section-lbl">Continue where you left off</div>
+          <div class="recent-list" id="dash-recent-list"></div>
+          <div style="margin-top:32px">
+            <div class="dash-section-lbl">Trending in your categories</div>
+            <div id="dash-trending-grid" class="tg-grid" style="margin-top:0"></div>
+          </div>
+          <div class="dash-stats-row">
+            <div class="dash-stat-box"><div class="dash-stat-num" id="stat-analyses">0</div><div class="dash-stat-lbl">Episodes analyzed</div></div>
+            <div class="dash-stat-box"><div class="dash-stat-num" id="stat-shows">0</div><div class="dash-stat-lbl">Shows followed</div></div>
+            <div class="dash-stat-box"><div class="dash-stat-num" id="stat-lean">—</div><div class="dash-stat-lbl">Your lean this month</div></div>
+          </div>
         </div>
-        <div class="dash-section-lbl" style="margin-top:16px">Shows I follow</div>
-        <div class="sb-follow-list" id="sb-follow-list">
-          <div style="font-size:12px;color:var(--text3)">No shows followed yet.</div>
-        </div>
-        <div class="dash-section-lbl" style="margin-top:20px">Unheard Preview</div>
-        <div id="sb-unheard-preview" style="background:var(--bg3);border-radius:var(--r);padding:12px;font-size:12px;color:var(--text2)">
-          <!-- populated by renderDashUnheardPreview() on login -->
-          <div style="color:var(--text3)">Loading&hellip;</div>
+        <div class="dash-sidebar">
+          <div class="sb-fp-card">
+            <div class="sb-fp-title">My Bias Fingerprint</div>
+            <div class="bias-bar" style="height:10px;margin-bottom:6px" id="sb-fp-bar"></div>
+            <div class="bias-counts" id="sb-fp-counts"></div>
+          </div>
+          <div class="dash-section-lbl" style="margin-top:16px">Shows I follow</div>
+          <div class="sb-follow-list" id="sb-follow-list">
+            <div style="font-size:12px;color:var(--text3)">No shows followed yet.</div>
+          </div>
+          <div class="dash-section-lbl" style="margin-top:20px">Unheard Preview</div>
+          <div id="sb-unheard-preview" style="background:var(--bg3);border-radius:var(--r);padding:12px;font-size:12px;color:var(--text2)">
+            <div style="color:var(--text3)">Analyze more to unlock.</div>
+          </div>
         </div>
       </div>
-    </div>
+    </div><!-- /dash-state-b -->
   </div><!-- /home-loggedin -->
 
 </div><!-- /view-home -->
@@ -2498,20 +2563,7 @@ body.light-mode,[data-theme="light"]{
 
 <script>
 // ── THEME ──
-function setTheme(t) {
-  var html = document.documentElement;
-  if (t === 'auto') {
-    html.removeAttribute('data-theme');
-    localStorage.removeItem('pl-theme');
-  } else {
-    html.setAttribute('data-theme', t);
-    localStorage.setItem('pl-theme', t);
-  }
-  document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.toggle('on', b.dataset.t === (t || 'auto')); });
-}
 (function(){
-  var s = localStorage.getItem('pl-theme') || 'auto';
-  document.querySelectorAll('.theme-btn').forEach(function(b){ b.classList.toggle('on', b.dataset.t === s); });
   var d = new Date(); var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var el = document.getElementById('topbar-date');
@@ -2523,8 +2575,11 @@ function plUser() {
   try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) { return null; }
 }
 function setPlUser(obj) {
+  document.body.classList.toggle('authenticated', !!obj);
   if (obj) {
     localStorage.setItem('pl-user', JSON.stringify(obj));
+    var banner = document.getElementById('founding-banner');
+    if (banner) banner.style.display = 'none';
     // PostHog identify + Sentry user context
     try {
       if (window.posthog && obj.id) {
@@ -2955,20 +3010,80 @@ function renderHomeState() {
     loadHeroStats();
     loadTrendingGrid('all');
     if (!document.getElementById('featured-player-pane').querySelector('iframe')) { loadFeaturedPlayer(); }
+    return;
   }
-  if (u) {
-    var hr = new Date().getHours();
-    var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
-    var first = (u.name || '').split(' ')[0];
-    document.getElementById('dash-greeting').innerHTML = greeting + (first ? ', <em>' + first + '</em>' : '') + '.';
+  var hr = new Date().getHours();
+  var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  var first = (u.name || '').split(' ')[0];
+  var greetText = greeting + (first ? ', <em>' + first + '</em>' : '') + '.';
+
+  var recent = getRecent();
+  var isNewUser = recent.length === 0;
+
+  var stateA = document.getElementById('dash-state-a');
+  var stateB = document.getElementById('dash-state-b');
+  if (stateA) stateA.style.display = isNewUser ? 'block' : 'none';
+  if (stateB) stateB.style.display = isNewUser ? 'none' : 'block';
+
+  if (isNewUser) {
+    var ga = document.getElementById('dash-greeting-a');
+    if (ga) ga.innerHTML = greetText;
+  } else {
+    var gb = document.getElementById('dash-greeting');
+    if (gb) gb.innerHTML = greetText;
     renderDashRecent();
     renderBiasFingerprint();
     renderDashUnheardPreview(u);
-    // Show trial day-6 banner if within last 24h of trial
-    if (u.plan === 'trial' && u.trialEndsAt) {
-      var remaining = new Date(u.trialEndsAt).getTime() - Date.now();
-      if (remaining > 0 && remaining <= 24*60*60*1000) showTrialDay6Banner(u);
-    }
+    loadDashTrending();
+    renderDashStats(u, recent);
+  }
+  // Trial day-6 banner
+  if (u.plan === 'trial' && u.trialEndsAt) {
+    var remaining = new Date(u.trialEndsAt).getTime() - Date.now();
+    if (remaining > 0 && remaining <= 24*60*60*1000) showTrialDay6Banner(u);
+  }
+}
+
+function handleDashAnalyzeB() {
+  var inp = document.getElementById('dash-url-input-b');
+  var url = inp ? inp.value.trim() : '';
+  if (!url) { if (inp) inp.focus(); return; }
+  var mainInp = document.getElementById('url-input') || document.getElementById('dash-url-input');
+  if (mainInp) mainInp.value = url;
+  showView('analyze');
+  startAnalysis(url);
+}
+
+async function loadDashTrending() {
+  var el = document.getElementById('dash-trending-grid');
+  if (!el) return;
+  el.innerHTML = [1,2,3].map(function(){ return '<div class="tg-card skel"><div class="tg-skel-art"></div><div class="tg-skel-line" style="width:80%;margin-bottom:8px"></div><div class="tg-skel-line" style="width:55%"></div></div>'; }).join('');
+  try {
+    var data = await fetch('/api/marketplace?genre=all', { signal: AbortSignal.timeout(8000) }).then(function(r){ return r.json(); });
+    var results = (data.podcasts || []).slice(0, 3);
+    if (!results.length) { el.innerHTML = ''; return; }
+    el.innerHTML = results.map(function(p) {
+      var art = p.artwork || ''; var name = p.name || ''; var artist = p.artist || ''; var feedUrl = p.feedUrl || '';
+      var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      var safeUrl = feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      return '<div class="tg-card" onclick="' + (feedUrl ? 'showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')' : 'showView(\'analyze\')') + '">'
+        + '<div class="tg-art-wrap">' + (art ? '<img class="tg-art" src="' + art + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'&#127897;\'">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'
+        + '<div class="tg-card-body"><div class="tg-card-name">' + name + '</div><div class="tg-card-artist">' + artist + '</div>'
+        + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
+    }).join('');
+  } catch(e) { el.innerHTML = ''; }
+}
+
+function renderDashStats(u, recent) {
+  var analyses = document.getElementById('stat-analyses');
+  var shows = document.getElementById('stat-shows');
+  var lean = document.getElementById('stat-lean');
+  if (analyses) analyses.textContent = (u.analysesThisMonth || recent.length || 0);
+  if (shows) shows.textContent = (u.followedShows ? u.followedShows.length : 0);
+  if (lean && recent.length) {
+    var fp = recent.reduce(function(a,r){ return {l:a.l+(r.leftPct||0),c:a.c+(r.centerPct||0),r:a.r+(r.rightPct||0)}; }, {l:0,c:0,r:0});
+    var n = recent.length; var l=fp.l/n, r=fp.r/n; var diff=Math.abs(l-r);
+    lean.textContent = diff < 20 ? 'Balanced' : l > r ? 'Leans left' : 'Leans right';
   }
 }
 
@@ -3107,6 +3222,11 @@ function showView(name) {
   // Hide footer when in non-home views (except show)
   var footer = document.getElementById('site-footer');
   if (footer) footer.style.display = (name === 'home' || name === 'show') ? '' : 'none';
+  // Banner only shows on home when logged out
+  var isHome = (name === 'home');
+  document.body.classList.toggle('app-page', !isHome);
+  var banner = document.getElementById('founding-banner');
+  if (banner && !plUser()) banner.style.display = isHome ? '' : 'none';
 }
 
 function showHome() {
@@ -5028,7 +5148,7 @@ function showUpgrade(){
 // ── KEYBOARD ──
 document.getElementById('url-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleAnalyze();});
 document.getElementById('hero-url-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleHeroAnalyze();});
-document.getElementById('dash-url-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleDashAnalyze();});
+var _dui=document.getElementById('dash-url-input'); if(_dui)_dui.addEventListener('keydown',function(e){if(e.key==='Enter')handleDashAnalyze();});
 
 // ── POPSTATE ──
 window.addEventListener('popstate',function(e){
@@ -5920,6 +6040,11 @@ function getItunesSearchUrl(term) {
   return base + '?term=' + encodeURIComponent(term) + '&media=podcast&entity=podcast&limit=5';
 }
 
+// ── ARTWORK PROXY HELPER ─────────────────────────────────────────────────
+function artworkProxy(url) {
+  return url ? '/api/proxy-image?url=' + encodeURIComponent(url) : '';
+}
+
 // ── KOREAN SHOWS (TASK 10) ────────────────────────────────────────────────
 
 var KR_SHOWS = [
@@ -5935,20 +6060,69 @@ var KR_SHOWS = [
   {name:"\uc36c\uc804\ub77c\uc774\ube0c", category:"\uc815\uce58/\uc2dc\uc0ac"},
 ];
 
-function renderKoreanShows() {
+async function renderKoreanShows() {
   var grid = document.getElementById('kr-shows-grid');
-  if (!grid || grid.children.length > 0) return;
-  var html = '';
-  KR_SHOWS.forEach(function(show) {
+  if (!grid) return;
+  // Use tg-grid class for parity with international cards
+  grid.className = 'tg-grid';
+  grid.innerHTML = [1,2,3].map(function(){
+    return '<div class="tg-card skel"><div class="tg-skel-art"></div><div class="tg-skel-line" style="width:80%;margin-bottom:8px"></div><div class="tg-skel-line" style="width:55%"></div></div>';
+  }).join('');
+
+  try {
+    var res = await fetch('https://itunes.apple.com/kr/rss/topaudiopodcasts/limit=25/json', { signal: AbortSignal.timeout(8000) });
+    var data = await res.json();
+    var entries = (data.feed && data.feed.entry) || [];
+    if (!entries.length) { _renderKoreanFallback(grid); return; }
+
+    // Batch lookup for feed URLs
+    var ids = entries.slice(0, 15).map(function(e) { return e.id && e.id.attributes && e.id.attributes['im:id']; }).filter(Boolean);
+    var feedUrls = {};
+    if (ids.length) {
+      try {
+        var lr = await fetch('https://itunes.apple.com/lookup?id=' + ids.join(',') + '&entity=podcast', { signal: AbortSignal.timeout(8000) });
+        if (lr.ok) {
+          var ld = await lr.json();
+          (ld.results || []).forEach(function(r) { if (r.trackId && r.feedUrl) feedUrls[String(r.trackId)] = r.feedUrl; });
+        }
+      } catch {}
+    }
+
+    grid.innerHTML = entries.slice(0, 6).map(function(e) {
+      var id = e.id && e.id.attributes && e.id.attributes['im:id'] || '';
+      var name = (e['im:name'] && e['im:name'].label) || '';
+      var artist = (e['im:artist'] && e['im:artist'].label) || '';
+      var imgs = e['im:image'] || [];
+      var rawArt = (imgs[2] || imgs[1] || imgs[0] || {}).label || '';
+      var art = rawArt ? artworkProxy(rawArt) : '';
+      var feedUrl = feedUrls[id] || '';
+      var slug = name.toLowerCase().replace(/[^a-z0-9가-힣]+/g, '-').replace(/^-|-$/g, '');
+      var safeUrl = feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      var onclick = feedUrl
+        ? 'showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')'
+        : 'document.getElementById(\'url-input\').value=' + JSON.stringify(name) + ';showView(\'analyze\')';
+      return '<div class="tg-card" onclick="' + onclick + '">'
+        + '<div class="tg-art-wrap">' + (art ? '<img class="tg-art" src="' + art + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'&#127897;\'">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'
+        + '<div class="tg-card-body">'
+        + '<div class="tg-card-name">' + name + '</div>'
+        + '<div class="tg-card-artist">' + artist + '</div>'
+        + '<button class="tg-analyze-btn">\ubd84\uc11d\ud558\uae30 &rarr;</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) { _renderKoreanFallback(grid); }
+}
+
+function _renderKoreanFallback(grid) {
+  grid.innerHTML = KR_SHOWS.slice(0, 6).map(function(show) {
     var initial = show.name.charAt(0);
-    html += '<div class="proof-card" style="cursor:pointer;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r)" onclick="document.getElementById(\'url-input\').value='+JSON.stringify(show.name)+';showView(\'analyze\')">'
-      + '<div style="width:56px;height:56px;background:var(--navy);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;margin-bottom:8px;font-family:var(--ffs);font-weight:700">'+initial+'</div>'
-      + '<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">'+show.category+'</div>'
-      + '<div style="font-size:12px;font-weight:600;line-height:1.3">'+show.name+'</div>'
-      + '<div style="font-size:10px;color:var(--text3);margin-top:6px">\ubd84\uc11d \ubc14\ub85c\uac00\uae30 \u2192</div>'
-      + '</div>';
-  });
-  grid.innerHTML = html;
+    return '<div class="tg-card" onclick="document.getElementById(\'url-input\').value=' + JSON.stringify(show.name) + ';showView(\'analyze\')">'
+      + '<div class="tg-art-wrap"><div class="tg-art-ph">' + initial + '</div></div>'
+      + '<div class="tg-card-body">'
+      + '<div class="tg-card-name">' + show.name + '</div>'
+      + '<div class="tg-card-artist">' + show.category + '</div>'
+      + '<button class="tg-analyze-btn">\ubd84\uc11d\ud558\uae30 &rarr;</button>'
+      + '</div></div>';
+  }).join('');
 }
 
 // ── KAKAOTALK (TASK 9) ────────────────────────────────────────────────────
@@ -6395,29 +6569,28 @@ function filterTrendingGrid(category, btn) {
 }
 
 var _tgCategory = 'all';
+// Map frontend pill values to backend genre keys
+var _genreKeyMap = {all:'all',news:'news',tech:'technology',business:'business',society:'society',crime:'true-crime',comedy:'comedy',health:'health',sports:'sports'};
+
 async function loadTrendingGrid(category) {
   _tgCategory = category || 'all';
   var el = document.getElementById('tg-grid');
   if (!el) return;
-  // Show skeletons
   el.innerHTML = [1,2,3].map(function(){
     return '<div class="tg-card skel"><div class="tg-skel-art"></div><div class="tg-skel-line" style="width:80%;margin-bottom:8px"></div><div class="tg-skel-line" style="width:55%"></div></div>';
   }).join('');
 
   try {
-    // Use curated shows as trending (real implementation would hit an API)
-    var store = (_settings && _settings.store) || 'us';
-    var catMap = { news:'News', tech:'Technology', business:'Business', society:'Society', crime:'True Crime', comedy:'Comedy', health:'Health', sports:'Sports' };
-    var term = catMap[_tgCategory] || 'podcast';
-    var searchTerm = _tgCategory === 'all' ? 'top podcasts 2024' : term + ' podcast';
-    var data = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(searchTerm) + '&media=podcast&entity=podcast&limit=6&country=' + store, { signal: AbortSignal.timeout(6000) }).then(function(r){ return r.json(); });
-    var results = (data.results || []).slice(0, 6);
+    var genre = _genreKeyMap[_tgCategory] || 'all';
+    var apiUrl = '/api/marketplace?genre=' + encodeURIComponent(genre);
+    var data = await fetch(apiUrl, { signal: AbortSignal.timeout(8000) }).then(function(r){ return r.json(); });
+    var results = (data.podcasts || []).slice(0, 6);
     if (!results.length) { _renderTrendingFallback(el); return; }
-    el.innerHTML = results.map(function(r) {
-      var art = r.artworkUrl100 || r.artworkUrl60 || '';
-      var name = r.collectionName || r.trackName || '';
-      var artist = r.artistName || '';
-      var feedUrl = r.feedUrl || '';
+    el.innerHTML = results.map(function(p) {
+      var art = p.artwork || '';
+      var name = p.name || '';
+      var artist = p.artist || '';
+      var feedUrl = p.feedUrl || '';
       var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       var safeUrl = feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
       return '<div class="tg-card" onclick="' + (feedUrl ? 'showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')' : 'showView(\'analyze\')') + '">'
@@ -6525,6 +6698,7 @@ function renderProfileEmptyState(el) {
 
 // ── AUTO INIT ──
 enforcePlanRules();
+if (plUser()) document.body.classList.add('authenticated');
 renderNavAuth();
 // Apply region, translations, Korean mode
 updateRegionUI();
@@ -6548,15 +6722,17 @@ if (!handleUrlRouting()) {
   var CACHE_TTL = 60 * 60 * 1000; // 1hr
   function renderBanner(data) {
     if (!data || !data.foundingActive) return;
+    if (plUser()) return; // Never show to logged-in users
+    var activeView = document.querySelector('.view.on');
+    if (activeView && activeView.id !== 'view-home') return; // Only on home view
     var banner = document.getElementById('founding-banner');
     if (!banner) return;
-    // FOUNDING_SHOW_SPOT_COUNT=false → never show spot count or date
     var spotsEl = document.getElementById('founding-spots-text');
     var fillEl = document.getElementById('founding-progress-fill');
     var endsEl = document.getElementById('founding-ends-text');
-    if (spotsEl) spotsEl.style.display = 'none'; // no spot count shown
-    if (fillEl) fillEl.style.display = 'none';   // no progress bar
-    if (endsEl) endsEl.style.display = 'none';   // no date — "launch period" only
+    if (spotsEl) spotsEl.style.display = 'none';
+    if (fillEl) fillEl.style.display = 'none';
+    if (endsEl) endsEl.style.display = 'none';
     banner.style.display = '';
   }
   try {

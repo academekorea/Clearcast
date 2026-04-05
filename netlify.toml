@@ -131,3 +131,8 @@
   from = "/api/build-showcases"
   to = "/.netlify/functions/build-showcases-background"
   status = 202
+
+[[redirects]]
+  from = "/api/proxy-image"
+  to = "/.netlify/functions/proxy-image"
+  status = 200
