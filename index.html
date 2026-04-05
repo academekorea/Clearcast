@@ -3,18 +3,23 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Podlens — Understand what you're actually listening to</title>
-<meta name="description" content="Podlens helps you understand what you're actually listening to — bias patterns, missing perspectives, and host influence in any podcast."/>
-<meta property="og:title" content="Podlens — Understand what you're actually listening to"/>
-<meta property="og:description" content="Podlens helps you understand what you're actually listening to — bias patterns, missing perspectives, and host influence in any podcast."/>
-<meta property="og:url" content="https://podlens.app"/>
-<meta property="og:type" content="website"/>
+<title>Podlens — Know what you're actually listening to</title>
+<meta name="description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
+<meta property="og:title" content="Podlens — Know what you're actually listening to">
+<meta property="og:description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
+<meta property="og:image" content="https://podlens.app/og-image.png">
+<meta property="og:url" content="https://podlens.app">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://podlens.app/og-image.png">
+<meta name="theme-color" content="#0f2027">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
 <link rel="stylesheet" media="print" href="/print.css">
-<meta property="og:image" content="https://podlens.app/og-image.jpg">
-<meta name="theme-color" content="#0f2027">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -37,6 +42,13 @@
   --color-border:#e0ddd8;
   --color-left:#E24B4A;--color-center:#D1CFC9;--color-right:#378ADD;
   --color-creator:#7C6AF7;--color-operator:#0f2027;--color-studio:#B8860B;
+  /* Semantic aliases — satisfy naming spec */
+  --color-bg:var(--bg);--color-surface:var(--bg2);
+  --color-text-primary:var(--text);--color-text-secondary:var(--text2);--color-text-tertiary:var(--text3);
+  --color-accent:var(--navy);--color-accent-hover:var(--color-navy-mid);
+  --color-bias-left:var(--left);--color-bias-right:var(--right);--color-bias-center:var(--center);
+  /* Founding member colors */
+  --color-founding:#FFF8E7;--color-founding-border:#F0C040;
   --font-display:'Playfair Display',Georgia,serif;
   --font-body:'Inter',-apple-system,sans-serif;
   --text-xs:11px;--text-sm:13px;--text-base:15px;
@@ -177,13 +189,13 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .bias-snap-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;flex-shrink:0}
 .bias-snap-sample{font-size:10px;color:rgba(255,255,255,.35);margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}
 /* Founding banner */
-.founding-banner{background:#FFF8E7;border-bottom:1px solid #F0C040;padding:10px 40px}
+.founding-banner{background:var(--color-founding,#FFF8E7);border-bottom:1px solid var(--color-founding-border,#F0C040);padding:10px 40px}
 .founding-banner-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .founding-badge{font-size:13px;font-weight:600;color:#92600A}
 .founding-text{font-size:13px;color:#666;flex:1}
 .founding-spots{font-size:12px;font-weight:600;color:#92600A}
 .founding-progress-wrap{width:80px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden}
-.founding-progress-fill{height:100%;background:#F0C040;border-radius:2px;transition:width .5s}
+.founding-progress-fill{height:100%;background:var(--color-founding-border,#F0C040);border-radius:2px;transition:width .5s}
 .founding-ends{font-size:11px;color:#999}
 @media(max-width:768px){.founding-banner{padding:10px 16px}.founding-progress-wrap{display:none}.founding-ends{display:none}}
 /* Engagement nudge banner */
@@ -909,7 +921,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 /* ── AUTH MODALS ── */
 .auth-modal{max-width:400px;padding:0}
 .auth-modal-body{padding:32px}
-.auth-logo{font-family:var(--ffs);font-size:20px;font-weight:700;text-align:center;margin-bottom:4px;letter-spacing:.02em}
+.auth-logo{text-align:center;margin-bottom:16px;display:flex;justify-content:center}
 .auth-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:24px}
 .auth-field{margin-bottom:14px}
 .auth-field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
@@ -1124,10 +1136,23 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 .al-track{height:14px!important;border-radius:7px!important}
 
 /* ── PODLENS WORDMARK ── */
-.podlens-wordmark{font-family:'Playfair Display',Georgia,serif;letter-spacing:.08em;line-height:1;display:inline}
+.podlens-wordmark{font-family:'Playfair Display',Georgia,serif;letter-spacing:0;line-height:1;display:inline}
 .podlens-wordmark .pod{font-weight:400;color:inherit}
 .podlens-wordmark .lens{font-weight:700;color:inherit}
 .podlens-wordmark.large{font-size:48px;color:white}
+
+/* ── LOGO LOCKUP ── */
+.pl-lockup{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.pl-lockup-icon{width:28px;height:28px;flex-shrink:0;border-radius:6px;display:block}
+.pl-lockup-divider{width:1px;height:30px;background:var(--border2);flex-shrink:0}
+.pl-lockup-text{display:flex;flex-direction:column;gap:3px;line-height:1}
+.pl-lockup-wm{font-family:'Playfair Display',Georgia,serif;font-size:18px;line-height:1;color:var(--navy);letter-spacing:0;display:block}
+[data-theme="dark"] .pl-lockup-wm{color:var(--text)}
+.pl-wm-pod{font-weight:400}
+.pl-wm-lens{font-weight:700}
+.pl-lockup-tagline{display:block;font-family:'Inter',-apple-system,sans-serif;font-size:9.5px;color:var(--text3);letter-spacing:.02em;line-height:1.3;white-space:nowrap}
+/* Mobile: icon only below 480px */
+@media(max-width:480px){.nav .pl-lockup-divider,.nav .pl-lockup-text{display:none}.nav .pl-lockup-icon{width:30px;height:30px}}
 
 /* ── BRANDED SPLASH SCREEN ── */
 .pl-splash{position:fixed;inset:0;background:#0f2027;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:99999;transition:opacity .4s ease}
@@ -1290,8 +1315,14 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 
 <!-- BRANDED SPLASH SCREEN -->
 <div class="pl-splash" id="pl-splash">
-  <span class="podlens-wordmark large"><span class="pod">POD</span><span class="lens">LENS</span></span>
-  <div class="pl-tagline">Know what you&rsquo;re actually listening to</div>
+  <div style="display:inline-flex;align-items:center;gap:16px">
+    <img src="/favicon.svg" alt="" width="56" height="56" style="border-radius:10px;opacity:.95;flex-shrink:0">
+    <span style="width:1px;height:56px;background:rgba(255,255,255,.2);flex-shrink:0"></span>
+    <span style="display:flex;flex-direction:column;gap:6px">
+      <span class="podlens-wordmark large"><span class="pod">POD</span><span class="lens">LENS</span></span>
+      <span class="pl-tagline">Know what you&rsquo;re actually listening to</span>
+    </span>
+  </div>
   <div class="pl-loader-bar"></div>
 </div>
 
@@ -1326,7 +1357,14 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 
 <!-- NAV -->
 <nav class="nav">
-  <a href="/" class="logo" onclick="showHome();return false"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></a>
+  <a href="/" class="pl-lockup" onclick="showHome();return false" aria-label="Podlens home">
+    <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="28" height="28">
+    <span class="pl-lockup-divider"></span>
+    <span class="pl-lockup-text">
+      <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
+      <span class="pl-lockup-tagline" id="nav-tagline">Know what you&rsquo;re actually listening to</span>
+    </span>
+  </a>
   <div class="nav-links">
     <button class="nl on" id="nl-home" onclick="showHome()" data-i18n="navHome">Home</button>
     <button class="nl" id="nl-discover" onclick="showView('discover')" data-i18n="navDiscover">Discover</button>
@@ -1367,6 +1405,15 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <div class="hero-inner">
         <!-- Left 60%: heading + analyze bar -->
         <div class="hero-left">
+          <!-- Hero logo lockup — larger scale above headline -->
+          <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:28px">
+            <img src="/favicon.svg" alt="" width="44" height="44" style="border-radius:9px;flex-shrink:0">
+            <span style="width:1px;height:44px;background:var(--border2);flex-shrink:0"></span>
+            <span style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:400;letter-spacing:0;line-height:1;color:var(--navy)"><span style="font-weight:400">POD</span><span style="font-weight:700">LENS</span></span>
+              <span style="font-size:10px;color:var(--text3);letter-spacing:.02em;line-height:1.3" id="hero-lockup-tagline">Know what you&rsquo;re actually listening to</span>
+            </span>
+          </div>
           <div class="hero-kicker">Podcast Intelligence</div>
           <h1 class="hero-h" data-i18n="tagline">Know what you&rsquo;re<br><em>actually listening to.</em></h1>
           <p class="hero-sub" data-i18n="subTagline">Discover podcasts, see their bias, listen smarter.</p>
@@ -1803,7 +1850,13 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 <footer class="site-footer" id="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <span class="footer-logo"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></span>
+      <div class="footer-logo">
+        <div class="pl-lockup" style="gap:8px">
+          <img src="/favicon.svg" alt="" width="24" height="24" style="border-radius:4px;opacity:.8;flex-shrink:0">
+          <span style="width:1px;height:24px;background:var(--border2);flex-shrink:0"></span>
+          <span class="pl-lockup-wm" style="font-size:16px"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
+        </div>
+      </div>
       <div class="footer-tagline">Media literacy for the audio generation.</div>
     </div>
     <div class="footer-cols">
@@ -1974,7 +2027,16 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <div class="modal-handle"></div>
     <button class="modal-close" style="position:absolute;right:16px;top:16px" onclick="closeModal('login')">&#x2715;</button>
     <div class="auth-modal-body">
-      <div class="auth-logo"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></div>
+      <div class="auth-logo">
+        <div class="pl-lockup">
+          <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="40" height="40" style="border-radius:8px">
+          <span class="pl-lockup-divider" style="height:40px"></span>
+          <span class="pl-lockup-text">
+            <span class="pl-lockup-wm" style="font-size:24px"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
+            <span class="pl-lockup-tagline" style="font-size:11px">Know what you&rsquo;re actually listening to</span>
+          </span>
+        </div>
+      </div>
       <div class="auth-sub">Welcome back</div>
       <div class="auth-error" id="login-error"></div>
       <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/></div>
@@ -2010,7 +2072,16 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <div class="modal-handle"></div>
     <button class="modal-close" style="position:absolute;right:16px;top:16px" onclick="closeModal('signup')">&#x2715;</button>
     <div class="auth-modal-body">
-      <div class="auth-logo"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></div>
+      <div class="auth-logo">
+        <div class="pl-lockup">
+          <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="40" height="40" style="border-radius:8px">
+          <span class="pl-lockup-divider" style="height:40px"></span>
+          <span class="pl-lockup-text">
+            <span class="pl-lockup-wm" style="font-size:24px"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
+            <span class="pl-lockup-tagline" style="font-size:11px">Know what you&rsquo;re actually listening to</span>
+          </span>
+        </div>
+      </div>
       <div id="signup-heading" class="signup-heading">Analyze this episode free</div>
       <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">7 days of full access &mdash; no credit card required</div>
       <div class="kakao-social-section" id="signup-kakao-section">
@@ -4993,6 +5064,7 @@ var i18n = {
     continueGoogle: "Continue with Google", continueSpotify: "Continue with Spotify",
     navHome: "Home", navDiscover: "Discover", navCompare: "Compare",
     navUnheard: "Unheard", navPricing: "Pricing",
+    logoTagline: "Know what you\u2019re actually listening to",
     trialBanner: "Your free trial ends in {days} days",
     listenPlatform: "Listen on your preferred platform",
     analysisComplete: "Analysis complete", analyzingEpisode: "Analyzing this episode\u2026",
@@ -5017,6 +5089,7 @@ var i18n = {
     continueGoogle: "Google\ub85c \uacc4\uc18d\ud558\uae30", continueSpotify: "Spotify\ub85c \uacc4\uc18d\ud558\uae30",
     navHome: "\ud648", navDiscover: "\ubc1c\uacac\ud558\uae30", navCompare: "\ube44\uad50\ud558\uae30",
     navUnheard: "\ubbf8\uccad\ucde8", navPricing: "\uc694\uae08\uc81c",
+    logoTagline: "\ub2f9\uc2e0\uc774 \uc2e4\uc81c\ub85c \ub4e3\uace0 \uc788\ub294 \uac83\uc744 \uc54c\uc544\ubcf4\uc138\uc694",
     trialBanner: "\ubb34\ub8cc \uccb4\ud5d8\uc774 {days}\uc77c \ud6c4 \uc885\ub8cc\ub429\ub2c8\ub2e4",
     listenPlatform: "\uc120\ud638\ud558\ub294 \ud50c\ub7ab\ud3fc\uc5d0\uc11c \ub4e3\uae30",
     analysisComplete: "\ubd84\uc11d \uc644\ub8cc", analyzingEpisode: "\uc5d0\ud53c\uc18c\ub4dc\ub97c \ubd84\uc11d\ud558\uace0 \uc788\uc2b5\ub2c8\ub2e4\u2026",
@@ -5043,6 +5116,11 @@ function applyTranslations(lang) {
   if (sh && t.signupHeading) sh.textContent = t.signupHeading;
   var ss = document.getElementById('signup-subtext');
   if (ss && t.signupSub) ss.textContent = t.signupSub;
+  // Update logo lockup taglines
+  var logoTagline = t.logoTagline || i18n.en.logoTagline;
+  document.querySelectorAll('#nav-tagline,#hero-lockup-tagline').forEach(function(el) {
+    el.textContent = logoTagline;
+  });
 }
 
 var prices = {
@@ -5208,7 +5286,7 @@ function shareToKakao(data) {
         content: {
           title: title,
           description: leanStr || '\ud3b8\ud5a5\uc131 \ubd84\uc11d \ud655\uc778',
-          imageUrl: data.artworkUrl || 'https://podlens.app/og-image.jpg',
+          imageUrl: data.artworkUrl || 'https://podlens.app/og-image.png',
           link: { mobileWebUrl: 'https://podlens.app', webUrl: 'https://podlens.app' },
         },
         buttons: [{ title: '\ubd84\uc11d \ubcf4\uae30', link: { mobileWebUrl: 'https://podlens.app', webUrl: 'https://podlens.app' } }],
