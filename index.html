@@ -146,6 +146,26 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .user-dropdown a,.user-dropdown button{display:block;width:100%;padding:10px 16px;font-size:13px;color:var(--text);text-decoration:none;background:transparent;border:none;cursor:pointer;font-family:var(--ff);text-align:left;transition:background .1s}
 .user-dropdown a:hover,.user-dropdown button:hover{background:var(--bg3)}
 .user-dropdown button{color:var(--left)}
+/* Notification bell */
+.notif-bell-wrap{position:relative}
+.notif-bell{background:none;border:none;cursor:pointer;padding:6px 8px;font-size:18px;color:var(--text2);line-height:1;border-radius:var(--r);transition:background .1s,color .1s;position:relative}
+.notif-bell:hover{background:var(--bg3);color:var(--text)}
+.notif-badge{position:absolute;top:2px;right:2px;background:var(--left);color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:1px 4px;min-width:14px;text-align:center;line-height:14px;display:none}
+.notif-badge.on{display:block}
+.notif-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);min-width:300px;max-height:380px;overflow-y:auto;z-index:9998;display:none;box-shadow:0 4px 24px rgba(0,0,0,.12)}
+.notif-dropdown.on{display:block}
+.notif-header{padding:10px 14px 8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.notif-header-title{font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.06em}
+.notif-mark-read{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:0;font-family:var(--ff)}
+.notif-mark-read:hover{color:var(--text)}
+.notif-item{padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.notif-item:hover{background:var(--bg3)}
+.notif-item:last-child{border-bottom:none}
+.notif-item.unread{background:var(--bg3)}
+.notif-item-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.notif-item-body{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notif-item-time{font-size:10px;color:var(--text3);margin-top:3px}
+.notif-empty{padding:24px;text-align:center;font-size:13px;color:var(--text3)}
 
 /* ── VIEWS ── */
 .view{display:none}.view.on{display:block}
@@ -1391,8 +1411,8 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 .trending-card-title{font-size:12px;font-weight:600;line-height:1.35;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .trending-card-show{font-size:10px;color:var(--text3)}
 </style>
-<!-- Hotjar -->
-<script>(function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:5360806,hjsv:6};a=o.getElementsByTagName('head')[0];r=o.createElement('script');r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r);})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');</script>
+<!-- Hotjar / ContentSquare -->
+<script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
 <!-- PostHog -->
 <script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),i=0;i<o.length;i++)g(u,o[i]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ',{api_host:'https://us.i.posthog.com',capture_pageview:true,capture_pageleave:true});</script>
 <!-- Sentry -->
@@ -2323,7 +2343,7 @@ function plUser() {
 function setPlUser(obj) {
   if (obj) {
     localStorage.setItem('pl-user', JSON.stringify(obj));
-    // PostHog identify after login
+    // PostHog identify + Sentry user context
     try {
       if (window.posthog && obj.id) {
         posthog.identify(obj.id, {
@@ -2336,9 +2356,17 @@ function setPlUser(obj) {
         });
       }
     } catch(e) {}
+    try {
+      if (window.Sentry && obj.id) {
+        Sentry.setUser({ id: obj.id, email: obj.email || '' });
+        Sentry.setTag('tier', obj.plan || 'free');
+        Sentry.setTag('region', obj.region || '');
+      }
+    } catch(e) {}
   } else {
     localStorage.removeItem('pl-user');
     try { if (window.posthog) posthog.reset(); } catch(e) {}
+    try { if (window.Sentry) Sentry.setUser(null); } catch(e) {}
   }
 }
 
@@ -2348,14 +2376,24 @@ function renderNavAuth() {
   if (!el) return;
   if (u) {
     var initials = (u.name || u.email || 'U').trim().split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
-    el.innerHTML = '<button onclick="showUpgrade()" class="nav-pro-btn" style="margin-right:4px">Get Pro</button>'
+    var planBadge = (u.plan && u.plan !== 'free' && u.plan !== 'trial')
+      ? '<span style="font-size:9px;background:var(--color-operator);color:#fff;border-radius:2px;padding:1px 5px;margin-left:4px;vertical-align:middle;font-weight:700">' + u.plan.toUpperCase() + '</span>' : '';
+    el.innerHTML = '<div class="notif-bell-wrap" id="notif-bell-wrap">'
+      + '<button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifDropdown()" title="Notifications">🔔</button>'
+      + '<span class="notif-badge" id="notif-badge"></span>'
+      + '<div class="notif-dropdown" id="notif-dropdown">'
+      + '<div class="notif-header"><span class="notif-header-title">Notifications</span><button class="notif-mark-read" onclick="markNotifsRead()">Mark all read</button></div>'
+      + '<div id="notif-list"><div class="notif-empty">Loading…</div></div>'
+      + '</div></div>'
       + '<div class="user-menu-wrap"><button class="avatar-btn" id="avatar-btn" onclick="toggleUserMenu()">' + initials + '</button>'
       + '<div class="user-dropdown" id="user-dropdown">'
-      + '<a href="/profile.html">Profile</a>'
+      + '<a href="/profile.html">Profile' + planBadge + '</a>'
       + '<a href="/profile.html#bias">My Bias</a>'
+      + '<a href="/library.html">My Library</a>'
       + '<a href="/settings.html">Settings</a>'
       + '<button onclick="doLogout()">Log out</button>'
       + '</div></div>';
+    loadNotifCount(u.id);
   } else {
     el.innerHTML = '<button onclick="showUpgrade()" class="nav-pro-btn">Get Pro</button>'
       + '<button onclick="openModal(\'login\')" class="nav-login-btn">Log in</button>'
@@ -2370,7 +2408,85 @@ function toggleUserMenu() {
 document.addEventListener('click', function(e) {
   var d = document.getElementById('user-dropdown');
   if (d && !d.contains(e.target) && e.target.id !== 'avatar-btn') d.classList.remove('on');
+  var nd = document.getElementById('notif-dropdown');
+  var nb = document.getElementById('notif-bell-btn');
+  if (nd && !nd.contains(e.target) && e.target !== nb && !nb?.contains(e.target)) nd.classList.remove('on');
 });
+
+// ── Notification Bell ────────────────────────────────────────────────────────
+function toggleNotifDropdown() {
+  var dd = document.getElementById('notif-dropdown');
+  if (!dd) return;
+  var wasOpen = dd.classList.contains('on');
+  dd.classList.toggle('on');
+  if (!wasOpen) {
+    var u = plUser();
+    if (u) loadNotifList(u.id);
+  }
+}
+function loadNotifCount(userId) {
+  if (!userId) return;
+  fetch('/api/notifications?userId=' + encodeURIComponent(userId) + '&action=count')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var badge = document.getElementById('notif-badge');
+      if (!badge) return;
+      var count = d.count || 0;
+      if (count > 0) {
+        badge.textContent = count > 9 ? '9+' : String(count);
+        badge.classList.add('on');
+      } else {
+        badge.classList.remove('on');
+      }
+    }).catch(function() {});
+}
+function loadNotifList(userId) {
+  var list = document.getElementById('notif-list');
+  if (!list) return;
+  fetch('/api/notifications?userId=' + encodeURIComponent(userId))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var notifs = d.notifications || [];
+      if (!notifs.length) {
+        list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+        return;
+      }
+      list.innerHTML = notifs.map(function(n) {
+        var ago = _timeAgo(n.created_at);
+        var cls = n.read ? '' : ' unread';
+        var href = n.url || '#';
+        return '<a href="' + href + '" class="notif-item' + cls + '" style="text-decoration:none;display:block">'
+          + '<div class="notif-item-title">' + _esc(n.title || '') + '</div>'
+          + '<div class="notif-item-body">' + _esc(n.body || '') + '</div>'
+          + '<div class="notif-item-time">' + ago + '</div>'
+          + '</a>';
+      }).join('');
+    }).catch(function() {
+      if (list) list.innerHTML = '<div class="notif-empty">Could not load notifications</div>';
+    });
+}
+function markNotifsRead() {
+  var u = plUser();
+  if (!u) return;
+  fetch('/api/notifications?userId=' + encodeURIComponent(u.id) + '&action=mark-read')
+    .then(function() {
+      var badge = document.getElementById('notif-badge');
+      if (badge) badge.classList.remove('on');
+      var items = document.querySelectorAll('.notif-item.unread');
+      items.forEach(function(i) { i.classList.remove('unread'); });
+    }).catch(function() {});
+}
+function _timeAgo(isoStr) {
+  if (!isoStr) return '';
+  var diff = Date.now() - new Date(isoStr).getTime();
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return Math.floor(diff/60000) + 'm ago';
+  if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
+  return Math.floor(diff/86400000) + 'd ago';
+}
+function _esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 function openModal(name) { document.getElementById('modal-' + name).classList.add('on'); }
 function closeModal(name) { document.getElementById('modal-' + name).classList.remove('on'); }
@@ -3297,7 +3413,8 @@ function pollStatus(jobId, audioUrl) {
   lafAddStep(si, false);
   _poll=setInterval(async function(){
     try {
-      var d=await fetch('/api/status/'+jobId).then(function(r){return r.json();});
+      var _statusPlan=(getPlUser()||{}).plan||'free';
+      var d=await fetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_statusPlan)).then(function(r){return r.json();});
       if (d.status==='partial'&&!shownPartial) {
         lafCompleteStep(si);
         si=Math.min(si+1,5);
@@ -4356,7 +4473,8 @@ function viewAnalysis(jobId) {
   document.getElementById('loading').classList.add('on');
   document.getElementById('atabs').classList.remove('on');
   document.querySelectorAll('.apanel').forEach(function(p){p.classList.remove('on');});
-  fetch('/api/status/'+jobId).then(function(r){return r.json();}).then(function(d){
+  var _rePlan=(getPlUser()||{}).plan||'free';
+  fetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_rePlan)).then(function(r){return r.json();}).then(function(d){
     document.getElementById('loading').classList.remove('on');
     if (d.status==='complete') { document.getElementById('atabs').classList.add('on'); document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on'); document.getElementById('apanel-results').classList.add('on'); renderResults(d); }
   }).catch(function(){ document.getElementById('loading').classList.remove('on'); });
@@ -4542,8 +4660,25 @@ function syncPlanFromStripe(u) {
         renderNavAuth();
         renderHomeState();
       }
+      // Show payment grace period banner if needed
+      if (d.graceMode && d.graceUntil) {
+        showGraceBanner(d.graceUntil);
+      }
     })
     .catch(function(){});
+}
+
+function showGraceBanner(graceUntil) {
+  var existing = document.getElementById('grace-banner');
+  if (existing) return;
+  var daysLeft = Math.ceil((new Date(graceUntil) - Date.now()) / 86400000);
+  var banner = document.createElement('div');
+  banner.id = 'grace-banner';
+  banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#b91c1c;color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:16px;z-index:9999;font-family:var(--font-body,Inter);font-size:14px;';
+  banner.innerHTML = '<span>⚠ Your payment failed. Your account stays active for ' + daysLeft + ' more day' + (daysLeft !== 1 ? 's' : '') + '.</span>'
+    + '<button onclick="document.location=\'/account\'" style="background:white;color:#b91c1c;border:none;border-radius:4px;padding:6px 16px;font-weight:600;cursor:pointer;">Update payment</button>'
+    + '<button onclick="document.getElementById(\'grace-banner\').remove()" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:18px;padding:0 4px;">×</button>';
+  document.body.appendChild(banner);
 }
 
 // ── CANACCESS — TIER GATING ──
@@ -5964,15 +6099,13 @@ if (!handleUrlRouting()) {
     if (!data || !data.foundingActive) return;
     var banner = document.getElementById('founding-banner');
     if (!banner) return;
-    var spotsLeft = data.spotsLeft || 0;
-    var endsAt = data.foundingEndsAt ? new Date(data.foundingEndsAt) : null;
-    var usedPct = data.foundingMax ? Math.round(((data.foundingMax - spotsLeft) / data.foundingMax) * 100) : 0;
+    // FOUNDING_SHOW_SPOT_COUNT=false → never show spot count or date
     var spotsEl = document.getElementById('founding-spots-text');
     var fillEl = document.getElementById('founding-progress-fill');
     var endsEl = document.getElementById('founding-ends-text');
-    if (spotsEl) spotsEl.textContent = spotsLeft + ' of ' + (data.foundingMax || 500) + ' spots remaining';
-    if (fillEl) fillEl.style.width = usedPct + '%';
-    if (endsEl && endsAt) endsEl.textContent = 'Offer ends ' + endsAt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    if (spotsEl) spotsEl.style.display = 'none'; // no spot count shown
+    if (fillEl) fillEl.style.display = 'none';   // no progress bar
+    if (endsEl) endsEl.style.display = 'none';   // no date — "launch period" only
     banner.style.display = '';
   }
   try {
@@ -6589,7 +6722,8 @@ function rotateSpotlight() {
 
   function _lapPoll() {
     if (!_lap.jobId) return;
-    fetch('/api/status/' + _lap.jobId)
+    var _lapPlan=(getPlUser()||{}).plan||'free';
+    fetch('/api/status/' + _lap.jobId + '?plan=' + encodeURIComponent(_lapPlan))
       .then(function(r) { return r.json(); })
       .then(function(data) {
         _lap.lastStatus = data;

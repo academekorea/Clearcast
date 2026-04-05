@@ -1,9 +1,10 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { getSupabaseAdmin } from "./lib/supabase.js";
+import { sendEmail, weeklyDigestEmail } from "./lib/email.js";
 
-// Weekly Bias Digest — sends Monday 9am to all Creator+ subscribers
-// Triggered by Netlify scheduled function or external cron
-// Email delivery is stubbed until an email provider (Postmark/SendGrid) is wired in
+// Weekly Bias Digest — Monday midnight UTC = 9am KST
+// Sends to all Creator+ users who analyzed episodes in the last 7 days
 
 function getWeekNumber(): string {
   const now = new Date();
@@ -13,105 +14,83 @@ function getWeekNumber(): string {
 }
 
 export default async (req: Request) => {
-  // Secure with RATE_LIMIT_SECRET header (used as scheduler auth)
-  const secret = Netlify.env.get("RATE_LIMIT_SECRET") || "";
-  const authHeader = req.headers.get("x-pl-secret") || "";
-  if (secret && authHeader !== secret) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
   const week = getWeekNumber();
   const metaStore = getStore("podlens-meta");
 
-  // Check if digest already sent this week
+  // Idempotency: skip if already sent this week
   try {
     const log = await metaStore.get(`digest-sent-${week}`, { type: "json" }) as any;
     if (log?.sent) {
-      return new Response(JSON.stringify({ skipped: true, reason: "already_sent", week }), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
+      return new Response(JSON.stringify({ skipped: true, week }), { status: 200 });
     }
   } catch {}
 
-  // Gather this week's analyses from Blobs
-  const jobStore = getStore("podlens-jobs");
-  const userStore = getStore("podlens-users");
-
+  const sb = getSupabaseAdmin();
   let digestsSent = 0;
   const errors: string[] = [];
 
   try {
-    // List users with digest subscription
-    const userKeys = await userStore.list();
-    const weekStart = new Date();
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Monday
-    weekStart.setHours(0, 0, 0, 0);
+    if (sb) {
+      // Query Supabase: users with analyses in last 7 days
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: userRows } = await sb
+        .from('users')
+        .select('id,email,name,tier')
+        .in('tier', ['creator', 'operator', 'studio']);
 
-    for (const key of (userKeys.blobs || []).slice(0, 500)) {
-      if (!key.key.startsWith("google-") && !key.key.startsWith("kakao-") && !key.key.startsWith("u-")) continue;
+      if (userRows) {
+        for (const user of userRows) {
+          try {
+            if (!user.email) continue;
 
-      try {
-        const user = await userStore.get(key.key, { type: "json" }) as any;
-        if (!user?.email || !user?.plan) continue;
-        if (!["creator", "operator", "studio"].includes(user.plan)) continue;
+            // Get their analyses this week
+            const { data: analyses } = await sb
+              .from('analyses')
+              .select('show_name,episode_title,bias_label,share_id,created_at')
+              .eq('user_id', user.id)
+              .gte('created_at', weekAgo)
+              .order('created_at', { ascending: false })
+              .limit(5);
 
-        // Check digest prefs
-        const prefs = await userStore.get(`digest-prefs-${user.id}`, { type: "json" }).catch(() => null) as any;
-        if (prefs?.subscribed === false) continue;
+            if (!analyses || analyses.length === 0) continue;
 
-        // Get user's recent analyses (last 7 days)
-        const userAnalyses: any[] = [];
-        const analyzed = user.analyzedEpisodes || [];
-        for (const ep of analyzed.slice(-10)) {
-          if (ep.analyzedAt && new Date(ep.analyzedAt) >= weekStart) {
-            userAnalyses.push(ep);
+            const ok = await sendEmail({
+              to: user.email,
+              subject: `📊 Your Podlens week — ${analyses.length} episode${analyses.length !== 1 ? 's' : ''} analyzed`,
+              html: weeklyDigestEmail({
+                name: user.name || 'Listener',
+                analyses: analyses.map(a => ({
+                  showName: a.show_name || '',
+                  episodeTitle: a.episode_title || '',
+                  biasLabel: a.bias_label || 'Analyzed',
+                  url: a.share_id ? `https://podlens.app/analysis/${a.share_id}` : 'https://podlens.app/library',
+                })),
+                totalCount: analyses.length,
+              }),
+            });
+
+            if (ok) digestsSent++;
+          } catch (e: any) {
+            errors.push(e?.message || 'unknown');
           }
         }
-
-        // Build digest content
-        const digestContent = {
-          userId: user.id,
-          email: user.email,
-          name: user.name || "Listener",
-          plan: user.plan,
-          week,
-          episodesThisWeek: userAnalyses.length,
-          biasFingerprint: user.biasFingerprint || { leftPct: 0, centerPct: 0, rightPct: 0, totalEpisodes: 0 },
-          analyses: userAnalyses.slice(0, 5),
-        };
-
-        // Store digest for delivery (email provider integration point)
-        await userStore.setJSON(`digest-${user.id}-${week}`, {
-          ...digestContent,
-          createdAt: new Date().toISOString(),
-          delivered: false,
-        });
-
-        // TODO: integrate with Postmark/SendGrid/Resend here
-        // await sendEmail({ to: user.email, subject: "Your Weekly Bias Digest", ... })
-
-        digestsSent++;
-      } catch (e: any) {
-        errors.push(e?.message || "unknown");
       }
     }
 
-    // Mark digest as sent for this week
     await metaStore.setJSON(`digest-sent-${week}`, {
-      sent: true,
-      sentAt: new Date().toISOString(),
-      count: digestsSent,
-    });
+      sent: true, sentAt: new Date().toISOString(), count: digestsSent,
+    }).catch(() => {});
 
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || "Digest failed" }), {
-      status: 500, headers: { "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({ error: e?.message }), { status: 500 });
   }
 
-  return new Response(JSON.stringify({ ok: true, week, digestsSent, errors: errors.slice(0, 10) }), {
-    status: 200, headers: { "Content-Type": "application/json" },
+  return new Response(JSON.stringify({ ok: true, week, digestsSent, errors: errors.slice(0, 5) }), {
+    status: 200, headers: { 'Content-Type': 'application/json' },
   });
 };
 
-export const config: Config = { path: "/api/send-digest" };
+export const config: Config = {
+  path: '/api/send-digest',
+  schedule: '0 0 * * 1', // Monday midnight UTC = 9am KST
+};

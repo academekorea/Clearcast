@@ -6,6 +6,8 @@
     "@netlify/blobs": "^8.0.0",
     "@netlify/functions": "^2.0.0",
     "@supabase/supabase-js": "^2.101.1",
-    "stripe": "^22.0.0"
+    "resend": "^6.10.0",
+    "stripe": "^22.0.0",
+    "web-push": "^3.6.7"
   }
 }

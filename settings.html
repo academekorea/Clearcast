@@ -146,8 +146,8 @@ footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2
 .conn-btn:disabled{opacity:.5;cursor:default}
 .conn-permissions{font-size:11px;color:var(--text3);margin-top:8px}
 </style>
-<!-- Hotjar -->
-<script>(function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:5360806,hjsv:6};a=o.getElementsByTagName('head')[0];r=o.createElement('script');r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r);})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');</script>
+<!-- Hotjar / ContentSquare -->
+<script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
 <!-- PostHog -->
 <script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),i=0;i<o.length;i++)g(u,o[i]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ',{api_host:'https://us.i.posthog.com',capture_pageview:true,capture_pageleave:true});</script>
 <!-- Sentry -->
@@ -345,11 +345,28 @@ footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2
 
     <!-- NOTIFICATIONS -->
     <div class="tab-panel" id="tab-notifications">
+
+      <!-- Pre-Analysis Card -->
+      <div class="settings-card" id="pre-analysis-card">
+        <div class="card-head">
+          <h3>⚡ Pre-Analysis <span id="pre-analysis-tier-badge" style="font-size:11px;background:#0f2027;color:#fff;border-radius:2px;padding:2px 6px;vertical-align:middle;font-weight:600;margin-left:4px">Operator+</span></h3>
+          <p>We analyze new episodes before you listen. Your analysis is ready when you press play.</p>
+        </div>
+        <div class="card-body" id="pre-analysis-body">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Email Notifications Card -->
       <div class="settings-card">
         <div class="card-head"><h3>Email notifications</h3><p>Control what emails Podlens sends you</p></div>
         <div class="card-body">
           <div class="toggle-row">
-            <div class="toggle-info"><h4>Weekly Unheard report</h4><p>A summary of what the shows you don't follow are covering</p></div>
+            <div class="toggle-info"><h4>Pre-analysis ready</h4><p>Email when a new episode is analyzed and ready to play</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="notif-preanalysis" checked><div class="toggle-track"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info"><h4>Weekly digest</h4><p>Your week in review — analyses, bias fingerprint update</p></div>
             <label class="toggle-switch"><input type="checkbox" id="notif-unheard" checked><div class="toggle-track"></div></label>
           </div>
           <div class="toggle-row">
@@ -745,6 +762,132 @@ function renderMembershipStatus(u, plan) {
 }
 
 init();
+
+// ── PRE-ANALYSIS UI ──────────────────────────────────────────────────────────
+var PRE_ANALYSIS_MAX = parseInt('5', 10); // PRE_ANALYSIS_MAX_SHOWS
+
+function renderPreAnalysis() {
+  var u = plUser();
+  var body = document.getElementById('pre-analysis-body');
+  if (!body) return;
+  var plan = (u && u.plan || 'free').toLowerCase();
+  var isEligible = plan === 'operator' || plan === 'studio';
+
+  if (!isEligible) {
+    body.innerHTML = '<div style="padding:12px;background:#f8f8f6;border-radius:6px;border:1px solid var(--border2)">'
+      + '<div style="font-size:13px;color:var(--text2);margin-bottom:10px">Pre-analysis automatically queues up new episodes from your followed shows so your analysis is waiting when you press play. Zero wait time.</div>'
+      + '<a href="/pricing.html" style="display:inline-block;background:#0f2027;color:#fff;padding:9px 18px;border-radius:4px;font-size:13px;font-weight:600;text-decoration:none">Upgrade to Operator →</a>'
+      + '</div>';
+    return;
+  }
+
+  // Load followed shows from localStorage
+  var plu = {};
+  try { plu = JSON.parse(localStorage.getItem('podlens_user') || '{}'); } catch(e) {}
+  var allShows = plu.followedShows || [];
+  var preShows = (plu.preAnalysisShows || []).map(function(s){ return s.slug || s.show_slug || s; });
+  var maxShows = plan === 'studio' ? 999 : PRE_ANALYSIS_MAX;
+
+  var isEnabled = !!(plu.preAnalysisEnabled);
+
+  var html = '<div class="toggle-row" style="margin-bottom:16px">'
+    + '<div class="toggle-info"><h4>Enable pre-analysis</h4><p>New episodes checked every hour. You\'ll be notified when analysis is ready.</p></div>'
+    + '<label class="toggle-switch"><input type="checkbox" id="toggle-preanalysis"' + (isEnabled ? ' checked' : '') + ' onchange="togglePreAnalysis(this.checked)"><div class="toggle-track"></div></label>'
+    + '</div>';
+
+  if (isEnabled) {
+    html += '<div style="border-top:1px solid var(--border);padding-top:16px">'
+      + '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:10px">'
+      + 'Monitored Shows <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--text3)">(max ' + maxShows + ')</span>'
+      + '</div>';
+
+    if (preShows.length === 0) {
+      html += '<div style="font-size:13px;color:var(--text3);margin-bottom:12px">No shows added yet. Add up to ' + maxShows + ' shows below.</div>';
+    }
+
+    // List monitored shows
+    allShows.filter(function(s){ return preShows.indexOf(s.show_slug || s.slug) > -1; }).forEach(function(s, i) {
+      html += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">'
+        + (s.show_artwork ? '<img src="' + _esc(s.show_artwork) + '" style="width:32px;height:32px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'">' : '')
+        + '<span style="flex:1;font-size:13px;font-weight:500">' + _esc(s.show_name || s.name || 'Unknown Show') + '</span>'
+        + '<button onclick="removePreShow(\'' + _esc(s.show_slug || s.slug || '') + '\')" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--text3);padding:0 4px" title="Remove">×</button>'
+        + '</div>';
+    });
+
+    // Add show button (if under limit)
+    if (preShows.length < maxShows) {
+      var notAdded = allShows.filter(function(s){ return preShows.indexOf(s.show_slug || s.slug) === -1; });
+      if (notAdded.length > 0) {
+        html += '<div style="margin-top:12px"><select id="pre-show-select" style="padding:8px 12px;border:1px solid var(--border2);border-radius:4px;font-size:13px;background:var(--bg2);color:var(--text);width:200px">'
+          + '<option value="">— Select a show —</option>'
+          + notAdded.map(function(s){ return '<option value="' + _esc(s.show_slug || s.slug || '') + '">' + _esc(s.show_name || s.name || 'Show') + '</option>'; }).join('')
+          + '</select>'
+          + '<button onclick="addPreShow()" style="margin-left:8px;padding:8px 16px;background:#0f2027;color:#fff;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:500">+ Add show</button>';
+
+        if (allShows.length === 0) {
+          html += '<div style="margin-top:8px;font-size:12px;color:var(--text3)">No followed shows yet. <a href="/" style="color:var(--text2)">Follow shows from the discover tab</a>.</div>';
+        }
+        html += '</div>';
+      }
+    }
+
+    html += '<div style="margin-top:12px;font-size:11px;color:var(--text3)">New episodes checked every hour. Up to ' + maxShows + ' shows monitored.</div>';
+    html += '</div>';
+  }
+
+  body.innerHTML = html;
+}
+
+function togglePreAnalysis(enabled) {
+  var plu = {};
+  try { plu = JSON.parse(localStorage.getItem('podlens_user') || '{}'); } catch(e) {}
+  plu.preAnalysisEnabled = enabled;
+  localStorage.setItem('podlens_user', JSON.stringify(plu));
+  renderPreAnalysis();
+  showSettingsToast(enabled ? '⚡ Pre-analysis enabled' : 'Pre-analysis disabled');
+  // Track event
+  try {
+    var u = plUser();
+    fetch('/api/log-event', { method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ event_type: 'pre_analysis_enabled', user_id: u && u.id, properties: { enabled: enabled } }) }).catch(function(){});
+  } catch(e) {}
+}
+
+function addPreShow() {
+  var sel = document.getElementById('pre-show-select');
+  if (!sel || !sel.value) return;
+  var slug = sel.value;
+  var plu = {};
+  try { plu = JSON.parse(localStorage.getItem('podlens_user') || '{}'); } catch(e) {}
+  var preShows = plu.preAnalysisShows || [];
+  if (!preShows.find(function(s){ return (s.slug || s.show_slug || s) === slug; })) {
+    // Find full show data
+    var allShows = plu.followedShows || [];
+    var show = allShows.find(function(s){ return (s.show_slug || s.slug) === slug; });
+    if (show) preShows.push({ slug: slug, show_name: show.show_name, feed_url: show.feed_url });
+    else preShows.push({ slug: slug });
+  }
+  plu.preAnalysisShows = preShows;
+  localStorage.setItem('podlens_user', JSON.stringify(plu));
+  renderPreAnalysis();
+}
+
+function removePreShow(slug) {
+  var plu = {};
+  try { plu = JSON.parse(localStorage.getItem('podlens_user') || '{}'); } catch(e) {}
+  plu.preAnalysisShows = (plu.preAnalysisShows || []).filter(function(s){ return (s.slug || s.show_slug || s) !== slug; });
+  localStorage.setItem('podlens_user', JSON.stringify(plu));
+  renderPreAnalysis();
+}
+
+// Render pre-analysis when notifications tab opens
+var _origShowTab = window.showTab_by_id;
+if (typeof _origShowTab === 'function') {
+  window.showTab_by_id = function(id) {
+    _origShowTab.call(this, id);
+    if (id === 'notifications') renderPreAnalysis();
+  };
+}
 </script>
 </body>
 </html>

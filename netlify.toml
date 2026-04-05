@@ -41,3 +41,23 @@
   from = "/api/connect-youtube"
   to = "/.netlify/functions/connect-youtube"
   status = 200
+
+[[redirects]]
+  from = "/api/notifications"
+  to = "/.netlify/functions/notifications"
+  status = 200
+
+[[redirects]]
+  from = "/api/pre-analyze"
+  to = "/.netlify/functions/pre-analyze"
+  status = 200
+
+[[redirects]]
+  from = "/api/check-pilot-expiry"
+  to = "/.netlify/functions/check-pilot-expiry"
+  status = 200
+
+[[redirects]]
+  from = "/api/push-subscribe"
+  to = "/.netlify/functions/push-subscribe"
+  status = 200

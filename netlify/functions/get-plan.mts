@@ -80,10 +80,17 @@ export default async (req: Request) => {
       isActive = false;
     }
 
+    // Grace period: payment failed but within 3-day window — keep plan active
+    const graceUntil = data.paymentGraceUntil || null;
+    const inGrace = graceUntil && new Date(graceUntil).getTime() > Date.now();
+    const effectiveIsActive = isActive || !!inGrace;
+
     return new Response(JSON.stringify({
-      plan: isActive ? data.plan : "free",
+      plan: effectiveIsActive ? data.plan : "free",
       currentPeriodEnd: data.currentPeriodEnd,
-      isActive,
+      isActive: effectiveIsActive,
+      graceMode: !!inGrace,
+      graceUntil: inGrace ? graceUntil : null,
       stripeCustomerId: data.stripeCustomerId,
       foundingMember: foundingData?.foundingMember || data.foundingMember || false,
       foundingMemberSince: foundingData?.foundingMemberSince || data.foundingMemberSince || null,

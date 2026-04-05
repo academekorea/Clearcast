@@ -77,10 +77,50 @@ Rules:
 - flags: max 6, high confidence only; each flag should have 1-2 citations
 - If something is not detectable, use empty arrays`;
 
+// ── TIER GATING ───────────────────────────────────────────────────────────
+function gateForTier(data: any, plan: string): any {
+  const p = (plan || "free").toLowerCase();
+  const isCreatorPlus = ["creator", "operator", "studio"].includes(p) || p === "trial";
+  const isOperatorPlus = ["operator", "studio"].includes(p);
+
+  if (!isCreatorPlus) {
+    // Free: null out scores, remove gated content
+    return {
+      ...data,
+      audioLean: data.audioLean ? {
+        leftPct: null, centerPct: null, rightPct: null,
+        basis: null, citations: [],
+        _locked: true,
+      } : null,
+      keyQuotes: [],
+      flags: [],
+      missingVoices: [],
+      sponsorConflicts: [],
+      topicBreakdown: (data.topicBreakdown || []).slice(0, 3).map((t: any) => ({
+        topic: t.topic, percentage: null, lean: null,
+      })),
+    };
+  }
+
+  if (!isOperatorPlus) {
+    // Creator: scores + keyQuotes + topicBreakdown, but no citations, no missingVoices
+    return {
+      ...data,
+      flags: (data.flags || []).map((f: any) => ({ ...f, citations: [] })),
+      missingVoices: [],
+      sponsorConflicts: [],
+    };
+  }
+
+  // Operator / Studio: full data
+  return data;
+}
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const parts = url.pathname.split("/");
   const jobId = parts[parts.length - 1];
+  const userPlan = url.searchParams.get("plan") || "free";
 
   if (!jobId) {
     return new Response(JSON.stringify({ error: "Job ID required" }), {
@@ -99,7 +139,7 @@ export default async (req: Request) => {
     }
 
     if (job.status === "complete" || job.status === "error") {
-      return new Response(JSON.stringify(job), {
+      return new Response(JSON.stringify(gateForTier(job, userPlan)), {
         status: 200, headers: { "Content-Type": "application/json" },
       });
     }
@@ -206,7 +246,7 @@ export default async (req: Request) => {
         } catch { /* non-critical */ }
       }
 
-      return new Response(JSON.stringify(result), {
+      return new Response(JSON.stringify(gateForTier(result, userPlan)), {
         status: 200, headers: { "Content-Type": "application/json" },
       });
     }
@@ -320,7 +360,7 @@ export default async (req: Request) => {
 
     // Return without _transcript to keep response lean
     const { _transcript: _t, ...partialForClient } = partial;
-    return new Response(JSON.stringify(partialForClient), {
+    return new Response(JSON.stringify(gateForTier(partialForClient, userPlan)), {
       status: 200, headers: { "Content-Type": "application/json" },
     });
 

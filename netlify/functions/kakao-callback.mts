@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { getSupabaseAdmin } from "./lib/supabase.js";
 
 async function sha256hex(text: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -172,6 +173,28 @@ export default async (req: Request) => {
         await userStore.setJSON(emailKey, userData);
       }
     } catch {}
+  }
+
+  // Upsert user to Supabase (fire-and-forget)
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    sb.from('users').upsert({
+      id: userData.id,
+      email: kakaoEmail,
+      name: userData.name,
+      avatar_url: avatarUrl,
+      provider: 'kakao',
+      tier: userData.plan || 'trial',
+      region: 'KR',
+      language: 'ko',
+      founding_member: userData.foundingMember || false,
+      founding_member_since: userData.foundingMemberSince || null,
+      founding_signup_number: userData.signupCount || null,
+      pilot_member: userData.pilotMember || false,
+      pilot_expires_at: userData.pilotExpiresAt || null,
+      created_at: userData.signupDate || new Date().toISOString(),
+      last_seen_at: new Date().toISOString(),
+    }, { onConflict: 'id' }).then(() => {}).catch(() => {});
   }
 
   const loginPayload = encodeURIComponent(JSON.stringify({
