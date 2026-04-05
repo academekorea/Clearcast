@@ -91,6 +91,5 @@ export default async (req: Request) => {
 };
 
 export const config: Config = {
-  path: '/api/send-digest',
   schedule: '0 0 * * 1', // Monday midnight UTC = 9am KST
 };

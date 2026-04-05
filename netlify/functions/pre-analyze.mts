@@ -198,6 +198,5 @@ export default async (req: Request) => {
 };
 
 export const config: Config = {
-  path: '/api/pre-analyze',
   schedule: '0 * * * *',  // every hour
 };

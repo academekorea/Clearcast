@@ -62,6 +62,5 @@ export default async (req: Request) => {
 };
 
 export const config: Config = {
-  path: '/api/check-pilot-expiry',
   schedule: '0 1 * * *', // Daily 1am UTC
 };
