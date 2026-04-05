@@ -1,0 +1,69 @@
+// Supabase client for Netlify Functions
+// Admin client — server-side only, never expose service key to browser
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
+
+let _admin: SupabaseClient | null = null
+let _public: SupabaseClient | null = null
+
+export function getSupabaseAdmin(): SupabaseClient | null {
+  const url = Netlify.env.get('SUPABASE_URL')
+  const key = Netlify.env.get('SUPABASE_SERVICE_KEY')
+  if (!url || !key) return null
+  if (!_admin) _admin = createClient(url, key)
+  return _admin
+}
+
+export function getSupabasePublic(): SupabaseClient | null {
+  const url = Netlify.env.get('SUPABASE_URL')
+  const key = Netlify.env.get('SUPABASE_ANON_KEY')
+  if (!url || !key) return null
+  if (!_public) _public = createClient(url, key)
+  return _public
+}
+
+// Fire-and-forget Supabase write — never throws, never blocks
+export async function sbInsert(table: string, data: Record<string, unknown>): Promise<void> {
+  try {
+    const sb = getSupabaseAdmin()
+    if (!sb) return
+    await sb.from(table).insert(data)
+  } catch { /* non-critical — never block main flow */ }
+}
+
+export async function sbUpsert(table: string, data: Record<string, unknown>, onConflict?: string): Promise<void> {
+  try {
+    const sb = getSupabaseAdmin()
+    if (!sb) return
+    const q = sb.from(table).upsert(data)
+    if (onConflict) (q as any).onConflict(onConflict)
+    await q
+  } catch { /* non-critical */ }
+}
+
+export async function sbUpdate(table: string, match: Record<string, unknown>, data: Record<string, unknown>): Promise<void> {
+  try {
+    const sb = getSupabaseAdmin()
+    if (!sb) return
+    let q = sb.from(table).update(data)
+    for (const [k, v] of Object.entries(match)) q = (q as any).eq(k, v)
+    await q
+  } catch { /* non-critical */ }
+}
+
+// Track event in events table (fire-and-forget)
+export function trackEvent(
+  userId: string | null | undefined,
+  eventType: string,
+  properties: Record<string, unknown> = {},
+  extra: { region?: string; tierAtTime?: string; source?: string } = {}
+): void {
+  sbInsert('events', {
+    user_id: userId || null,
+    event_type: eventType,
+    properties,
+    region: extra.region || null,
+    tier_at_time: extra.tierAtTime || null,
+    source: extra.source || 'web',
+    created_at: new Date().toISOString(),
+  }).catch(() => {})
+}

@@ -5,6 +5,7 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+  included_files = ["netlify/functions/lib/**"]
 
 [[redirects]]
   from = "/show/*"
@@ -14,4 +15,29 @@
 [[redirects]]
   from = "/account"
   to = "/account.html"
+  status = 200
+
+[[redirects]]
+  from = "/analysis/*"
+  to = "/analysis.html"
+  status = 200
+
+[[redirects]]
+  from = "/library"
+  to = "/library.html"
+  status = 200
+
+[[redirects]]
+  from = "/auth/spotify/callback"
+  to = "/.netlify/functions/auth-spotify-callback"
+  status = 200
+
+[[redirects]]
+  from = "/auth/youtube/callback"
+  to = "/.netlify/functions/auth-youtube-callback"
+  status = 200
+
+[[redirects]]
+  from = "/api/connect-youtube"
+  to = "/.netlify/functions/connect-youtube"
   status = 200

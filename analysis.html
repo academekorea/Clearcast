@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Podcast Analysis — Podlens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+<meta id="og-title" property="og:title" content="Podcast Analysis — Podlens">
+<meta id="og-desc" property="og:description" content="Know what you're actually listening to. Bias analysis powered by Podlens.">
+<meta id="og-image" property="og:image" content="https://podlens.app/og-image.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta id="tw-image" name="twitter:image" content="https://podlens.app/og-image.png">
+<meta name="theme-color" content="#0f2027">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--text:#1a1a1a;--text2:#555;--text3:#999;--navy:#0f2027;--border:rgba(0,0,0,0.1);--left:#E24B4A;--center:#D1CFC9;--right:#378ADD;--ff:'Inter',-apple-system,sans-serif;--ffs:'Playfair Display',Georgia,serif;--r:4px}
+@media(prefers-color-scheme:dark){:root{--bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--text:#FAF9F6;--text2:#888;--text3:#555;--border:rgba(255,255,255,0.08)}}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+.pl-lockup{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;margin-right:auto}
+.pl-lockup-icon{width:28px;height:28px;flex-shrink:0;border-radius:6px;display:block}
+.pl-lockup-divider{width:1px;height:30px;background:rgba(0,0,0,0.15);flex-shrink:0}
+.pl-lockup-wm{font-family:'Playfair Display',Georgia,serif;font-size:18px;line-height:1;color:var(--navy);letter-spacing:0;display:block}
+.pl-wm-pod{font-weight:400}.pl-wm-lens{font-weight:700}
+.pl-lockup-tagline{display:block;font-size:9.5px;color:var(--text3);letter-spacing:.02em;line-height:1.3;white-space:nowrap}
+.nav-cta{padding:8px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);text-decoration:none;white-space:nowrap}
+.main{max-width:880px;margin:0 auto;padding:60px 24px}
+.share-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:24px}
+.share-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block}
+.show-meta{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.show-art{width:80px;height:80px;border-radius:8px;object-fit:cover;background:var(--bg3);flex-shrink:0}
+.show-art-ph{width:80px;height:80px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:var(--ffs);font-size:28px;font-weight:700;color:#fff;flex-shrink:0}
+.show-name{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:4px}
+.ep-title{font-family:var(--ffs);font-size:28px;font-weight:700;line-height:1.2;margin-bottom:4px}
+.ep-date{font-size:12px;color:var(--text3)}
+.bias-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:28px;margin-bottom:20px}
+.bias-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
+.bias-plain{font-size:22px;font-weight:700;color:var(--text)}
+.bias-bar-wrap{height:14px;border-radius:7px;overflow:hidden;display:flex;margin-bottom:8px}
+.bias-bar-l{background:var(--left)}
+.bias-bar-c{background:var(--center)}
+.bias-bar-r{background:var(--right)}
+.bias-pcts{display:flex;gap:16px;font-size:12px;color:var(--text2)}
+.pct-l{color:var(--left)}.pct-r{color:var(--right)}
+.footnote{font-size:11px;color:var(--text3);font-style:italic;margin-top:8px}
+.summary-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:20px}
+.summary-text{font-size:15px;color:var(--text2);line-height:1.7}
+.findings-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:20px}
+.finding{border-left:3px solid var(--border);padding:10px 14px;margin-bottom:10px;background:var(--bg3);border-radius:0 4px 4px 0}
+.finding:last-child{margin-bottom:0}
+.finding-title{font-size:13px;font-weight:600;margin-bottom:4px}
+.finding-detail{font-size:12px;color:var(--text2);line-height:1.5}
+.share-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);text-decoration:none;transition:all .15s}
+.share-btn:hover{border-color:var(--navy);color:var(--navy)}
+.share-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.share-btn.primary:hover{opacity:.85}
+.kakao-btn{background:#FEE500;color:#1a1a1a;border-color:#FEE500;display:none}
+.cta-card{background:var(--navy);border-radius:8px;padding:32px;text-align:center;color:#fff}
+.cta-title{font-family:var(--ffs);font-size:24px;font-weight:700;margin-bottom:8px}
+.cta-sub{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:20px;line-height:1.5}
+.cta-btn{display:inline-block;padding:12px 28px;background:#fff;color:var(--navy);border-radius:var(--r);font-size:13px;font-weight:700;text-decoration:none;transition:opacity .15s}
+.cta-btn:hover{opacity:.88}
+.loading{text-align:center;padding:80px 24px;color:var(--text3)}
+.error-state{text-align:center;padding:80px 24px}
+.locked-blur{filter:blur(5px);user-select:none;pointer-events:none}
+.upgrade-pill{display:inline-flex;align-items:center;gap:6px;background:#FFF7ED;color:#92400e;border-radius:3px;padding:4px 10px;font-size:11px;font-weight:600;margin-left:8px}
+footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:12px;color:var(--text3)}
+footer a{color:var(--text3);text-decoration:none}footer a:hover{color:var(--text)}
+</style>
+</head>
+<body>
+<nav>
+  <a class="pl-lockup" href="/" aria-label="Podlens home">
+    <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="28" height="28">
+    <span class="pl-lockup-divider"></span>
+    <span class="pl-lockup-text">
+      <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
+      <span class="pl-lockup-tagline">Know what you're actually listening to</span>
+    </span>
+  </a>
+  <a class="nav-cta" href="/">Analyze your podcasts</a>
+</nav>
+
+<div class="main">
+  <div id="loading-state" class="loading">
+    <div style="font-size:24px;margin-bottom:12px">⏳</div>
+    <div>Loading analysis…</div>
+  </div>
+
+  <div id="error-state" class="error-state" style="display:none">
+    <div style="font-size:32px;margin-bottom:12px">🔍</div>
+    <div style="font-size:18px;font-weight:600;margin-bottom:8px">Analysis not found</div>
+    <div style="color:var(--text3);margin-bottom:20px">This share link may have expired or the analysis was removed.</div>
+    <a href="/" style="color:var(--navy);font-weight:600">Analyze your own podcast →</a>
+  </div>
+
+  <div id="content-state" style="display:none">
+    <div class="share-badge">Shared analysis</div>
+
+    <div class="show-meta">
+      <div id="show-art-wrap"></div>
+      <div>
+        <div class="show-name" id="show-name"></div>
+        <div class="ep-title" id="ep-title"></div>
+        <div class="ep-date" id="ep-date"></div>
+      </div>
+    </div>
+
+    <div class="bias-card">
+      <div class="bias-label-row">
+        <span class="section-eyebrow">Political Lean</span>
+        <span style="font-size:11px;color:var(--text3)" id="share-count-label"></span>
+      </div>
+      <div class="bias-bar-wrap">
+        <div class="bias-bar-l" id="bar-l"></div>
+        <div class="bias-bar-c" id="bar-c"></div>
+        <div class="bias-bar-r" id="bar-r"></div>
+      </div>
+      <div class="bias-pcts" id="bias-pcts"></div>
+      <div class="bias-plain" id="bias-plain" style="margin-top:12px"></div>
+      <div class="footnote">Based on language patterns and framing choices — not a judgment of the host's personal politics</div>
+    </div>
+
+    <div class="summary-card" id="summary-card" style="display:none">
+      <div class="section-eyebrow" style="margin-bottom:10px">Summary</div>
+      <div class="summary-text" id="summary-text"></div>
+    </div>
+
+    <div class="findings-card" id="findings-card" style="display:none">
+      <div class="section-eyebrow" style="margin-bottom:14px">Key Findings</div>
+      <div id="findings-list"></div>
+    </div>
+
+    <div class="share-row">
+      <button class="share-btn primary" onclick="copyLink()">📋 Copy link</button>
+      <button class="share-btn" onclick="shareX()">𝕏 Share on X</button>
+      <button class="share-btn kakao-btn" id="kakao-share-btn" onclick="shareKakao()">💬 카카오톡 공유</button>
+      <button class="share-btn" onclick="nativeShare()">📱 Share</button>
+    </div>
+
+    <div class="cta-card">
+      <div class="cta-title">Analyze your own podcasts</div>
+      <div class="cta-sub">See what you're actually listening to — bias, framing patterns, missing perspectives, and host trust score. Free to try.</div>
+      <a class="cta-btn" href="/">Get started for free →</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Podlens</a> &middot; <a href="/about.html">About</a> &middot; <a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a>
+  <div style="margin-top:8px">&copy; 2026 Podlens</div>
+</footer>
+
+<script>
+(function() {
+  var shareId = location.pathname.split('/').pop() || location.pathname.split('/').slice(-2, -1)[0];
+  var data = null;
+  var isKo = navigator.language.startsWith('ko');
+
+  if (isKo) {
+    document.getElementById('kakao-share-btn').style.display = 'inline-flex';
+  }
+
+  async function load() {
+    if (!shareId) { showError(); return; }
+    try {
+      var res = await fetch('/api/share/' + shareId);
+      if (!res.ok) { showError(); return; }
+      data = await res.json();
+      if (data.error) { showError(); return; }
+      render(data);
+    } catch(e) {
+      showError();
+    }
+  }
+
+  function showError() {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-state').style.display = 'block';
+  }
+
+  function render(d) {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('content-state').style.display = 'block';
+
+    // Update meta tags
+    document.title = (d.episodeTitle || 'Episode') + ' — Podlens Analysis';
+    document.getElementById('og-title').content = (d.episodeTitle || 'Episode') + ' — Podlens';
+    document.getElementById('og-desc').content = d.biasLabel + ' — See the full analysis on Podlens.';
+    var cardUrl = '/api/share-card?id=' + shareId
+      + '&show=' + encodeURIComponent(d.showName || '')
+      + '&title=' + encodeURIComponent((d.episodeTitle || '').slice(0,60))
+      + '&label=' + encodeURIComponent(d.biasLabel || '')
+      + '&l=' + (d.audioLean?.leftPct || 0)
+      + '&c=' + (d.audioLean?.centerPct || 0)
+      + '&r=' + (d.audioLean?.rightPct || 0);
+    document.getElementById('og-image').content = 'https://podlens.app' + cardUrl;
+    document.getElementById('tw-image').content = 'https://podlens.app' + cardUrl;
+
+    // Episode info
+    document.getElementById('show-name').textContent = d.showName || 'Podcast';
+    document.getElementById('ep-title').textContent = d.episodeTitle || 'Episode Analysis';
+    if (d.createdAt) {
+      document.getElementById('ep-date').textContent = new Date(d.createdAt).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+    }
+    if (d.shareCount > 1) {
+      document.getElementById('share-count-label').textContent = 'Viewed ' + d.shareCount + ' times';
+    }
+
+    // Artwork
+    var artWrap = document.getElementById('show-art-wrap');
+    if (d.showArtwork) {
+      artWrap.innerHTML = '<img class="show-art" src="'+escHtml(d.showArtwork)+'" alt="" onerror="this.style.display=\'none\'">';
+    } else {
+      var initials = (d.showName || 'P').charAt(0).toUpperCase();
+      artWrap.innerHTML = '<div class="show-art-ph">'+initials+'</div>';
+    }
+
+    // Bias bar
+    var al = d.audioLean || {};
+    var l = al.leftPct || 0, c = al.centerPct || 0, r = al.rightPct || 0;
+    document.getElementById('bar-l').style.width = l + '%';
+    document.getElementById('bar-c').style.width = c + '%';
+    document.getElementById('bar-r').style.width = r + '%';
+    document.getElementById('bias-pcts').innerHTML =
+      '<span class="pct-l">🔴 '+l+'% left</span>' +
+      '<span>⬜ '+c+'% center</span>' +
+      '<span class="pct-r">🔵 '+r+'% right</span>';
+    document.getElementById('bias-plain').textContent = d.biasLabel || '';
+
+    // Summary
+    if (d.summary) {
+      document.getElementById('summary-text').textContent = d.summary;
+      document.getElementById('summary-card').style.display = 'block';
+    }
+
+    // Findings
+    if (d.flags && d.flags.length) {
+      var html = d.flags.slice(0, 3).map(function(f) {
+        return '<div class="finding">' +
+          '<div class="finding-title">'+escHtml(f.title || '')+'</div>' +
+          '<div class="finding-detail">'+escHtml(f.detail || '')+'</div>' +
+          '</div>';
+      }).join('');
+      document.getElementById('findings-list').innerHTML = html;
+      document.getElementById('findings-card').style.display = 'block';
+    }
+  }
+
+  function escHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  window.copyLink = function() {
+    navigator.clipboard.writeText(location.href).then(function(){
+      var btn = document.querySelector('.share-btn.primary');
+      btn.textContent = '✓ Copied!';
+      setTimeout(function(){ btn.innerHTML = '📋 Copy link'; }, 1800);
+    });
+    logEvent('share_created', { method: 'copy', share_id: shareId });
+  };
+
+  window.shareX = function() {
+    if (!data) return;
+    var text = encodeURIComponent('"' + (data.episodeTitle||'').slice(0,60) + '" — ' + data.biasLabel + ' on Podlens:');
+    window.open('https://twitter.com/intent/tweet?text='+text+'&url='+encodeURIComponent(location.href), '_blank');
+    logEvent('share_created', { method: 'x', share_id: shareId });
+  };
+
+  window.shareKakao = function() {
+    window.open('https://podlens.app/?share=kakao&url='+encodeURIComponent(location.href), '_blank');
+  };
+
+  window.nativeShare = function() {
+    if (!data) return;
+    if (navigator.share) {
+      navigator.share({ title: data.episodeTitle, text: data.biasLabel + ' — Podlens Analysis', url: location.href });
+    } else {
+      window.copyLink();
+    }
+  };
+
+  function logEvent(type, props) {
+    fetch('/api/log-event', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event_type:type,properties:props,source:'share_page'}) }).catch(function(){});
+  }
+
+  load();
+})();
+</script>
+
+<!-- PostHog -->
+<script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),i=0;i<o.length;i++)g(u,o[i]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ',{api_host:'https://us.i.posthog.com',capture_pageview:true,capture_pageleave:true});</script>
+<!-- Sentry -->
+<script src="https://browser.sentry-cdn.com/7.x.x/bundle.min.js" crossorigin="anonymous"></script>
+<script>if(window.Sentry)Sentry.init({dsn:"https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128",environment:"production",tracesSampleRate:0.2});</script>
+</body>
+</html>

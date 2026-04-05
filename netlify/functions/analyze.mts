@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { trackEvent, sbUpsert } from "./lib/supabase.js";
 
 // ── URL NORMALIZATION ─────────────────────────────────────────────────────
 
@@ -470,6 +471,17 @@ export default async (req: Request) => {
   try {
     const body = await req.json();
     const { url: rawUrl, showName, showSlug, showArtwork, showFeedUrl, episodeTitle, store = "us", userId, userPlan } = body;
+
+    // ── Track analysis_started event ──
+    trackEvent(userId, 'analysis_started', {
+      url: rawUrl || '',
+      plan: userPlan || 'anonymous',
+    });
+    // Upsert usage record
+    if (userId) {
+      const period = new Date().toISOString().slice(0, 7); // YYYY-MM
+      sbUpsert('usage', { user_id: userId, period_start: period }, 'user_id,period_start').catch(() => {});
+    }
 
     // ── Tier enforcement ──────────────────────────────────────────────────
     if (userId && userPlan) {

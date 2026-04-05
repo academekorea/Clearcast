@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { sbInsert, sbUpdate, trackEvent } from "./lib/supabase.js";
 
 // ── KOREAN LANGUAGE DETECTION ──────────────────────────────────────────────
 function isKoreanTranscript(text: string): boolean {
@@ -138,6 +139,41 @@ export default async (req: Request) => {
       };
 
       await store.setJSON(jobId, result);
+
+      // ── Supabase: write completed analysis (fire-and-forget) ──
+      const al = result.audioLean || {};
+      const shareId = result.shareId || jobId.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 32);
+      sbInsert('analyses', {
+        id: jobId,
+        user_id: result.userId || null,
+        show_name: result.showName || null,
+        show_slug: result.showSlug || null,
+        show_artwork: result.showArtwork || null,
+        episode_title: result.episodeTitle || null,
+        episode_url: result.url || null,
+        bias_left_pct: al.leftPct ?? 0,
+        bias_center_pct: al.centerPct ?? 0,
+        bias_right_pct: al.rightPct ?? 0,
+        bias_label: result.biasLabel || null,
+        host_trust_score: result.hostTrustScore || null,
+        summary: result.summary || null,
+        share_id: shareId,
+        share_count: 0,
+        duration: result.duration || null,
+        word_count: result.wordCount || null,
+        created_at: new Date().toISOString(),
+      }).catch(() => {});
+      // Update shows table total_analyses count
+      if (result.showSlug) {
+        sbUpdate('shows', { slug: result.showSlug }, { total_analyses: 1 }).catch(() => {});
+      }
+      // Track event
+      trackEvent(result.userId, 'analysis_completed', {
+        show_name: result.showName,
+        episode_title: result.episodeTitle,
+        bias_label: result.biasLabel,
+        duration: result.duration,
+      });
 
       // Increment global analytics counter (fire-and-forget)
       try {
