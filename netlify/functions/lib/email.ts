@@ -191,6 +191,134 @@ export function newDeviceAlertEmail(opts: {
   `)
 }
 
+export function welcomeEmail(opts: {
+  name: string
+  email: string
+  plan: string
+  trialEndsAt?: string
+}): { subject: string; html: string } {
+  const firstName = opts.name.split(' ')[0] || 'there'
+  const trialNote = opts.plan === 'trial' && opts.trialEndsAt
+    ? `<p>Your 7-day Operator trial ends on <strong>${new Date(opts.trialEndsAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>. After that, you'll move to the free tier — or <a href="https://podlens.app/pricing" style="color:#0f2027">upgrade to keep your access</a>.</p>`
+    : ''
+  return {
+    subject: `Welcome to Podlens, ${firstName}`,
+    html: baseTemplate(`
+      <h1 class="h1">You're in, ${firstName} 👋</h1>
+      <p>Welcome to Podlens — your podcast bias intelligence layer.</p>
+      <p>Here's what you can do right now:</p>
+      <ul style="padding-left:18px;font-size:14px;color:#444;line-height:1.8">
+        <li>Paste any YouTube, Spotify, or podcast URL to analyze it</li>
+        <li>Connect Spotify or YouTube to build your bias fingerprint</li>
+        <li>Follow shows to get weekly bias insights</li>
+      </ul>
+      ${trialNote}
+      <a class="btn" href="https://podlens.app">Start analyzing →</a>
+      <p class="muted">Questions? Just reply to this email — we read everything.</p>
+    `)
+  }
+}
+
+export function adminLoginAlertEmail(opts: {
+  email: string
+  ip?: string
+  userAgent?: string
+  time: string
+}): { subject: string; html: string } {
+  return {
+    subject: 'Admin login detected — Podlens',
+    html: baseTemplate(`
+      <div class="danger">⚠ Admin login detected</div>
+      <h1 class="h1">Super admin access</h1>
+      <p>An admin session was started for <strong>${opts.email}</strong>.</p>
+      <table style="font-size:13px;color:#444;border-collapse:collapse;width:100%">
+        <tr><td style="padding:4px 0;color:#888">Time</td><td style="padding:4px 8px">${opts.time}</td></tr>
+        <tr><td style="padding:4px 0;color:#888">IP</td><td style="padding:4px 8px">${opts.ip || 'unknown'}</td></tr>
+        <tr><td style="padding:4px 0;color:#888">Browser</td><td style="padding:4px 8px;font-size:12px">${(opts.userAgent || 'unknown').slice(0, 80)}</td></tr>
+      </table>
+      <p style="margin-top:14px">If this wasn't you, <a href="mailto:hello@podlens.app" style="color:#0f2027">contact us immediately</a>.</p>
+    `)
+  }
+}
+
+export function accountDeletedEmail(opts: {
+  name: string
+  email: string
+}): { subject: string; html: string } {
+  const firstName = opts.name?.split(' ')[0] || 'there'
+  return {
+    subject: 'Your Podlens account has been deleted',
+    html: baseTemplate(`
+      <h1 class="h1">Account deleted</h1>
+      <p>Hi ${firstName},</p>
+      <p>Your Podlens account has been permanently deleted as requested. All your data — analysis history, fingerprint, followed shows, and preferences — has been removed.</p>
+      <p>If you had an active subscription, it has been canceled and you won't be charged again.</p>
+      <p>We're sorry to see you go. If you change your mind, you're always welcome back at <a href="https://podlens.app" style="color:#0f2027">podlens.app</a>.</p>
+      <p class="muted">This deletion is permanent and cannot be reversed. If you deleted by mistake, please <a href="mailto:hello@podlens.app">contact us within 24 hours</a> and we'll do our best to help.</p>
+    `)
+  }
+}
+
+export function showAlertEmail(opts: {
+  name: string
+  showName: string
+  episodeTitle: string
+  biasLabel: string
+  analysisUrl: string
+}): { subject: string; html: string } {
+  const firstName = opts.name?.split(' ')[0] || 'there'
+  return {
+    subject: `New episode from ${opts.showName} — analyzed`,
+    html: baseTemplate(`
+      <h1 class="h1">New episode alert</h1>
+      <p>Hi ${firstName}, a new episode of <strong>${opts.showName}</strong> you follow has been analyzed.</p>
+      <div style="background:#f4f3ef;border-radius:6px;padding:14px 16px;margin:14px 0">
+        <div style="font-size:12px;color:#888;margin-bottom:4px">${opts.showName}</div>
+        <div style="font-size:15px;font-weight:600;color:#0f2027;margin-bottom:8px">${opts.episodeTitle}</div>
+        <span class="pill">${opts.biasLabel}</span>
+      </div>
+      <a class="btn" href="${opts.analysisUrl}">See full analysis →</a>
+      <p class="muted">You're receiving this because you follow ${opts.showName} on Podlens. <a href="https://podlens.app/settings">Manage alerts</a>.</p>
+    `)
+  }
+}
+
+export function dataExportReadyEmail(opts: {
+  name: string
+  downloadUrl: string
+  expiresAt: string
+}): { subject: string; html: string } {
+  const firstName = opts.name?.split(' ')[0] || 'there'
+  return {
+    subject: 'Your Podlens data export is ready',
+    html: baseTemplate(`
+      <h1 class="h1">Your data export is ready</h1>
+      <p>Hi ${firstName},</p>
+      <p>Your Podlens data export has been generated and is ready to download. It includes your analysis history, bias fingerprint, followed shows, and account settings.</p>
+      <a class="btn" href="${opts.downloadUrl}">Download your data →</a>
+      <p class="muted">This link expires on ${new Date(opts.expiresAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. Download it before then.</p>
+    `)
+  }
+}
+
+export function pilotExpiredEmail(opts: {
+  name: string
+  plan?: string
+}): { subject: string; html: string } {
+  const firstName = opts.name?.split(' ')[0] || 'there'
+  return {
+    subject: 'Your Podlens pilot access has ended',
+    html: baseTemplate(`
+      <h1 class="h1">Your pilot access has ended</h1>
+      <p>Hi ${firstName},</p>
+      <p>Your Podlens pilot membership has ended. Your profile, analysis history, and fingerprint remain intact — you now have free tier access.</p>
+      <p>To continue with full access, choose a plan that fits how you listen:</p>
+      <a class="btn" href="https://podlens.app/pricing">See plans →</a>
+      <p class="muted">Thanks for being an early supporter of Podlens. Your feedback shaped the product.</p>
+    `)
+  }
+}
+
 // ── Send helper ──────────────────────────────────────────────────────────────
 
 export async function sendEmail(opts: {

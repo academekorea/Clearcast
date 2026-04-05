@@ -12,13 +12,15 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://podlens.app/og-image.png">
-<meta name="theme-color" content="#0f2027">
+<meta name="theme-color" content="#0A0F1E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" media="print" href="/print.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -1410,6 +1412,50 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 .trending-card:hover{border-color:var(--navy)}
 .trending-card-title{font-size:12px;font-weight:600;line-height:1.35;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .trending-card-show{font-size:10px;color:var(--text3)}
+/* Hero platform buttons */
+.hero-platform-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;color:white}
+.hero-platform-btn:hover{opacity:.88}
+.hero-platform-spotify{background:#1DB954}
+.hero-platform-youtube{background:#FF0000}
+.hero-platform-apple{background:#FC3C44}
+.hero-platform-btn.connected{opacity:.6;cursor:default}
+/* Admin */
+.adm-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);padding-bottom:0;flex-wrap:wrap}
+.adm-tab{background:none;border:none;border-bottom:2px solid transparent;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);margin-bottom:-1px}
+.adm-tab.on{color:var(--navy);border-bottom-color:var(--navy);font-weight:600}
+.adm-tab-danger.on{color:#dc2626;border-bottom-color:#dc2626}
+.adm-loading{color:var(--text3);padding:40px 0;font-size:14px}
+.adm-stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:28px}
+.adm-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.adm-stat-val{font-size:28px;font-weight:700;line-height:1;margin-bottom:4px}
+.adm-stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.adm-stat-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.adm-table{width:100%;border-collapse:collapse;font-size:13px}
+.adm-table th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:8px 12px;border-bottom:1px solid var(--border)}
+.adm-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.adm-table tr:hover td{background:var(--bg2)}
+.adm-plan-badge{font-size:10px;font-weight:700;border-radius:3px;padding:2px 6px;background:var(--navy);color:white}
+.adm-plan-badge.free{background:#888;color:white}
+.adm-plan-badge.trial{background:#7C6AF7;color:white}
+.adm-plan-badge.creator{background:#7C6AF7;color:white}
+.adm-plan-badge.operator{background:var(--navy);color:white}
+.adm-plan-badge.studio{background:#B8860B;color:white}
+.adm-chart-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px}
+.adm-chart-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:14px}
+.adm-bar-chart{display:flex;flex-direction:column;gap:8px}
+.adm-bar-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.adm-bar-label{width:120px;flex-shrink:0;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm-bar-track{flex:1;height:16px;background:var(--border);border-radius:2px;overflow:hidden}
+.adm-bar-fill{height:100%;background:var(--navy);border-radius:2px;transition:width .4s}
+.adm-bar-val{width:40px;text-align:right;color:var(--text3);flex-shrink:0}
+.adm-ctrl-row{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;flex-wrap:wrap}
+.adm-ctrl-label{font-size:13px;font-weight:600;flex:1;min-width:160px}
+.adm-ctrl-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.adm-input{border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:13px;background:var(--bg);color:var(--text)}
+.adm-danger-btn{background:#dc2626;color:white;border:none;border-radius:4px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer}
+.adm-pagination{display:flex;gap:8px;margin-top:16px;justify-content:center}
+.adm-page-btn{border:1px solid var(--border);border-radius:4px;padding:6px 12px;font-size:12px;cursor:pointer;background:none;color:var(--text2)}
+.adm-page-btn.on{background:var(--navy);color:white;border-color:var(--navy)}
 </style>
 <!-- Hotjar / ContentSquare -->
 <script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
@@ -1526,13 +1572,34 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
           </div>
           <div class="hero-kicker">Podcast Intelligence</div>
           <h1 class="hero-h" data-i18n="tagline">Know what you&rsquo;re<br><em>actually listening to.</em></h1>
-          <p class="hero-sub" data-i18n="subTagline">Discover podcasts, see their bias, listen smarter.</p>
-          <div class="hero-analyze-label">Or analyze any podcast or YouTube URL:</div>
+          <p class="hero-sub" data-i18n="subTagline">See the bias and missing voices in every podcast you love.</p>
+
+          <!-- Connected-first platform CTAs -->
+          <div id="hero-connect-block" style="margin-bottom:24px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px">Connect your listening</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button id="hero-spotify-btn" class="hero-platform-btn hero-platform-spotify" onclick="heroConnectSpotify()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                <span id="hero-spotify-label">Connect Spotify</span>
+              </button>
+              <button id="hero-youtube-btn" class="hero-platform-btn hero-platform-youtube" onclick="heroConnectYouTube()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+                <span id="hero-youtube-label">Connect YouTube</span>
+              </button>
+              <button class="hero-platform-btn hero-platform-apple" onclick="heroConnectApple()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                Apple Podcasts
+              </button>
+            </div>
+            <div id="hero-connect-status" style="font-size:12px;color:var(--text3);margin-top:10px;min-height:16px"></div>
+          </div>
+
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">Or analyze any URL</div>
           <div class="hero-input-wrap">
-            <input type="text" id="hero-url-input" class="hero-input" placeholder="https://www.youtube.com/watch?v=...  or  RSS feed  or  .mp3" autocomplete="off"/>
+            <input type="text" id="hero-url-input" class="hero-input" placeholder="YouTube, Spotify, Apple Podcasts, RSS, or .mp3" autocomplete="off"/>
             <button class="hero-analyze-btn" onclick="handleHeroAnalyze()" data-i18n="analyzeBtn">Analyze &rarr;</button>
           </div>
-          <p class="hero-platforms">Supports &middot; YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
+          <p class="hero-platforms">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
         </div>
         <!-- Right 40%: Bias Snapshot Today -->
         <div class="hero-right-panel" id="hero-stats-panel">
@@ -1955,6 +2022,38 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <canvas id="sp-canvas" style="display:none"></canvas>
   </div>
 </div><!-- /view-show -->
+
+<!-- ADMIN VIEW -->
+<div class="view" id="view-admin">
+  <div style="max-width:1400px;margin:0 auto;padding:32px 40px 80px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
+      <div>
+        <h2 style="font-family:var(--ffs);font-size:24px;font-weight:700;margin:0 0 4px">Admin Dashboard</h2>
+        <div style="font-size:13px;color:var(--text2)">Super admin view — visible only to you</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:11px;background:#dc2626;color:white;padding:3px 8px;border-radius:3px;font-weight:700">ADMIN</span>
+        <button onclick="adminRefresh()" style="font-size:12px;border:1px solid var(--border);border-radius:4px;padding:6px 12px;background:none;cursor:pointer;color:var(--text2)">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- Admin tabs -->
+    <div class="adm-tabs" id="adm-tabs">
+      <button class="adm-tab on" onclick="adminTab('overview',this)">Overview</button>
+      <button class="adm-tab" onclick="adminTab('users',this)">Users</button>
+      <button class="adm-tab" onclick="adminTab('analyses',this)">Analyses</button>
+      <button class="adm-tab" onclick="adminTab('revenue',this)">Revenue</button>
+      <button class="adm-tab" onclick="adminTab('funnel',this)">Funnel</button>
+      <button class="adm-tab" onclick="adminTab('shows',this)">Shows</button>
+      <button class="adm-tab" onclick="adminTab('events',this)">Events</button>
+      <button class="adm-tab adm-tab-danger" onclick="adminTab('controls',this)">Controls</button>
+    </div>
+
+    <div id="adm-content" style="margin-top:24px">
+      <div class="adm-loading">Loading…</div>
+    </div>
+  </div>
+</div><!-- /view-admin -->
 
 <!-- FOOTER -->
 <footer class="site-footer" id="site-footer">
@@ -2388,7 +2487,7 @@ function renderNavAuth() {
     var planBadge = (u.plan && u.plan !== 'free' && u.plan !== 'trial')
       ? '<span style="font-size:9px;background:var(--color-operator);color:#fff;border-radius:2px;padding:1px 5px;margin-left:4px;vertical-align:middle;font-weight:700">' + u.plan.toUpperCase() + '</span>' : '';
     var adminTab = u.isSuperAdmin
-      ? '<a href="/admin.html" style="color:#dc2626;font-weight:700">Admin <span style="display:inline-block;width:7px;height:7px;background:#dc2626;border-radius:50%;vertical-align:middle;margin-left:2px"></span></a>'
+      ? '<a href="#admin" onclick="showView(\'admin\');adminLoad(\'overview\');toggleUserMenu();return false;" style="color:#dc2626;font-weight:700">Admin <span style="display:inline-block;width:7px;height:7px;background:#dc2626;border-radius:50%;vertical-align:middle;margin-left:2px"></span></a>'
       : '';
     el.innerHTML = '<div class="notif-bell-wrap" id="notif-bell-wrap">'
       + '<button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifDropdown()" title="Notifications">🔔</button>'
@@ -3737,99 +3836,125 @@ function ftLabel(t) { return {['fact-check']:'Fact check',['framing']:'Framing',
 function leanColor(l) { return {left:'var(--left-bar)',center:'var(--center-bar)',right:'var(--right-bar)',neutral:'var(--text3)'}[l]||'var(--text3)'; }
 
 // ── AUDIO BRIEFING PLAYER ──
-var _audioJob=null, _audioUtterance=null, _audioPlaying=false, _audioPaused=false;
-var _audioProgInterval=null, _audioProgStart=0, _audioProgDur=90; // ~90s estimate
+var _audioJob=null, _audioEl=null, _audioPlaying=false, _audioPaused=false;
+var _audioProgInterval=null, _audioProgStart=0, _audioProgDur=90;
+var _audioBlobUrls={}; // cache blob URLs by jobId
 
 function toggleAudioSummary(jobId, script) {
-  // Check if user can play full briefing
   var cu = plUser();
   var plan = (cu && cu.plan || '').toLowerCase();
   var canPlayFull = plan === 'creator' || plan === 'operator' || plan === 'studio';
 
-  // --- Non-Creator: 10-second preview ---
+  // --- Non-Creator: 10-second Web Speech preview ---
   if (!canPlayFull) {
-    // If already playing preview, stop it
     if (_audioJob === jobId && _audioPlaying) {
       window.speechSynthesis.cancel();
       _stopProgressTick();
-      _setAudioState(jobId, false, 'Hear the full 90-second briefing &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
+      _setAudioState(jobId, false, 'Hear the full 90-sec briefing &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
       _resetProgress(jobId);
-      _audioPlaying = false; _audioPaused = false; _audioJob = null; _audioProgDur = 90;
+      _audioPlaying=false; _audioPaused=false; _audioJob=null; _audioProgDur=90;
       return;
     }
-    // Stop any other job
-    if (_audioJob && _audioJob !== jobId) {
-      window.speechSynthesis.cancel(); _resetProgress(_audioJob); _stopProgressTick();
-      _setAudioState(_audioJob, false, 'Preview &middot; first 10 seconds free');
+    if (_audioJob && _audioJob!==jobId) { window.speechSynthesis.cancel(); _resetProgress(_audioJob); _stopProgressTick(); }
+    _audioJob=jobId; _audioPlaying=true; _audioPaused=false;
+    var preview=new SpeechSynthesisUtterance(script.replace(/&#39;/g,"'").replace(/&quot;/g,'"'));
+    preview.rate=0.95;
+    function _doPreview() {
+      var vv=window.speechSynthesis.getVoices();
+      var pv=vv.find(function(v){return v.lang==='en-US'&&(/Natural|Premium|Enhanced/i).test(v.name);})||vv.find(function(v){return v.lang==='en-US';})||vv[0];
+      if(pv) preview.voice=pv;
+      _setAudioState(jobId,true,'Playing preview \u2014 10 sec\u2026');
+      _audioProgStart=Date.now(); _audioProgDur=10; _startProgressTick(jobId);
+      var t=setTimeout(function(){
+        window.speechSynthesis.cancel(); _stopProgressTick(); _resetProgress(jobId); _audioProgDur=90;
+        _setAudioState(jobId,false,'Hear the full 90-sec briefing &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
+        _audioPlaying=false; _audioPaused=false; _audioJob=null;
+      },10000);
+      preview.onend=preview.onerror=function(){ clearTimeout(t); _stopProgressTick(); _resetProgress(jobId); _audioProgDur=90; _audioPlaying=false; _audioPaused=false; _audioJob=null; };
+      window.speechSynthesis.speak(preview);
     }
-    _audioJob = jobId; _audioPlaying = true; _audioPaused = false;
-    var decodedPreview = script.replace(/&#39;/g,"'").replace(/&quot;/g,'"');
-    var utterPreview = new SpeechSynthesisUtterance(decodedPreview);
-    utterPreview.rate = 0.95; utterPreview.pitch = 1.0; utterPreview.volume = 1.0;
-    function _speakPreview() {
-      var voices = window.speechSynthesis.getVoices();
-      var pref = voices.find(function(v){return v.lang==='en-US'&&(/Natural|Premium|Enhanced/i).test(v.name);})||voices.find(function(v){return v.lang==='en-US';})||voices[0];
-      if (pref) utterPreview.voice = pref;
-      _setAudioState(jobId, true, 'Playing preview \u2014 10 seconds\u2026');
-      _audioProgStart = Date.now(); _audioProgDur = 10;
-      _startProgressTick(jobId);
-      var previewTimer = setTimeout(function() {
-        window.speechSynthesis.cancel();
-        _stopProgressTick(); _resetProgress(jobId); _audioProgDur = 90;
-        _setAudioState(jobId, false, 'Hear the full 90-second briefing &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
-        _audioPlaying = false; _audioPaused = false; _audioJob = null;
-      }, 10000);
-      utterPreview.onend = function() { clearTimeout(previewTimer); _stopProgressTick(); _resetProgress(jobId); _audioProgDur = 90; _audioPlaying = false; _audioPaused = false; _audioJob = null; };
-      utterPreview.onerror = function() { clearTimeout(previewTimer); _stopProgressTick(); _resetProgress(jobId); _audioProgDur = 90; _audioPlaying = false; _audioPaused = false; _audioJob = null; };
-      _audioUtterance = utterPreview;
-      window.speechSynthesis.speak(utterPreview);
-    }
-    if (window.speechSynthesis.getVoices().length) { _speakPreview(); }
-    else { window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.onvoiceschanged = null; _speakPreview(); }; _speakPreview(); }
+    if(window.speechSynthesis.getVoices().length){_doPreview();}
+    else{window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.onvoiceschanged=null;_doPreview();};_doPreview();}
     return;
   }
 
-  // --- Creator+: Full briefing ---
-  if (_audioJob===jobId) {
-    if (_audioPaused) {
-      window.speechSynthesis.resume();
-      _audioPaused=false;
-      _setAudioState(jobId, true, 'Playing briefing\u2026');
+  // --- Creator+: if Audio element already loaded for this job ---
+  if (_audioEl && _audioJob===jobId) {
+    if (_audioPaused||_audioEl.paused) {
+      _audioEl.play().catch(function(){});
+      _audioPaused=false; _audioPlaying=true;
+      _setAudioState(jobId,true,'Playing briefing\u2026');
       _startProgressTick(jobId);
-      return;
-    }
-    if (_audioPlaying) {
-      window.speechSynthesis.pause();
-      _audioPaused=true;
+    } else {
+      _audioEl.pause();
+      _audioPaused=true; _audioPlaying=false;
       _stopProgressTick();
-      _setAudioState(jobId, false, 'Paused \u2014 tap to resume');
-      return;
+      _setAudioState(jobId,false,'Paused \u2014 tap to resume');
     }
+    return;
   }
-  if (_audioJob && _audioJob!==jobId) {
-    window.speechSynthesis.cancel();
-    _setAudioState(_audioJob, false, 'Listen to briefing \u00b7 ~1 min 30 sec');
-    _resetProgress(_audioJob);
-    _stopProgressTick();
+
+  // Stop other job
+  if (_audioEl && _audioJob!==jobId) {
+    _audioEl.pause(); _audioEl.src='';
+    _stopProgressTick(); _resetProgress(_audioJob);
+    _setAudioState(_audioJob,false,'Listen to briefing \u00b7 ~90 sec');
+    _audioEl=null;
   }
-  _audioJob=jobId; _audioPlaying=true; _audioPaused=false;
+
+  _audioJob=jobId; _audioPlaying=false;
+  _setAudioState(jobId,false,'Loading briefing\u2026');
+
+  // Fetch TTS audio from backend (with blob URL cache)
+  function _playFromUrl(blobUrl) {
+    var el=new Audio(blobUrl);
+    el.preload='auto';
+    _audioEl=el;
+    el.oncanplaythrough=function(){
+      _audioPlaying=true; _audioPaused=false;
+      _setAudioState(jobId,true,'Playing briefing\u2026');
+      _audioProgStart=Date.now(); _audioProgDur=el.duration||90;
+      _startProgressTick(jobId);
+      el.play().catch(function(){_setAudioState(jobId,false,'Tap to play briefing');});
+    };
+    el.onended=function(){
+      _setAudioState(jobId,false,'Briefing complete \u2014 tap to replay');
+      _resetProgress(jobId); _stopProgressTick();
+      _audioPlaying=false; _audioPaused=false; _audioJob=null; _audioEl=null;
+    };
+    el.onerror=function(){
+      _setAudioState(jobId,false,'Playback error \u2014 tap to retry');
+      _stopProgressTick(); _audioPlaying=false; _audioEl=null;
+    };
+  }
+
+  if (_audioBlobUrls[jobId]) { _playFromUrl(_audioBlobUrls[jobId]); return; }
+
+  var lang = (_settings&&_settings.lang==='ko') ? 'ko' : 'en';
   var decodedScript=script.replace(/&#39;/g,"'").replace(/&quot;/g,'"');
-  var utter=new SpeechSynthesisUtterance(decodedScript);
-  utter.rate=0.95; utter.pitch=1.0; utter.volume=1.0;
-  function _speak() {
-    var voices=window.speechSynthesis.getVoices();
-    var preferred=voices.find(function(v){return v.lang==='en-US'&&(/Natural|Premium|Enhanced/i).test(v.name);})||voices.find(function(v){return v.lang==='en-US'&&!v.name.includes('Google');})||voices.find(function(v){return v.lang==='en-US';})||voices[0];
-    if (preferred) utter.voice=preferred;
-    _setAudioState(jobId, true, 'Playing briefing\u2026');
-    _audioProgStart=Date.now(); _audioProgDur=90;
-    _startProgressTick(jobId);
-    utter.onend=function(){ _setAudioState(jobId, false, 'Briefing complete \u2014 tap to replay'); _resetProgress(jobId); _stopProgressTick(); _audioPlaying=false; _audioPaused=false; _audioJob=null; };
-    utter.onerror=function(){ _setAudioState(jobId, false, 'Listen to briefing \u00b7 ~1 min 30 sec'); _resetProgress(jobId); _stopProgressTick(); _audioPlaying=false; _audioPaused=false; _audioJob=null; };
-    _audioUtterance=utter;
+  fetch('/api/audio-briefing', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({jobId:jobId, script:decodedScript, lang:lang, userId:(cu&&cu.id||'')})
+  }).then(function(r){
+    if(!r.ok) throw new Error('TTS API ' + r.status);
+    return r.blob();
+  }).then(function(blob){
+    var url=URL.createObjectURL(blob);
+    _audioBlobUrls[jobId]=url;
+    _playFromUrl(url);
+  }).catch(function(){
+    // Fallback to Web Speech for Creator+
+    _audioEl=null;
+    _setAudioState(jobId,true,'Playing briefing\u2026');
+    var utter=new SpeechSynthesisUtterance(decodedScript);
+    utter.rate=0.95;
+    _audioJob=jobId; _audioPlaying=true; _audioPaused=false;
+    _audioProgStart=Date.now(); _audioProgDur=90; _startProgressTick(jobId);
+    utter.onend=function(){ _setAudioState(jobId,false,'Briefing complete'); _resetProgress(jobId); _stopProgressTick(); _audioPlaying=false; _audioJob=null; };
+    utter.onerror=utter.onend;
     window.speechSynthesis.speak(utter);
-  }
-  if (window.speechSynthesis.getVoices().length) { _speak(); }
-  else { window.speechSynthesis.onvoiceschanged=function(){ window.speechSynthesis.onvoiceschanged=null; _speak(); }; _speak(); }
+  });
 }
 
 function showAudioGate() {
@@ -3937,6 +4062,7 @@ function thFilter(btn, dir) {
 // ── RENDER RESULTS (2-col dashboard) ──
 function renderResults(data) {
   if (data.jobId) _currentJobId = data.jobId;
+  window._lastAnalysisResult = data; // used by share system
   var vid=ytId(data.url||'');
   var u=plUser(); var plan=(u&&u.plan||'').toLowerCase();
   var canPlay=plan==='creator'||plan==='operator'||plan==='studio'||plan==='trial';
@@ -4220,10 +4346,194 @@ function renderResults(data) {
 }
 
 function shareAnalysis(jobId) {
-  var url=window.location.origin+'/analysis/'+jobId;
-  if (navigator.share) { navigator.share({title:'Podlens Analysis',url:window.location.href}); }
-  else if (navigator.clipboard) { navigator.clipboard.writeText(window.location.href).then(function(){ plToast('Link copied!'); }); }
-  else { plToast('Copy URL from your address bar'); }
+  // Find analysis data
+  var data = window._lastAnalysisResult || {};
+  if (!data.jobId && jobId) data.jobId = jobId;
+  showShareModal(data);
+}
+
+function showShareModal(data) {
+  var jobId = data.jobId || '';
+  var analysisUrl = window.location.origin + '/analysis/' + jobId;
+  var title = (data.episodeTitle || 'Podcast Analysis') + ' — Podlens';
+  var biasLabel = (data.audioLean && data.audioLean.plainEnglishLabel) || 'Analyzed on Podlens';
+  var showName = data.showName || 'Podcast';
+  var tweetText = encodeURIComponent('"' + (data.episodeTitle || showName) + '" leans ' + biasLabel + '. See the full breakdown: ' + analysisUrl + ' via @podlensapp #podcasts');
+  var isKorean = (_settings && _settings.lang === 'ko');
+
+  // Remove old modal if any
+  var old = document.getElementById('share-modal-overlay');
+  if (old) old.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'share-modal-overlay';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99990;display:flex;align-items:flex-end;justify-content:center;padding-bottom:0';
+  modal.innerHTML = '<div id="share-modal-inner" style="background:var(--bg);border-radius:12px 12px 0 0;width:100%;max-width:520px;padding:0 0 24px;box-shadow:0 -8px 32px rgba(0,0,0,.2)">'
+    + '<div style="padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">'
+    + '<div style="font-size:14px;font-weight:700">Share this analysis</div>'
+    + '<button onclick="document.getElementById(\'share-modal-overlay\').remove()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);line-height:1">&times;</button>'
+    + '</div>'
+    + '<div style="padding:12px 20px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border)">'
+    + '<span style="font-weight:600">' + _escHtml(showName) + '</span> · ' + _escHtml((data.episodeTitle || '').substring(0, 60)) + (data.episodeTitle && data.episodeTitle.length > 60 ? '…' : '')
+    + '<div style="margin-top:4px"><span style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px;background:var(--navy);color:white">' + _escHtml(biasLabel) + '</span></div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin:0">'
+    + _shareBtn('🔗', 'Copy link', 'document.getElementById(\'share-modal-overlay\').remove();_shareCopyLink(\'' + analysisUrl + '\')')
+    + _shareBtn('𝕏', 'Share on X', 'window.open(\'https://x.com/intent/tweet?text=' + tweetText + '\',\'_blank\')')
+    + _shareBtn('in', 'LinkedIn', 'window.open(\'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(analysisUrl) + '\',\'_blank\')')
+    + _shareBtn('💬', 'WhatsApp', 'window.open(\'https://wa.me/?text=' + encodeURIComponent(title + ' ' + analysisUrl) + '\',\'_blank\')')
+    + (isKorean ? _shareBtn('💛', 'KakaoTalk', '_shareKakao(\'' + analysisUrl + '\',\'' + _escJs(biasLabel) + '\')') : _shareBtn('📧', 'Email', 'window.open(\'mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(analysisUrl) + '\')'))
+    + _shareBtn('🖼', 'Download card', 'document.getElementById(\'share-modal-overlay\').remove();_shareDownloadCard()')
+    + '</div>'
+    + '</div>';
+
+  modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+function _shareBtn(icon, label, onclick) {
+  return '<button onclick="' + onclick + '" style="background:var(--bg);border:none;padding:18px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--text2);font-weight:500;transition:background .1s" onmouseover="this.style.background=\'var(--bg2)\'" onmouseout="this.style.background=\'var(--bg)\'">'
+    + '<span style="font-size:22px;line-height:1">' + icon + '</span>' + label + '</button>';
+}
+
+function _escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function _escJs(s) { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+function _shareCopyLink(url) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function(){ showToast('Link copied to clipboard', 2000); });
+  } else {
+    var inp = document.createElement('input');
+    inp.value = url; document.body.appendChild(inp); inp.select();
+    document.execCommand('copy'); document.body.removeChild(inp);
+    showToast('Link copied', 2000);
+  }
+}
+
+function _shareKakao(url, biasLabel) {
+  if (window.Kakao && Kakao.Link) {
+    Kakao.Link.sendDefault({ objectType: 'feed',
+      content: { title: 'Podlens Analysis', description: biasLabel,
+        imageUrl: 'https://podlens.app/og-image.png',
+        link: { mobileWebUrl: url, webUrl: url } },
+      buttons: [{ title: '분석 보기', link: { mobileWebUrl: url, webUrl: url } }]
+    });
+  } else { _shareCopyLink(url); }
+}
+
+function _shareDownloadCard() {
+  var data = window._lastAnalysisResult || {};
+  generateShareCard1200(data).then(function(dataUrl) {
+    var a = document.createElement('a');
+    a.download = 'podlens-' + (data.jobId || 'analysis') + '.png';
+    a.href = dataUrl; a.click();
+  }).catch(function(){ showToast('Could not generate card', 2000); });
+}
+
+async function generateShareCard1200(data) {
+  var W = 1200, H = 630;
+  var canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext('2d');
+
+  // Bias-colored gradient background
+  var leftPct = (data.audioLean && data.audioLean.leftPct) || 33;
+  var rightPct = (data.audioLean && data.audioLean.rightPct) || 33;
+  var gradient = ctx.createLinearGradient(0, 0, W, H);
+  gradient.addColorStop(0, '#0A0F1E');
+  gradient.addColorStop(0.5, '#0f2027');
+  gradient.addColorStop(1, '#0A0F1E');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, W, H);
+
+  // Bias accent strip at left edge
+  var biasGrad = ctx.createLinearGradient(0, 0, 0, H);
+  biasGrad.addColorStop(0, '#E24B4A');
+  biasGrad.addColorStop(0.5, '#D1CFC9');
+  biasGrad.addColorStop(1, '#378ADD');
+  ctx.fillStyle = biasGrad;
+  ctx.fillRect(0, 0, 8, H);
+
+  // Artwork circle
+  if (data.artworkUrl) {
+    try {
+      var img = new Image(); img.crossOrigin = 'anonymous';
+      await new Promise(function(r) { img.onload = r; img.onerror = r; img.src = data.artworkUrl; });
+      if (img.naturalWidth) {
+        ctx.save();
+        ctx.beginPath(); ctx.arc(100, H/2, 72, 0, Math.PI*2); ctx.clip();
+        ctx.drawImage(img, 28, H/2 - 72, 144, 144);
+        ctx.restore();
+      }
+    } catch {}
+  }
+
+  var xContent = 196;
+
+  // PODLENS wordmark
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '400 13px Georgia, serif';
+  ctx.fillText('POD', xContent, 72);
+  ctx.font = '700 13px Georgia, serif';
+  ctx.fillText('LENS', xContent + 30, 72);
+
+  // Show name
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.font = '500 16px Inter, sans-serif';
+  ctx.fillText((data.showName || '').substring(0, 50), xContent, 108);
+
+  // Episode title
+  ctx.fillStyle = 'white';
+  ctx.font = '700 28px Inter, sans-serif';
+  var titleStr = (data.episodeTitle || 'Episode Analysis').substring(0, 55);
+  if ((data.episodeTitle || '').length > 55) titleStr += '…';
+  ctx.fillText(titleStr, xContent, 152);
+
+  // Bias bar
+  var barY = 196, barH = 14, barW = W - xContent - 40;
+  var lW = Math.round((leftPct/100) * barW);
+  var cW = Math.round(((data.audioLean && data.audioLean.centerPct)||34)/100 * barW);
+  var rW = barW - lW - cW;
+  function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r); ctx.closePath(); }
+  ctx.fillStyle = '#E24B4A'; rr(xContent, barY, lW, barH, 3); ctx.fill();
+  ctx.fillStyle = '#D1CFC9'; rr(xContent + lW + 2, barY, cW, barH, 3); ctx.fill();
+  ctx.fillStyle = '#378ADD'; rr(xContent + lW + cW + 4, barY, rW, barH, 3); ctx.fill();
+
+  // Bias label pill
+  var label = (data.audioLean && data.audioLean.plainEnglishLabel) || 'Analyzed on Podlens';
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  rr(xContent, barY + 28, 200, 26, 4); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = '600 13px Inter, sans-serif';
+  ctx.fillText(label, xContent + 10, barY + 45);
+
+  // Pct labels
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.font = '400 12px Inter, sans-serif';
+  ctx.fillText(leftPct + '% left  ·  ' + ((data.audioLean&&data.audioLean.centerPct)||34) + '% center  ·  ' + rightPct + '% right', xContent + 220, barY + 45);
+
+  // Key quote (if available)
+  var quote = data.keyQuotes && data.keyQuotes[0] && data.keyQuotes[0].text;
+  if (quote) {
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.fillRect(xContent, barY + 80, 3, 60);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = 'italic 400 15px Georgia, serif';
+    var qStr = '"' + quote.substring(0, 90) + (quote.length > 90 ? '…' : '') + '"';
+    ctx.fillText(qStr, xContent + 14, barY + 100);
+  }
+
+  // Footer
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  ctx.fillRect(0, H - 48, W, 1);
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '400 13px Inter, sans-serif';
+  ctx.fillText('podlens.app', xContent, H - 18);
+  ctx.textAlign = 'right';
+  ctx.fillText('Know what you\'re actually listening to', W - 40, H - 18);
+  ctx.textAlign = 'left';
+
+  return canvas.toDataURL('image/png');
 }
 
 // ── SLUGIFY ──
@@ -6874,6 +7184,369 @@ function rotateSpotlight() {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 })();
+
+// ── HERO PLATFORM CONNECT ────────────────────────────────────────────────────
+function heroConnectSpotify() {
+  var u = plUser();
+  if (!u) { openModal('signup'); return; }
+  // Check if already connected
+  var isConnected = localStorage.getItem('pl-spotify-connected') === '1';
+  if (isConnected) {
+    showToast('Spotify already connected — importing library…', 2000);
+    if (typeof startSpotifyImport === 'function') startSpotifyImport();
+    return;
+  }
+  // Start Spotify OAuth
+  var clientId = '1eb72bc291654bfba6cd9ce1679c5774';
+  var scopes = 'user-library-read user-read-recently-played user-top-read';
+  var redirect = encodeURIComponent(window.location.origin + '/auth/spotify/callback');
+  var state = crypto.randomUUID();
+  sessionStorage.setItem('spotify_oauth_state', state);
+  window.location.href = 'https://accounts.spotify.com/authorize?response_type=code&client_id=' + clientId
+    + '&scope=' + encodeURIComponent(scopes) + '&redirect_uri=' + redirect + '&state=' + state;
+}
+
+function heroConnectYouTube() {
+  var u = plUser();
+  if (!u) { openModal('signup'); return; }
+  var isConnected = localStorage.getItem('pl-youtube-connected') === '1';
+  if (isConnected) {
+    showToast('YouTube already connected', 2000);
+    return;
+  }
+  // Start YouTube OAuth
+  fetch('/api/connect-youtube?userId=' + encodeURIComponent(u.id))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.authUrl) window.location.href = d.authUrl;
+      else showToast('Could not start YouTube auth', 2000);
+    })
+    .catch(function(){ showToast('Network error — try again', 2000); });
+}
+
+function heroConnectApple() {
+  var u = plUser();
+  if (!u) { openModal('signup'); return; }
+  showToast('Apple Podcasts integration coming soon — paste your podcast URL above to analyze any episode now', 4000);
+}
+
+(function() {
+  // Update connect buttons state on load
+  function updateHeroConnectStatus() {
+    var u = plUser();
+    var status = document.getElementById('hero-connect-status');
+    var spotifyBtn = document.getElementById('hero-spotify-btn');
+    var youtubeBtn = document.getElementById('hero-youtube-btn');
+    var spotifyLabel = document.getElementById('hero-spotify-label');
+    var youtubeLabel = document.getElementById('hero-youtube-label');
+    if (!u) return;
+
+    var spotifyConnected = localStorage.getItem('pl-spotify-connected') === '1';
+    var youtubeConnected = localStorage.getItem('pl-youtube-connected') === '1';
+
+    if (spotifyConnected && spotifyBtn && spotifyLabel) {
+      spotifyLabel.textContent = '✓ Spotify connected';
+      spotifyBtn.classList.add('connected');
+    }
+    if (youtubeConnected && youtubeBtn && youtubeLabel) {
+      youtubeLabel.textContent = '✓ YouTube connected';
+      youtubeBtn.classList.add('connected');
+    }
+
+    var connected = [];
+    if (spotifyConnected) connected.push('Spotify');
+    if (youtubeConnected) connected.push('YouTube');
+    if (connected.length > 0 && status) {
+      status.textContent = '✓ ' + connected.join(' & ') + ' connected — your bias fingerprint updates automatically';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', updateHeroConnectStatus);
+  setTimeout(updateHeroConnectStatus, 500);
+})();
+
+// ── ADMIN DASHBOARD ──────────────────────────────────────────────────────────
+var _adminCurrentTab = 'overview';
+var _adminPage = 1;
+
+function adminLoad(tab) {
+  _adminCurrentTab = tab;
+  _adminPage = 1;
+  _fetchAdminData(tab, 1);
+}
+
+function adminTab(tab, btn) {
+  document.querySelectorAll('.adm-tab').forEach(function(b){ b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  _adminCurrentTab = tab;
+  _adminPage = 1;
+  _fetchAdminData(tab, 1);
+}
+
+function adminRefresh() {
+  _fetchAdminData(_adminCurrentTab, _adminPage);
+}
+
+function _fetchAdminData(tab, page) {
+  var u = plUser();
+  if (!u || !u.isSuperAdmin) return;
+  var el = document.getElementById('adm-content');
+  if (!el) return;
+  el.innerHTML = '<div class="adm-loading">Loading ' + tab + '…</div>';
+  fetch('/api/admin-data?tab=' + tab + '&email=' + encodeURIComponent(u.email) + '&page=' + page)
+    .then(function(r){ return r.json(); })
+    .then(function(d){ _renderAdminTab(tab, d); })
+    .catch(function(e){ el.innerHTML = '<div class="adm-loading" style="color:#dc2626">Error loading data</div>'; });
+}
+
+function _renderAdminTab(tab, d) {
+  var el = document.getElementById('adm-content');
+  if (!el) return;
+  var html = '';
+
+  if (tab === 'overview') {
+    html += '<div class="adm-stat-grid">'
+      + _admStat(d.totalUsers, 'Total Users', '+' + d.newToday + ' today')
+      + _admStat(d.new7d, 'New (7d)', '+' + d.new30d + ' / 30d')
+      + _admStat(d.dau, 'DAU', d.wau + ' WAU')
+      + _admStat(d.totalAnalyses, 'Total Analyses', d.analyses24h + ' today / ' + d.analyses7d + ' 7d')
+      + _admStat('$' + (d.mrr/100).toFixed(0), 'MRR', 'Monthly recurring')
+      + '</div>';
+
+    // Plan breakdown
+    html += '<div class="adm-chart-wrap"><div class="adm-chart-title">Users by Plan</div><div class="adm-bar-chart">';
+    var plans = d.planCounts || {};
+    var maxPlan = Math.max.apply(null, Object.values(plans).map(Number)) || 1;
+    ['free','trial','creator','operator','studio'].forEach(function(p) {
+      var cnt = plans[p] || 0;
+      html += '<div class="adm-bar-row"><div class="adm-bar-label">' + p + '</div>'
+        + '<div class="adm-bar-track"><div class="adm-bar-fill" style="width:' + Math.round((cnt/maxPlan)*100) + '%;background:' + (p==='studio'?'#B8860B':p==='operator'?'var(--navy)':p==='creator'||p==='trial'?'#7C6AF7':'#888') + '"></div></div>'
+        + '<div class="adm-bar-val">' + cnt + '</div></div>';
+    });
+    html += '</div></div>';
+
+    // DAU trend
+    if (d.dauTrend && d.dauTrend.length) {
+      html += '<div class="adm-chart-wrap"><div class="adm-chart-title">Activity Trend (7 days)</div><div class="adm-bar-chart">';
+      var maxDau = Math.max.apply(null, d.dauTrend.map(function(t){ return t.count; })) || 1;
+      d.dauTrend.forEach(function(t) {
+        html += '<div class="adm-bar-row"><div class="adm-bar-label">' + t.date.slice(5) + '</div>'
+          + '<div class="adm-bar-track"><div class="adm-bar-fill" style="width:' + Math.round((t.count/maxDau)*100) + '%"></div></div>'
+          + '<div class="adm-bar-val">' + t.count + '</div></div>';
+      });
+      html += '</div></div>';
+    }
+  }
+
+  else if (tab === 'users') {
+    html += '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">'
+      + '<input id="adm-user-search" class="adm-input" placeholder="Search email or name…" style="flex:1;min-width:200px" onkeydown="if(event.key===\'Enter\')_admUserSearch()">'
+      + '<select id="adm-user-plan" class="adm-input" onchange="_admUserSearch()">'
+      + '<option value="">All plans</option>'
+      + ['free','trial','creator','operator','studio'].map(function(p){ return '<option value="'+p+'">'+p+'</option>'; }).join('')
+      + '</select>'
+      + '<button onclick="_admUserSearch()" style="border:1px solid var(--border);border-radius:4px;padding:8px 14px;cursor:pointer;font-size:13px">Search</button></div>';
+
+    html += '<table class="adm-table"><thead><tr><th>Email</th><th>Name</th><th>Plan</th><th>Joined</th><th>Last seen</th><th>Actions</th></tr></thead><tbody>';
+    (d.users || []).forEach(function(u) {
+      html += '<tr>'
+        + '<td>' + _esc(u.email || '') + (u.is_super_admin ? ' 👑' : '') + '</td>'
+        + '<td>' + _esc(u.name || '') + '</td>'
+        + '<td><span class="adm-plan-badge ' + (u.plan||'free') + '">' + (u.plan||'free').toUpperCase() + '</span></td>'
+        + '<td>' + (u.created_at||'').slice(0,10) + '</td>'
+        + '<td>' + (u.last_seen_at||'').slice(0,10) + '</td>'
+        + '<td><button onclick="_admSetPlan(\'' + u.id + '\')" style="font-size:11px;border:1px solid var(--border);border-radius:3px;padding:3px 8px;cursor:pointer;background:none">Set plan</button></td>'
+        + '</tr>';
+    });
+    html += '</tbody></table>';
+    html += _admPager(d.page, d.total, d.perPage, function(p){ _adminPage=p; _fetchAdminData('users',p); });
+    html += '<div style="font-size:12px;color:var(--text3);margin-top:8px">Showing ' + (d.users||[]).length + ' of ' + d.total + ' users</div>';
+  }
+
+  else if (tab === 'analyses') {
+    html += '<table class="adm-table"><thead><tr><th>Show</th><th>Episode</th><th>User</th><th>Date</th><th>Duration</th><th>Status</th></tr></thead><tbody>';
+    (d.analyses || []).forEach(function(a) {
+      html += '<tr>'
+        + '<td>' + _esc(a.show_name||'—') + '</td>'
+        + '<td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(a.episode_title||a.episode_url||'') + '</td>'
+        + '<td style="font-size:11px;color:var(--text3)">' + (a.user_id||'').slice(0,8) + '…</td>'
+        + '<td>' + (a.created_at||'').slice(0,10) + '</td>'
+        + '<td>' + (a.duration_ms ? Math.round(a.duration_ms/1000) + 's' : '—') + '</td>'
+        + '<td><span style="font-size:10px;font-weight:600">' + (a.status||'') + '</span></td>'
+        + '</tr>';
+    });
+    html += '</tbody></table>';
+    html += '<div style="font-size:12px;color:var(--text3);margin-top:8px">' + d.total + ' total analyses</div>';
+  }
+
+  else if (tab === 'revenue') {
+    html += '<div class="adm-stat-grid">'
+      + _admStat('$' + ((d.mrr||0)/100).toFixed(0), 'MRR', d.activeCount + ' active subs')
+      + _admStat(d.activeCount, 'Active Subs', d.canceledCount + ' canceled')
+      + _admStat(d.activeCount > 0 ? '$' + (d.mrr/100/d.activeCount).toFixed(0) : '$0', 'ARPU', 'Avg revenue / user')
+      + '</div>';
+
+    if (d.planRevenue) {
+      html += '<div class="adm-chart-wrap"><div class="adm-chart-title">Revenue by Plan</div><div class="adm-bar-chart">';
+      var maxRev = Math.max.apply(null, Object.values(d.planRevenue).map(function(v){ return v.mrr; })) || 1;
+      Object.entries(d.planRevenue).forEach(function(e) {
+        var p = e[0], v = e[1];
+        html += '<div class="adm-bar-row"><div class="adm-bar-label">' + p + ' (' + v.count + ')</div>'
+          + '<div class="adm-bar-track"><div class="adm-bar-fill" style="width:' + Math.round((v.mrr/maxRev)*100) + '%"></div></div>'
+          + '<div class="adm-bar-val">$' + (v.mrr/100).toFixed(0) + '</div></div>';
+      });
+      html += '</div></div>';
+    }
+
+    if (d.mrrTrend && d.mrrTrend.length) {
+      html += '<div class="adm-chart-wrap"><div class="adm-chart-title">MRR by Month</div><div class="adm-bar-chart">';
+      var maxMrr = Math.max.apply(null, d.mrrTrend.map(function(t){ return t.mrr; })) || 1;
+      d.mrrTrend.forEach(function(t) {
+        html += '<div class="adm-bar-row"><div class="adm-bar-label">' + t.month + '</div>'
+          + '<div class="adm-bar-track"><div class="adm-bar-fill" style="width:' + Math.round((t.mrr/maxMrr)*100) + '%"></div></div>'
+          + '<div class="adm-bar-val">$' + (t.mrr/100).toFixed(0) + '</div></div>';
+      });
+      html += '</div></div>';
+    }
+  }
+
+  else if (tab === 'funnel') {
+    html += '<div class="adm-stat-grid">'
+      + _admStat(d.total, 'Total Signups', 'All time')
+      + _admStat(d.trial, 'In Trial', 'Active 7-day trials')
+      + _admStat(d.free, 'Free Tier', 'Trial expired → free')
+      + _admStat(d.paying, 'Paying', d.trialToPaid + '% conversion')
+      + '</div>';
+    html += '<div class="adm-chart-wrap"><div class="adm-chart-title">Conversion Funnel</div><div class="adm-bar-chart">';
+    var steps = [
+      { label: 'Signed up', val: d.total },
+      { label: 'Completed trial', val: d.total - d.trial },
+      { label: 'Upgraded to paid', val: d.paying },
+    ];
+    var maxFunnel = steps[0].val || 1;
+    steps.forEach(function(s) {
+      html += '<div class="adm-bar-row"><div class="adm-bar-label">' + s.label + '</div>'
+        + '<div class="adm-bar-track"><div class="adm-bar-fill" style="width:' + Math.round((s.val/maxFunnel)*100) + '%"></div></div>'
+        + '<div class="adm-bar-val">' + s.val + '</div></div>';
+    });
+    html += '</div></div>';
+    html += '<div style="font-size:13px;color:var(--text2);padding:8px 0">Trial → Paid: <strong>' + d.trialToPaid + '%</strong> &nbsp;|&nbsp; Any upgrade: <strong>' + d.freeToAny + '%</strong></div>';
+  }
+
+  else if (tab === 'shows') {
+    html += '<div class="adm-chart-wrap"><div class="adm-chart-title">Most Analyzed Shows</div><div class="adm-bar-chart">';
+    var shows = (d.shows || []).slice(0, 30);
+    var maxShow = shows.length > 0 ? shows[0].count : 1;
+    shows.forEach(function(s) {
+      html += '<div class="adm-bar-row"><div class="adm-bar-label" title="' + _esc(s.name) + '">' + _esc(s.name) + '</div>'
+        + '<div class="adm-bar-track"><div class="adm-bar-fill" style="width:' + Math.round((s.count/maxShow)*100) + '%"></div></div>'
+        + '<div class="adm-bar-val">' + s.count + '</div></div>';
+    });
+    html += '</div></div>';
+  }
+
+  else if (tab === 'events') {
+    html += '<div style="display:flex;gap:8px;margin-bottom:16px">'
+      + '<select id="adm-event-type" class="adm-input" onchange="_admEventFilter()">'
+      + '<option value="">All event types</option>'
+      + ['page_view','analyze_start','analyze_complete','signup','login','upgrade','share'].map(function(t){ return '<option>'+t+'</option>'; }).join('')
+      + '</select></div>';
+    html += '<table class="adm-table"><thead><tr><th>Type</th><th>User</th><th>Properties</th><th>When</th></tr></thead><tbody>';
+    (d.events || []).forEach(function(e) {
+      var props = '';
+      try { var p = JSON.parse(e.properties||'{}'); props = Object.entries(p).slice(0,3).map(function(kv){ return kv[0]+':'+kv[1]; }).join(', '); } catch {}
+      html += '<tr>'
+        + '<td><code style="font-size:11px">' + _esc(e.type||'') + '</code></td>'
+        + '<td style="font-size:11px;color:var(--text3)">' + (e.user_id||'anon').slice(0,8) + '</td>'
+        + '<td style="font-size:11px;color:var(--text3);max-width:200px;overflow:hidden;text-overflow:ellipsis">' + _esc(props) + '</td>'
+        + '<td style="font-size:11px">' + (e.created_at||'').slice(0,16).replace('T',' ') + '</td>'
+        + '</tr>';
+    });
+    html += '</tbody></table>';
+    html += '<div style="font-size:12px;color:var(--text3);margin-top:8px">' + d.total + ' total events</div>';
+  }
+
+  else if (tab === 'controls') {
+    html += '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:var(--r);padding:16px;margin-bottom:20px;font-size:13px;color:#dc2626">'
+      + '⚠ These actions affect live user data. Proceed with caution.</div>';
+    html += '<div class="adm-ctrl-row">'
+      + '<div><div class="adm-ctrl-label">Set User Plan</div><div class="adm-ctrl-sub">Manually override a user\'s plan for testing or support</div></div>'
+      + '<input id="adm-ctrl-userid" class="adm-input" placeholder="User ID" style="width:220px">'
+      + '<select id="adm-ctrl-plan" class="adm-input">'
+      + ['free','creator','operator','studio'].map(function(p){ return '<option>'+p+'</option>'; }).join('')
+      + '</select>'
+      + '<button onclick="_admConfirmSetPlan()" class="btn-primary" style="font-size:12px;padding:8px 14px">Set Plan</button>'
+      + '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function _admStat(val, lbl, sub) {
+  return '<div class="adm-stat"><div class="adm-stat-val">' + val + '</div><div class="adm-stat-lbl">' + lbl + '</div><div class="adm-stat-sub">' + (sub||'') + '</div></div>';
+}
+
+function _admPager(page, total, perPage, onPage) {
+  var pages = Math.ceil((total||0) / (perPage||50));
+  if (pages <= 1) return '';
+  var html = '<div class="adm-pagination">';
+  if (page > 1) html += '<button class="adm-page-btn" onclick="(' + onPage.toString() + ')(' + (page-1) + ')">← Prev</button>';
+  html += '<span style="padding:6px 12px;font-size:12px;color:var(--text2)">Page ' + page + ' of ' + pages + '</span>';
+  if (page < pages) html += '<button class="adm-page-btn" onclick="(' + onPage.toString() + ')(' + (page+1) + ')">Next →</button>';
+  html += '</div>';
+  return html;
+}
+
+function _admUserSearch() {
+  var q = (document.getElementById('adm-user-search')||{}).value || '';
+  var plan = (document.getElementById('adm-user-plan')||{}).value || '';
+  var u = plUser();
+  if (!u) return;
+  var el = document.getElementById('adm-content');
+  fetch('/api/admin-data?tab=users&email=' + encodeURIComponent(u.email) + '&q=' + encodeURIComponent(q) + '&plan=' + plan + '&page=1')
+    .then(function(r){ return r.json(); })
+    .then(function(d){ _renderAdminTab('users', d); });
+}
+
+function _admEventFilter() {
+  var type = (document.getElementById('adm-event-type')||{}).value || '';
+  var u = plUser();
+  if (!u) return;
+  fetch('/api/admin-data?tab=events&email=' + encodeURIComponent(u.email) + '&type=' + encodeURIComponent(type) + '&page=1')
+    .then(function(r){ return r.json(); })
+    .then(function(d){ _renderAdminTab('events', d); });
+}
+
+function _admSetPlan(userId) {
+  var plan = prompt('Enter new plan for user ' + userId + ':\n(free / creator / operator / studio)');
+  if (!plan) return;
+  plan = plan.trim().toLowerCase();
+  if (!['free','creator','operator','studio'].includes(plan)) { alert('Invalid plan'); return; }
+  _admControlAction({ action: 'set-plan', userId: userId, value: plan });
+}
+
+function _admConfirmSetPlan() {
+  var userId = (document.getElementById('adm-ctrl-userid')||{}).value || '';
+  var plan = (document.getElementById('adm-ctrl-plan')||{}).value || '';
+  if (!userId) { alert('Enter a user ID'); return; }
+  if (!confirm('Set plan to "' + plan + '" for user ' + userId + '?')) return;
+  _admControlAction({ action: 'set-plan', userId: userId, value: plan });
+}
+
+function _admControlAction(body) {
+  var u = plUser();
+  if (!u) return;
+  fetch('/api/admin-data?email=' + encodeURIComponent(u.email), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) { showToast(d.message || 'Done', 3000); }
+      else { alert('Error: ' + (d.error||'Unknown')); }
+    })
+    .catch(function(){ alert('Network error'); });
+}
 </script>
 </body>
 </html>

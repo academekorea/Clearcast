@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Podlens is Live — Know what you're actually listening to</title>
+<meta name="description" content="Podlens is now live. Discover the bias and missing voices in every podcast you listen to.">
+<meta property="og:title" content="Podlens is Live">
+<meta property="og:description" content="Know what you're actually listening to. Podcast bias intelligence, powered by AI.">
+<meta property="og:image" content="https://podlens.app/og-image.png">
+<meta property="og:url" content="https://podlens.app/launch">
+<meta name="theme-color" content="#0A0F1E">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A0F1E;--navy-mid:#1a3a4a;--cream:#FAF9F6;--text:#1a1a1a;
+  --text2:#444;--text3:#888;--border:#e0ddd8;
+  --left:#E24B4A;--center:#D1CFC9;--right:#378ADD;
+  --ffs:'Playfair Display',Georgia,serif;--ff:'Inter',-apple-system,sans-serif;
+}
+body{font-family:var(--ff);background:var(--navy);color:white;min-height:100vh;overflow-x:hidden}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(55,138,221,.12) 0%,transparent 70%)}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent)}
+.wordmark{font-family:var(--ffs);font-size:clamp(40px,8vw,80px);font-weight:400;letter-spacing:.05em;margin-bottom:8px}
+.wordmark strong{font-weight:700}
+.tagline{font-size:clamp(16px,3vw,24px);color:rgba(255,255,255,.6);font-weight:400;margin-bottom:48px;max-width:540px}
+.bias-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;width:min(280px,80%);margin:0 auto 48px}
+.b-l{background:var(--left);flex:33}
+.b-c{background:var(--center);flex:34}
+.b-r{background:var(--right);flex:33}
+.launch-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:100px;padding:8px 20px;font-size:13px;font-weight:600;letter-spacing:.02em;margin-bottom:32px;color:rgba(255,255,255,.9)}
+.launch-badge span{width:8px;height:8px;background:#4ade80;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px #4ade80}
+.cta-group{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:48px}
+.btn-primary{background:white;color:var(--navy);border:none;border-radius:4px;padding:14px 32px;font-family:var(--ff);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s;text-decoration:none;display:inline-block}
+.btn-primary:hover{opacity:.9}
+.btn-secondary{background:transparent;color:white;border:1px solid rgba(255,255,255,.3);border-radius:4px;padding:13px 28px;font-family:var(--ff);font-size:15px;font-weight:500;cursor:pointer;transition:border-color .15s;text-decoration:none;display:inline-block}
+.btn-secondary:hover{border-color:rgba(255,255,255,.6)}
+.stats{display:flex;gap:48px;justify-content:center;margin-bottom:80px;flex-wrap:wrap}
+.stat-item{text-align:center}
+.stat-num{font-family:var(--ffs);font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1}
+.stat-lbl{font-size:12px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;max-width:1000px;width:100%;margin:0 auto;padding:0 24px}
+.feature-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:24px}
+.feature-icon{font-size:28px;margin-bottom:12px}
+.feature-title{font-size:15px;font-weight:700;margin-bottom:8px;color:white}
+.feature-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}
+.proof{padding:80px 24px;border-top:1px solid rgba(255,255,255,.07);text-align:center}
+.proof-eyebrow{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px}
+.proof-quote{font-family:var(--ffs);font-size:clamp(20px,3.5vw,32px);font-weight:400;font-style:italic;max-width:720px;margin:0 auto 16px;line-height:1.5;color:rgba(255,255,255,.85)}
+.proof-attr{font-size:13px;color:rgba(255,255,255,.35)}
+.footer{padding:32px 24px;border-top:1px solid rgba(255,255,255,.07);text-align:center;font-size:12px;color:rgba(255,255,255,.25)}
+.footer a{color:rgba(255,255,255,.35);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,.6)}
+@media(max-width:480px){.stats{gap:28px}.cta-group{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="launch-badge">
+    <span></span>
+    Live now
+  </div>
+
+  <div class="wordmark">POD<strong>LENS</strong></div>
+  <div class="tagline">Know what you&rsquo;re actually listening to</div>
+
+  <div class="bias-bar">
+    <div class="b-l"></div>
+    <div class="b-c"></div>
+    <div class="b-r"></div>
+  </div>
+
+  <div class="cta-group">
+    <a href="/" class="btn-primary">Start analyzing — it&rsquo;s free</a>
+    <a href="/pricing.html" class="btn-secondary">See plans</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-num">Free</div>
+      <div class="stat-lbl">To start</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">~90s</div>
+      <div class="stat-lbl">Analysis time</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">7-day</div>
+      <div class="stat-lbl">Operator trial</div>
+    </div>
+  </div>
+</div>
+
+<div style="padding:80px 24px;border-top:1px solid rgba(255,255,255,.07)">
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">⚖️</div>
+      <div class="feature-title">Political Lean</div>
+      <div class="feature-desc">See exactly how each episode frames issues — left, center, or right — based on language patterns and source choices.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <div class="feature-title">Missing Voices</div>
+      <div class="feature-desc">Who wasn't invited to the conversation? Podlens flags the perspectives and experts each episode left out.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎙</div>
+      <div class="feature-title">Audio Briefing</div>
+      <div class="feature-desc">90-second spoken summary of every analysis. Listen while the full report loads — no waiting.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧬</div>
+      <div class="feature-title">Bias Fingerprint</div>
+      <div class="feature-desc">Analyze your listening patterns over time. See how your podcast diet is shaping your worldview.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📖</div>
+      <div class="feature-title">Source Citations</div>
+      <div class="feature-desc">Every finding is backed by exact quotes from the transcript. No black boxes — just evidence.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌍</div>
+      <div class="feature-title">Works everywhere</div>
+      <div class="feature-desc">YouTube, Spotify, Apple Podcasts, RSS feeds, direct MP3. If it's audio, Podlens can analyze it.</div>
+    </div>
+  </div>
+</div>
+
+<div class="proof">
+  <div class="proof-eyebrow">Why it matters</div>
+  <div class="proof-quote">&ldquo;Most people don&rsquo;t realize how much their podcast feed shapes their political views. Podlens makes the invisible visible.&rdquo;</div>
+  <div class="proof-attr">— Beta user, media researcher</div>
+</div>
+
+<div style="background:rgba(255,255,255,.03);padding:80px 24px;text-align:center">
+  <div style="font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:16px">Founding Member Pricing</div>
+  <div style="font-family:var(--ffs);font-size:clamp(28px,5vw,44px);font-weight:700;margin-bottom:12px">33% off forever</div>
+  <div style="font-size:16px;color:rgba(255,255,255,.5);margin-bottom:32px">Only available during our launch period. Lock in the founding rate for as long as you keep your subscription.</div>
+  <a href="/" class="btn-primary">Start your free trial</a>
+</div>
+
+<div class="footer">
+  <div style="margin-bottom:12px">
+    <a href="/">Home</a> &nbsp;&middot;&nbsp;
+    <a href="/pricing.html">Pricing</a> &nbsp;&middot;&nbsp;
+    <a href="/about.html">About</a> &nbsp;&middot;&nbsp;
+    <a href="/privacy.html">Privacy</a> &nbsp;&middot;&nbsp;
+    <a href="mailto:hello@podlens.app">hello@podlens.app</a>
+  </div>
+  Podlens &copy; 2026 &nbsp;&middot;&nbsp; Know what you&rsquo;re actually listening to
+</div>
+
+</body>
+</html>

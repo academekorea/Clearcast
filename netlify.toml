@@ -91,3 +91,33 @@
   from = "/auth/kakao/callback"
   to = "/.netlify/functions/kakao-callback"
   status = 200
+
+[[redirects]]
+  from = "/api/audio-briefing"
+  to = "/.netlify/functions/audio-briefing"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-data"
+  to = "/.netlify/functions/admin-data"
+  status = 200
+
+[[redirects]]
+  from = "/api/send-otp"
+  to = "/.netlify/functions/send-otp"
+  status = 200
+
+[[redirects]]
+  from = "/api/verify-otp"
+  to = "/.netlify/functions/verify-otp"
+  status = 200
+
+[[redirects]]
+  from = "/api/account-delete"
+  to = "/.netlify/functions/account-delete"
+  status = 200
+
+[[redirects]]
+  from = "/launch"
+  to = "/launch.html"
+  status = 200

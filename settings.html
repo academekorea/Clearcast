@@ -5,10 +5,12 @@
 <title>Settings — Podlens</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <meta name="description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
 <meta property="og:title" content="Settings — Podlens">
 <meta property="og:description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
@@ -17,7 +19,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://podlens.app/og-image.png">
-<meta name="theme-color" content="#0f2027">
+<meta name="theme-color" content="#0A0F1E">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -221,10 +223,39 @@ footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2
       </div>
 
       <div class="settings-card">
-        <div class="card-head"><h3>Delete account</h3><p>Permanently remove your account and data</p></div>
+        <div class="card-head"><h3>Two-factor verification</h3><p>Verify your identity for sensitive actions</p></div>
         <div class="card-body">
-          <p style="font-size:13px;color:var(--text2);margin-bottom:16px">This action is permanent and cannot be undone. All your data including analysis history, followed shows, and preferences will be deleted.</p>
-          <button class="danger-btn" onclick="if(confirm('Delete your account permanently?')){localStorage.clear();window.location.href='/';}">Delete my account</button>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px">We'll email a one-time code when you perform sensitive actions like deleting your account or exporting data.</p>
+          <button class="save-btn" onclick="testOtp()">Send test code</button>
+          <div id="otp-test-status" style="margin-top:8px;font-size:13px"></div>
+        </div>
+      </div>
+
+      <div class="settings-card" style="border-color:var(--left)">
+        <div class="card-head"><h3 style="color:var(--left)">Delete account</h3><p>Permanently remove your account and all data</p></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px">This permanently deletes your analysis history, followed shows, fingerprint, and cancels any active subscription. This cannot be undone.</p>
+          <div id="delete-account-flow">
+            <select id="delete-reason" style="padding:8px 12px;border:1px solid var(--border2);border-radius:4px;font-size:13px;background:var(--bg2);color:var(--text);margin-bottom:12px;display:block;width:100%;max-width:320px">
+              <option value="">Why are you leaving? (optional)</option>
+              <option value="not_useful">Not useful enough</option>
+              <option value="too_expensive">Too expensive</option>
+              <option value="privacy">Privacy concerns</option>
+              <option value="switching">Switching to another tool</option>
+              <option value="other">Other</option>
+            </select>
+            <button class="danger-btn" onclick="startAccountDelete()">Delete my account</button>
+          </div>
+          <div id="delete-otp-step" style="display:none">
+            <p style="font-size:13px;color:var(--text2);margin-bottom:12px">We sent a 6-digit code to your email. Enter it below to confirm deletion:</p>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input id="delete-otp-input" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="000000"
+                style="padding:10px 14px;border:2px solid var(--left);border-radius:4px;font-size:18px;font-weight:700;letter-spacing:4px;width:120px;text-align:center">
+              <button class="danger-btn" onclick="confirmAccountDelete()">Confirm delete</button>
+              <button onclick="cancelAccountDelete()" style="background:none;border:none;font-size:13px;cursor:pointer;color:var(--text3)">Cancel</button>
+            </div>
+            <div id="delete-otp-error" style="margin-top:8px;font-size:13px;color:var(--left)"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -888,6 +919,93 @@ if (typeof _origShowTab === 'function') {
     _origShowTab.call(this, id);
     if (id === 'notifications') renderPreAnalysis();
   };
+}
+
+// ── OTP / Account Deletion ──────────────────────────────────────────────────
+function testOtp() {
+  var u = plUser ? plUser() : null;
+  if (!u || !u.email) { document.getElementById('otp-test-status').textContent = 'Log in first.'; return; }
+  document.getElementById('otp-test-status').textContent = 'Sending…';
+  fetch('/api/send-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: u.email, purpose: 'verification' })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      document.getElementById('otp-test-status').textContent = d.ok ? '✓ Code sent to ' + u.email : '✗ ' + (d.error || 'Error');
+    }).catch(function(){
+      document.getElementById('otp-test-status').textContent = '✗ Network error';
+    });
+}
+
+function startAccountDelete() {
+  var u = plUser ? plUser() : null;
+  if (!u || !u.email) { alert('Please log in first.'); return; }
+  if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
+
+  document.getElementById('delete-account-flow').style.display = 'none';
+  document.getElementById('delete-otp-step').style.display = 'block';
+  document.getElementById('delete-otp-error').textContent = 'Sending verification code to ' + u.email + '…';
+
+  fetch('/api/send-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: u.email, purpose: 'delete_account' })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) {
+        document.getElementById('delete-otp-error').textContent = '✓ Code sent — check your email';
+        document.getElementById('delete-otp-input').focus();
+      } else {
+        document.getElementById('delete-otp-error').textContent = '✗ ' + (d.error || 'Could not send code');
+      }
+    }).catch(function(){
+      document.getElementById('delete-otp-error').textContent = '✗ Network error — try again';
+    });
+}
+
+function cancelAccountDelete() {
+  document.getElementById('delete-account-flow').style.display = '';
+  document.getElementById('delete-otp-step').style.display = 'none';
+  document.getElementById('delete-otp-input').value = '';
+  document.getElementById('delete-otp-error').textContent = '';
+}
+
+function confirmAccountDelete() {
+  var u = plUser ? plUser() : null;
+  if (!u) return;
+  var code = (document.getElementById('delete-otp-input').value || '').trim();
+  if (code.length !== 6) { document.getElementById('delete-otp-error').textContent = 'Enter the 6-digit code from your email'; return; }
+  var reason = (document.getElementById('delete-reason') || {}).value || '';
+
+  document.getElementById('delete-otp-error').textContent = 'Verifying…';
+
+  fetch('/api/verify-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: u.email, code: code, purpose: 'delete_account' })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.ok) {
+        document.getElementById('delete-otp-error').textContent = '✗ ' + (d.error || 'Invalid code');
+        return;
+      }
+      // Verified — proceed with deletion
+      document.getElementById('delete-otp-error').textContent = 'Deleting your account…';
+      return fetch('/api/account-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: u.id, email: u.email, reason: reason })
+      }).then(function(r){ return r.json(); })
+        .then(function(del){
+          localStorage.clear();
+          sessionStorage.clear();
+          alert('Your account has been deleted. Sorry to see you go.');
+          window.location.href = '/';
+        });
+    }).catch(function(){
+      document.getElementById('delete-otp-error').textContent = '✗ Network error — try again';
+    });
 }
 </script>
 </body>
