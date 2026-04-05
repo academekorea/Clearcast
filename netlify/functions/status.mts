@@ -139,6 +139,21 @@ export default async (req: Request) => {
 
       await store.setJSON(jobId, result);
 
+      // Increment global analytics counter (fire-and-forget)
+      try {
+        const statsStore = getStore("podlens-cache");
+        const statsKey = "platform-stats";
+        const existing = await statsStore.get(statsKey, { type: "json" }).catch(() => null) as any || {};
+        const now = Date.now();
+        const isNewWeek = now - (existing.weekStart || 0) > 7 * 24 * 60 * 60 * 1000;
+        await statsStore.setJSON(statsKey, {
+          totalAnalyses: (existing.totalAnalyses || 0) + 1,
+          analysesThisWeek: isNewWeek ? 1 : (existing.analysesThisWeek || 0) + 1,
+          weekStart: isNewWeek ? now : (existing.weekStart || now),
+          lastUpdated: now,
+        });
+      } catch { /* non-critical */ }
+
       if (job.showSlug) {
         try {
           const showStore = getStore("podlens-shows");
