@@ -1,6 +1,20 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
+// ── KOREAN LANGUAGE DETECTION ──────────────────────────────────────────────
+function isKoreanTranscript(text: string): boolean {
+  const koreanChars = (text.match(/[가-힣]/g) || []).length;
+  return koreanChars >= 10 && koreanChars / text.length > 0.05;
+}
+
+const KOREAN_CONTEXT = `
+Analyze in Korean political context:
+보수 (conservative): national security, pro-US, free market, traditional values, Chosun Ilbo framing.
+진보 (progressive): welfare expansion, labor rights, chaebol reform, North Korea dialogue, Hankyoreh framing.
+중립 (center/balanced): evidence-based, multiple perspectives, avoids political framing.
+Use these labels: leftLabel='진보 성향', centerLabel='중립', rightLabel='보수 성향'.
+Return ALL analysis text (summary, flag titles, flag details, topics, quotes, missingVoices, audioScript) in Korean.`;
+
 const PROMPT_1 = `You are a media literacy expert analyzing a podcast transcript. Your job is to give listeners honest, verifiable intelligence about what they are actually hearing.
 
 Return ONLY a valid JSON object (no markdown, no explanation, no preamble):
@@ -94,13 +108,15 @@ export default async (req: Request) => {
     // ── Phase 2: headline metrics are done, now get details ──
     if (job.status === "partial") {
       const text = job._transcript || "";
+      const isKorean2 = isKoreanTranscript(text);
+      const prompt2 = isKorean2 ? `${PROMPT_2}\n\n${KOREAN_CONTEXT}` : PROMPT_2;
       const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "x-api-key": anthropicKey!, "anthropic-version": "2023-06-01", "content-type": "application/json" },
         body: JSON.stringify({
           model: "claude-sonnet-4-20250514",
           max_tokens: 1200,
-          messages: [{ role: "user", content: `${PROMPT_2}\n\nTranscript:\n${text}` }],
+          messages: [{ role: "user", content: `${prompt2}\n\nTranscript:\n${text}` }],
         }),
       });
 
@@ -188,6 +204,8 @@ export default async (req: Request) => {
 
     // ── Phase 1: get headline metrics, return immediately as "partial" ──
     const text = transcriptText.split(" ").slice(0, 10000).join(" ");
+    const isKorean = isKoreanTranscript(text);
+    const prompt1 = isKorean ? `${PROMPT_1}\n\n${KOREAN_CONTEXT}` : PROMPT_1;
 
     const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -195,7 +213,7 @@ export default async (req: Request) => {
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 800,
-        messages: [{ role: "user", content: `${PROMPT_1}\n\nTranscript:\n${text}` }],
+        messages: [{ role: "user", content: `${prompt1}\n\nTranscript:\n${text}` }],
       }),
     });
 

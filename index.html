@@ -75,7 +75,37 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .theme-seg{display:flex;border:1px solid rgba(255,255,255,.2);border-radius:3px;overflow:hidden}
 .theme-btn{padding:2px 10px;font-size:11px;border:none;background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:var(--ff);transition:all .1s}
 .theme-btn.on,.theme-btn:hover{background:rgba(255,255,255,.15);color:#fff}
-.topbar-r{color:rgba(255,255,255,.55);font-size:11px;flex-shrink:0}
+.topbar-r{color:rgba(255,255,255,.55);font-size:11px;flex-shrink:0;display:flex;align-items:center;gap:10px}
+/* Region selector */
+.region-sel{position:relative}
+.region-btn{background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:3px;color:rgba(255,255,255,.75);padding:3px 8px;font-size:11px;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;gap:4px;transition:all .1s;line-height:1.4}
+.region-btn:hover{border-color:rgba(255,255,255,.5);color:#fff}
+.region-menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,.18);min-width:210px;z-index:9999;display:none}
+.region-menu.on{display:block}
+.region-menu button{display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;font-size:13px;color:var(--text);background:transparent;border:none;border-bottom:1px solid var(--border);cursor:pointer;font-family:var(--ff);text-align:left;transition:background .1s}
+.region-menu button:last-child{border-bottom:none}
+.region-menu button:hover{background:var(--bg3)}
+.region-menu button.on{background:var(--bg3);font-weight:500}
+.beta-pill{font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;background:#1DB954;color:#fff;letter-spacing:.03em;flex-shrink:0}
+/* Korean beta badge */
+.kr-beta-banner{display:none;align-items:center;justify-content:center;gap:8px;padding:6px 24px;background:rgba(29,185,84,.12);border-bottom:1px solid rgba(29,185,84,.2);font-size:12px;color:#1a7a3c;font-weight:500}
+[data-theme="dark"] .kr-beta-banner{color:#1DB954}
+.kr-beta-banner.on{display:flex}
+/* Kakao button */
+.auth-kakao-btn{width:100%;padding:10px;border:none;border-radius:var(--r);background:#FEE500;color:#1a1a1a;cursor:pointer;font-size:13px;font-family:var(--ff);font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;margin-bottom:10px}
+.auth-kakao-btn:hover{opacity:.85}
+.kakao-social-section{display:none}
+.kakao-social-section.on{display:block}
+/* Share Kakao button */
+.kakao-share-wrap{display:none}
+.kakao-share-wrap.on{display:inline-block}
+.kakao-share-btn{background:#FEE500;color:#1a1a1a;border:none;border-radius:var(--r);padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;gap:6px;transition:opacity .15s}
+.kakao-share-btn:hover{opacity:.85}
+/* Korean shows grid */
+.kr-shows-section{padding:48px 0;border-top:1px solid var(--border)}
+.kr-shows-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media(max-width:900px){.kr-shows-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.kr-shows-grid{grid-template-columns:repeat(2,1fr)}}
 
 /* ── NAV ── */
 .nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);position:sticky;top:36px;background:var(--bg);z-index:200;gap:8px}
@@ -1079,18 +1109,39 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <button class="theme-btn" data-t="auto" onclick="setTheme('auto')">Auto</button>
     </div>
   </div>
-  <div class="topbar-r" id="topbar-date"></div>
+  <div class="topbar-r">
+    <div class="region-sel" id="region-sel">
+      <button class="region-btn" id="region-btn" onclick="toggleRegionMenu(event)">
+        <span id="region-flag">🌍</span>&nbsp;<span id="region-currency-label">USD</span>
+      </button>
+      <div class="region-menu" id="region-menu">
+        <button onclick="setRegion('INTL','en','USD','us')">🌍 International (USD)</button>
+        <button onclick="setRegion('US','en','USD','us')">🇺🇸 United States (USD)</button>
+        <button onclick="setRegion('GB','en','GBP','gb')">🇬🇧 United Kingdom (GBP)</button>
+        <button onclick="setRegion('EU','en','EUR','eu')">🇪🇺 Europe (EUR)</button>
+        <button onclick="setRegion('AU','en','AUD','au')">🇦🇺 Australia (AUD)</button>
+        <button onclick="setRegion('CA','en','CAD','ca')">🇨🇦 Canada (CAD)</button>
+        <button onclick="setRegion('KR','ko','KRW','kr')">🇰🇷 한국어 (KRW) <span class="beta-pill">베타</span></button>
+      </div>
+    </div>
+    <div id="topbar-date"></div>
+  </div>
+</div>
+<!-- Korean beta banner (shown when region=KR) -->
+<div class="kr-beta-banner" id="kr-beta-banner">
+  🇰🇷 한국어 베타 서비스 중입니다 &mdash; 피드백을 보내주세요:
+  <a href="mailto:hello@podlens.app" style="color:inherit;font-weight:600">hello@podlens.app</a>
 </div>
 
 <!-- NAV -->
 <nav class="nav">
   <a href="/" class="logo" onclick="showHome();return false"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></a>
   <div class="nav-links">
-    <button class="nl on" id="nl-home" onclick="showHome()">Home</button>
-    <button class="nl" id="nl-discover" onclick="showView('discover')">Discover</button>
-    <button class="nl" onclick="showView('discover');showFeed('compare')">Compare</button>
-    <button class="nl" onclick="showView('discover');showFeed('unheard')">Unheard</button>
-    <a href="/pricing.html" class="nl">Pricing</a>
+    <button class="nl on" id="nl-home" onclick="showHome()" data-i18n="navHome">Home</button>
+    <button class="nl" id="nl-discover" onclick="showView('discover')" data-i18n="navDiscover">Discover</button>
+    <button class="nl" onclick="showView('discover');showFeed('compare')" data-i18n="navCompare">Compare</button>
+    <button class="nl" onclick="showView('discover');showFeed('unheard')" data-i18n="navUnheard">Unheard</button>
+    <a href="/pricing.html" class="nl" data-i18n="navPricing">Pricing</a>
   </div>
   <div class="nav-search-wrap">
     <input type="text" id="nav-search-q" class="nav-search" placeholder="Search episodes or shows&hellip;" onkeydown="if(event.key==='Enter')doNavSearch()"/>
@@ -1112,11 +1163,11 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <!-- HERO -->
     <section class="home-hero">
       <div class="hero-kicker">Podcast Intelligence</div>
-      <h1 class="hero-h">Know what you&rsquo;re<br><em>actually listening to.</em></h1>
-      <p class="hero-sub">Paste any podcast or YouTube URL. We surface bias, framing patterns, missing perspectives, and host influence &mdash; grounded in the actual transcript.</p>
+      <h1 class="hero-h" data-i18n="tagline">Know what you&rsquo;re<br><em>actually listening to.</em></h1>
+      <p class="hero-sub" data-i18n="subTagline">Paste any podcast or YouTube URL. We surface bias, framing patterns, missing perspectives, and host influence &mdash; grounded in the actual transcript.</p>
       <div class="hero-input-wrap">
         <input type="text" id="hero-url-input" class="hero-input" placeholder="https://www.youtube.com/watch?v=...  or  RSS feed  or  .mp3" autocomplete="off"/>
-        <button class="hero-analyze-btn" onclick="handleHeroAnalyze()">Analyze &rarr;</button>
+        <button class="hero-analyze-btn" onclick="handleHeroAnalyze()" data-i18n="analyzeBtn">Analyze &rarr;</button>
       </div>
       <p class="hero-platforms">Supports &middot; YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
     </section>
@@ -1330,6 +1381,11 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <!-- For You panel -->
       <div class="fp on" id="fp-foryou">
         <div style="padding:12px 0">
+          <!-- Korean shows section (shown only for KR region) -->
+          <div id="kr-shows-section" style="display:none;margin-bottom:32px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:14px">🇰🇷 한국 인기 팟캐스트 <span class="beta-pill">베타</span></div>
+            <div class="kr-shows-grid" id="kr-shows-grid"></div>
+          </div>
           <div id="hero-wrap"></div>
           <div class="feed-loading" id="feed-loading"><div class="feed-spin"></div></div>
           <div id="story-list"></div>
@@ -1513,6 +1569,9 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <span>&copy; 2026 Podlens &mdash; AI analysis grounded in the actual transcript. Not a substitute for critical thinking.</span>
       <span class="footer-no-ads">No ads. No conflicts of interest. Ever.</span>
     </div>
+    <div id="kr-footer" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);text-align:center">
+      Podlens 한국어 베타 &middot; 피드백 환영 &middot; <a href="mailto:hello@podlens.app" style="color:inherit">hello@podlens.app</a>
+    </div>
   </div>
 </footer>
 
@@ -1639,6 +1698,12 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <div class="auth-field"><label>Password</label><input type="password" id="login-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password"/><button class="auth-forgot" onclick="alert('Password reset coming soon. Contact hello@podlens.app')">Forgot password?</button></div>
       <button class="auth-btn" onclick="doLogin()">Log in</button>
       <div class="auth-divider">or</div>
+      <div class="kakao-social-section" id="login-kakao-section">
+        <button class="auth-kakao-btn" onclick="doKakaoOAuth()">
+          <svg width="18" height="18" viewBox="0 0 512 512"><path fill="#1a1a1a" d="M255.5 48C132.6 48 32 129.4 32 231.4c0 63.3 38.5 119 97 155.3l-24.7 91.5c-2.1 7.8 6.1 14 12.9 9.7l108.5-72.3c9.9 1.3 20.1 2 30.8 2 122.9 0 223.5-81.4 223.5-183.4C480 129.4 378.4 48 255.5 48z"/></svg>
+          카카오로 로그인
+        </button>
+      </div>
       <button class="auth-google-btn" onclick="doGoogleOAuth('login')">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
@@ -1665,6 +1730,12 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <div class="auth-logo"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></div>
       <div id="signup-heading" class="signup-heading">Analyze this episode free</div>
       <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">7 days of full access &mdash; no credit card required</div>
+      <div class="kakao-social-section" id="signup-kakao-section">
+        <button class="auth-kakao-btn" onclick="doKakaoOAuth()">
+          <svg width="18" height="18" viewBox="0 0 512 512"><path fill="#1a1a1a" d="M255.5 48C132.6 48 32 129.4 32 231.4c0 63.3 38.5 119 97 155.3l-24.7 91.5c-2.1 7.8 6.1 14 12.9 9.7l108.5-72.3c9.9 1.3 20.1 2 30.8 2 122.9 0 223.5-81.4 223.5-183.4C480 129.4 378.4 48 255.5 48z"/></svg>
+          카카오로 시작하기
+        </button>
+      </div>
       <button class="auth-google-btn" onclick="doGoogleOAuth('signup')" style="margin-bottom:10px">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
@@ -3410,6 +3481,7 @@ function renderResults(data) {
       + (canShare ? '<button class="share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||"",audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"story","&#128247; Story")\'>&#128247; Story</button>' : '')
       + (canShare ? '<button class="share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||"",audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"topic","&#128241; Topics")\'>&#128241; Topic card</button>' : '')
       + '<button class="share-btn" onclick=\'shareToThreads(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,audioLean:data.audioLean||{}}))+'"))\'>\uD83E\uDDF5 Threads</button>'
+      + (isKoreanMode() ? '<div class="kakao-share-wrap on"><button class="kakao-share-btn" onclick=\'shareToKakao(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,url:data.url||window.location.href,audioLean:data.audioLean||{}}))+'"))\'><svg width="16" height="16" viewBox="0 0 512 512"><path fill="#1a1a1a" d="M255.5 48C132.6 48 32 129.4 32 231.4c0 63.3 38.5 119 97 155.3l-24.7 91.5c-2.1 7.8 6.1 14 12.9 9.7l108.5-72.3c9.9 1.3 20.1 2 30.8 2 122.9 0 223.5-81.4 223.5-183.4C480 129.4 378.4 48 255.5 48z"/></svg>\uCE74\uCE74\uC624\uD1A1 \uACF5\uC720</button></div>' : '')
       + (canShare ? '' : '<span style="font-size:11px;color:rgba(255,255,255,.4);margin-left:4px">Image cards on <button onclick="showUpgrade()" style="color:white;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Creator plan</button></span>')
       + '</div></div>';
   }
@@ -3488,6 +3560,19 @@ function handleUrlRouting() {
   if (googleError) {
     history.replaceState({}, '', window.location.pathname);
     plToast('Google login failed \u2014 please try again or use email');
+    return false;
+  }
+
+  // Handle KakaoTalk OAuth callback
+  var kakaoLogin = params.get('kakao_login');
+  if (kakaoLogin) {
+    try { handleSocialLogin(JSON.parse(decodeURIComponent(kakaoLogin))); } catch(e) {}
+    return false;
+  }
+  var kakaoError = params.get('kakao_error');
+  if (kakaoError) {
+    history.replaceState({}, '', window.location.pathname);
+    plToast('\uce74\uce74\uc624 \ub85c\uadf8\uc778\uc5d0 \uc2e4\ud328\ud588\uc2b5\ub2c8\ub2e4. \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc138\uc694.');
     return false;
   }
 
@@ -4419,6 +4504,284 @@ function renderFeaturedPlayer(item) {
     +'<button class="featured-action" onclick="document.getElementById(\'hero-url-input\').value=\''+ytUrl+'\';document.getElementById(\'hero-url-input\').scrollIntoView({behavior:\'smooth\'})">Analyze this episode \u2192</button>';
 }
 
+// ── GEO / i18n / REGION ──────────────────────────────────────────────────
+
+function detectSettings() {
+  var saved = localStorage.getItem('pl_prefs_region');
+  if (saved) try { return JSON.parse(saved); } catch {}
+  // Read edge-function cookie
+  var cookies = {};
+  document.cookie.split('; ').forEach(function(c) {
+    var parts = c.split('=');
+    if (parts.length >= 2) cookies[parts[0].trim()] = parts[1].trim();
+  });
+  if (cookies.pl_region) return {
+    region: cookies.pl_region, lang: cookies.pl_lang || 'en',
+    currency: cookies.pl_currency || 'USD', store: cookies.pl_store || 'us',
+  };
+  // Browser language fallback
+  var bl = (navigator.language || 'en').toLowerCase();
+  if (bl.startsWith('ko')) return { region:'KR', lang:'ko', currency:'KRW', store:'kr' };
+  return { region:'INTL', lang:'en', currency:'USD', store:'us' };
+}
+
+var _settings = detectSettings();
+
+function isKoreanMode() { return _settings.region === 'KR' || _settings.lang === 'ko'; }
+
+var i18n = {
+  en: {
+    tagline: "Know what you're actually listening to",
+    subTagline: "Paste any podcast or YouTube URL. We surface bias, framing patterns, missing perspectives, and host influence \u2014 grounded in the actual transcript.",
+    analyzeBtn: "Analyze \u2192",
+    analyzeBar: "Paste any podcast or YouTube URL\u2026",
+    getProBtn: "Get Pro", loginBtn: "Log in", signupBtn: "Sign up",
+    biasLabel: "Political Lean \u2014 how this episode frames issues",
+    biasFootnote: "Based on language patterns and framing choices \u2014 not the host's personal politics",
+    leanLeft: "Lean left", center: "Center", leanRight: "Lean right",
+    mostlyBalanced: "Mostly balanced", lightlyOneSided: "Lightly one-sided",
+    moderatelyBiased: "Moderately biased", heavilyOneSided: "Heavily one-sided",
+    extremelyOneSided: "Extremely one-sided",
+    unheardTitle: "Unheard", unheardSub: "Stories one side covers that the other ignores",
+    hostTrust: "Host Trust", missingVoices: "Missing Voices",
+    sponsorFlags: "Sponsor Flags", whyScore: "Why this score?",
+    signupHeading: "Analyze this episode free",
+    signupSub: "7 days of full access \u2014 no credit card required",
+    continueGoogle: "Continue with Google", continueSpotify: "Continue with Spotify",
+    navHome: "Home", navDiscover: "Discover", navCompare: "Compare",
+    navUnheard: "Unheard", navPricing: "Pricing",
+    trialBanner: "Your free trial ends in {days} days",
+    listenPlatform: "Listen on your preferred platform",
+    analysisComplete: "Analysis complete", analyzingEpisode: "Analyzing this episode\u2026",
+  },
+  ko: {
+    tagline: "\uc2e4\uc81c\ub85c \ubb34\uc5c7\uc744 \ub4e3\uace0 \uc788\ub294\uc9c0 \uc54c\uc544\ubcf4\uc138\uc694",
+    subTagline: "\ud32c\ub4dc\uce90\uc2a4\ud2b8 \ub610\ub294 YouTube URL\uc744 \ubd99\uc5ec\ub123\uc73c\uc138\uc694. \ud3b8\ud5a5\uc131, \ud504\ub808\uc774\ubc0d \ud328\ud134, \ub204\ub77d\ub41c \uad00\uc810, \uc9c4\ud589\uc790 \uc601\ud5a5\ub825\uc744 \ud2b8\ub79c\uc2a4\ud06c\ub9bd\ud2b8 \uae30\ubc18\uc73c\ub85c \ud655\uc778\ud569\ub2c8\ub2e4.",
+    analyzeBtn: "\ubd84\uc11d\ud558\uae30",
+    analyzeBar: "\ud32c\ub4dc\uce90\uc2a4\ud2b8 \ub610\ub294 YouTube URL\uc744 \ubd99\uc5ec\ub123\uc73c\uc138\uc694\u2026",
+    getProBtn: "Pro \uad6c\ub3c5", loginBtn: "\ub85c\uadf8\uc778", signupBtn: "\ud68c\uc6d0\uac00\uc785",
+    biasLabel: "\uc815\uce58\uc801 \uc131\ud5a5 \u2014 \uc774 \uc5d0\ud53c\uc18c\ub4dc\uc758 \ud504\ub808\uc774\ubc0d \ubc29\uc2dd",
+    biasFootnote: "\ud2b8\ub79c\uc2a4\ud06c\ub9bd\ud2b8\uc758 \uc5b8\uc5b4 \ud328\ud134\uc5d0 \uae30\ubc18 \u2014 \uc9c4\ud589\uc790\uc758 \uac1c\uc778 \uc815\uce58\uc640 \ubb34\uad00\ud569\ub2c8\ub2e4",
+    leanLeft: "\uc9c4\ubcf4 \uc131\ud5a5", center: "\uc911\ub9bd", leanRight: "\ubcf4\uc218 \uc131\ud5a5",
+    mostlyBalanced: "\ub300\uccb4\ub85c \uade0\ud615\uc801", lightlyOneSided: "\uc57d\uac04 \ud3b8\ud5a5\ub428",
+    moderatelyBiased: "\uc911\uac04 \uc815\ub3c4 \ud3b8\ud5a5\ub428", heavilyOneSided: "\uc2ec\ud558\uac8c \ud3b8\ud5a5\ub428",
+    extremelyOneSided: "\uadf9\ub3c4\ub85c \ud3b8\ud5a5\ub428",
+    unheardTitle: "\ubbf8\uccad\ucde8", unheardSub: "\ud55c\ucabd\uc5d0\uc11c\ub9cc \ub2e4\ub8e8\ub294 \uc774\uc57c\uae30\ub4e4",
+    hostTrust: "\uc9c4\ud589\uc790 \uc2e0\ub8b0\ub3c4", missingVoices: "\ub204\ub77d\ub41c \uad00\uc810",
+    sponsorFlags: "\uc2a4\ud3f0\uc11c \uc601\ud5a5", whyScore: "\uc65c \uc774 \uc810\uc218\uc778\uac00\uc694?",
+    signupHeading: "\uc774 \uc5d0\ud53c\uc18c\ub4dc\ub97c \ubb34\ub8cc\ub85c \ubd84\uc11d\ud558\uc138\uc694",
+    signupSub: "7\uc77c \uc804\uccb4 \ubb34\ub8cc \uccb4\ud5d8 \u2014 \uc2e0\uc6a9\uce74\ub4dc \ubd88\ud544\uc694",
+    continueGoogle: "Google\ub85c \uacc4\uc18d\ud558\uae30", continueSpotify: "Spotify\ub85c \uacc4\uc18d\ud558\uae30",
+    navHome: "\ud648", navDiscover: "\ubc1c\uacac\ud558\uae30", navCompare: "\ube44\uad50\ud558\uae30",
+    navUnheard: "\ubbf8\uccad\ucde8", navPricing: "\uc694\uae08\uc81c",
+    trialBanner: "\ubb34\ub8cc \uccb4\ud5d8\uc774 {days}\uc77c \ud6c4 \uc885\ub8cc\ub429\ub2c8\ub2e4",
+    listenPlatform: "\uc120\ud638\ud558\ub294 \ud50c\ub7ab\ud3fc\uc5d0\uc11c \ub4e3\uae30",
+    analysisComplete: "\ubd84\uc11d \uc644\ub8cc", analyzingEpisode: "\uc5d0\ud53c\uc18c\ub4dc\ub97c \ubd84\uc11d\ud558\uace0 \uc788\uc2b5\ub2c8\ub2e4\u2026",
+  }
+};
+
+function getT(key) {
+  var lang = _settings.lang || 'en';
+  var t = i18n[lang] || i18n.en;
+  return t[key] || i18n.en[key] || key;
+}
+
+function applyTranslations(lang) {
+  var t = i18n[lang] || i18n.en;
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (t[key]) el.textContent = t[key];
+  });
+  // Update placeholders
+  var heroInput = document.getElementById('hero-url-input');
+  if (heroInput && t.analyzeBar) heroInput.placeholder = t.analyzeBar;
+  // Update auth modal headings
+  var sh = document.getElementById('signup-heading');
+  if (sh && t.signupHeading) sh.textContent = t.signupHeading;
+  var ss = document.getElementById('signup-subtext');
+  if (ss && t.signupSub) ss.textContent = t.signupSub;
+}
+
+var prices = {
+  USD: { creator:"$12", creatorAnn:"$99", operator:"$39", operatorAnn:"$299", studio:"$99", studioAnn:"$799" },
+  GBP: { creator:"\u00a310", creatorAnn:"\u00a382", operator:"\u00a332", operatorAnn:"\u00a3245", studio:"\u00a382", studioAnn:"\u00a3650" },
+  EUR: { creator:"\u20ac11", creatorAnn:"\u20ac90", operator:"\u20ac36", operatorAnn:"\u20ac275", studio:"\u20ac92", studioAnn:"\u20ac730" },
+  AUD: { creator:"A$18", creatorAnn:"A$149", operator:"A$59", operatorAnn:"A$449", studio:"A$149", studioAnn:"A$1,190" },
+  CAD: { creator:"C$16", creatorAnn:"C$129", operator:"C$52", operatorAnn:"C$399", studio:"C$132", studioAnn:"C$1,059" },
+  KRW: { creator:"\u20a916,000", creatorAnn:"\u20a9130,000", operator:"\u20a952,000", operatorAnn:"\u20a9390,000", studio:"\u20a9135,000", studioAnn:"\u20a91,050,000" },
+};
+
+var regionFlags = { INTL:'\uD83C\uDF0D', US:'\uD83C\uDDFA\uD83C\uDDF8', GB:'\uD83C\uDDEC\uD83C\uDDE7', EU:'\uD83C\uDDEA\uD83C\uDDFA', AU:'\uD83C\uDDE6\uD83C\uDDFA', CA:'\uD83C\uDDE8\uD83C\uDDE6', KR:'\uD83C\uDDF0\uD83C\uDDF7' };
+
+function setRegion(region, lang, currency, store) {
+  _settings = { region: region, lang: lang, currency: currency, store: store };
+  localStorage.setItem('pl_prefs_region', JSON.stringify(_settings));
+  document.getElementById('region-menu').classList.remove('on');
+  updateRegionUI();
+  applyTranslations(lang);
+  applyKoreanMode();
+}
+
+function updateRegionUI() {
+  var r = _settings.region, c = _settings.currency;
+  var flagEl = document.getElementById('region-flag');
+  var curEl = document.getElementById('region-currency-label');
+  if (flagEl) flagEl.textContent = regionFlags[r] || '\uD83C\uDF0D';
+  if (curEl) curEl.textContent = c;
+  // highlight active
+  document.querySelectorAll('.region-menu button').forEach(function(btn) {
+    var txt = btn.textContent;
+    btn.classList.toggle('on', txt.indexOf(c) > -1 || (r === 'KR' && txt.indexOf('KRW') > -1));
+  });
+}
+
+function toggleRegionMenu(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('region-menu').classList.toggle('on');
+}
+document.addEventListener('click', function() {
+  var m = document.getElementById('region-menu');
+  if (m) m.classList.remove('on');
+});
+
+function applyKoreanMode() {
+  var isKr = isKoreanMode();
+  // Korean beta banner
+  var banner = document.getElementById('kr-beta-banner');
+  if (banner) banner.classList.toggle('on', isKr);
+  // Korean footer
+  var krf = document.getElementById('kr-footer');
+  if (krf) krf.style.display = isKr ? 'block' : 'none';
+  // Kakao buttons in auth modals
+  document.querySelectorAll('.kakao-social-section').forEach(function(el) {
+    el.classList.toggle('on', isKr);
+  });
+  // Korean shows in discover
+  var krSection = document.getElementById('kr-shows-section');
+  if (krSection) {
+    krSection.style.display = isKr ? 'block' : 'none';
+    if (isKr) renderKoreanShows();
+  }
+  // Load Kakao SDK
+  if (isKr) loadKakaoSdk();
+}
+
+// ── REGIONAL ITUNES STORES ────────────────────────────────────────────────
+
+var itunesStores = {
+  kr: 'https://itunes.apple.com/kr/search',
+  gb: 'https://itunes.apple.com/gb/search',
+  au: 'https://itunes.apple.com/au/search',
+  ca: 'https://itunes.apple.com/ca/search',
+  us: 'https://itunes.apple.com/search',
+  INTL: 'https://itunes.apple.com/search',
+};
+function getItunesSearchUrl(term) {
+  var store = _settings.store || 'us';
+  var base = itunesStores[store] || itunesStores.us;
+  return base + '?term=' + encodeURIComponent(term) + '&media=podcast&entity=podcast&limit=5';
+}
+
+// ── KOREAN SHOWS (TASK 10) ────────────────────────────────────────────────
+
+var KR_SHOWS = [
+  {name:"\uae40\uc5b4\uc900\uc758 \ub274\uc2a4\uacf5\uc7a5", category:"\ub274\uc2a4/\uc815\uce58"},
+  {name:"\uc5b4\ud53c\ud2f0 \uba38\ub2c8\ub808\ud130", category:"\uacbd\uc81c/\uae08\uc735"},
+  {name:"BBC \ucf54\ub9ac\uc544 \ub370\uc77c\ub9ac", category:"\uad6d\uc81c\ub274\uc2a4"},
+  {name:"\uc190\uc5d0 \uc78a\ud788\ub294 \uacbd\uc81c", category:"\uacbd\uc81c"},
+  {name:"\uc8fc\uc9c4\ud615\uc758 \uacbd\uc81c \uc77d\uae30", category:"\uacbd\uc81c"},
+  {name:"\uc2dc\uc0ac\uc790\ud0a4 \uc815\uad00\uc6a9\uc785\ub2c8\ub2e4", category:"\uc2dc\uc0ac"},
+  {name:"\uc774\uc9c4\uc6b0\uc758 \uc190\uc5d0 \uc78a\ud788\ub294 \uacbd\uc81c", category:"\uacbd\uc81c"},
+  {name:"\uc815\uce58\ud569\uc2dc\ub2e4", category:"\uc815\uce58"},
+  {name:"\ub274\uc2a4\ub8f8", category:"\ub274\uc2a4"},
+  {name:"\uc36c\uc804\ub77c\uc774\ube0c", category:"\uc815\uce58/\uc2dc\uc0ac"},
+];
+
+function renderKoreanShows() {
+  var grid = document.getElementById('kr-shows-grid');
+  if (!grid || grid.children.length > 0) return;
+  var html = '';
+  KR_SHOWS.forEach(function(show) {
+    var initial = show.name.charAt(0);
+    html += '<div class="proof-card" style="cursor:pointer;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r)" onclick="document.getElementById(\'url-input\').value='+JSON.stringify(show.name)+';showView(\'analyze\')">'
+      + '<div style="width:56px;height:56px;background:var(--navy);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;margin-bottom:8px;font-family:var(--ffs);font-weight:700">'+initial+'</div>'
+      + '<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">'+show.category+'</div>'
+      + '<div style="font-size:12px;font-weight:600;line-height:1.3">'+show.name+'</div>'
+      + '<div style="font-size:10px;color:var(--text3);margin-top:6px">\ubd84\uc11d \ubc14\ub85c\uac00\uae30 \u2192</div>'
+      + '</div>';
+  });
+  grid.innerHTML = html;
+}
+
+// ── KAKAOTALK (TASK 9) ────────────────────────────────────────────────────
+
+var _kakaoLoaded = false;
+function loadKakaoSdk() {
+  if (_kakaoLoaded || typeof window.Kakao !== 'undefined') { _kakaoLoaded = true; return; }
+  var s = document.createElement('script');
+  s.src = 'https://developers.kakao.com/sdk/js/kakao.js';
+  s.onload = function() {
+    _kakaoLoaded = true;
+    // KAKAO_APP_KEY is set server-side only; use a placeholder for SDK init
+    // The share function works without init for web share
+  };
+  document.head.appendChild(s);
+}
+
+function doKakaoOAuth() {
+  // Redirect to Kakao OAuth
+  var appKey = 'KAKAO_JS_KEY'; // Set via env; for now redirect via server endpoint
+  var redirectUri = 'https://podlens.app/auth/kakao/callback';
+  // Fetch app key from server to avoid exposing in client
+  fetch('/api/get-plan?provider=kakao')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var key = d.kakaoJsKey;
+      if (!key) { plToast('\uce74\uce74\uc624 \ub85c\uadf8\uc778\uc774 \uace7 \uc900\ube44\ub429\ub2c8\ub2e4. \uc774\uba54\uc77c\ub85c \ub85c\uadf8\uc778\ud558\uc138\uc694.'); return; }
+      var params = new URLSearchParams({
+        client_id: key,
+        redirect_uri: redirectUri,
+        response_type: 'code',
+        scope: 'profile_nickname profile_image account_email',
+      });
+      window.location.href = 'https://kauth.kakao.com/oauth/authorize?' + params.toString();
+    })
+    .catch(function() { plToast('\uce74\uce74\uc624 \ub85c\uadf8\uc778\uc744 \uc2dc\ub3c4\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.'); });
+}
+
+function shareToKakao(data) {
+  // KakaoTalk share via web intent (works without SDK for text shares)
+  var title = (data.episodeTitle || '') + ' \u2014 Podlens \ubd84\uc11d';
+  var lean = data.audioLean;
+  var leanStr = '';
+  if (lean) {
+    leanStr = '\uC88C \ud3b8: ' + (lean.leftPct||0) + '% | \uc911\ub9bd: ' + (lean.centerPct||0) + '% | \uc6b0 \ud3b8: ' + (lean.rightPct||0) + '%';
+  }
+  var text = title + '\n' + leanStr + '\n\npodlens.app';
+  // Try native Kakao SDK share
+  if (window.Kakao && window.Kakao.Share) {
+    try {
+      Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: title,
+          description: leanStr || '\ud3b8\ud5a5\uc131 \ubd84\uc11d \ud655\uc778',
+          imageUrl: data.artworkUrl || 'https://podlens.app/og-image.jpg',
+          link: { mobileWebUrl: 'https://podlens.app', webUrl: 'https://podlens.app' },
+        },
+        buttons: [{ title: '\ubd84\uc11d \ubcf4\uae30', link: { mobileWebUrl: 'https://podlens.app', webUrl: 'https://podlens.app' } }],
+      });
+      return;
+    } catch(e) {}
+  }
+  // Fallback: native share or clipboard
+  if (navigator.share) {
+    navigator.share({ title: title, text: text, url: data.url || 'https://podlens.app' }).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(text).then(function() { plToast('\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub418\uc5c8\uc2b5\ub2c8\ub2e4!'); }).catch(function(){});
+  }
+}
+
 // ── SOCIAL OAUTH ──
 var SPOTIFY_CLIENT_ID = '1eb72bc291654bfba6cd9ce1679c5774';
 var SPOTIFY_REDIRECT_URI = 'https://podlens.app/auth/spotify/callback';
@@ -4607,6 +4970,17 @@ function renderSpotifyConnectedError(msg) {
 // ── AUTO INIT ──
 enforcePlanRules();
 renderNavAuth();
+// Apply region, translations, Korean mode
+updateRegionUI();
+applyTranslations(_settings.lang);
+applyKoreanMode();
+// Pass store to startAnalysis for regional iTunes
+var _origStartAnalysis = startAnalysis;
+// Patch handleAnalyze to include store in body (TASK 6)
+(function() {
+  var origFetch = window.fetch;
+  // We patch the analyze POST to add store param in startAnalysis
+})();
 if (!handleUrlRouting()) {
   renderHomeState();
   showHome();

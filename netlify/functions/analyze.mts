@@ -244,11 +244,24 @@ interface PodcastMatch {
   showArtwork: string;
 }
 
-async function searchApplePodcasts(channelTitle: string): Promise<PodcastMatch | null> {
+// ── KOREAN PODCAST PLATFORMS ──────────────────────────────────────────────
+
+function extractKoreanPlatformRss(url: string): string | null {
+  // Podbbang
+  const podbbangM = url.match(/podbbang\.com\/channels\/(\d+)/);
+  if (podbbangM) return `https://www.podbbang.com/channels/${podbbangM[1]}/rss`;
+  // Naver AudioClip
+  const naverM = url.match(/audioclip\.naver\.com\/channels\/(\d+)/);
+  if (naverM) return `https://audioclip.naver.com/channels/${naverM[1]}/rss.xml`;
+  return null;
+}
+
+async function searchApplePodcasts(channelTitle: string, store = "us"): Promise<PodcastMatch | null> {
   if (!channelTitle) return null;
+  const storeParam = store !== "us" ? `&country=${store}` : "";
   try {
     const res = await fetch(
-      `https://itunes.apple.com/search?term=${encodeURIComponent(channelTitle)}&media=podcast&entity=podcast&limit=5`,
+      `https://itunes.apple.com/search?term=${encodeURIComponent(channelTitle)}&media=podcast&entity=podcast&limit=5${storeParam}`,
       { signal: AbortSignal.timeout(5000) }
     );
     if (!res.ok) return null;
@@ -413,7 +426,20 @@ export default async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { url: rawUrl, showName, showSlug, showArtwork, showFeedUrl, episodeTitle } = body;
+    const { url: rawUrl, showName, showSlug, showArtwork, showFeedUrl, episodeTitle, store = "us" } = body;
+
+    // ── Korean platform detection (before YouTube path) ──
+    const koreanRss = extractKoreanPlatformRss(rawUrl || "");
+    if (koreanRss) {
+      return new Response(JSON.stringify({
+        status: "needs_episode_selection",
+        feedUrl: koreanRss,
+        showName: showName || "",
+        showArtwork: showArtwork || "",
+        channelName: showName || "",
+        isKorean: true,
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
 
     if (!rawUrl) {
       return new Response(JSON.stringify({ error: "URL is required" }), {
@@ -503,7 +529,7 @@ export default async (req: Request) => {
       // ── Layers 2-4: run in parallel ──
       console.log(`[analyze] Layers 2-4 parallel: channelTitle="${channelTitle}", videoTitle="${videoTitle}", channelId="${channelId}"`);
       const [appleResult, podcastIndexResult, rssRetryResult] = await Promise.allSettled([
-        searchApplePodcasts(channelTitle),                 // Layer 2
+        searchApplePodcasts(channelTitle, store),          // Layer 2
         searchPodcastIndex(channelTitle),                   // Layer 3
         retryFromYouTubeChannelRss(channelId, videoId),    // Layer 4 (caption retry)
       ]);

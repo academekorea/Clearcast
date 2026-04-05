@@ -13,6 +13,12 @@ export default async (req: Request) => {
       status: 200, headers: { "Content-Type": "application/json" },
     });
   }
+  if (provider === "kakao") {
+    const kakaoJsKey = Netlify.env.get("KAKAO_APP_KEY") || "";
+    return new Response(JSON.stringify({ kakaoJsKey: kakaoJsKey || null }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
+  }
 
   if (!userId) {
     return new Response(JSON.stringify({ error: "userId required" }), {

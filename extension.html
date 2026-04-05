@@ -82,6 +82,18 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
   <div class="success-msg" id="waitlist-success">You're on the list. We'll email you when the extension launches.</div>
 </div>
 
+<!-- Korean waitlist (shown only for Korean region) -->
+<div id="kr-waitlist-section" style="display:none;max-width:640px;margin:0 auto 48px;padding:32px 24px;background:#fff;border-radius:8px;text-align:center">
+  <div style="font-size:22px;font-weight:700;color:#0f2027;margin-bottom:8px">🇰🇷 한국 얼리 액세스 대기 목록에 참여하세요</div>
+  <p style="font-size:14px;color:#666;margin-bottom:20px">한국어 베타 서비스 및 익스텐션 출시 소식을 가장 먼저 받아보세요</p>
+  <form name="korean-waitlist" method="POST" data-netlify="true" onsubmit="handleKoreanWaitlist(event)" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+    <input type="hidden" name="form-name" value="korean-waitlist">
+    <input type="email" name="email" placeholder="이메일 주소" required style="flex:1;min-width:200px;padding:12px 16px;border:1px solid #e0ddd8;border-radius:4px;font-size:14px;font-family:inherit">
+    <button type="submit" style="padding:12px 24px;background:#0f2027;color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">참여하기</button>
+  </form>
+  <div id="kr-waitlist-success" style="display:none;margin-top:12px;font-size:14px;color:#1a7a3c;font-weight:500">감사합니다! 출시 시 알려드리겠습니다. 🙌</div>
+</div>
+
 <div class="features">
   <div class="feature-card">
     <div class="feature-icon">&#9654;</div>
@@ -134,6 +146,25 @@ function handleWaitlist(e) {
     .then(function(){ form.style.display='none'; document.getElementById('waitlist-success').style.display='block'; })
     .catch(function(){ document.getElementById('waitlist-success').textContent="Something went wrong. Email hello@podlens.app to join the waitlist."; document.getElementById('waitlist-success').style.display='block'; });
 }
+function handleKoreanWaitlist(e) {
+  e.preventDefault();
+  var form = e.target;
+  fetch('/', { method:'POST', body: new FormData(form) })
+    .then(function(){ form.style.display='none'; document.getElementById('kr-waitlist-success').style.display='block'; })
+    .catch(function(){ document.getElementById('kr-waitlist-success').textContent='\uc624\ub958\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. hello@podlens.app\uc73c\ub85c \uc5f0\ub77d\ud574\uc8fc\uc138\uc694.'; document.getElementById('kr-waitlist-success').style.display='block'; });
+}
+// Show Korean waitlist if Korean region
+(function() {
+  var cookies = {};
+  document.cookie.split('; ').forEach(function(c) { var p=c.split('='); if(p.length>=2) cookies[p[0].trim()]=p[1].trim(); });
+  var saved = localStorage.getItem('pl_prefs_region');
+  var region = (saved ? JSON.parse(saved).region : null) || cookies.pl_region || '';
+  var lang = (navigator.language || '').toLowerCase();
+  if (region === 'KR' || lang.startsWith('ko')) {
+    var s = document.getElementById('kr-waitlist-section');
+    if (s) s.style.display = 'block';
+  }
+})();
 </script>
 </body>
 </html>
