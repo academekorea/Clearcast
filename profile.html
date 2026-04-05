@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>My Profile — Podlens</title>
+<meta property="og:image" content="https://podlens.app/og-image.jpg">
+<meta name="theme-color" content="#0f2027">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -32,9 +35,14 @@ html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.6}
 a{color:var(--navy);text-decoration:none}
 [data-theme="dark"] a{color:var(--text)}
+
+/* ── NAV ── */
 nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
 .logo{font-family:var(--ffs);font-size:20px;font-weight:700;color:var(--navy);text-decoration:none;flex-shrink:0;margin-right:auto}
 [data-theme="dark"] .logo{color:var(--text)}
+.podlens-wordmark{font-family:'Playfair Display',Georgia,serif;letter-spacing:.08em;line-height:1;display:inline}
+.podlens-wordmark .pod{font-weight:400;color:inherit}
+.podlens-wordmark .lens{font-weight:700;color:inherit}
 .nl{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:var(--r);text-decoration:none}
 .nl:hover{background:var(--bg3);color:var(--text)}
 .nav-btn{padding:7px 16px;font-size:13px;font-weight:600;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-family:var(--ff)}
@@ -73,8 +81,14 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .fpc{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}
 .fpcd{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
+/* ── PROFILE TABS ── */
+.profile-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
+.ptab{padding:10px 16px;font-size:13px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:var(--ff);border-bottom:2px solid transparent;transition:all .15s}
+.ptab.on{color:var(--text);font-weight:600;border-bottom-color:var(--text)}
+.ptab:hover:not(.on){color:var(--text2)}
+.ptab-panel{display:none}.ptab-panel.on{display:block}
+
 /* ── MAIN CONTENT ── */
-.profile-main{}
 .section-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px;overflow:hidden}
 .section-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .section-head-title{font-size:13px;font-weight:600}
@@ -94,19 +108,61 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .show-meta{font-size:11px;color:var(--text3)}
 .empty-state{padding:40px 20px;text-align:center;color:var(--text3);font-size:13px}
 .empty-state a{color:var(--navy);text-decoration:underline}
-[data-theme="dark"] .empty-state a{color:var(--text)}
+
+/* ── WRAPPED CARDS ── */
+.wrapped-trigger{background:linear-gradient(135deg,#0f2027 0%,#1a3a4a 100%);border-radius:var(--r);padding:32px;text-align:center;margin-bottom:20px;color:white}
+.wrapped-trigger h2{font-family:var(--ffs);font-size:28px;font-weight:700;margin-bottom:8px}
+.wrapped-trigger p{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:20px}
+.wrapped-btn{padding:12px 28px;background:white;color:#0f2027;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:700;font-family:var(--ff);transition:opacity .15s}
+.wrapped-btn:hover{opacity:.9}
+.wrapped-cards{display:none}
+.wrapped-card{background:#0f2027;border-radius:var(--r);padding:40px 32px;text-align:center;color:white;margin-bottom:16px;display:none;animation:wrapFade .5s ease}
+.wrapped-card.on{display:block}
+@keyframes wrapFade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.wc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.4);margin-bottom:16px}
+.wc-big{font-family:var(--ffs);font-size:72px;font-weight:700;line-height:1;margin-bottom:8px;color:white}
+.wc-sub{font-size:16px;color:rgba(255,255,255,.6);margin-bottom:24px}
+.wc-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:24px}
+.wc-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:background .2s}
+.wc-dot.on{background:white}
+.wc-prev,.wc-next{padding:8px 18px;border:1px solid rgba(255,255,255,.25);border-radius:4px;background:transparent;color:white;cursor:pointer;font-size:13px;font-family:var(--ff);transition:background .15s}
+.wc-prev:hover,.wc-next:hover{background:rgba(255,255,255,.1)}
+.wc-share-row{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.wc-share-btn{padding:8px 16px;border:1px solid rgba(255,255,255,.25);border-radius:4px;background:transparent;color:white;cursor:pointer;font-size:12px;font-family:var(--ff);transition:background .15s}
+.wc-share-btn:hover{background:rgba(255,255,255,.1)}
+.wc-share-btn.wc-dl{background:white;color:#0f2027;border-color:white}
+.wc-bar-row{display:flex;height:14px;border-radius:7px;overflow:hidden;max-width:400px;margin:0 auto 10px}
+.wc-bar-l{background:#E24B4A}
+.wc-bar-c{background:rgba(255,255,255,.3)}
+.wc-bar-r{background:#378ADD}
+.wc-bias-label{font-size:22px;font-weight:700;color:white;margin-bottom:8px}
+.wc-bias-counts{display:flex;gap:16px;justify-content:center;font-size:13px;color:rgba(255,255,255,.6)}
+
+/* ── MONTHLY REPORTS ── */
+.monthly-report-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:12px;display:flex;align-items:center;gap:16px}
+.mrc-month{font-family:var(--ffs);font-size:20px;font-weight:700;min-width:100px}
+.mrc-stats{flex:1;font-size:13px;color:var(--text2)}
+.mrc-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;width:80px;margin-top:4px}
+.mrc-dl{padding:6px 14px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;font-family:var(--ff);white-space:nowrap;transition:all .1s}
+.mrc-dl:hover{border-color:var(--text);color:var(--text)}
+
 footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2)}
 .footer-bottom{max-width:960px;margin:0 auto;font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+/* Canvas (hidden, used for image generation) */
+#wrapped-canvas{display:none}
 </style>
 </head>
 <body>
 <nav>
-  <a class="logo" href="/">Podlens</a>
+  <a class="logo" href="/"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></a>
   <a class="nl" href="/">Home</a>
   <span style="flex:1"></span>
   <a class="nl" href="/settings.html">Settings</a>
   <button class="nav-btn" onclick="doLogout()">Log out</button>
 </nav>
+
+<canvas id="wrapped-canvas"></canvas>
 
 <div class="profile-wrap" id="profile-wrap">
   <div class="profile-sidebar">
@@ -135,77 +191,130 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
       </div>
       <div class="fp-labels"><span>Left</span><span>Center</span><span>Right</span></div>
       <div class="fp-counts" id="fp-counts">
-        <span class="fpc"><span class="fpcd" style="background:#E24B4A"></span><span id="fp-l">—%</span> left</span>
-        <span class="fpc"><span class="fpcd" style="background:#9E9E9E"></span><span id="fp-c">—%</span> center</span>
-        <span class="fpc"><span class="fpcd" style="background:#378ADD"></span><span id="fp-r">—%</span> right</span>
+        <span class="fpc"><span class="fpcd" style="background:#E24B4A"></span><span id="fp-l">&mdash;%</span> left</span>
+        <span class="fpc"><span class="fpcd" style="background:#9E9E9E"></span><span id="fp-c">&mdash;%</span> center</span>
+        <span class="fpc"><span class="fpcd" style="background:#378ADD"></span><span id="fp-r">&mdash;%</span> right</span>
       </div>
       <div style="font-size:10px;color:var(--text3);margin-top:10px;font-style:italic">Based on your last <span id="fp-count">0</span> analyses</div>
     </div>
   </div>
 
   <div class="profile-main">
-    <div class="section-card">
-      <div class="section-head">
-        <div class="section-head-title">Recent analyses</div>
-        <div class="section-head-sub" id="recent-count"></div>
-      </div>
-      <div id="recent-list"><div class="empty-state">No analyses yet. <a href="/">Analyze your first episode &rarr;</a></div></div>
+    <!-- TABS -->
+    <div class="profile-tabs">
+      <button class="ptab on" onclick="showTab('history',this)">History</button>
+      <button class="ptab" onclick="showTab('wrapped',this)">My Wrapped</button>
+      <button class="ptab" onclick="showTab('reports',this)">Monthly Reports</button>
     </div>
 
-    <div class="section-card">
-      <div class="section-head">
-        <div class="section-head-title">Shows you follow</div>
-        <div class="section-head-sub" id="shows-count"></div>
+    <!-- HISTORY TAB -->
+    <div class="ptab-panel on" id="tab-history">
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-title">Recent analyses</div>
+          <div class="section-head-sub" id="recent-count"></div>
+        </div>
+        <div id="recent-list"><div class="empty-state">No analyses yet. <a href="/">Analyze your first episode &rarr;</a></div></div>
       </div>
-      <div id="shows-list"><div class="empty-state">No shows followed yet. Browse shows on the <a href="/">home page</a>.</div></div>
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-title">Shows you follow</div>
+          <div class="section-head-sub" id="shows-count"></div>
+        </div>
+        <div id="shows-list"><div class="empty-state">No shows followed yet. Browse shows on the <a href="/">home page</a>.</div></div>
+      </div>
+    </div>
+
+    <!-- WRAPPED TAB -->
+    <div class="ptab-panel" id="tab-wrapped">
+      <div class="wrapped-trigger" id="wrapped-trigger">
+        <div class="wc-label">Your listening, quantified</div>
+        <h2>Podlens Wrapped <span id="wrapped-year">2026</span></h2>
+        <p>A look back at everything you&rsquo;ve listened to and analyzed this year.</p>
+        <button class="wrapped-btn" onclick="generateWrapped()">Generate my Wrapped</button>
+      </div>
+
+      <div class="wrapped-cards" id="wrapped-cards">
+        <!-- Cards rendered by generateWrapped() -->
+      </div>
+    </div>
+
+    <!-- MONTHLY REPORTS TAB -->
+    <div class="ptab-panel" id="tab-reports">
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-title">Monthly Reports</div>
+          <div class="section-head-sub">Auto-generated on the 1st of each month</div>
+        </div>
+        <div id="monthly-reports-list" style="padding:20px">
+          <div style="color:var(--text3);font-size:13px">Generating your monthly reports&hellip;</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <footer>
-  <div class="footer-bottom"><span>&copy; 2026 Podlens &middot; podlens.app</span><span><a href="mailto:hello@podlens.app">hello@podlens.app</a></span></div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 <span class="podlens-wordmark" style="font-size:12px"><span class="pod">POD</span><span class="lens">LENS</span></span> &middot; podlens.app</span>
+    <span><a href="mailto:hello@podlens.app">hello@podlens.app</a></span>
+  </div>
 </footer>
 
 <script>
 function plUser() {
-  try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch { return null; }
+  try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) { return null; }
+}
+function getRecent() {
+  try { return JSON.parse(localStorage.getItem('pl-recent') || '[]'); } catch(e) { return []; }
 }
 function doLogout() {
   localStorage.removeItem('pl-user');
   window.location.href = '/';
 }
 
+// ── TABS ──
+function showTab(name, btn) {
+  document.querySelectorAll('.ptab').forEach(function(b){ b.classList.remove('on'); });
+  document.querySelectorAll('.ptab-panel').forEach(function(p){ p.classList.remove('on'); });
+  btn.classList.add('on');
+  document.getElementById('tab-' + name).classList.add('on');
+  if (name === 'reports') renderMonthlyReports();
+}
+
+// ── MAIN RENDER ──
 function renderProfile() {
   var u = plUser();
   if (!u) { window.location.href = '/'; return; }
 
-  var initials = (u.name || u.email || '?').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
+  document.getElementById('wrapped-year').textContent = new Date().getFullYear();
+
+  var initials = (u.name || u.email || '?').split(' ').map(function(w){ return w[0]; }).join('').slice(0, 2).toUpperCase();
   document.getElementById('prof-avatar').textContent = initials;
   document.getElementById('prof-name').textContent = u.name || u.email || 'My Account';
   document.getElementById('prof-email').textContent = u.email || '';
-  document.getElementById('prof-plan').textContent = (u.plan || 'Listener').charAt(0).toUpperCase() + (u.plan || 'listener').slice(1);
+  var planName = (u.plan || 'listener');
+  document.getElementById('prof-plan').textContent = planName.charAt(0).toUpperCase() + planName.slice(1);
 
   // Recent analyses
-  var recent = [];
-  try { recent = JSON.parse(localStorage.getItem('pl-recent') || '[]'); } catch {}
+  var recent = getRecent();
   document.getElementById('stat-analyzed').textContent = recent.length;
   document.getElementById('recent-count').textContent = recent.length + ' episodes';
 
   if (recent.length) {
     var html = '';
     recent.slice(0, 10).forEach(function(ep) {
-      var al = ep.audioLean || {};
-      var lp = al.leftPct || 0, cp = al.centerPct || 0, rp = al.rightPct || 0;
+      var lp = ep.leftPct || 0, cp = ep.centerPct || 0, rp = ep.rightPct || 0;
       var date = ep.analyzedAt ? new Date(ep.analyzedAt).toLocaleDateString('en-US', {month:'short',day:'numeric'}) : '';
       html += '<div class="ep-row">';
-      if (ep.showArtwork) html += '<img class="ep-art" src="'+ep.showArtwork+'" alt="" onerror="this.style.display=\'none\'">';
-      else html += '<div class="ep-art"></div>';
+      html += '<div class="ep-art"></div>';
       html += '<div class="ep-body">';
-      if (ep.showName) html += '<div class="ep-show">'+ep.showName+'</div>';
-      html += '<div class="ep-title">'+(ep.episodeTitle||'Episode')+'</div>';
+      if (ep.showName) html += '<div class="ep-show">' + ep.showName + '</div>';
+      html += '<div class="ep-title">' + (ep.title || 'Episode') + '</div>';
       html += '<div class="ep-mini-bar"><div style="width:'+lp+'%;background:#E24B4A"></div><div style="width:'+cp+'%;background:#9E9E9E"></div><div style="width:'+rp+'%;background:#378ADD"></div></div>';
       html += '</div>';
-      if (date) html += '<div class="ep-date">'+date+'</div>';
+      if (date) html += '<div class="ep-date">' + date + '</div>';
       html += '</div>';
     });
     document.getElementById('recent-list').innerHTML = html;
@@ -213,40 +322,386 @@ function renderProfile() {
 
   // Followed shows
   var followed = [];
-  try { followed = JSON.parse(localStorage.getItem('pl-followed') || '[]'); } catch {}
+  try { followed = JSON.parse(localStorage.getItem('pl-followed') || '[]'); } catch(e) {}
   document.getElementById('stat-shows').textContent = followed.length;
   document.getElementById('shows-count').textContent = followed.length + ' shows';
-
   if (followed.length) {
     var shtml = '';
     followed.slice(0, 8).forEach(function(show) {
       shtml += '<div class="show-row">';
-      if (show.artwork) shtml += '<img class="show-art" src="'+show.artwork+'" alt="" onerror="this.style.display=\'none\'">';
+      if (show.artwork) shtml += '<img class="show-art" src="' + show.artwork + '" alt="" onerror="this.style.display=\'none\'">';
       else shtml += '<div class="show-art"></div>';
-      shtml += '<div><div class="show-name">'+(show.name||'Show')+'</div>';
-      shtml += '<div class="show-meta">'+(show.category||'Podcast')+'</div></div>';
+      shtml += '<div><div class="show-name">' + (show.name || 'Show') + '</div>';
+      shtml += '<div class="show-meta">' + (show.category || 'Podcast') + '</div></div>';
       shtml += '</div>';
     });
     document.getElementById('shows-list').innerHTML = shtml;
   }
 
   // Bias fingerprint
-  if (recent.length) {
-    var validLeans = recent.filter(function(e){return e.audioLean && typeof e.audioLean.leftPct==='number';});
-    if (validLeans.length) {
-      var avgL = Math.round(validLeans.reduce(function(s,e){return s+e.audioLean.leftPct;},0)/validLeans.length);
-      var avgC = Math.round(validLeans.reduce(function(s,e){return s+e.audioLean.centerPct;},0)/validLeans.length);
-      var avgR = 100-avgL-avgC;
-      document.getElementById('fp-bar').innerHTML =
-        '<div class="fp-l" style="width:'+avgL+'%"></div>'+
-        '<div class="fp-c" style="width:'+avgC+'%"></div>'+
-        '<div class="fp-r" style="width:'+avgR+'%"></div>';
-      document.getElementById('fp-l').textContent = avgL + '%';
-      document.getElementById('fp-c').textContent = avgC + '%';
-      document.getElementById('fp-r').textContent = avgR + '%';
-      document.getElementById('fp-count').textContent = validLeans.length;
-    }
+  var withLean = recent.filter(function(r){ return typeof r.leftPct === 'number'; });
+  if (withLean.length) {
+    var avgL = Math.round(withLean.reduce(function(s,r){ return s+r.leftPct; }, 0) / withLean.length);
+    var avgC = Math.round(withLean.reduce(function(s,r){ return s+r.centerPct; }, 0) / withLean.length);
+    var avgR = 100 - avgL - avgC;
+    document.getElementById('fp-bar').innerHTML =
+      '<div class="fp-l" style="width:'+avgL+'%"></div>'+
+      '<div class="fp-c" style="width:'+avgC+'%"></div>'+
+      '<div class="fp-r" style="width:'+avgR+'%"></div>';
+    document.getElementById('fp-l').textContent = avgL + '%';
+    document.getElementById('fp-c').textContent = avgC + '%';
+    document.getElementById('fp-r').textContent = avgR + '%';
+    document.getElementById('fp-count').textContent = withLean.length;
   }
+}
+
+// ── WRAPPED ──
+var _wrappedIdx = 0;
+var _wrappedData = null;
+
+function biasLabel(l, r) {
+  var d = Math.abs((l||0)-(r||0));
+  if (d < 20) return 'Mostly balanced';
+  if (d < 40) return 'Lightly one-sided';
+  if (d < 60) return 'Moderately biased';
+  if (d < 80) return 'Heavily one-sided';
+  return 'Extremely one-sided';
+}
+
+function generateWrapped() {
+  var recent = getRecent();
+  var year = new Date().getFullYear();
+
+  if (!recent.length) {
+    document.getElementById('wrapped-trigger').innerHTML =
+      '<div class="wc-label">Not enough data</div>'
+      + '<h2>Keep analyzing!</h2>'
+      + '<p>Analyze at least 3 episodes to generate your Wrapped.</p>'
+      + '<a href="/" style="display:inline-block;padding:12px 24px;background:white;color:#0f2027;border-radius:4px;font-weight:700;text-decoration:none;margin-top:8px">Start analyzing &rarr;</a>';
+    return;
+  }
+
+  // Calculate stats
+  var totalEps = recent.length;
+  var shows = {};
+  var totalHours = 0;
+  var withLean = recent.filter(function(r){ return typeof r.leftPct === 'number'; });
+  var avgL = withLean.length ? Math.round(withLean.reduce(function(s,r){return s+r.leftPct;},0)/withLean.length) : 34;
+  var avgC = withLean.length ? Math.round(withLean.reduce(function(s,r){return s+r.centerPct;},0)/withLean.length) : 32;
+  var avgR = withLean.length ? 100-avgL-avgC : 34;
+  recent.forEach(function(r){ if(r.showName) shows[r.showName]=(shows[r.showName]||0)+1; });
+  var topShow = Object.keys(shows).sort(function(a,b){return shows[b]-shows[a];})[0] || 'Your shows';
+  var topShowCount = shows[topShow] || 1;
+  var leanDir = avgL > avgR ? 'left' : avgR > avgL ? 'right' : 'center';
+  var leanPct = leanDir === 'left' ? avgL : leanDir === 'right' ? avgR : avgC;
+  var leanLabel = biasLabel(avgL, avgR);
+
+  _wrappedData = { totalEps: totalEps, totalHours: totalHours, topShow: topShow, topShowCount: topShowCount, avgL: avgL, avgC: avgC, avgR: avgR, leanDir: leanDir, leanPct: leanPct, leanLabel: leanLabel, year: year };
+
+  var cards = [
+    buildWrappedCard(0, year, totalEps, avgL, avgC, avgR, topShow, topShowCount, leanDir, leanPct, leanLabel),
+    buildWrappedCard(1, year, totalEps, avgL, avgC, avgR, topShow, topShowCount, leanDir, leanPct, leanLabel),
+    buildWrappedCard(2, year, totalEps, avgL, avgC, avgR, topShow, topShowCount, leanDir, leanPct, leanLabel),
+    buildWrappedCard(3, year, totalEps, avgL, avgC, avgR, topShow, topShowCount, leanDir, leanPct, leanLabel),
+    buildWrappedCard(4, year, totalEps, avgL, avgC, avgR, topShow, topShowCount, leanDir, leanPct, leanLabel),
+  ];
+
+  document.getElementById('wrapped-trigger').style.display = 'none';
+  var wc = document.getElementById('wrapped-cards');
+  wc.style.display = 'block';
+  wc.innerHTML = cards.join('') + buildWrappedNav(cards.length);
+  _wrappedIdx = 0;
+  updateWrappedDisplay();
+}
+
+function buildWrappedCard(idx, year, totalEps, avgL, avgC, avgR, topShow, topShowCount, leanDir, leanPct, leanLabel) {
+  var content = '';
+  var shareRow = '<div class="wc-share-row"><button class="wc-share-btn wc-dl" onclick="downloadWrappedCard('+idx+')">&#9660; Download</button><button class="wc-share-btn" onclick="shareWrappedToX('+idx+')">&#120143; Share to X</button></div>';
+  if (idx === 0) {
+    content = '<div class="wc-label">Your Podlens Year ' + year + '</div>'
+      + '<div class="wc-big" id="wc-num-0">0</div>'
+      + '<div class="wc-sub">episodes analyzed</div>'
+      + '<p style="font-size:14px;color:rgba(255,255,255,.5);margin-bottom:16px">That\'s ' + Math.round(totalEps * 0.7) + ' hours of podcast intelligence.</p>'
+      + shareRow;
+  } else if (idx === 1) {
+    content = '<div class="wc-label">Your Bias Fingerprint ' + year + '</div>'
+      + '<div class="wc-bar-row"><div class="wc-bar-l" style="width:'+avgL+'%"></div><div class="wc-bar-c" style="width:'+avgC+'%"></div><div class="wc-bar-r" style="width:'+avgR+'%"></div></div>'
+      + '<div class="wc-bias-label">' + leanLabel + '</div>'
+      + '<div class="wc-bias-counts"><span>🔴 '+avgL+'% left</span><span>⬜ '+avgC+'% center</span><span>🔵 '+avgR+'% right</span></div>'
+      + '<p style="font-size:13px;color:rgba(255,255,255,.4);margin-top:12px;line-height:1.5">Your listening leans ' + leanPct + '% ' + leanDir + ' — here\'s what that means for your information diet.</p>'
+      + shareRow;
+  } else if (idx === 2) {
+    content = '<div class="wc-label">Your Most Analyzed Show</div>'
+      + '<div style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px">🎙</div>'
+      + '<div style="font-family:var(--ffs);font-size:28px;font-weight:700;margin-bottom:8px">' + topShow + '</div>'
+      + '<div class="wc-sub">You analyzed ' + topShowCount + ' episode' + (topShowCount > 1 ? 's' : '') + ' from this show</div>'
+      + shareRow;
+  } else if (idx === 3) {
+    var oppositeDir = leanDir === 'left' ? 'right' : leanDir === 'right' ? 'left' : 'center';
+    content = '<div class="wc-label">Your Listening Blindspot</div>'
+      + '<div style="font-size:48px;margin-bottom:16px">🔍</div>'
+      + '<div style="font-family:var(--ffs);font-size:24px;font-weight:600;margin-bottom:12px">You rarely heard ' + oppositeDir + '-leaning voices</div>'
+      + '<p style="font-size:14px;color:rgba(255,255,255,.55);line-height:1.6;max-width:360px;margin:0 auto 16px">Your listening leans ' + leanDir + '. Here\'s what you might be missing from the other side.</p>'
+      + shareRow;
+  } else {
+    // Final shareable card
+    content = '<div class="wc-label">Your Podlens ' + year + ' in full</div>'
+      + '<div class="wc-big">' + totalEps + '</div>'
+      + '<div class="wc-sub">episodes · ' + leanLabel.toLowerCase() + ' listening</div>'
+      + '<div class="wc-bar-row" style="margin:16px auto"><div class="wc-bar-l" style="width:'+avgL+'%"></div><div class="wc-bar-c" style="width:'+avgC+'%"></div><div class="wc-bar-r" style="width:'+avgR+'%"></div></div>'
+      + '<div style="font-size:12px;color:rgba(255,255,255,.3);margin-bottom:20px">' + avgL + '% left · ' + avgC + '% center · ' + avgR + '% right</div>'
+      + '<div class="wc-share-row"><button class="wc-share-btn wc-dl" onclick="downloadWrappedCard(4)">&#9660; Download PNG</button><button class="wc-share-btn" onclick="shareWrappedToX(4)">&#120143; Share to X</button><button class="wc-share-btn" onclick="downloadWrappedStory()">&#128247; Story</button></div>';
+  }
+  return '<div class="wrapped-card" id="wcard-'+idx+'">' + content + '</div>';
+}
+
+function buildWrappedNav(total) {
+  var dots = '';
+  for (var i = 0; i < total; i++) dots += '<span class="wc-dot' + (i===0?' on':'') + '" onclick="goWrappedCard('+i+')"></span>';
+  return '<div class="wc-nav"><button class="wc-prev" onclick="prevWrapped()">&larr;</button><div style="display:flex;gap:6px">'+dots+'</div><button class="wc-next" onclick="nextWrapped()">&rarr;</button></div>';
+}
+
+function updateWrappedDisplay() {
+  document.querySelectorAll('.wrapped-card').forEach(function(c, i){ c.classList.toggle('on', i === _wrappedIdx); });
+  document.querySelectorAll('.wc-dot').forEach(function(d, i){ d.classList.toggle('on', i === _wrappedIdx); });
+  // Animate number on card 0
+  if (_wrappedIdx === 0 && _wrappedData) {
+    var el = document.getElementById('wc-num-0');
+    if (el) animateCount(el, 0, _wrappedData.totalEps, 1200);
+  }
+}
+
+function animateCount(el, from, to, duration) {
+  var start = Date.now();
+  function tick() {
+    var elapsed = Date.now() - start;
+    var progress = Math.min(elapsed / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(from + (to - from) * eased);
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function prevWrapped() {
+  var total = document.querySelectorAll('.wrapped-card').length;
+  _wrappedIdx = (_wrappedIdx - 1 + total) % total;
+  updateWrappedDisplay();
+}
+function nextWrapped() {
+  var total = document.querySelectorAll('.wrapped-card').length;
+  _wrappedIdx = (_wrappedIdx + 1) % total;
+  updateWrappedDisplay();
+}
+function goWrappedCard(idx) { _wrappedIdx = idx; updateWrappedDisplay(); }
+
+function shareWrappedToX(cardIdx) {
+  if (!_wrappedData) return;
+  var text = 'My Podlens Wrapped ' + _wrappedData.year + ': ' + _wrappedData.totalEps + ' episodes analyzed, ' + _wrappedData.leanLabel.toLowerCase() + ' listening (' + _wrappedData.avgL + '% left / ' + _wrappedData.avgC + '% center / ' + _wrappedData.avgR + '% right) #PodlensWrapped' + _wrappedData.year;
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent('https://podlens.app'), '_blank');
+}
+
+async function downloadWrappedCard(cardIdx) {
+  if (!_wrappedData) return;
+  var btn = event && event.target;
+  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
+  try {
+    var canvas = document.getElementById('wrapped-canvas');
+    canvas.width = 1080; canvas.height = 1080;
+    var ctx = canvas.getContext('2d');
+    var d = _wrappedData;
+    ctx.fillStyle = '#0f2027'; ctx.fillRect(0, 0, 1080, 1080);
+    // PODLENS wordmark
+    ctx.fillStyle = 'rgba(255,255,255,.9)';
+    ctx.font = '400 22px "Playfair Display",Georgia,serif';
+    ctx.fillText('POD', 60, 70);
+    var pw = ctx.measureText('POD').width;
+    ctx.font = '700 22px "Playfair Display",Georgia,serif';
+    ctx.fillText('LENS', 60 + pw, 70);
+    ctx.fillStyle = 'rgba(255,255,255,.3)';
+    ctx.font = '400 16px Inter,sans-serif';
+    ctx.textAlign = 'right'; ctx.fillText('podlens.app', 1020, 70); ctx.textAlign = 'left';
+    // Year
+    ctx.fillStyle = 'rgba(255,255,255,.4)';
+    ctx.font = '700 14px Inter,sans-serif';
+    ctx.fillText('WRAPPED ' + d.year, 60, 200);
+    // Big number
+    ctx.fillStyle = 'white';
+    ctx.font = '700 120px "Playfair Display",Georgia,serif';
+    ctx.fillText(String(d.totalEps), 60, 360);
+    ctx.fillStyle = 'rgba(255,255,255,.5)';
+    ctx.font = '400 28px Inter,sans-serif';
+    ctx.fillText('episodes analyzed', 60, 410);
+    // Bias bar
+    var bW = 960, bH = 16, bX = 60, bY = 470;
+    ctx.fillStyle = '#E24B4A'; ctx.fillRect(bX, bY, Math.round(bW*d.avgL/100), bH);
+    ctx.fillStyle = '#D1CFC9'; ctx.fillRect(bX+Math.round(bW*d.avgL/100), bY, Math.round(bW*d.avgC/100), bH);
+    ctx.fillStyle = '#378ADD'; ctx.fillRect(bX+Math.round(bW*(d.avgL+d.avgC)/100), bY, Math.round(bW*d.avgR/100), bH);
+    ctx.fillStyle = 'rgba(255,255,255,.6)';
+    ctx.font = '400 18px Inter,sans-serif';
+    ctx.fillText(d.avgL+'% left · '+d.avgC+'% center · '+d.avgR+'% right', bX, bY+bH+24);
+    ctx.fillStyle = 'white';
+    ctx.font = '700 32px Inter,sans-serif';
+    ctx.fillText(d.leanLabel, bX, bY+bH+72);
+    ctx.fillStyle = 'rgba(255,255,255,.3)';
+    ctx.font = '400 18px Inter,sans-serif';
+    ctx.fillText('#PodlensWrapped'+d.year, bX, 1020);
+    canvas.toBlob(function(blob) {
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'podlens-wrapped-'+d.year+'.png'; a.click(); URL.revokeObjectURL(a.href);
+      if (btn) { btn.textContent = '⬇ Download PNG'; btn.disabled = false; }
+    }, 'image/png');
+  } catch(e) { alert('Failed to generate. Try again.'); if (btn) { btn.textContent = '⬇ Download'; btn.disabled = false; } }
+}
+
+async function downloadWrappedStory() {
+  if (!_wrappedData) return;
+  var btn = event && event.target;
+  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
+  try {
+    var canvas = document.getElementById('wrapped-canvas');
+    canvas.width = 1080; canvas.height = 1920;
+    var ctx = canvas.getContext('2d');
+    var d = _wrappedData;
+    ctx.fillStyle = '#0f2027'; ctx.fillRect(0, 0, 1080, 1920);
+    ctx.fillStyle = 'rgba(255,255,255,.9)';
+    ctx.font = '400 26px "Playfair Display",Georgia,serif';
+    ctx.fillText('POD', 60, 100);
+    var pw = ctx.measureText('POD').width;
+    ctx.font = '700 26px "Playfair Display",Georgia,serif';
+    ctx.fillText('LENS', 60+pw, 100);
+    ctx.fillStyle = 'rgba(255,255,255,.4)';
+    ctx.font = '700 16px Inter,sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText('WRAPPED '+d.year, 540, 280); ctx.textAlign = 'left';
+    ctx.fillStyle = 'white';
+    ctx.font = '700 140px "Playfair Display",Georgia,serif';
+    ctx.textAlign = 'center'; ctx.fillText(String(d.totalEps), 540, 550); ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,.5)';
+    ctx.font = '400 32px Inter,sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText('episodes analyzed', 540, 610); ctx.textAlign = 'left';
+    var bW = 960, bH = 20, bX = 60, bY = 700;
+    ctx.fillStyle = '#E24B4A'; ctx.fillRect(bX, bY, Math.round(bW*d.avgL/100), bH);
+    ctx.fillStyle = '#D1CFC9'; ctx.fillRect(bX+Math.round(bW*d.avgL/100), bY, Math.round(bW*d.avgC/100), bH);
+    ctx.fillStyle = '#378ADD'; ctx.fillRect(bX+Math.round(bW*(d.avgL+d.avgC)/100), bY, Math.round(bW*d.avgR/100), bH);
+    ctx.fillStyle = 'rgba(255,255,255,.6)';
+    ctx.font = '400 22px Inter,sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText(d.avgL+'% left · '+d.avgC+'% center · '+d.avgR+'% right', 540, bY+bH+36); ctx.textAlign = 'left';
+    ctx.fillStyle = 'white';
+    ctx.font = '700 38px Inter,sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText(d.leanLabel, 540, bY+bH+90); ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,.3)';
+    ctx.font = '400 22px Inter,sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText('Tap to analyze your podcasts →', 540, 1820); ctx.textAlign = 'left';
+    ctx.fillText('#PodlensWrapped'+d.year+' · podlens.app', 60, 1880);
+    canvas.toBlob(function(blob) {
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'podlens-wrapped-story-'+d.year+'.png'; a.click(); URL.revokeObjectURL(a.href);
+      if (btn) { btn.textContent = '📷 Story'; btn.disabled = false; }
+    }, 'image/png');
+  } catch(e) { alert('Failed.'); if (btn) { btn.textContent = '📷 Story'; btn.disabled = false; } }
+}
+
+// ── MONTHLY REPORTS ──
+function renderMonthlyReports() {
+  var el = document.getElementById('monthly-reports-list');
+  var recent = getRecent();
+  if (!recent.length) {
+    el.innerHTML = '<div class="empty-state">No analyses yet. <a href="/">Analyze your first episode &rarr;</a></div>';
+    return;
+  }
+  // Group by month
+  var months = {};
+  var now = new Date();
+  // Always show current month even if no analyses
+  for (var m = 0; m < 6; m++) {
+    var d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+    var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    months[key] = { year: d.getFullYear(), month: d.getMonth(), eps: [], label: d.toLocaleDateString('en-US',{month:'long',year:'numeric'}) };
+  }
+  recent.forEach(function(r) {
+    var d = r.analyzedAt ? new Date(r.analyzedAt) : null;
+    if (!d) return;
+    var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    if (months[key]) months[key].eps.push(r);
+  });
+  var html = '';
+  Object.keys(months).sort(function(a,b){return b.localeCompare(a);}).forEach(function(key) {
+    var mo = months[key];
+    var withLean = mo.eps.filter(function(r){ return typeof r.leftPct === 'number'; });
+    var avgL = withLean.length ? Math.round(withLean.reduce(function(s,r){return s+r.leftPct;},0)/withLean.length) : 33;
+    var avgC = withLean.length ? Math.round(withLean.reduce(function(s,r){return s+r.centerPct;},0)/withLean.length) : 34;
+    var avgR = withLean.length ? 100-avgL-avgC : 33;
+    var isCurrentMonth = (new Date().getMonth() === mo.month && new Date().getFullYear() === mo.year);
+    html += '<div class="monthly-report-card">';
+    html += '<div class="mrc-month">' + mo.label + (isCurrentMonth ? ' <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:2px 6px;background:#EFF6FF;color:#378ADD;border-radius:3px">Current</span>' : '') + '</div>';
+    html += '<div class="mrc-stats">';
+    html += mo.eps.length ? mo.eps.length + ' episode' + (mo.eps.length > 1 ? 's' : '') + ' analyzed' : 'No analyses this month';
+    if (withLean.length) {
+      html += '<div class="mrc-bar"><div style="width:'+avgL+'%;background:#E24B4A"></div><div style="width:'+avgC+'%;background:#9E9E9E"></div><div style="width:'+avgR+'%;background:#378ADD"></div></div>';
+    }
+    html += '</div>';
+    if (mo.eps.length) {
+      html += '<button class="mrc-dl" onclick="downloadMonthlyReport(\'' + key + '\')"  data-key="'+key+'">&#9660; Download</button>';
+    }
+    html += '</div>';
+  });
+  el.innerHTML = html || '<div class="empty-state">No reports yet.</div>';
+}
+
+async function downloadMonthlyReport(monthKey) {
+  var btn = event && event.target;
+  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
+  var recent = getRecent();
+  var d2 = new Date(monthKey + '-01');
+  var eps = recent.filter(function(r) {
+    if (!r.analyzedAt) return false;
+    var d = new Date(r.analyzedAt);
+    return d.getFullYear() === d2.getFullYear() && d.getMonth() === d2.getMonth();
+  });
+  var withLean = eps.filter(function(r){ return typeof r.leftPct === 'number'; });
+  var avgL = withLean.length ? Math.round(withLean.reduce(function(s,r){return s+r.leftPct;},0)/withLean.length) : 33;
+  var avgC = withLean.length ? Math.round(withLean.reduce(function(s,r){return s+r.centerPct;},0)/withLean.length) : 34;
+  var avgR = withLean.length ? 100-avgL-avgC : 33;
+  var monthLabel = d2.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  try {
+    var canvas = document.getElementById('wrapped-canvas');
+    canvas.width = 1080; canvas.height = 1080;
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0f2027'; ctx.fillRect(0,0,1080,1080);
+    ctx.fillStyle = 'rgba(255,255,255,.9)';
+    ctx.font = '400 22px "Playfair Display",Georgia,serif';
+    ctx.fillText('POD', 60, 70);
+    var pw = ctx.measureText('POD').width;
+    ctx.font = '700 22px "Playfair Display",Georgia,serif';
+    ctx.fillText('LENS', 60+pw, 70);
+    ctx.fillStyle = 'rgba(255,255,255,.4)';
+    ctx.font = '700 14px Inter,sans-serif';
+    ctx.fillText('MONTHLY REPORT', 60, 200);
+    ctx.fillStyle = 'white';
+    ctx.font = '700 52px "Playfair Display",Georgia,serif';
+    ctx.fillText(monthLabel, 60, 280);
+    ctx.fillStyle = 'rgba(255,255,255,.6)';
+    ctx.font = '400 28px Inter,sans-serif';
+    ctx.fillText(eps.length + ' episode' + (eps.length!==1?'s':'') + ' analyzed', 60, 340);
+    var bW = 960, bH = 14, bX = 60, bY = 420;
+    ctx.fillStyle = '#E24B4A'; ctx.fillRect(bX,bY,Math.round(bW*avgL/100),bH);
+    ctx.fillStyle = '#D1CFC9'; ctx.fillRect(bX+Math.round(bW*avgL/100),bY,Math.round(bW*avgC/100),bH);
+    ctx.fillStyle = '#378ADD'; ctx.fillRect(bX+Math.round(bW*(avgL+avgC)/100),bY,Math.round(bW*avgR/100),bH);
+    ctx.fillStyle = 'rgba(255,255,255,.5)';
+    ctx.font = '400 18px Inter,sans-serif';
+    ctx.fillText(avgL+'% left · '+avgC+'% center · '+avgR+'% right', bX, bY+bH+28);
+    ctx.fillStyle = 'white';
+    ctx.font = '700 30px Inter,sans-serif';
+    var bLabel = Math.abs(avgL-avgR)<20?'Mostly balanced':avgL>avgR?'Leans left':'Leans right';
+    ctx.fillText(bLabel, bX, bY+bH+70);
+    ctx.fillStyle = 'rgba(255,255,255,.3)';
+    ctx.font = '400 16px Inter,sans-serif';
+    ctx.textAlign = 'right'; ctx.fillText('podlens.app', 1020, 1040); ctx.textAlign = 'left';
+    ctx.fillText('#PodlensReport', 60, 1040);
+    canvas.toBlob(function(blob) {
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'podlens-report-'+monthKey+'.png'; a.click(); URL.revokeObjectURL(a.href);
+      if (btn) { btn.textContent = '⬇ Download'; btn.disabled = false; }
+    }, 'image/png');
+  } catch(e) { alert('Failed to generate report.'); if (btn) { btn.textContent = '⬇ Download'; btn.disabled = false; } }
 }
 
 renderProfile();

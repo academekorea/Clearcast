@@ -11,6 +11,10 @@
 <meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" media="print" href="/print.css">
+<meta property="og:image" content="https://podlens.app/og-image.jpg">
+<meta name="theme-color" content="#0f2027">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -27,6 +31,16 @@
   --ff:'Inter',-apple-system,sans-serif;
   --ffs:'Playfair Display',Georgia,serif;
   --r:4px;
+  /* Brand system */
+  --color-navy:#0f2027;--color-navy-mid:#1a3a4a;
+  --color-cream:#FAF9F6;--color-text:#1a1a1a;--color-muted:#666666;
+  --color-border:#e0ddd8;
+  --color-left:#E24B4A;--color-center:#D1CFC9;--color-right:#378ADD;
+  --color-creator:#7C6AF7;--color-operator:#0f2027;--color-studio:#B8860B;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'Inter',-apple-system,sans-serif;
+  --text-xs:11px;--text-sm:13px;--text-base:15px;
+  --text-lg:18px;--text-xl:24px;--text-2xl:32px;--text-hero:56px;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
@@ -854,6 +868,58 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 /* ── AL TRACK FIX ── */
 .al-track{height:14px!important;border-radius:7px!important}
 
+/* ── PODLENS WORDMARK ── */
+.podlens-wordmark{font-family:'Playfair Display',Georgia,serif;letter-spacing:.08em;line-height:1;display:inline}
+.podlens-wordmark .pod{font-weight:400;color:inherit}
+.podlens-wordmark .lens{font-weight:700;color:inherit}
+.podlens-wordmark.large{font-size:48px;color:white}
+
+/* ── BRANDED SPLASH SCREEN ── */
+.pl-splash{position:fixed;inset:0;background:#0f2027;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:99999;transition:opacity .4s ease}
+.pl-tagline{color:rgba(255,255,255,.5);font-family:'Inter',-apple-system,sans-serif;font-size:16px}
+.pl-loader-bar{width:120px;height:2px;background:rgba(255,255,255,.2);border-radius:1px;overflow:hidden;margin-top:8px}
+.pl-loader-bar::after{content:'';display:block;height:100%;background:white;animation:pl-load 1.5s ease-in-out infinite}
+@keyframes pl-load{0%{width:0;transform:translateX(0)}50%{width:60%}100%{width:0;transform:translateX(200px)}}
+
+/* ── BUTTON SYSTEM ── */
+.btn-primary{background:var(--navy);color:white;border:none;border-radius:4px;padding:12px 24px;font-family:var(--ff);font-size:13px;font-weight:500;cursor:pointer;transition:background .15s}
+.btn-primary:hover{background:var(--color-navy-mid)}
+.btn-secondary{background:transparent;color:var(--navy);border:1px solid var(--navy);border-radius:4px;padding:11px 24px;font-family:var(--ff);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-secondary:hover{background:var(--navy);color:white}
+.btn-spotify{background:#1DB954;color:white;border:none;border-radius:4px;padding:10px 20px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer}
+.btn-youtube{background:#FF0000;color:white;border:none;border-radius:4px;padding:10px 20px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer}
+.btn-apple{background:#FC3C44;color:white;border:none;border-radius:4px;padding:10px 20px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer}
+.btn-kakao{background:#FEE500;color:#1a1a1a;border:none;border-radius:4px;padding:10px 20px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer}
+
+/* ── SHARE ANALYSIS SECTION ── */
+.share-analysis-section{background:#0f2027;border-radius:var(--r);padding:20px 24px;margin-bottom:16px;color:white}
+.share-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:12px}
+.share-btns{display:flex;gap:8px;flex-wrap:wrap}
+.share-btn{padding:8px 14px;border:1px solid rgba(255,255,255,.25);border-radius:4px;background:transparent;color:white;cursor:pointer;font-size:12px;font-family:var(--ff);font-weight:500;transition:background .15s;display:inline-flex;align-items:center;gap:6px}
+.share-btn:hover{background:rgba(255,255,255,.1)}
+.share-btn.primary{background:white;color:#0f2027;border-color:white}
+.share-btn.primary:hover{background:rgba(255,255,255,.9)}
+
+/* ── DOWNLOAD REPORT BTN ── */
+.download-report-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;font-family:var(--ff);transition:all .15s;white-space:nowrap}
+.download-report-btn:hover{border-color:var(--text);color:var(--text)}
+.download-report-btn.locked{opacity:.5;cursor:not-allowed}
+
+/* ── AUDIO BRIEFING READY NOTIFICATION ── */
+.audio-ready-banner{background:#0f2027;border-radius:var(--r);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;animation:fadeStep .4s ease}
+.arb-icon{font-size:24px;flex-shrink:0}
+.arb-body{flex:1;min-width:0}
+.arb-title{font-size:13px;font-weight:600;color:white;margin-bottom:2px}
+.arb-sub{font-size:11px;color:rgba(255,255,255,.5)}
+.arb-play{padding:7px 16px;background:white;color:#0f2027;border:none;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--ff);flex-shrink:0;transition:opacity .15s}
+.arb-play:hover{opacity:.9}
+
+/* ── ROTATING INSIGHT CARDS (during loading) ── */
+.insight-cards-wrap{margin-top:24px;max-width:560px;margin-left:auto;margin-right:auto}
+.insight-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;font-size:13px;color:var(--text2);line-height:1.55;display:none}
+.insight-card.on{display:block;animation:fadeStep .4s ease}
+.insight-card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px}
+
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   .home-hero{padding:72px 20px 60px}
@@ -878,6 +944,13 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 
 <script>(function(){var s=localStorage.getItem('pl-theme');if(s)document.documentElement.setAttribute('data-theme',s);})()</script>
 
+<!-- BRANDED SPLASH SCREEN -->
+<div class="pl-splash" id="pl-splash">
+  <span class="podlens-wordmark large"><span class="pod">POD</span><span class="lens">LENS</span></span>
+  <div class="pl-tagline">Know what you&rsquo;re actually listening to</div>
+  <div class="pl-loader-bar"></div>
+</div>
+
 <!-- TOP BAR -->
 <div class="topbar">
   <a href="/extension.html" class="topbar-l">Browser Extension &mdash; Coming Soon</a>
@@ -893,7 +966,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 
 <!-- NAV -->
 <nav class="nav">
-  <a href="/" class="logo" onclick="showHome();return false">PODLENS</a>
+  <a href="/" class="logo" onclick="showHome();return false"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></a>
   <div class="nav-links">
     <button class="nl on" id="nl-home" onclick="showHome()">Home</button>
     <button class="nl" id="nl-discover" onclick="showView('discover')">Discover</button>
@@ -1194,12 +1267,36 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <div id="ep-list"></div>
     </div>
     <div class="loading" id="loading">
+      <!-- Immediate episode metadata (populated as soon as iTunes responds) -->
+      <div id="laf-meta" style="display:none;margin-bottom:20px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);display:flex;gap:12px;align-items:flex-start"></div>
+
       <div class="laf-wrap">
         <div class="laf-header">Live Analysis Feed</div>
         <div class="laf-progress-rail"><div class="laf-progress-fill" id="laf-progress"></div></div>
         <div id="laf-steps"></div>
         <div class="laf-eta" id="laf-eta">&nbsp;</div>
       </div>
+
+      <!-- Rotating insight cards -->
+      <div class="insight-cards-wrap" id="insight-cards">
+        <div class="insight-card on" id="ic-0">
+          <div class="insight-card-label">Did you know</div>
+          We analyze language patterns and framing choices &mdash; how topics are introduced and framed &mdash; not just which topics appear.
+        </div>
+        <div class="insight-card" id="ic-1">
+          <div class="insight-card-label">How it works</div>
+          Your analysis covers political lean, host trust indicators, missing perspectives, and sponsor influence &mdash; all grounded in the actual transcript.
+        </div>
+        <div class="insight-card" id="ic-2">
+          <div class="insight-card-label">About Podlens</div>
+          The plain English bias label is always visible to everyone &mdash; it&rsquo;s the starting point for understanding what you&rsquo;re listening to.
+        </div>
+        <div class="insight-card" id="ic-3">
+          <div class="insight-card-label">Pro tip</div>
+          After analysis completes, check the Transcript Highlights tab for key moments color-coded by framing direction.
+        </div>
+      </div>
+
       <!-- keep hidden legacy elements for startTranscriptionFallback compat -->
       <div id="ld-title" style="display:none"></div>
       <div id="ld-msg" style="display:none"></div>
@@ -1232,7 +1329,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 <footer class="site-footer" id="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <span class="footer-logo">PODLENS</span>
+      <span class="footer-logo"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></span>
       <div class="footer-tagline">Media literacy for the audio generation.</div>
     </div>
     <div class="footer-cols">
@@ -1397,7 +1494,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <div class="modal-handle"></div>
     <button class="modal-close" style="position:absolute;right:16px;top:16px" onclick="closeModal('login')">&#x2715;</button>
     <div class="auth-modal-body">
-      <div class="auth-logo">PODLENS</div>
+      <div class="auth-logo"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></div>
       <div class="auth-sub">Welcome back</div>
       <div class="auth-error" id="login-error"></div>
       <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/></div>
@@ -1416,7 +1513,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <div class="modal-handle"></div>
     <button class="modal-close" style="position:absolute;right:16px;top:16px" onclick="closeModal('signup')">&#x2715;</button>
     <div class="auth-modal-body">
-      <div class="auth-logo">PODLENS</div>
+      <div class="auth-logo"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></div>
       <div id="signup-heading" class="signup-heading">Analyze this episode free</div>
       <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">7 days of full access &mdash; no credit card required</div>
       <button class="auth-google-btn" onclick="alert('Google login coming soon.')" style="margin-bottom:10px">
@@ -2351,6 +2448,12 @@ function startAnalysis(audioUrl, epTitle, showName) {
   document.getElementById('laf-steps').innerHTML='';
   document.getElementById('laf-progress').style.width='0%';
   document.getElementById('laf-eta').textContent='\u00a0';
+  // Reset meta preview
+  var metaEl=document.getElementById('laf-meta'); if(metaEl){metaEl.style.display='none';metaEl.innerHTML='';}
+  // Start rotating insight cards
+  startInsightCards();
+  // Fetch iTunes metadata immediately for preview
+  fetchLoadingMeta(audioUrl);
   document.getElementById('ld-title').textContent='Checking cache\u2026';
   document.getElementById('ld-msg').textContent='Looking up previous results\u2026';
   var btn=document.getElementById('go-btn');
@@ -2416,6 +2519,7 @@ function pollStatus(jobId, audioUrl) {
         si=Math.min(si+1,5);
         lafAddStep(si, false);
         shownPartial=true;
+        stopInsightCards();
         document.getElementById('loading').classList.remove('on');
         document.getElementById('atabs').classList.add('on');
         document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
@@ -2433,9 +2537,11 @@ function pollStatus(jobId, audioUrl) {
         document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
         document.getElementById('apanel-results').classList.add('on');
         resetBtn(); d.url=audioUrl;
+        stopInsightCards();
         if (!shownPartial) trackAnalysis(d);
         renderResults(d);
         renderTranscriptHighlights(d);
+        plToast('\u2705 Analysis complete');
       } else if (d.status==='error') {
         clearInterval(_poll); showAnalyzeErr(d.error||'Analysis failed.'); resetBtn();
       } else {
@@ -3002,8 +3108,48 @@ function renderResults(data) {
     right+='</div></div>';
   }
 
+  // ── SHARE SECTION ──
+  var shareSection = '';
+  if (!isPartial && plUser()) {
+    var u2 = plUser(); var plan2 = (u2 && u2.plan||'').toLowerCase();
+    var canShare = canAccess('shareCards') || plan2 === 'trial';
+    var safeData = JSON.stringify({
+      episodeTitle: data.episodeTitle || '',
+      showName: data.showName || '',
+      artworkUrl: data.artworkUrl || '',
+      audioLean: data.audioLean || {},
+      topicBreakdown: (data.topicBreakdown||[]).slice(0,5)
+    }).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+    shareSection = '<div class="share-analysis-section" id="analysis-share-section" style="margin-top:8px">'
+      + '<div class="share-section-title">Share this analysis</div>'
+      + '<div class="share-btns">'
+      + '<button class="share-btn primary" onclick=\'shareToX(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,audioLean:data.audioLean||{}}))+'"))\'>\uD835\uDD4F Share to X</button>'
+      + (canShare ? '<button class="share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||"",audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"square","&#9660; Download")\'>&#9660; Download PNG</button>' : '')
+      + (canShare ? '<button class="share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||"",audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"story","&#128247; Story")\'>&#128247; Story</button>' : '')
+      + (canShare ? '<button class="share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||"",audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"topic","&#128241; Topics")\'>&#128241; Topic card</button>' : '')
+      + '<button class="share-btn" onclick=\'shareToThreads(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,audioLean:data.audioLean||{}}))+'"))\'>\uD83E\uDDF5 Threads</button>'
+      + (canShare ? '' : '<span style="font-size:11px;color:rgba(255,255,255,.4);margin-left:4px">Image cards on <button onclick="showUpgrade()" style="color:white;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Creator plan</button></span>')
+      + '</div></div>';
+  }
+
+  // ── DOWNLOAD REPORT ──
+  var downloadBtn = '';
+  if (!isPartial && plUser()) {
+    var u3 = plUser(); var plan3 = (u3 && u3.plan||'').toLowerCase();
+    var canDl = plan3 === 'creator' || plan3 === 'operator' || plan3 === 'studio';
+    var dlLabel = (plan3 === 'operator' || plan3 === 'studio') ? '&#9660; Download Full Report' : '&#9660; Download Basic Report';
+    if (canDl) {
+      downloadBtn = '<button class="download-report-btn" onclick="downloadReport()" style="margin-left:8px">'+dlLabel+'</button>';
+    } else {
+      downloadBtn = '<button class="download-report-btn locked" title="Available on Creator plan" onclick="showUpgrade()">&#9660; Download Report</button>';
+    }
+  }
+
+  // Inject download btn into header
+  var headerWithDl = header.replace('</div></div>', downloadBtn+'</div></div>');
+
   // ── ASSEMBLE ──
-  var html=header+'<div class="res-grid"><div class="res-left-col">'+left+'</div><div class="res-right-col">'+right+'</div></div>';
+  var html=headerWithDl+'<div class="res-grid"><div class="res-left-col">'+left+'</div><div class="res-right-col">'+right+'</div></div>'+shareSection;
   document.getElementById('results').innerHTML=html;
 }
 
@@ -3374,6 +3520,344 @@ function syncPlanFromStripe(u) {
       }
     })
     .catch(function(){});
+}
+
+// ── CANACCESS — TIER GATING ──
+function canAccess(feature) {
+  var u = plUser();
+  if (!u) return false;
+  var plan = enforcePlanRules() || u.plan || 'free';
+  plan = plan.toLowerCase();
+  var tiers = {
+    audioBriefing:       ['creator','operator','studio'],
+    fullBiasScores:      ['creator','operator','studio'],
+    biasFingerprint:     ['creator','operator','studio'],
+    shareCards:          ['creator','operator','studio'],
+    downloadBasic:       ['creator','operator','studio'],
+    transcriptTop10:     ['creator','operator','studio'],
+    sourceCitations:     ['operator','studio'],
+    missingVoicesDetail: ['operator','studio'],
+    deepAnalysis:        ['operator','studio'],
+    unheard:             ['operator','studio'],
+    showComparison:      ['operator','studio'],
+    extension:           ['operator','studio'],
+    fullTranscript:      ['operator','studio'],
+    downloadFull:        ['operator','studio'],
+    timestampMarkers:    ['operator','studio'],
+    csvExport:           ['studio'],
+    bulkScan:            ['studio'],
+    apiAccess:           ['studio'],
+  };
+  // Trial gets Operator minus 4 specific features
+  if (plan === 'trial') {
+    var trialBlocked = ['audioBriefing','sourceCitations','deepAnalysis','extension'];
+    if (trialBlocked.indexOf(feature) !== -1) return false;
+    // For everything else, trial = operator
+    return tiers[feature] ? tiers[feature].indexOf('operator') !== -1 : false;
+  }
+  return tiers[feature] ? tiers[feature].indexOf(plan) !== -1 : false;
+}
+
+// ── SPLASH SCREEN ──
+window.addEventListener('load', function() {
+  var s = document.getElementById('pl-splash');
+  if (!s) return;
+  // Hide after 800ms (enough to see the brand, not long enough to annoy)
+  setTimeout(function() {
+    s.style.opacity = '0';
+    setTimeout(function() { s.style.display = 'none'; }, 400);
+  }, 800);
+});
+
+// ── ROTATING INSIGHT CARDS ──
+var _icIdx = 0, _icTotal = 4, _icTimer = null;
+function startInsightCards() {
+  stopInsightCards();
+  _icIdx = 0;
+  var cards = document.querySelectorAll('.insight-card');
+  cards.forEach(function(c, i) { c.classList.toggle('on', i === 0); });
+  _icTimer = setInterval(function() {
+    var cards = document.querySelectorAll('.insight-card');
+    if (!cards.length) return;
+    cards[_icIdx % cards.length].classList.remove('on');
+    _icIdx = (_icIdx + 1) % cards.length;
+    cards[_icIdx].classList.add('on');
+  }, 8000);
+}
+function stopInsightCards() {
+  if (_icTimer) { clearInterval(_icTimer); _icTimer = null; }
+}
+
+// ── ITUNES METADATA PREVIEW (during loading) ──
+async function fetchLoadingMeta(url) {
+  var el = document.getElementById('laf-meta');
+  if (!el) return;
+  // Try to extract a search term
+  var term = '';
+  var ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (!ytMatch) {
+    // RSS / podcast URL — try domain name as search hint
+    try { var u2 = new URL(url); term = u2.hostname.replace('www.','').replace('.com','').replace('.fm',''); } catch(e) {}
+  }
+  if (!term) return;
+  try {
+    var d = await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(term)+'&media=podcast&entity=podcast&limit=1',{signal:AbortSignal.timeout(4000)}).then(function(r){return r.json();});
+    var p = d.results && d.results[0];
+    if (!p) return;
+    el.style.display = 'flex';
+    el.innerHTML = (p.artworkUrl100?'<img src="'+p.artworkUrl100+'" style="width:44px;height:44px;border-radius:4px;flex-shrink:0" alt="">':'')
+      + '<div style="min-width:0"><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Analyzing from</div>'
+      + '<div style="font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(p.collectionName||p.trackName||'Podcast')+'</div>'
+      + (p.artistName?'<div style="font-size:11px;color:var(--text3)">'+p.artistName+'</div>':'')
+      + '</div>';
+  } catch(e) {}
+}
+
+// ── SHAREABLE ANALYSIS CARDS ──
+function showShareSection(data) {
+  var u = plUser();
+  if (!u) return;
+  var el = document.getElementById('analysis-share-section');
+  if (!el) return;
+  el.style.display = 'block';
+}
+
+async function generateAnalysisCard(data, cardType) {
+  var canvas = document.createElement('canvas');
+  var W, H;
+  if (cardType === 'story') { W = 1080; H = 1920; }
+  else if (cardType === 'topic') { W = 1080; H = 1080; }
+  else { W = 1080; H = 1080; } // square default
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#0f2027';
+  ctx.fillRect(0, 0, W, H);
+
+  // Helper: rounded rect
+  function rr(x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+    ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
+    ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
+    ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
+    ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+  }
+
+  if (cardType === 'topic') {
+    // Topic card
+    var topics = (data.topicBreakdown || []).slice(0, 5);
+    var maxPct = topics[0] ? topics[0].percentage : 1;
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.font = '600 22px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillText('TOPICS IN THIS EPISODE', 80, 100);
+    var ty = 160;
+    topics.forEach(function(t) {
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '500 28px Inter, sans-serif';
+      ctx.fillText(t.topic, 80, ty);
+      var barW = Math.round((t.percentage / maxPct) * (W - 160));
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      rr(80, ty + 12, W - 160, 14, 3); ctx.fill();
+      ctx.fillStyle = 'white';
+      rr(80, ty + 12, barW, 14, 3); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '400 22px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(t.percentage + '%', W - 80, ty);
+      ctx.textAlign = 'left';
+      ty += 90;
+    });
+    // Footer
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '400 22px Inter, sans-serif';
+    ctx.fillText((data.episodeTitle || 'Episode Analysis').substring(0, 50), 80, H - 120);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '400 18px Inter, sans-serif';
+    ctx.fillText('#PodlensTopics · podlens.app', 80, H - 80);
+  } else {
+    // Square / Story card
+    var centerX = W / 2;
+    var artY = cardType === 'story' ? 260 : 140;
+    var artSize = cardType === 'story' ? 280 : 220;
+    var artX = centerX - artSize / 2;
+
+    // Podcast artwork (circular)
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.beginPath(); ctx.arc(centerX, artY + artSize/2, artSize/2 + 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.beginPath(); ctx.arc(centerX, artY + artSize/2, artSize/2, 0, Math.PI * 2); ctx.fill();
+    if (data.artworkUrl) {
+      try {
+        var img = new Image(); img.crossOrigin = 'anonymous';
+        await new Promise(function(resolve) { img.onload = resolve; img.onerror = resolve; img.src = data.artworkUrl; });
+        if (img.naturalWidth) {
+          ctx.save();
+          ctx.beginPath(); ctx.arc(centerX, artY + artSize/2, artSize/2, 0, Math.PI * 2); ctx.clip();
+          ctx.drawImage(img, artX, artY, artSize, artSize);
+          ctx.restore();
+        }
+      } catch(e) {}
+    }
+
+    // PODLENS wordmark top-left
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.font = '400 20px "Playfair Display", Georgia, serif';
+    ctx.fillText('POD', 60, 60);
+    var podW = ctx.measureText('POD').width;
+    ctx.font = '700 20px "Playfair Display", Georgia, serif';
+    ctx.fillText('LENS', 60 + podW, 60);
+    // podlens.app top-right
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '400 16px Inter, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('podlens.app', W - 60, 60);
+    ctx.textAlign = 'left';
+
+    var textY = artY + artSize + (cardType === 'story' ? 60 : 40);
+    // Episode title
+    ctx.fillStyle = 'white';
+    ctx.font = (cardType === 'story' ? '600 32px' : '600 26px') + ' "Playfair Display", Georgia, serif';
+    var titleText = (data.episodeTitle || 'Episode Analysis');
+    var maxTitleW = W - 120;
+    var words = titleText.split(' '); var line = ''; var lines = [];
+    words.forEach(function(w) {
+      var test = line + w + ' ';
+      if (ctx.measureText(test).width > maxTitleW && line) { lines.push(line.trim()); line = w + ' '; }
+      else line = test;
+    });
+    if (line) lines.push(line.trim());
+    lines.slice(0, 2).forEach(function(l, i) { ctx.fillText(l, 60, textY + i * (cardType === 'story' ? 42 : 34)); });
+    textY += (Math.min(lines.length, 2)) * (cardType === 'story' ? 42 : 34) + 12;
+
+    // Show name
+    if (data.showName) {
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.font = (cardType === 'story' ? '400 24px' : '400 18px') + ' Inter, sans-serif';
+      ctx.fillText(data.showName, 60, textY);
+      textY += cardType === 'story' ? 50 : 40;
+    }
+
+    // Bias bar
+    if (data.audioLean && data.audioLean.leftPct !== undefined) {
+      var al = data.audioLean;
+      var barW = W - 120, barH = cardType === 'story' ? 18 : 14, barX = 60;
+      ctx.fillStyle = '#E24B4A'; ctx.fillRect(barX, textY, Math.round(barW * al.leftPct / 100), barH);
+      ctx.fillStyle = '#D1CFC9'; ctx.fillRect(barX + Math.round(barW * al.leftPct / 100), textY, Math.round(barW * al.centerPct / 100), barH);
+      ctx.fillStyle = '#378ADD'; ctx.fillRect(barX + Math.round(barW * (al.leftPct + al.centerPct) / 100), textY, Math.round(barW * al.rightPct / 100), barH);
+      textY += barH + 14;
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.font = '400 16px Inter, sans-serif';
+      ctx.fillText(al.leftPct + '% left · ' + al.centerPct + '% center · ' + al.rightPct + '% right', barX, textY);
+      textY += 28;
+      // Plain label
+      var diff = Math.abs((al.leftPct || 0) - (al.rightPct || 0));
+      var label = diff < 20 ? 'Mostly balanced' : diff < 40 ? 'Lightly one-sided' : diff < 60 ? 'Moderately biased' : diff < 80 ? 'Heavily one-sided' : 'Extremely one-sided';
+      ctx.fillStyle = 'white';
+      ctx.font = '700 ' + (cardType === 'story' ? '28px' : '22px') + ' Inter, sans-serif';
+      ctx.fillText(label, barX, textY);
+      textY += 40;
+    }
+
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(60, H - 80); ctx.lineTo(W - 60, H - 80); ctx.stroke();
+
+    // Bottom: hashtag + URL
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '400 16px Inter, sans-serif';
+    ctx.fillText('#PodlensAnalysis', 60, H - 48);
+    ctx.textAlign = 'right';
+    ctx.fillText('podlens.app', W - 60, H - 48);
+    ctx.textAlign = 'left';
+
+    if (cardType === 'story') {
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '400 20px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Tap to see full analysis →', W / 2, H - 100);
+      ctx.textAlign = 'left';
+    }
+  }
+
+  return canvas;
+}
+
+async function downloadAnalysisCard(data, cardType, label) {
+  var btn = event && event.target;
+  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
+  try {
+    var canvas = await generateAnalysisCard(data, cardType);
+    canvas.toBlob(function(blob) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'podlens-analysis-' + cardType + '.png';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      if (btn) { btn.textContent = label || '⬇ Download'; btn.disabled = false; }
+    }, 'image/png');
+  } catch(e) {
+    alert('Card generation failed. Try again.');
+    if (btn) { btn.textContent = label || '⬇ Download'; btn.disabled = false; }
+  }
+}
+
+async function copyAnalysisCard(data) {
+  var btn = event && event.target;
+  if (btn) { btn.textContent = 'Copying…'; btn.disabled = true; }
+  try {
+    var canvas = await generateAnalysisCard(data, 'square');
+    canvas.toBlob(async function(blob) {
+      try {
+        await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+        plToast('Image copied to clipboard!');
+      } catch(e) {
+        // Fallback: download instead
+        var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'podlens-analysis.png'; a.click(); URL.revokeObjectURL(a.href);
+        plToast('Downloaded instead (clipboard not supported)');
+      }
+      if (btn) { btn.textContent = '📋 Copy'; btn.disabled = false; }
+    }, 'image/png');
+  } catch(e) {
+    if (btn) { btn.textContent = '📋 Copy'; btn.disabled = false; }
+  }
+}
+
+function shareToX(data) {
+  var al = data.audioLean || {};
+  var diff = Math.abs((al.leftPct||0) - (al.rightPct||0));
+  var label = diff < 20 ? 'Mostly balanced' : diff < 40 ? 'Lightly one-sided' : 'Moderately biased';
+  var text = '"' + (data.episodeTitle || 'Episode') + '" — ' + label;
+  if (al.leftPct !== undefined) text += ' (' + al.leftPct + '% left / ' + al.centerPct + '% center / ' + al.rightPct + '% right)';
+  text += ' — analyzed by Podlens';
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent('https://podlens.app'), '_blank');
+}
+
+function shareToThreads(data) {
+  var text = 'Just analyzed "' + (data.episodeTitle || 'Episode') + '" on Podlens — podlens.app';
+  window.open('https://www.threads.net/intent/post?text=' + encodeURIComponent(text), '_blank');
+}
+
+// ── DOWNLOAD REPORT ──
+function downloadReport(data) {
+  var u = plUser();
+  var plan = (u && u.plan || '').toLowerCase();
+  var canBasic = plan === 'creator' || plan === 'operator' || plan === 'studio';
+  if (!canBasic) { showUpgrade(); return; }
+  // Add print header
+  var printHeader = document.getElementById('print-header-inject');
+  if (printHeader) printHeader.remove();
+  var header = document.createElement('div');
+  header.id = 'print-header-inject';
+  header.className = 'print-header';
+  header.innerHTML = '<div style="background:#0f2027;color:white;padding:16px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center">'
+    + '<span style="font-family:Playfair Display,Georgia,serif;font-size:20px;font-weight:700;letter-spacing:.08em"><span style="font-weight:400">POD</span>LENS</span>'
+    + '<span style="font-size:11px;opacity:.6">podlens.app &nbsp;·&nbsp; Analyzed ' + new Date().toLocaleDateString() + '</span></div>'
+    + '<div style="padding:0 24px 12px;font-size:11px;color:#999;font-style:italic">Based on language patterns and framing choices — not a judgment of personal politics</div>';
+  document.body.insertBefore(header, document.body.firstChild);
+  window.print();
+  setTimeout(function() { var h = document.getElementById('print-header-inject'); if (h) h.remove(); }, 1000);
 }
 
 // ── AUTO INIT ──
