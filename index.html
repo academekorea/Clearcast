@@ -520,7 +520,82 @@ body.player-on .lap{bottom:72px}
 .sb-follow-item:hover{color:var(--text)}
 .sb-follow-art{width:28px;height:28px;border-radius:3px;background:var(--bg4);object-fit:cover;flex-shrink:0}
 
-/* ── DASHBOARD STATE A (new user) ── */
+/* ── DASHBOARD v2 LAYOUT ── */
+.dashboard-container{max-width:1400px;margin:0 auto;padding:32px 32px 80px;width:100%;box-sizing:border-box}
+@media(max-width:768px){.dashboard-container{padding:20px 16px 60px}}
+.dashboard-header{margin-bottom:28px}
+.dashboard-greeting{font-family:var(--ffs);font-size:clamp(1.8rem,4vw,3rem);font-weight:800;line-height:1.1;margin-bottom:6px}
+.dashboard-greeting em{font-style:italic;color:var(--text3)}
+.dashboard-subline{font-size:15px;color:var(--text2)}
+.dashboard-grid{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start}
+@media(max-width:1024px){.dashboard-grid{grid-template-columns:1fr}}
+.dashboard-main{}
+.dashboard-sidebar{}
+/* Analyze bar */
+.analyze-bar{display:flex;align-items:center;border:1.5px solid var(--border2);border-radius:14px;overflow:hidden;background:var(--bg2);margin-bottom:32px;transition:border-color .15s}
+.analyze-bar:focus-within{border-color:var(--navy)}
+.analyze-input{flex:1;padding:14px 18px;font-size:15px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none}
+.analyze-input::placeholder{color:var(--text3)}
+.analyze-btn{padding:12px 22px;background:var(--navy);color:#fff;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff);transition:opacity .15s;flex-shrink:0;border-radius:0 12px 12px 0}
+.analyze-btn:hover{opacity:.85}
+/* Section headers */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3)}
+.section-link{font-size:12px;color:var(--navy);text-decoration:none;font-weight:500}
+.section-link:hover{text-decoration:underline}
+/* Episode cards */
+.episode-card{display:flex;gap:14px;align-items:center;padding:14px;border-radius:12px;border:1.5px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s,background .1s;background:var(--bg2);margin-bottom:8px}
+.episode-card:hover{transform:translateX(4px);border-color:var(--navy);background:var(--bg3)}
+.episode-artwork{width:56px;height:56px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--bg4)}
+.episode-info{flex:1;min-width:0}
+.episode-show{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px}
+.episode-title{font-size:13px;font-weight:600;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:5px}
+.episode-meta{font-size:11px;color:var(--text3);display:flex;gap:8px;align-items:center}
+.episode-bias-bar{height:4px;border-radius:2px;overflow:hidden;background:var(--bg4);margin-top:6px;display:flex}
+/* Fingerprint */
+.fingerprint-container{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.fingerprint-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:20px}
+.fingerprint-bar-track{position:relative;height:10px;border-radius:5px;background:linear-gradient(to right,rgba(55,138,221,.25) 0%,rgba(200,200,200,.15) 50%,rgba(226,75,74,.25) 100%);margin-bottom:12px}
+.fingerprint-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:var(--navy);border:2px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.25);transition:left 1s cubic-bezier(0.34,1.56,0.64,1)}
+.fingerprint-labels{display:flex;justify-content:space-between;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.fingerprint-counts{display:flex;justify-content:center;gap:16px;margin-top:12px}
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr}}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center}
+.stat-number{font-family:var(--ffs);font-size:1.8rem;font-weight:800;line-height:1;color:var(--text);margin-bottom:4px}
+.stat-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text3)}
+/* Connect CTAs (STATE A) */
+.connect-cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+@media(max-width:540px){.connect-cta-grid{grid-template-columns:1fr}}
+.connect-btn{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:transform .15s,border-color .15s,box-shadow .15s;text-align:left;border-left-width:4px}
+.connect-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1);border-color:var(--border2)}
+.connect-btn.spotify{border-left-color:#1DB954}
+.connect-btn.youtube{border-left-color:#FF0000}
+.connect-btn.apple{border-left-color:#FC3C44}
+.connect-btn.rss{border-left-color:var(--navy)}
+.connect-btn-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.connect-btn.spotify .connect-btn-icon{background:#1DB954;color:#fff}
+.connect-btn.youtube .connect-btn-icon{background:#FF0000;color:#fff}
+.connect-btn.apple .connect-btn-icon{background:#FC3C44;color:#fff}
+.connect-btn.rss .connect-btn-icon{background:var(--navy);color:#fff}
+/* Preview cards (STATE A) */
+.preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+@media(max-width:700px){.preview-grid{grid-template-columns:1fr}}
+.preview-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;overflow:hidden}
+.preview-card-title{font-size:12px;font-weight:700;margin-bottom:14px;color:var(--text)}
+.preview-blur{filter:blur(5px);opacity:.35;user-select:none;pointer-events:none}
+.preview-caption{font-size:11px;color:var(--text3);margin-top:12px;filter:none;opacity:1}
+/* Sidebar sections */
+.sidebar-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
+.sidebar-card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:16px}
+.follow-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .1s}
+.follow-item:last-child{border-bottom:none}
+.follow-item:hover{opacity:.7}
+.follow-art{width:32px;height:32px;border-radius:6px;background:var(--bg4);object-fit:cover;flex-shrink:0}
+.follow-name{font-size:12px;font-weight:500;color:var(--text)}
+
+/* ── DASHBOARD STATE A (new user) — keep old aliases for compat ── */
 .dash-connect-card{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:32px;max-width:660px;margin-bottom:40px}
 .dash-connect-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
 @media(max-width:540px){.dash-connect-grid{grid-template-columns:1fr}}
@@ -532,7 +607,7 @@ body.player-on .lap{bottom:72px}
 .dash-preview-blur{filter:blur(6px);opacity:.4;user-select:none;pointer-events:none}
 .dash-preview-label{font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text)}
 .dash-preview-hint{font-size:11px;color:var(--text3);margin-top:10px;filter:none;opacity:1}
-/* ── DASHBOARD STATE B stats boxes ── */
+/* ── DASHBOARD STATE B stats boxes — keep old aliases for compat ── */
 .dash-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
 @media(max-width:540px){.dash-stats-row{grid-template-columns:1fr}}
 .dash-stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;text-align:center}
@@ -1882,97 +1957,150 @@ body.light-mode,[data-theme="light"]{
     <div id="trial-day6-banner" style="display:none;padding:16px 0 0"></div>
 
     <!-- STATE A: New user (0 analyses) -->
-    <div id="dash-state-a" style="display:none;padding:48px 80px 80px;max-width:1400px;margin:0 auto">
-      <div class="dash-greeting" id="dash-greeting-a">Good morning.</div>
-      <p class="dash-sub">Connect your podcasts to get started — we&rsquo;ll take it from there.</p>
-      <div class="dash-connect-card">
-        <div style="font-size:17px;font-weight:700;margin-bottom:6px">🎙 Connect your podcasts</div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:24px">We&rsquo;ll analyze what you listen to and show you what you might be missing.</div>
-        <div class="dash-connect-grid">
-          <button class="dash-connect-btn" onclick="heroConnectSpotify()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg>Connect Spotify</button>
-          <button class="dash-connect-btn" onclick="heroConnectYouTube()">▶ Connect YouTube</button>
-          <button class="dash-connect-btn" onclick="heroConnectApple()">🎵 Apple Podcasts</button>
-          <button class="dash-connect-btn" onclick="showView('analyze')">📻 Paste RSS or URL</button>
+    <div id="dash-state-a" style="display:none">
+      <div class="dashboard-container">
+        <div class="dashboard-header">
+          <div class="dashboard-greeting" id="dash-greeting-a">Good morning.</div>
+          <div class="dashboard-subline">Connect your podcasts to get started — we&rsquo;ll take it from there.</div>
         </div>
-        <div style="font-size:12px;color:var(--text3);text-align:center">Or paste any episode URL to try it now ↓</div>
-      </div>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:16px">What you&rsquo;ll see after connecting</div>
-      <div class="dash-preview-grid">
-        <div class="dash-preview-card">
-          <div class="dash-preview-label">Your bias fingerprint</div>
-          <div class="dash-preview-blur">
-            <div class="bias-bar" style="height:10px"><div class="bias-bar-l" style="width:38%"></div><div class="bias-bar-c" style="width:32%"></div><div class="bias-bar-r" style="width:30%"></div></div>
-            <div style="font-size:11px;margin-top:6px;color:var(--text3)">🔴 38% &nbsp; ⬜ 32% &nbsp; 🔵 30%</div>
+        <div class="dashboard-grid">
+          <div class="dashboard-main">
+            <!-- Analyze bar -->
+            <div class="analyze-bar">
+              <input type="text" id="dash-url-input" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL to try it now&hellip;" autocomplete="off" onkeydown="if(event.key==='Enter')handleDashAnalyze()"/>
+              <button class="analyze-btn" onclick="handleDashAnalyze()">Analyze &rarr;</button>
+            </div>
+            <!-- Connect CTAs -->
+            <div class="section-header"><span class="section-title">Connect your sources</span></div>
+            <div class="connect-cta-grid">
+              <button class="connect-btn spotify" onclick="heroConnectSpotify()">
+                <div class="connect-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg></div>
+                <div><div style="font-size:13px;font-weight:700">Connect Spotify</div><div style="font-size:11px;color:var(--text3);font-weight:400">Import your library</div></div>
+              </button>
+              <button class="connect-btn youtube" onclick="heroConnectYouTube()">
+                <div class="connect-btn-icon">▶</div>
+                <div><div style="font-size:13px;font-weight:700">Connect YouTube</div><div style="font-size:11px;color:var(--text3);font-weight:400">Analyze any video podcast</div></div>
+              </button>
+              <button class="connect-btn apple" onclick="heroConnectApple()">
+                <div class="connect-btn-icon">🎵</div>
+                <div><div style="font-size:13px;font-weight:700">Apple Podcasts</div><div style="font-size:11px;color:var(--text3);font-weight:400">Search &amp; follow shows</div></div>
+              </button>
+              <button class="connect-btn rss" onclick="showView('analyze')">
+                <div class="connect-btn-icon">📻</div>
+                <div><div style="font-size:13px;font-weight:700">RSS or direct URL</div><div style="font-size:11px;color:var(--text3);font-weight:400">Paste any episode link</div></div>
+              </button>
+            </div>
+            <!-- Preview -->
+            <div class="section-header" style="margin-top:32px"><span class="section-title">What you&rsquo;ll see after connecting</span></div>
+            <div class="preview-grid">
+              <div class="preview-card">
+                <div class="preview-card-title">Your bias fingerprint</div>
+                <div class="preview-blur">
+                  <div class="bias-bar" style="height:10px"><div class="bias-bar-l" style="width:38%"></div><div class="bias-bar-c" style="width:32%"></div><div class="bias-bar-r" style="width:30%"></div></div>
+                  <div style="font-size:11px;margin-top:6px;color:var(--text3)">🔴 38% &nbsp;⬜ 32% &nbsp;🔵 30%</div>
+                </div>
+                <div class="preview-caption">Builds as you analyze episodes</div>
+              </div>
+              <div class="preview-card">
+                <div class="preview-card-title">Most analyzed show</div>
+                <div class="preview-blur">
+                  <div style="display:flex;gap:10px;align-items:center">
+                    <div style="width:44px;height:44px;background:var(--bg4);border-radius:8px;flex-shrink:0"></div>
+                    <div><div style="height:10px;background:var(--bg4);border-radius:3px;width:120px;margin-bottom:6px"></div><div style="height:8px;background:var(--bg4);border-radius:3px;width:80px"></div></div>
+                  </div>
+                </div>
+                <div class="preview-caption">See your top podcasts</div>
+              </div>
+              <div class="preview-card">
+                <div class="preview-card-title">Unheard stories</div>
+                <div class="preview-blur">
+                  <div style="height:10px;background:var(--bg4);border-radius:3px;margin-bottom:7px"></div>
+                  <div style="height:10px;background:var(--bg4);border-radius:3px;width:85%;margin-bottom:7px"></div>
+                  <div style="height:10px;background:var(--bg4);border-radius:3px;width:70%"></div>
+                </div>
+                <div class="preview-caption">5 stories you haven&rsquo;t heard yet</div>
+              </div>
+            </div>
           </div>
-          <div class="dash-preview-hint">Builds as you analyze</div>
-        </div>
-        <div class="dash-preview-card">
-          <div class="dash-preview-label">Most analyzed show</div>
-          <div class="dash-preview-blur">
-            <div style="width:48px;height:48px;background:var(--bg4);border-radius:var(--r);margin:0 auto 8px"></div>
-            <div style="height:10px;background:var(--bg4);border-radius:3px;width:80%;margin:0 auto 6px"></div>
-            <div style="height:8px;background:var(--bg4);border-radius:3px;width:55%;margin:0 auto"></div>
+          <div class="dashboard-sidebar">
+            <!-- Fingerprint preview -->
+            <div class="fingerprint-container">
+              <div class="fingerprint-title">Your listening fingerprint</div>
+              <div class="fingerprint-bar-track">
+                <div class="fingerprint-dot" style="left:50%"></div>
+              </div>
+              <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
+              <div style="font-size:12px;color:var(--text3);margin-top:16px;text-align:center">Analyze your first episode to see where you stand</div>
+            </div>
+            <!-- Stats -->
+            <div class="section-header"><span class="section-title">Your stats</span></div>
+            <div class="stats-grid">
+              <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Analyzed</div></div>
+              <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Following</div></div>
+              <div class="stat-card"><div class="stat-number">—</div><div class="stat-label">Your lean</div></div>
+            </div>
           </div>
-          <div class="dash-preview-hint">See your top podcasts</div>
         </div>
-        <div class="dash-preview-card">
-          <div class="dash-preview-label">Unheard stories</div>
-          <div class="dash-preview-blur">
-            <div style="height:10px;background:var(--bg4);border-radius:3px;margin-bottom:6px"></div>
-            <div style="height:10px;background:var(--bg4);border-radius:3px;width:85%;margin-bottom:6px"></div>
-            <div style="height:10px;background:var(--bg4);border-radius:3px;width:70%"></div>
-          </div>
-          <div class="dash-preview-hint">5 stories you haven&rsquo;t heard</div>
-        </div>
-      </div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Already have an episode in mind?</div>
-      <div class="dash-input-wrap">
-        <input type="text" id="dash-url-input" class="dash-input" placeholder="Paste a YouTube, Spotify, or RSS URL&hellip;" autocomplete="off" onkeydown="if(event.key==='Enter')handleDashAnalyze()"/>
-        <button class="dash-analyze-btn" onclick="handleDashAnalyze()">Analyze &rarr;</button>
       </div>
     </div><!-- /dash-state-a -->
 
     <!-- STATE B: Returning user (1+ analyses) -->
     <div id="dash-state-b" style="display:none">
-      <div class="dash-hero">
-        <div class="dash-greeting" id="dash-greeting">Good morning</div>
-        <div class="dash-fingerprint" id="dash-fingerprint" style="margin-top:20px">
-          <div class="dash-fp-label">Your bias fingerprint this week</div>
-          <div class="bias-bar" style="height:10px" id="dash-fp-bar"></div>
-          <div class="bias-counts" id="dash-fp-counts"></div>
+      <div class="dashboard-container">
+        <div class="dashboard-header">
+          <div class="dashboard-greeting" id="dash-greeting">Good morning</div>
         </div>
-      </div>
-      <div class="dash-layout">
-        <div class="dash-main">
-          <div class="dash-input-wrap" style="margin-bottom:32px">
-            <input type="text" id="dash-url-input-b" class="dash-input" placeholder="Paste a YouTube, Spotify, or RSS URL&hellip;" autocomplete="off" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
-            <button class="dash-analyze-btn" onclick="handleDashAnalyzeB()">Analyze &rarr;</button>
-          </div>
-          <div class="dash-section-lbl">Continue where you left off</div>
-          <div class="recent-list" id="dash-recent-list"></div>
-          <div style="margin-top:32px">
-            <div class="dash-section-lbl">Trending in your categories</div>
+        <div class="dashboard-grid">
+          <div class="dashboard-main">
+            <!-- Analyze bar -->
+            <div class="analyze-bar">
+              <input type="text" id="dash-url-input-b" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL&hellip;" autocomplete="off" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
+              <button class="analyze-btn" onclick="handleDashAnalyzeB()">Analyze &rarr;</button>
+            </div>
+            <!-- Recent episodes -->
+            <div class="section-header">
+              <span class="section-title">Continue where you left off</span>
+              <a href="#" class="section-link" onclick="showView('analyze');return false">Analyze new &rarr;</a>
+            </div>
+            <div id="dash-recent-list"></div>
+            <!-- Trending -->
+            <div class="section-header" style="margin-top:8px">
+              <span class="section-title">Trending in your categories</span>
+              <a href="#" class="section-link" onclick="showView('discover');return false">Browse all &rarr;</a>
+            </div>
             <div id="dash-trending-grid" class="tg-grid" style="margin-top:0"></div>
+            <!-- Stats -->
+            <div class="section-header" style="margin-top:24px"><span class="section-title">Your stats</span></div>
+            <div class="stats-grid">
+              <div class="stat-card"><div class="stat-number" id="stat-analyses">0</div><div class="stat-label">Analyzed</div></div>
+              <div class="stat-card"><div class="stat-number" id="stat-shows">0</div><div class="stat-label">Following</div></div>
+              <div class="stat-card"><div class="stat-number" id="stat-lean">—</div><div class="stat-label">Your lean</div></div>
+            </div>
           </div>
-          <div class="dash-stats-row">
-            <div class="dash-stat-box"><div class="dash-stat-num" id="stat-analyses">0</div><div class="dash-stat-lbl">Episodes analyzed</div></div>
-            <div class="dash-stat-box"><div class="dash-stat-num" id="stat-shows">0</div><div class="dash-stat-lbl">Shows followed</div></div>
-            <div class="dash-stat-box"><div class="dash-stat-num" id="stat-lean">—</div><div class="dash-stat-lbl">Your lean this month</div></div>
-          </div>
-        </div>
-        <div class="dash-sidebar">
-          <div class="sb-fp-card">
-            <div class="sb-fp-title">My Bias Fingerprint</div>
-            <div class="bias-bar" style="height:10px;margin-bottom:6px" id="sb-fp-bar"></div>
-            <div class="bias-counts" id="sb-fp-counts"></div>
-          </div>
-          <div class="dash-section-lbl" style="margin-top:16px">Shows I follow</div>
-          <div class="sb-follow-list" id="sb-follow-list">
-            <div style="font-size:12px;color:var(--text3)">No shows followed yet.</div>
-          </div>
-          <div class="dash-section-lbl" style="margin-top:20px">Unheard Preview</div>
-          <div id="sb-unheard-preview" style="background:var(--bg3);border-radius:var(--r);padding:12px;font-size:12px;color:var(--text2)">
-            <div style="color:var(--text3)">Analyze more to unlock.</div>
+          <div class="dashboard-sidebar">
+            <!-- Bias fingerprint -->
+            <div class="fingerprint-container">
+              <div class="fingerprint-title">Your bias fingerprint</div>
+              <div class="fingerprint-bar-track" id="dash-fp-track">
+                <div class="fingerprint-dot" id="dash-fp-dot" style="left:50%"></div>
+              </div>
+              <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
+              <div class="fingerprint-counts" id="dash-fp-counts"></div>
+            </div>
+            <!-- Shows I follow -->
+            <div class="sidebar-card">
+              <div class="sidebar-card-title">Shows I follow</div>
+              <div id="sb-follow-list">
+                <div style="font-size:12px;color:var(--text3)">No shows followed yet.</div>
+              </div>
+            </div>
+            <!-- Unheard preview -->
+            <div class="sidebar-card">
+              <div class="sidebar-card-title">Unheard Preview</div>
+              <div id="sb-unheard-preview" style="font-size:12px;color:var(--text2)">
+                <div style="color:var(--text3)">Analyze more to unlock.</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -3034,6 +3162,7 @@ function renderHomeState() {
     renderDashRecent();
     renderBiasFingerprint();
     renderDashUnheardPreview(u);
+    renderDashFollowedShows(u);
     loadDashTrending();
     renderDashStats(u, recent);
   }
@@ -3111,47 +3240,77 @@ function renderDashUnheardPreview(u) {
     .catch(function() { el.innerHTML = '<div style="color:var(--text3)">Unable to load.</div>'; });
 }
 
+function renderDashFollowedShows(u) {
+  var el = document.getElementById('sb-follow-list');
+  if (!el) return;
+  var followed = (u && u.followedShows) || [];
+  if (!followed.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3)">No shows followed yet.</div>';
+    return;
+  }
+  el.innerHTML = followed.slice(0, 8).map(function(s) {
+    var name = s.name || s.showName || 'Show';
+    var art = s.artwork || s.artworkUrl || '';
+    var artHtml = art
+      ? '<img class="follow-art" src="'+artworkProxy(art)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+      : '<div class="follow-art" style="display:flex;align-items:center;justify-content:center;font-size:14px">&#127897;</div>';
+    return '<div class="follow-item">'+artHtml+'<span class="follow-name">'+name+'</span></div>';
+  }).join('');
+}
+
 function renderDashRecent() {
   var recent = getRecent();
   var el = document.getElementById('dash-recent-list');
   if (!el) return;
   if (!recent.length) { el.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:12px 0">No episodes analyzed yet. Paste a URL above to get started.</div>'; return; }
-  el.innerHTML = recent.map(function(r) {
+  el.innerHTML = recent.slice(0, 5).map(function(r) {
     var safeUrl = (r.url||'').replace(/"/g,'&quot;');
+    var artSrc = r.artwork ? artworkProxy(r.artwork) : '';
+    var artHtml = artSrc
+      ? '<img class="episode-artwork" src="'+artSrc+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+      : '<div class="episode-artwork"></div>';
     var bar = (r.leftPct !== undefined)
-      ? '<div class="bias-bar" style="height:5px;margin-top:4px"><div class="bias-bar-l" style="width:'+r.leftPct+'%"></div><div class="bias-bar-c" style="width:'+r.centerPct+'%"></div><div class="bias-bar-r" style="width:'+r.rightPct+'%"></div></div>' : '';
-    return '<div class="recent-row" onclick="goAnalyze(&quot;'+safeUrl+'&quot;)">'
-      + '<div class="recent-art" style="background:var(--bg3)"></div>'
-      + '<div class="recent-body"><div class="recent-show">'+(r.showName||'Podcast')+'</div>'
-      + '<div class="recent-title">'+(r.title||'Episode')+'</div>'
-      + bar + '</div></div>';
+      ? '<div class="episode-bias-bar"><div style="width:'+r.leftPct+'%;background:var(--left-bar)"></div><div style="width:'+r.centerPct+'%;background:var(--center-bar)"></div><div style="width:'+r.rightPct+'%;background:var(--right-bar)"></div></div>' : '';
+    var label = r.biasLabel ? '<span>'+r.biasLabel+'</span>' : '';
+    return '<div class="episode-card" onclick="goAnalyze(&quot;'+safeUrl+'&quot;)">'
+      + artHtml
+      + '<div class="episode-info">'
+        + '<div class="episode-show">'+(r.showName||'Podcast')+'</div>'
+        + '<div class="episode-title">'+(r.title||'Episode')+'</div>'
+        + '<div class="episode-meta">'+label+'</div>'
+        + bar
+      + '</div></div>';
   }).join('');
 }
 
 function renderBiasFingerprint() {
   var recent = getRecent().filter(function(r){ return r.leftPct !== undefined; });
-  var bars = ['dash-fp-bar','sb-fp-bar'];
-  var counts = ['dash-fp-counts','sb-fp-counts'];
+  var countsEl = document.getElementById('dash-fp-counts');
+  var dotEl = document.getElementById('dash-fp-dot');
   if (!recent.length) {
-    bars.forEach(function(id){ var el=document.getElementById(id); if(el)el.innerHTML='<div class="bias-bar-c" style="width:100%"></div>'; });
-    counts.forEach(function(id){ var el=document.getElementById(id); if(el)el.innerHTML='<span class="bias-count" style="color:var(--text3);font-size:11px">Analyze episodes to build your fingerprint</span>'; });
+    if (dotEl) dotEl.style.left = '50%';
+    if (countsEl) countsEl.innerHTML = '<span style="color:var(--text3);font-size:11px">Analyze episodes to build your fingerprint</span>';
     return;
   }
   var avg = recent.reduce(function(acc,r){ return {l:acc.l+r.leftPct,c:acc.c+r.centerPct,r:acc.r+r.rightPct}; },{l:0,c:0,r:0});
   var n = recent.length;
   var l=Math.round(avg.l/n), c=Math.round(avg.c/n), r=100-l-c;
-  bars.forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el)return;
-    el.innerHTML='<div class="bias-bar-l" style="width:'+l+'%"></div><div class="bias-bar-c" style="width:'+c+'%"></div><div class="bias-bar-r" style="width:'+r+'%"></div>';
-  });
-  counts.forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el)return;
-    el.innerHTML='<span class="bias-count"><span class="bias-dot" style="background:var(--left-bar)"></span>'+l+'% left</span>'
+  // Dot position: left=0%, center=50%, right=100%
+  // l=left%, r=right% → position = 50 + (r - l) / 2
+  var dotPct = Math.min(95, Math.max(5, 50 + (r - l) / 2));
+  if (dotEl) dotEl.style.left = dotPct + '%';
+  if (countsEl) {
+    countsEl.innerHTML = '<span class="bias-count"><span class="bias-dot" style="background:var(--left-bar)"></span>'+l+'% left</span>'
       +'<span class="bias-count"><span class="bias-dot" style="background:var(--center-bar)"></span>'+c+'% center</span>'
       +'<span class="bias-count"><span class="bias-dot" style="background:var(--right-bar)"></span>'+r+'% right</span>';
-  });
+  }
+  // Also update sidebar bar (legacy element, keep for compat)
+  var sbBar = document.getElementById('sb-fp-bar');
+  var sbCounts = document.getElementById('sb-fp-counts');
+  if (sbBar) sbBar.innerHTML='<div class="bias-bar-l" style="width:'+l+'%"></div><div class="bias-bar-c" style="width:'+c+'%"></div><div class="bias-bar-r" style="width:'+r+'%"></div>';
+  if (sbCounts) sbCounts.innerHTML='<span class="bias-count"><span class="bias-dot" style="background:var(--left-bar)"></span>'+l+'% left</span>'
+    +'<span class="bias-count"><span class="bias-dot" style="background:var(--center-bar)"></span>'+c+'% center</span>'
+    +'<span class="bias-count"><span class="bias-dot" style="background:var(--right-bar)"></span>'+r+'% right</span>';
 }
 
 // ── PENDING ANALYZE (saved when gate intercepts) ──
@@ -7535,19 +7694,12 @@ function heroConnectSpotify() {
 function heroConnectYouTube() {
   var u = plUser();
   if (!u) { openModal('signup'); return; }
-  var isConnected = localStorage.getItem('pl-youtube-connected') === '1';
-  if (isConnected) {
+  if (localStorage.getItem('pl-youtube-connected') === '1') {
     showToast('YouTube already connected', 2000);
     return;
   }
-  // Start YouTube OAuth
-  fetch('/api/connect-youtube?userId=' + encodeURIComponent(u.id))
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.authUrl) window.location.href = d.authUrl;
-      else showToast('Could not start YouTube auth', 2000);
-    })
-    .catch(function(){ showToast('Network error — try again', 2000); });
+  // Redirect directly — connect-youtube.mts handles the OAuth redirect
+  window.location.href = '/api/connect-youtube?userId=' + encodeURIComponent(u.id);
 }
 
 function heroConnectApple() {
@@ -7925,6 +8077,128 @@ function _admControlAction(body) {
     })
     .catch(function(){ alert('Network error'); });
 }
+
+// ── APPLE PODCASTS SEARCH MODAL ──────────────────────────────────────────────
+function heroConnectApple() {
+  var u = plUser();
+  if (!u) { openModal('signup'); return; }
+  openAppleModal();
+}
+
+function openAppleModal() {
+  var m = document.getElementById('apple-search-modal');
+  if (m) m.style.display = 'flex';
+  var inp = document.getElementById('apple-search-input');
+  if (inp) { inp.value = ''; inp.focus(); }
+  var results = document.getElementById('apple-search-results');
+  if (results) results.innerHTML = '';
+  _appleSelected = {};
+}
+
+function closeAppleModal() {
+  var m = document.getElementById('apple-search-modal');
+  if (m) m.style.display = 'none';
+}
+
+var _appleSelected = {};
+var _appleSearchTimer = null;
+
+function onAppleSearchInput() {
+  clearTimeout(_appleSearchTimer);
+  _appleSearchTimer = setTimeout(function() {
+    var q = (document.getElementById('apple-search-input') || {}).value || '';
+    if (q.trim().length < 2) return;
+    searchApplePodcasts(q.trim());
+  }, 400);
+}
+
+async function searchApplePodcasts(q) {
+  var results = document.getElementById('apple-search-results');
+  if (!results) return;
+  results.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Searching&hellip;</div>';
+  try {
+    var res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&media=podcast&entity=podcast&limit=20', { signal: AbortSignal.timeout(6000) });
+    var data = await res.json();
+    var podcasts = (data.results || []).filter(function(p){ return p.collectionName && p.feedUrl; });
+    if (!podcasts.length) { results.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">No podcasts found — try a different search</div>'; return; }
+    results.innerHTML = podcasts.map(function(p) {
+      var id = String(p.trackId || p.collectionId || '');
+      var name = p.collectionName || '';
+      var artist = p.artistName || '';
+      var art = p.artworkUrl100 || p.artworkUrl60 || '';
+      var feed = p.feedUrl || '';
+      var checked = _appleSelected[id] ? ' checked' : '';
+      return '<label class="apple-result-row" onclick="toggleAppleShowSelect(\'' + id + '\',\'' + name.replace(/'/g,"\\'") + '\',\'' + feed.replace(/'/g,"\\'") + '\',\'' + art.replace(/'/g,"\\'") + '\')">'
+        + '<img src="' + art + '" onerror="this.style.display=\'none\'" width="40" height="40" style="border-radius:6px;flex-shrink:0;object-fit:cover">'
+        + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + name + '</div>'
+        + '<div style="font-size:11px;color:var(--text3)">' + artist + '</div></div>'
+        + '<input type="checkbox" id="apc-' + id + '"' + checked + ' style="width:18px;height:18px;flex-shrink:0;accent-color:var(--navy)">'
+        + '</label>';
+    }).join('');
+  } catch(e) { results.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Search failed — try again</div>'; }
+}
+
+function toggleAppleShowSelect(id, name, feedUrl, artUrl) {
+  if (_appleSelected[id]) {
+    delete _appleSelected[id];
+  } else {
+    _appleSelected[id] = { id: id, name: name, feedUrl: feedUrl, artUrl: artUrl };
+  }
+  var cb = document.getElementById('apc-' + id);
+  if (cb) cb.checked = !!_appleSelected[id];
+  var addBtn = document.getElementById('apple-add-btn');
+  if (addBtn) addBtn.textContent = Object.keys(_appleSelected).length
+    ? 'Add ' + Object.keys(_appleSelected).length + ' show' + (Object.keys(_appleSelected).length > 1 ? 's' : '') + ' to library →'
+    : 'Select shows to add';
+}
+
+function addAppleShows() {
+  var shows = Object.values(_appleSelected);
+  if (!shows.length) return;
+  var u = plUser();
+  if (!u) return;
+  var followed = u.followedShows || [];
+  var added = 0;
+  shows.forEach(function(s) {
+    if (!followed.find(function(f){ return f.feedUrl === s.feedUrl; })) {
+      followed.push({ name: s.name, feedUrl: s.feedUrl, artwork: s.artUrl, addedAt: new Date().toISOString(), source: 'apple' });
+      added++;
+    }
+  });
+  u.followedShows = followed;
+  setPlUser(u);
+  closeAppleModal();
+  plToast('Added ' + added + ' show' + (added > 1 ? 's' : '') + ' to your library', 3000);
+  renderHomeState();
+}
 </script>
+
+<!-- Apple Podcasts Search Modal -->
+<div id="apple-search-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeAppleModal()">
+  <div style="background:var(--bg2);border-radius:12px;width:100%;max-width:560px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.3)">
+    <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700;margin-bottom:2px">Add from Apple Podcasts</div>
+        <div style="font-size:12px;color:var(--text3)">Search any podcast in the iTunes library</div>
+      </div>
+      <button onclick="closeAppleModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);padding:4px 8px;border-radius:var(--r);line-height:1" aria-label="Close">&times;</button>
+    </div>
+    <div style="padding:16px 24px;border-bottom:1px solid var(--border)">
+      <input id="apple-search-input" type="text" placeholder="Search podcasts&hellip;" oninput="onAppleSearchInput()" style="width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--r);font-size:14px;background:var(--bg);color:var(--text);font-family:var(--ff);outline:none" autocomplete="off"/>
+    </div>
+    <div id="apple-search-results" style="flex:1;overflow-y:auto;max-height:360px;padding:8px 0">
+      <div style="padding:32px;text-align:center;color:var(--text3);font-size:13px">Search for podcasts above to add them to your library</div>
+    </div>
+    <div style="padding:14px 24px;border-top:1px solid var(--border)">
+      <button id="apple-add-btn" onclick="addAppleShows()" style="width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:opacity .15s">Select shows to add</button>
+    </div>
+  </div>
+</div>
+<style>
+.apple-result-row{display:flex;align-items:center;gap:12px;padding:10px 24px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--border)}
+.apple-result-row:hover{background:var(--bg3)}
+.apple-result-row:last-child{border-bottom:none}
+</style>
+
 </body>
 </html>

@@ -13,12 +13,17 @@ export default async (req: Request) => {
     );
   }
 
+  const scopes = [
+    'https://www.googleapis.com/auth/youtube.readonly',
+    'https://www.googleapis.com/auth/youtube-paid-content',
+  ].join(' ');
+
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: 'https://podlens.app/auth/youtube/callback',
     response_type: 'code',
-    scope: 'openid email profile https://www.googleapis.com/auth/youtube.readonly',
-    state: userId,           // auth-youtube-callback.mts uses state as userId directly
+    scope: scopes,
+    state: userId,
     access_type: 'offline',
     prompt: 'consent',
   });
