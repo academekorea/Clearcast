@@ -937,7 +937,96 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
   .res-header{flex-wrap:wrap;gap:10px}
   .res-header-right{width:100%}
   .sp-content{padding:24px 16px}
+  .featured-main{grid-template-columns:1fr}
 }
+/* ── YOUTUBE EMBED PLAYER ── */
+.yt-player-wrap{margin-bottom:16px}
+.yt-scrubber-wrap{margin-top:8px;padding:0 2px}
+.yt-scrubber-track{height:8px;background:var(--bg3);border-radius:4px;position:relative;cursor:pointer;overflow:visible}
+.yt-scrubber-progress{height:100%;background:var(--navy);border-radius:4px;width:0;pointer-events:none;transition:width .5s linear}
+.yt-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;cursor:pointer;z-index:2;border:2px solid var(--bg2);transition:transform .15s}
+.yt-dot:hover{transform:translate(-50%,-50%) scale(1.4);z-index:3}
+.yt-dot-left{background:var(--left)}
+.yt-dot-right{background:var(--right)}
+.yt-dot-neutral{background:#888}
+.yt-dot-tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:11px;padding:6px 10px;border-radius:var(--r);white-space:normal;max-width:200px;pointer-events:none;z-index:10;opacity:0;transition:opacity .15s;text-align:center;line-height:1.4;min-width:80px}
+.yt-dot:hover .yt-dot-tip{opacity:1}
+.yt-legend{display:flex;gap:14px;margin-top:6px;font-size:11px;color:var(--text3);flex-wrap:wrap}
+.yt-leg-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px;vertical-align:middle}
+/* ── NATIVE AUDIO PLAYER ── */
+.ep-player{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.ep-player-top{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.ep-player-art{width:48px;height:48px;border-radius:4px;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:18px;overflow:hidden}
+.ep-player-art img{width:100%;height:100%;object-fit:cover}
+.ep-player-info{flex:1;min-width:0}
+.ep-player-title{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
+.ep-player-show{font-size:11px;color:var(--text3)}
+.ep-player-controls{display:flex;align-items:center;gap:8px;padding:10px 14px}
+.ep-play-btn{width:40px;height:40px;border-radius:50%;background:var(--navy);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;line-height:1;transition:opacity .15s}
+.ep-play-btn:hover{opacity:.85}
+.ep-scrubber{flex:1;display:flex;align-items:center;gap:8px}
+.ep-scrubber-track{flex:1;height:8px;background:var(--bg3);border-radius:4px;position:relative;cursor:pointer}
+.ep-scrubber-fill{height:100%;background:var(--navy);border-radius:4px;width:0;pointer-events:none}
+.ep-adot{position:absolute;top:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;border:2px solid var(--bg2);z-index:2;cursor:pointer}
+.ep-adot-left{background:var(--left)}
+.ep-adot-right{background:var(--right)}
+.ep-adot-neutral{background:#888}
+.ep-time{font-size:11px;color:var(--text3);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:72px;text-align:right}
+.ep-player-footer{display:flex;align-items:center;gap:6px;padding:6px 14px;border-top:1px solid var(--border)}
+.ep-speed{padding:3px 9px;border:1px solid var(--border2);border-radius:10px;background:transparent;color:var(--text2);cursor:pointer;font-size:11px;font-family:var(--ff);transition:all .1s}
+.ep-speed.on,.ep-speed:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ep-vol{-webkit-appearance:none;appearance:none;width:70px;height:3px;border-radius:2px;background:var(--border2);outline:none;cursor:pointer;margin-left:auto}
+.ep-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--navy);cursor:pointer}
+/* ── PLATFORM BUTTONS ── */
+.platform-btns-bar{padding:10px 0 16px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.platform-btns-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:8px}
+.platform-btns-row{display:flex;gap:8px;flex-wrap:wrap}
+.plat-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:none;border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--ff);text-decoration:none;transition:opacity .15s;white-space:nowrap}
+.plat-btn:hover{opacity:.85}
+.plat-btn.pspotify{background:#1DB954;color:#fff}
+.plat-btn.pyoutube{background:#FF0000;color:#fff}
+.plat-btn.papple{background:#FC3C44;color:#fff}
+.plat-btn.ploading{background:var(--bg3);color:var(--text3);cursor:default}
+/* ── SMART SEARCH RECOVERY ── */
+.smart-search-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:28px 24px}
+.smart-search-title{font-family:var(--ffs);font-size:22px;font-weight:600;margin-bottom:6px}
+.smart-search-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.smart-search-row{display:flex;gap:8px;margin-bottom:16px}
+.ss-input{flex:1;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);font-size:14px;color:var(--text);font-family:var(--ff);outline:none}
+.ss-input:focus{border-color:var(--text)}
+.ss-search-btn{padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)}
+.ss-results{display:flex;flex-direction:column;gap:8px}
+.ss-show-row{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:background .1s}
+.ss-show-row:hover{background:var(--bg3)}
+.ss-show-art{width:44px;height:44px;border-radius:4px;object-fit:cover;background:var(--bg3);flex-shrink:0}
+.ss-show-info{flex:1;min-width:0}
+.ss-show-name{font-size:13px;font-weight:600;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ss-show-meta{font-size:11px;color:var(--text3)}
+.ss-analyze-btn{padding:6px 12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:11px;font-weight:600;font-family:var(--ff);flex-shrink:0}
+.ss-adv-toggle{font-size:12px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:var(--ff);padding:4px 0;margin-top:12px;text-decoration:underline}
+.ss-adv{display:none;padding-top:14px;border-top:1px solid var(--border);margin-top:12px}
+.ss-adv.on{display:block}
+.ss-adv-row{display:flex;gap:8px;margin-bottom:10px}
+.ss-adv-input{flex:1;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);font-size:12px;color:var(--text);font-family:var(--ff);outline:none}
+.ss-adv-btn{padding:8px 12px;background:transparent;border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;font-size:12px;color:var(--text2);font-family:var(--ff)}
+/* ── FEATURED PLAYER (homepage) ── */
+.featured-section{padding:64px 24px;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.featured-inner{max-width:1200px;margin:0 auto}
+.featured-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px}
+.featured-heading{font-family:var(--ffs);font-size:26px;font-weight:600;margin-bottom:28px;letter-spacing:-.01em}
+.featured-main{display:grid;grid-template-columns:1fr 300px;gap:20px;margin-bottom:24px}
+.featured-player-pane{border-radius:var(--r);overflow:hidden;background:#000;min-height:160px;display:flex;align-items:center;justify-content:center}
+.featured-player-pane iframe{width:100%;aspect-ratio:16/9;border:none;display:block}
+.featured-analysis-pane{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.featured-ep-title{font-family:var(--ffs);font-size:15px;font-weight:600;margin-bottom:4px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.featured-show-name{font-size:11px;color:var(--text3);margin-bottom:12px}
+.featured-action{width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)}
+.featured-action:hover{opacity:.85}
+.trending-cards{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.trending-card{flex-shrink:0;width:160px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:border-color .15s}
+.trending-card:hover{border-color:var(--navy)}
+.trending-card-title{font-size:12px;font-weight:600;line-height:1.35;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.trending-card-show{font-size:10px;color:var(--text3)}
 </style>
 </head>
 <body>
@@ -1044,6 +1133,26 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
           </div>
           <div class="bias-plain-label">Lightly one-sided</div>
           <div class="proof-note">Example analysis &mdash; paste any episode URL to analyze</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED PLAYER -->
+    <section class="featured-section" id="featured-section">
+      <div class="featured-inner">
+        <div class="featured-eyebrow">Currently trending</div>
+        <div class="featured-heading">Listen while you learn</div>
+        <div class="featured-main" id="featured-main">
+          <div class="featured-player-pane" id="featured-player-pane">
+            <div style="color:rgba(255,255,255,.4);font-size:13px"><div class="feed-spin" style="margin:0 auto 8px;border-color:rgba(255,255,255,.2);border-top-color:white"></div>Loading&hellip;</div>
+          </div>
+          <div class="featured-analysis-pane" id="featured-analysis-pane">
+            <div style="color:var(--text3);font-size:13px">Select a trending episode to see its analysis summary here.</div>
+          </div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">More trending episodes</div>
+        <div class="trending-cards" id="trending-cards">
+          <div style="color:var(--text3);font-size:13px"><div class="feed-spin" style="margin:0 auto 8px"></div></div>
         </div>
       </div>
     </section>
@@ -1920,6 +2029,7 @@ function renderHomeState() {
   if (u) u = enforcePlanRules() || u;
   document.getElementById('home-loggedout').style.display = u ? 'none' : 'block';
   document.getElementById('home-loggedin').style.display = u ? 'block' : 'none';
+  if (!u && !document.getElementById('featured-player-pane').querySelector('iframe')) { loadFeaturedPlayer(); }
   if (u) {
     var hr = new Date().getHours();
     var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
@@ -2466,6 +2576,20 @@ function startAnalysis(audioUrl, epTitle, showName) {
     .then(function(r){ return r.json(); })
     .then(function(d){
       clearInterval(_analyzeStages);
+      // ── Fallback: episode picker (Apple/PodcastIndex found a feed) ──
+      if (d.status==='needs_episode_selection') {
+        document.getElementById('loading').classList.remove('on');
+        stopInsightCards(); resetBtn();
+        showEpisodePickerFromYT(d.feedUrl, d.showName, d.showArtwork, d.channelName||'');
+        return;
+      }
+      // ── Fallback: smart search (nothing found) ──
+      if (d.status==='needs_search') {
+        document.getElementById('loading').classList.remove('on');
+        stopInsightCards(); resetBtn();
+        showSmartSearchUI(d.channelName||'');
+        return;
+      }
       if (d.error) {
         var code=d.code||'';
         if (code==='VIDEO_PRIVATE') { showAnalyzeErr('This episode is private or unavailable. Try a public YouTube URL or podcast RSS link.'); resetBtn(); }
@@ -2588,6 +2712,96 @@ function pollTranscription(jobId, audioUrl) {
   },INTERVAL_MS);
 }
 function resetBtn() { var b=document.getElementById('go-btn'); b.disabled=false; b.textContent='Analyze'; }
+
+// ── EPISODE PICKER FROM YT FALLBACK ──
+// Called when analyze returns needs_episode_selection (Apple/PodcastIndex found a matching feed)
+function showEpisodePickerFromYT(feedUrl, showName, artwork, channelName) {
+  document.getElementById('atabs').classList.add('on');
+  document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
+  document.getElementById('apanel-results').classList.add('on');
+  var artHtml = artwork ? '<img src="'+artwork+'" style="width:48px;height:48px;border-radius:4px;object-fit:cover;flex-shrink:0" onerror="this.style.display=\'none\'" alt="">' : '';
+  document.getElementById('results').innerHTML=
+    '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
+    +artHtml
+    +'<div><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Found on Apple Podcasts</div>'
+    +'<div style="font-family:var(--ffs);font-size:18px;font-weight:600">'+showName+'</div>'
+    +(channelName && channelName!==showName?'<div style="font-size:12px;color:var(--text3)">YouTube: '+channelName+'</div>':'')
+    +'</div></div>'
+    +'<p style="font-size:13px;color:var(--text2);margin-bottom:14px">Select an episode to analyze:</p>'
+    +'<div id="ep-auto-list"><div class="feed-spin" style="margin:0 auto"></div></div>'
+    +'</div>';
+  loadEpisodesInto(feedUrl, showName, 'ep-auto-list');
+}
+
+// ── SMART SEARCH UI (last resort — no podcast directory match) ──
+function showSmartSearchUI(channelName) {
+  document.getElementById('atabs').classList.add('on');
+  document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
+  document.getElementById('apanel-results').classList.add('on');
+  document.getElementById('results').innerHTML=
+    '<div class="smart-search-card">'
+    +'<div class="smart-search-title">Let\u2019s find this podcast</div>'
+    +'<p class="smart-search-sub">We couldn\u2019t auto-match the YouTube channel to a podcast feed. Search below, or use the advanced options to paste a direct URL.</p>'
+    +'<div class="smart-search-row">'
+    +'<input class="ss-input" id="ss-q" type="text" placeholder="Search for a podcast\u2026" value="'+channelName.replace(/"/g,'&quot;')+'" autocomplete="off" onkeydown="if(event.key===\'Enter\')doSmartSearch()"/>'
+    +'<button class="ss-search-btn" onclick="doSmartSearch()">Search</button>'
+    +'</div>'
+    +'<div class="ss-results" id="ss-results"><div style="font-size:13px;color:var(--text3)">Type a podcast name above and hit Search.</div></div>'
+    +'<button class="ss-adv-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')">Advanced options &#9660;</button>'
+    +'<div class="ss-adv" id="ss-adv">'
+    +'<div style="font-size:12px;color:var(--text2);margin-bottom:12px">Power user options:</div>'
+    +'<div class="ss-adv-row"><input class="ss-adv-input" id="ss-rss" placeholder="RSS feed URL (https://feeds.example.com/...)"/><button class="ss-adv-btn" onclick="tryAdvUrl(\'ss-rss\')">Analyze</button></div>'
+    +'<div class="ss-adv-row"><input class="ss-adv-input" id="ss-mp3" placeholder="Direct MP3/M4A URL"/><button class="ss-adv-btn" onclick="tryAdvUrl(\'ss-mp3\')">Analyze</button></div>'
+    +'<p style="font-size:11px;color:var(--text3);margin-top:4px">Or try our <a href="/extension.html" class="link-btn">browser extension</a> for any video.</p>'
+    +'</div></div>';
+  // Auto-search if channelName provided
+  if (channelName) { setTimeout(function(){ var el=document.getElementById('ss-q'); if(el&&el.value) doSmartSearch(); }, 300); }
+}
+
+async function doSmartSearch() {
+  var q = (document.getElementById('ss-q')||{}).value||''; q=q.trim();
+  if (!q) return;
+  var el = document.getElementById('ss-results');
+  if (!el) return;
+  el.innerHTML='<div class="feed-spin" style="margin:8px auto"></div>';
+  try {
+    var res=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=podcast&entity=podcast&limit=8',{signal:AbortSignal.timeout(6000)});
+    var data=await res.json();
+    var results=data.results||[];
+    if (!results.length){el.innerHTML='<div style="font-size:13px;color:var(--text3)">No results found. Try a different search term.</div>';return;}
+    el.innerHTML=results.map(function(r){
+      var art=r.artworkUrl100||r.artworkUrl60||'';
+      var name=r.collectionName||r.trackName||'';
+      var count=(r.trackCount||0)>0?r.trackCount+' episodes':'';
+      var genre=(r.primaryGenreName||'');
+      var feedUrl=r.feedUrl||'';
+      if(!feedUrl) return '';
+      var safeUrl=feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      var safeName=name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      return '<div class="ss-show-row" onclick="ssPickShow(\''+safeUrl+'\',\''+safeName+'\',\''+art+'\',this)">'
+        +(art?'<img class="ss-show-art" src="'+art+'" alt="" onerror="this.style.display=\'none\'">':'<div class="ss-show-art" style="display:flex;align-items:center;justify-content:center;font-size:18px">\uD83C\uDFA7</div>')
+        +'<div class="ss-show-info"><div class="ss-show-name">'+name+'</div>'
+        +'<div class="ss-show-meta">'+(genre?genre+(count?' \u00b7 ':''):'')+count+'</div>'
+        +'</div>'
+        +'<button class="ss-analyze-btn">Episodes \u2192</button>'
+        +'</div>';
+    }).filter(Boolean).join('');
+  } catch(e){el.innerHTML='<div style="font-size:13px;color:var(--text3)">Search failed. Try again.</div>';}
+}
+
+function ssPickShow(feedUrl, showName, artwork, el) {
+  // Replace the clicked row with an episode list
+  el.outerHTML='<div id="ss-ep-list" style="margin-top:8px"><div class="feed-spin" style="margin:8px auto"></div></div>';
+  loadEpisodesInto(feedUrl, showName, 'ss-ep-list');
+}
+
+function tryAdvUrl(inputId) {
+  var url=(document.getElementById(inputId)||{}).value||''; url=url.trim();
+  if (!url) return;
+  document.getElementById('url-input').value=url;
+  startAnalysis(url);
+}
 function showAnalyzeErr(msg) {
   document.getElementById('loading').classList.remove('on');
   document.getElementById('atabs').classList.add('on');
@@ -2932,6 +3146,24 @@ function renderResults(data) {
   // ── LEFT COLUMN ──
   var left='';
 
+  // Panel: YouTube embed player (if YouTube source)
+  if (vid) {
+    left+='<div class="yt-player-wrap" id="yt-player-wrap">';
+    left+='<div style="border-radius:var(--r);overflow:hidden;background:#000"><iframe id="yt-iframe-'+vid+'"'
+      +' src="https://www.youtube.com/embed/'+vid+'?rel=0&modestbranding=1&enablejsapi=1"'
+      +' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
+      +' allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;display:block"></iframe></div>';
+    left+='<div class="yt-scrubber-wrap">';
+    left+='<div class="yt-scrubber-track" id="yt-track-'+vid+'" onclick="ytSeekFromClick(event,\''+vid+'\')"><div class="yt-scrubber-progress" id="yt-prog-'+vid+'"></div></div>';
+    left+='<div class="yt-legend"><span><span class="yt-leg-dot" style="background:var(--left)"></span>Right-leaning</span>'
+      +'<span><span class="yt-leg-dot" style="background:var(--right)"></span>Left-leaning</span>'
+      +'<span><span class="yt-leg-dot" style="background:#888"></span>Missing context</span></div>';
+    left+='</div></div>';
+  } else if (data.url && data.url.match(/\.(mp3|m4a|ogg|wav|aac)/i)) {
+    // Panel: Native audio player (RSS/MP3 source)
+    left+=buildNativePlayerHtml(data);
+  }
+
   // Panel: Audio Briefing Player
   if (data.audioScript) {
     var safeScript=data.audioScript.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
@@ -3148,9 +3380,24 @@ function renderResults(data) {
   // Inject download btn into header
   var headerWithDl = header.replace('</div></div>', downloadBtn+'</div></div>');
 
+  // ── PLATFORM BUTTONS BAR ──
+  var platBar='<div class="platform-btns-bar" id="platform-btns-bar">'
+    +'<div class="platform-btns-label">Listen on your preferred platform</div>'
+    +'<div class="platform-btns-row" id="platform-btns-row">'
+    +'<span class="plat-btn ploading" id="plat-spotify">Finding Spotify\u2026</span>'
+    +(vid?'<a class="plat-btn pyoutube" href="https://youtube.com/watch?v='+vid+'" target="_blank" rel="noopener">\u25ba YouTube</a>':'')
+    +'<a class="plat-btn papple" href="https://podcasts.apple.com/search?term='+encodeURIComponent(data.showName||'')
+    +'" target="_blank" rel="noopener">\u25ba Apple Podcasts</a>'
+    +'</div></div>';
+
   // ── ASSEMBLE ──
-  var html=headerWithDl+'<div class="res-grid"><div class="res-left-col">'+left+'</div><div class="res-right-col">'+right+'</div></div>'+shareSection;
+  var html=headerWithDl+platBar+'<div class="res-grid"><div class="res-left-col">'+left+'</div><div class="res-right-col">'+right+'</div></div>'+shareSection;
   document.getElementById('results').innerHTML=html;
+
+  // ── POST-RENDER: init players + platform buttons ──
+  if (vid) { setTimeout(function(){ initYouTubePlayer(vid, data); }, 200); }
+  if (data.url && data.url.match(/\.(mp3|m4a|ogg|wav|aac)/i)) { setTimeout(function(){ initNativePlayer(data.url, data); }, 100); }
+  if (!isPartial) { loadPlatformButtons(data); }
 }
 
 function shareAnalysis(jobId) {
@@ -3858,6 +4105,239 @@ function downloadReport(data) {
   document.body.insertBefore(header, document.body.firstChild);
   window.print();
   setTimeout(function() { var h = document.getElementById('print-header-inject'); if (h) h.remove(); }, 1000);
+}
+
+// ── YOUTUBE IFRAME API ──
+var _ytPlayers = {}, _ytApiReady = false, _ytApiCallbacks = [];
+function loadYouTubeAPI(cb) {
+  if (_ytApiReady) { cb(); return; }
+  _ytApiCallbacks.push(cb);
+  if (!document.getElementById('yt-api-script')) {
+    var s = document.createElement('script'); s.id = 'yt-api-script';
+    s.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(s);
+  }
+}
+window.onYouTubeIframeAPIReady = function() {
+  _ytApiReady = true;
+  _ytApiCallbacks.forEach(function(cb){ cb(); }); _ytApiCallbacks = [];
+};
+
+function tsToSeconds(ts) {
+  if (!ts) return 0;
+  var p = String(ts).split(':').map(Number);
+  if (p.length === 3) return p[0]*3600 + p[1]*60 + p[2];
+  if (p.length === 2) return p[0]*60 + p[1];
+  return 0;
+}
+
+function initYouTubePlayer(vid, data) {
+  loadYouTubeAPI(function() {
+    if (_ytPlayers[vid]) { try { _ytPlayers[vid].destroy(); } catch(e){} }
+    try {
+      _ytPlayers[vid] = new YT.Player('yt-iframe-'+vid, {
+        events: {
+          onReady: function(e) {
+            var player = e.target;
+            var track = document.getElementById('yt-track-'+vid);
+            if (!track) return;
+            // Build dots from lean citations + flag citations
+            var dots = [];
+            var leanCits = (data.audioLean && data.audioLean.citations) || [];
+            var lean = data.audioLean || {};
+            leanCits.forEach(function(c) {
+              if (c.timestamp) {
+                var dir = lean.rightPct > lean.leftPct ? 'right' : 'left';
+                dots.push({ ts: c.timestamp, dir: dir, label: c.quote ? '\u201c'+c.quote.slice(0,80)+'\u2026\u201d' : c.timestamp });
+              }
+            });
+            (data.flags || []).forEach(function(f) {
+              (f.citations || []).forEach(function(c) {
+                if (c.timestamp) dots.push({ ts: c.timestamp, dir: 'neutral', label: f.title || c.timestamp });
+              });
+            });
+            var dur = player.getDuration() || 3600;
+            var canTooltip = canAccess('timestampMarkers');
+            dots.forEach(function(dot) {
+              var secs = tsToSeconds(dot.ts);
+              if (!secs) return;
+              var pct = Math.min(100, (secs / dur) * 100).toFixed(2);
+              var d = document.createElement('div');
+              d.className = 'yt-dot yt-dot-' + dot.dir;
+              d.style.left = pct + '%';
+              if (canTooltip) {
+                d.innerHTML = '<div class="yt-dot-tip">' + dot.label + '</div>';
+                d.addEventListener('click', function(e) { e.stopPropagation(); player.seekTo(secs, true); });
+              } else {
+                d.addEventListener('click', function(e) { e.stopPropagation(); plToast('Timestamp citations on Operator plan'); });
+                d.style.opacity = '0.5';
+              }
+              track.appendChild(d);
+            });
+            // Progress tick
+            var progId = setInterval(function() {
+              var prog = document.getElementById('yt-prog-'+vid);
+              if (!prog) { clearInterval(progId); return; }
+              try { prog.style.width = (player.getCurrentTime() / player.getDuration() * 100).toFixed(2) + '%'; } catch(e){}
+            }, 500);
+          }
+        }
+      });
+    } catch(e) {}
+  });
+}
+
+function ytSeekFromClick(e, vid) {
+  var p = _ytPlayers[vid];
+  if (!p || !p.getDuration) return;
+  var rect = e.currentTarget.getBoundingClientRect();
+  try { p.seekTo(p.getDuration() * (e.clientX - rect.left) / rect.width, true); } catch(e2){}
+}
+
+// ── NATIVE AUDIO PLAYER ──
+function buildNativePlayerHtml(data) {
+  var art = data.artworkUrl || '';
+  var title = data.episodeTitle || 'Episode';
+  var show = data.showName || '';
+  var h = '<div class="ep-player" id="ep-player-wrap">';
+  h += '<div class="ep-player-top">';
+  h += '<div class="ep-player-art">' + (art ? '<img src="'+art+'" alt="">' : '\uD83C\uDFA7') + '</div>';
+  h += '<div class="ep-player-info"><div class="ep-player-title">'+title+'</div><div class="ep-player-show">'+show+'</div></div>';
+  h += '</div>';
+  h += '<div class="ep-player-controls">';
+  h += '<button class="ep-play-btn" id="ep-play-btn" onclick="toggleNativePlay()" title="Play/Pause">\u25ba</button>';
+  h += '<div class="ep-scrubber"><div class="ep-scrubber-track" id="ep-track" onclick="epSeekFromClick(event)">';
+  h += '<div class="ep-scrubber-fill" id="ep-fill"></div>';
+  h += '</div>';
+  h += '<div class="ep-time" id="ep-time">0:00 / 0:00</div></div>';
+  h += '</div>';
+  h += '<div class="ep-player-footer">';
+  h += '<button class="ep-speed on" onclick="setEpSpeed(1,this)">1x</button>';
+  h += '<button class="ep-speed" onclick="setEpSpeed(1.5,this)">1.5x</button>';
+  h += '<button class="ep-speed" onclick="setEpSpeed(2,this)">2x</button>';
+  h += '<input class="ep-vol" type="range" min="0" max="1" step="0.05" value="1" oninput="setEpVol(this.value)" title="Volume" style="margin-left:auto">';
+  h += '</div></div>';
+  return h;
+}
+
+var _epAudio = null;
+function initNativePlayer(audioUrl, data) {
+  if (_epAudio) { _epAudio.pause(); _epAudio = null; }
+  _epAudio = new Audio(audioUrl);
+  _epAudio.preload = 'metadata';
+  function fmtTime(s) {
+    if (!isFinite(s)) return '0:00';
+    var m = Math.floor(s/60), sec = Math.floor(s%60);
+    return m + ':' + (sec<10?'0':'')+sec;
+  }
+  _epAudio.addEventListener('timeupdate', function() {
+    var fill = document.getElementById('ep-fill');
+    var time = document.getElementById('ep-time');
+    if (fill && _epAudio.duration) fill.style.width = (_epAudio.currentTime/_epAudio.duration*100)+'%';
+    if (time) time.textContent = fmtTime(_epAudio.currentTime)+' / '+fmtTime(_epAudio.duration);
+  });
+  _epAudio.addEventListener('ended', function() {
+    var btn = document.getElementById('ep-play-btn');
+    if (btn) btn.textContent = '\u25ba';
+  });
+  // Add bias dots
+  _epAudio.addEventListener('loadedmetadata', function() {
+    var dur = _epAudio.duration;
+    var track = document.getElementById('ep-track');
+    if (!track || !dur) return;
+    var leanCits = (data.audioLean && data.audioLean.citations) || [];
+    var lean = data.audioLean || {};
+    leanCits.forEach(function(c) {
+      if (!c.timestamp) return;
+      var secs = tsToSeconds(c.timestamp);
+      if (!secs || secs > dur) return;
+      var d2 = document.createElement('div');
+      d2.className = 'ep-adot ep-adot-' + (lean.rightPct > lean.leftPct ? 'right' : 'left');
+      d2.style.left = (secs/dur*100).toFixed(2)+'%';
+      d2.title = c.quote ? c.quote.slice(0,100) : c.timestamp;
+      d2.addEventListener('click', function(e) { e.stopPropagation(); if(_epAudio) _epAudio.currentTime=secs; });
+      track.appendChild(d2);
+    });
+  });
+}
+function toggleNativePlay() {
+  var btn = document.getElementById('ep-play-btn');
+  if (!_epAudio) return;
+  if (_epAudio.paused) { _epAudio.play(); if(btn) btn.textContent='\u23f8'; }
+  else { _epAudio.pause(); if(btn) btn.textContent='\u25ba'; }
+}
+function epSeekFromClick(e) {
+  if (!_epAudio || !_epAudio.duration) return;
+  var rect = e.currentTarget.getBoundingClientRect();
+  _epAudio.currentTime = _epAudio.duration * (e.clientX - rect.left) / rect.width;
+}
+function setEpSpeed(rate, btn) {
+  if (_epAudio) _epAudio.playbackRate = rate;
+  document.querySelectorAll('.ep-speed').forEach(function(b){ b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+}
+function setEpVol(v) { if (_epAudio) _epAudio.volume = parseFloat(v); }
+
+// ── PLATFORM BUTTONS ──
+function loadPlatformButtons(data) {
+  var row = document.getElementById('platform-btns-row');
+  if (!row) return;
+  var showName = data.showName || '';
+  var epTitle = data.episodeTitle || '';
+  fetch('/api/find-episode', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ showName: showName, episodeTitle: epTitle })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    var spotifyBtn = document.getElementById('plat-spotify');
+    if (!spotifyBtn) return;
+    var isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    var href = d.found ? (isMobile && d.spotifyUri ? d.spotifyUri : (d.spotifyUrl || '')) : '';
+    if (!href) href = 'https://open.spotify.com/search/'+encodeURIComponent(showName)+'/podcasts';
+    spotifyBtn.outerHTML = '<a class="plat-btn pspotify" href="'+href+'" target="_blank" rel="noopener">\u25ba Spotify</a>';
+  })
+  .catch(function() {
+    var btn = document.getElementById('plat-spotify');
+    if (btn) btn.outerHTML = '<a class="plat-btn pspotify" href="https://open.spotify.com/search/'+encodeURIComponent(data.showName||'')+'/podcasts" target="_blank" rel="noopener">\u25ba Spotify</a>';
+  });
+}
+
+// ── FEATURED PLAYER (homepage) ──
+var _featuredVids = [];
+function loadFeaturedPlayer() {
+  fetch('/api/stories?q=podcast+news')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var items = (d.results || []).filter(function(i) { return i.videoId; });
+      if (!items.length) { document.getElementById('featured-section').style.display='none'; return; }
+      _featuredVids = items;
+      renderFeaturedPlayer(items[0]);
+      // Trending cards row
+      var cards = document.getElementById('trending-cards');
+      if (!cards) return;
+      cards.innerHTML = items.slice(0,6).map(function(item,i) {
+        return '<div class="trending-card" onclick="renderFeaturedPlayer(_featuredVids['+i+'])">'
+          +'<div class="trending-card-title">'+item.title+'</div>'
+          +'<div class="trending-card-show">'+item.channelTitle+'</div>'
+          +'</div>';
+      }).join('');
+    })
+    .catch(function() { document.getElementById('featured-section').style.display='none'; });
+}
+
+function renderFeaturedPlayer(item) {
+  var pane = document.getElementById('featured-player-pane');
+  var analysis = document.getElementById('featured-analysis-pane');
+  if (!pane || !analysis) return;
+  var ytUrl = 'https://www.youtube.com/watch?v='+item.videoId;
+  pane.innerHTML = '<iframe src="https://www.youtube.com/embed/'+item.videoId+'?rel=0&modestbranding=1"'
+    +' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
+    +' allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;display:block"></iframe>';
+  analysis.innerHTML = '<div class="featured-ep-title">'+item.title+'</div>'
+    +'<div class="featured-show-name">'+item.channelTitle+(item.duration?' \u00b7 '+item.duration:'')+'</div>'
+    +'<p style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:14px">Paste this video URL in the analyzer above to get the full bias report, political lean, missing perspectives, and trust score.</p>'
+    +'<button class="featured-action" onclick="document.getElementById(\'hero-url-input\').value=\''+ytUrl+'\';document.getElementById(\'hero-url-input\').scrollIntoView({behavior:\'smooth\'})">Analyze this episode \u2192</button>';
 }
 
 // ── AUTO INIT ──

@@ -238,7 +238,13 @@ async function findEpisodeInRss(feedUrl: string, videoTitle: string): Promise<st
 
 // ── LAYER 2: Apple Podcasts ───────────────────────────────────────────────
 
-async function searchApplePodcasts(channelTitle: string, videoTitle: string): Promise<string | null> {
+interface PodcastMatch {
+  feedUrl: string;
+  showName: string;
+  showArtwork: string;
+}
+
+async function searchApplePodcasts(channelTitle: string): Promise<PodcastMatch | null> {
   if (!channelTitle) return null;
   try {
     const res = await fetch(
@@ -250,15 +256,18 @@ async function searchApplePodcasts(channelTitle: string, videoTitle: string): Pr
     const results: any[] = data.results || [];
     if (!results.length) return null;
 
-    const cl = channelTitle.toLowerCase();
-    const match =
-      results.find(r =>
-        r.collectionName?.toLowerCase().includes(cl) ||
-        cl.includes(r.collectionName?.toLowerCase() || "") ||
-        r.artistName?.toLowerCase().includes(cl)
-      ) || results[0];
+    let best: any = null, bestScore = 0;
+    for (const r of results) {
+      const score = similarity(channelTitle, r.collectionName || r.trackName || "");
+      if (score > bestScore) { bestScore = score; best = r; }
+    }
 
-    return match?.feedUrl ? findEpisodeInRss(match.feedUrl, videoTitle) : null;
+    if (!best || bestScore < 0.5 || !best.feedUrl) return null;
+    return {
+      feedUrl: best.feedUrl,
+      showName: best.collectionName || best.trackName || channelTitle,
+      showArtwork: best.artworkUrl100 || best.artworkUrl60 || "",
+    };
   } catch {
     return null;
   }
@@ -266,11 +275,11 @@ async function searchApplePodcasts(channelTitle: string, videoTitle: string): Pr
 
 // ── LAYER 3: Podcast Index (open endpoint) ────────────────────────────────
 
-async function searchPodcastIndex(channelTitle: string, videoTitle: string): Promise<string | null> {
+async function searchPodcastIndex(channelTitle: string): Promise<{feedUrl: string, showName: string} | null> {
   if (!channelTitle) return null;
   try {
     const res = await fetch(
-      `https://podcastindex.org/api/search/byterm?q=${encodeURIComponent(channelTitle)}&max=3`,
+      `https://api.podcastindex.org/api/1.0/search/byterm?q=${encodeURIComponent(channelTitle)}&max=3`,
       {
         headers: { "User-Agent": "Podlens/1.0" },
         signal: AbortSignal.timeout(5000),
@@ -279,7 +288,8 @@ async function searchPodcastIndex(channelTitle: string, videoTitle: string): Pro
     if (!res.ok) return null;
     const data = await res.json();
     const match = (data.feeds || [])[0];
-    return match?.url ? findEpisodeInRss(match.url, videoTitle) : null;
+    if (!match?.url) return null;
+    return { feedUrl: match.url, showName: match.title || channelTitle };
   } catch {
     return null;
   }
@@ -493,13 +503,10 @@ export default async (req: Request) => {
       // ── Layers 2-4: run in parallel ──
       console.log(`[analyze] Layers 2-4 parallel: channelTitle="${channelTitle}", videoTitle="${videoTitle}", channelId="${channelId}"`);
       const [appleResult, podcastIndexResult, rssRetryResult] = await Promise.allSettled([
-        searchApplePodcasts(channelTitle, videoTitle),     // Layer 2
-        searchPodcastIndex(channelTitle, videoTitle),       // Layer 3
-        retryFromYouTubeChannelRss(channelId, videoId),    // Layer 4
+        searchApplePodcasts(channelTitle),                 // Layer 2
+        searchPodcastIndex(channelTitle),                   // Layer 3
+        retryFromYouTubeChannelRss(channelId, videoId),    // Layer 4 (caption retry)
       ]);
-      console.log(`[analyze] Layer 2 (Apple): ${appleResult.status} value=${appleResult.status === "fulfilled" ? appleResult.value : appleResult.reason}`);
-      console.log(`[analyze] Layer 3 (PodcastIndex): ${podcastIndexResult.status} value=${podcastIndexResult.status === "fulfilled" ? podcastIndexResult.value : podcastIndexResult.reason}`);
-      console.log(`[analyze] Layer 4 (RSS retry): ${rssRetryResult.status} value=${rssRetryResult.status === "fulfilled" ? !!rssRetryResult.value : rssRetryResult.reason}`);
 
       // Layer 4: caption retry succeeded
       if (rssRetryResult.status === "fulfilled" && rssRetryResult.value) {
@@ -507,32 +514,38 @@ export default async (req: Request) => {
         return saveCaption(rssRetryResult.value, "rss-retry");
       }
 
-      // Layers 2-3: podcast MP3 found → submit to AssemblyAI
-      const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
-      if (assemblyKey) {
-        const podcastAudioUrl =
-          (appleResult.status === "fulfilled" && appleResult.value) ||
-          (podcastIndexResult.status === "fulfilled" && podcastIndexResult.value) ||
-          null;
-
-        if (podcastAudioUrl) {
-          console.log(`[analyze] Layers 2-3 SUCCESS: podcast MP3 found, submitting to AssemblyAI: ${podcastAudioUrl}`);
-          return submitToAssemblyAI(podcastAudioUrl, normalizedYt, {
-            episodeTitle: episodeTitle || videoTitle,
-            showName: showName || channelTitle,
-            showSlug, showArtwork, showFeedUrl,
-          }, store, assemblyKey);
-        }
+      // Layer 2 (Apple Podcasts): podcast found with similarity > 0.5 → show episode picker
+      const appleMatch = appleResult.status === "fulfilled" ? appleResult.value : null;
+      if (appleMatch) {
+        console.log(`[analyze] Layer 2 SUCCESS: Apple Podcasts found → needs_episode_selection`);
+        return new Response(JSON.stringify({
+          status: "needs_episode_selection",
+          feedUrl: appleMatch.feedUrl,
+          showName: appleMatch.showName,
+          showArtwork: appleMatch.showArtwork,
+          channelName: channelTitle,
+        }), { status: 200, headers: { "Content-Type": "application/json" } });
       }
 
-      // All layers failed → signal frontend for Layer 5 (yt-dlp) or Layer 6 (recovery UI)
-      console.log(`[analyze] All layers failed → returning CAPTIONS_UNAVAILABLE`);
+      // Layer 3 (Podcast Index): podcast found → show episode picker
+      const piMatch = podcastIndexResult.status === "fulfilled" ? podcastIndexResult.value : null;
+      if (piMatch) {
+        console.log(`[analyze] Layer 3 SUCCESS: PodcastIndex found → needs_episode_selection`);
+        return new Response(JSON.stringify({
+          status: "needs_episode_selection",
+          feedUrl: piMatch.feedUrl,
+          showName: piMatch.showName,
+          showArtwork: "",
+          channelName: channelTitle,
+        }), { status: 200, headers: { "Content-Type": "application/json" } });
+      }
+
+      // All layers failed → smart search UI (Layer 4 smart search)
+      console.log(`[analyze] All layers failed → needs_search`);
       return new Response(JSON.stringify({
-        error: "Captions not found.",
-        code: "CAPTIONS_UNAVAILABLE",
-        channelTitle: channelTitle || "",
-        videoTitle: videoTitle || "",
-      }), { status: 400, headers: { "Content-Type": "application/json" } });
+        status: "needs_search",
+        channelName: channelTitle || videoTitle || "",
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
 
     // ── Non-YouTube: direct audio / RSS path ──────────────────────────────
