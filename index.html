@@ -710,6 +710,35 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .auth-spotify-btn:hover{opacity:.85}
 .auth-apple-btn{width:100%;padding:10px;border:none;border-radius:var(--r);background:#1a1a1a;color:#fff;cursor:pointer;font-size:13px;font-family:var(--ff);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;margin-bottom:0}
 .auth-apple-btn:hover{opacity:.85}
+/* Spotify connected overlay */
+.sp-connected-modal{max-width:680px;width:100%;background:var(--bg2);border-radius:var(--r);position:relative;max-height:90vh;overflow-y:auto}
+.sp-conn-body{padding:32px}
+.sp-conn-hd{margin-bottom:24px}
+.sp-conn-hd h2{font-size:20px;font-weight:700;margin-bottom:4px}
+.sp-conn-hd p{font-size:13px;color:var(--text3)}
+.sp-shows-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:500px){.sp-shows-grid{grid-template-columns:repeat(2,1fr)}}
+.sp-show-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;text-align:center;font-size:11px}
+.sp-show-art{width:56px;height:56px;border-radius:4px;object-fit:cover;margin:0 auto 6px;display:block;background:var(--bg4)}
+.sp-show-name{font-size:11px;font-weight:500;line-height:1.3;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sp-show-status{font-size:10px;padding:2px 6px;border-radius:2px;display:inline-block}
+.sp-show-status.analyzed{background:rgba(55,138,221,0.12);color:#378ADD}
+.sp-show-status.unanalyzed{background:var(--bg4);color:var(--text3)}
+.sp-fp-section{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px}
+.sp-fp-label{font-size:12px;font-weight:600;margin-bottom:10px}
+.sp-fp-blurred{filter:blur(6px);pointer-events:none;user-select:none}
+.sp-fp-gate{text-align:center;padding:4px 0}
+.sp-fp-gate p{font-size:12px;color:var(--text3);margin-bottom:8px}
+.sp-fp-gate button{padding:7px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff)}
+.sp-suggestions{margin-bottom:20px}
+.sp-suggestions h4{font-size:13px;font-weight:600;margin-bottom:10px}
+.sp-sug-list{display:flex;flex-direction:column;gap:8px}
+.sp-sug-item{display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border)}
+.sp-sug-art{width:36px;height:36px;border-radius:3px;object-fit:cover;background:var(--bg4);flex-shrink:0}
+.sp-sug-name{font-size:12px;font-weight:500;flex:1}
+.sp-sug-btn{padding:5px 10px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap}
+.sp-conn-footer{border-top:1px solid var(--border);padding-top:16px;display:flex;justify-content:flex-end}
+.sp-dash-btn{padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)}
 /* Toast */
 .pl-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:2000;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25)}
 .pl-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -1610,7 +1639,18 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <div class="auth-field"><label>Password</label><input type="password" id="login-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password"/><button class="auth-forgot" onclick="alert('Password reset coming soon. Contact hello@podlens.app')">Forgot password?</button></div>
       <button class="auth-btn" onclick="doLogin()">Log in</button>
       <div class="auth-divider">or</div>
-      <button class="auth-google-btn" onclick="alert('Google login coming soon.')">&#9654; Continue with Google</button>
+      <button class="auth-google-btn" onclick="doGoogleOAuth('login')">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <button class="auth-spotify-btn" onclick="doSpotifyOAuth('login')" style="margin-bottom:10px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        Continue with Spotify
+      </button>
+      <button class="auth-apple-btn" onclick="plToast('Apple login coming soon \u2014 use email or Spotify for now')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Continue with Apple
+      </button>
       <div class="auth-switch">Don&rsquo;t have an account? <button onclick="closeModal('login');openModal('signup')">Sign up</button></div>
     </div>
   </div>
@@ -1625,15 +1665,15 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <div class="auth-logo"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></div>
       <div id="signup-heading" class="signup-heading">Analyze this episode free</div>
       <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">7 days of full access &mdash; no credit card required</div>
-      <button class="auth-google-btn" onclick="alert('Google login coming soon.')" style="margin-bottom:10px">
+      <button class="auth-google-btn" onclick="doGoogleOAuth('signup')" style="margin-bottom:10px">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
       </button>
-      <button class="auth-spotify-btn" onclick="alert('Spotify login coming soon.')">
+      <button class="auth-spotify-btn" onclick="doSpotifyOAuth('signup')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
         Continue with Spotify
       </button>
-      <button class="auth-apple-btn" onclick="alert('Apple login coming soon.')">
+      <button class="auth-apple-btn" onclick="plToast('Apple login coming soon \u2014 use email or Spotify for now')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
         Continue with Apple
       </button>
@@ -1700,6 +1740,16 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
         <div class="onb-success-sub">Your dashboard is ready. Paste any podcast URL to get your first analysis.</div>
         <button class="auth-btn" onclick="finishOnboarding()">Go to my dashboard &rarr;</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- SPOTIFY CONNECTED OVERLAY -->
+<div class="overlay" id="modal-spotify-connected">
+  <div class="modal sp-connected-modal">
+    <button class="modal-close" style="position:absolute;right:16px;top:16px;z-index:2" onclick="document.getElementById('modal-spotify-connected').classList.remove('on')">&#x2715;</button>
+    <div class="sp-conn-body" id="sp-conn-body">
+      <div style="padding:60px 20px;text-align:center"><div class="feed-spin" style="margin:0 auto 12px"></div><div style="font-size:13px;color:var(--text3)">Loading your Spotify library&hellip;</div></div>
     </div>
   </div>
 </div>
@@ -3413,8 +3463,37 @@ function slugify(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').rep
 // ── URL ROUTING ──
 function handleUrlRouting() {
   var path=window.location.pathname;
+  var params=new URLSearchParams(window.location.search);
+
+  // Handle Spotify OAuth callback
+  var spotifyLogin = params.get('spotify_login');
+  if (spotifyLogin) {
+    try { handleSocialLogin(JSON.parse(decodeURIComponent(spotifyLogin))); } catch(e) {}
+    return false;
+  }
+  var spotifyError = params.get('spotify_error');
+  if (spotifyError) {
+    history.replaceState({}, '', window.location.pathname);
+    plToast('Spotify login failed \u2014 please try again or use email');
+    return false;
+  }
+
+  // Handle Google OAuth callback
+  var googleLogin = params.get('google_login');
+  if (googleLogin) {
+    try { handleSocialLogin(JSON.parse(decodeURIComponent(googleLogin))); } catch(e) {}
+    return false;
+  }
+  var googleError = params.get('google_error');
+  if (googleError) {
+    history.replaceState({}, '', window.location.pathname);
+    plToast('Google login failed \u2014 please try again or use email');
+    return false;
+  }
+
+  // Handle show profiles
   var m=path.match(/^\/show\/([^/?]+)/);
-  if (m) { var slug=decodeURIComponent(m[1]); var params=new URLSearchParams(window.location.search); var compareSlug=params.get('compare')||null; showView('show'); loadShowProfile(slug,compareSlug); return true; }
+  if (m) { var slug=decodeURIComponent(m[1]); var compareSlug=params.get('compare')||null; showView('show'); loadShowProfile(slug,compareSlug); return true; }
   return false;
 }
 function goBack(){ history.back(); }
@@ -4338,6 +4417,191 @@ function renderFeaturedPlayer(item) {
     +'<div class="featured-show-name">'+item.channelTitle+(item.duration?' \u00b7 '+item.duration:'')+'</div>'
     +'<p style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:14px">Paste this video URL in the analyzer above to get the full bias report, political lean, missing perspectives, and trust score.</p>'
     +'<button class="featured-action" onclick="document.getElementById(\'hero-url-input\').value=\''+ytUrl+'\';document.getElementById(\'hero-url-input\').scrollIntoView({behavior:\'smooth\'})">Analyze this episode \u2192</button>';
+}
+
+// ── SOCIAL OAUTH ──
+var SPOTIFY_CLIENT_ID = '1eb72bc291654bfba6cd9ce1679c5774';
+var SPOTIFY_REDIRECT_URI = 'https://podlens.app/auth/spotify/callback';
+var GOOGLE_REDIRECT_URI = 'https://podlens.app/auth/google/callback';
+
+function doSpotifyOAuth(action) {
+  // action: 'login' | 'signup' | 'connect'
+  var u = plUser();
+  var state = JSON.stringify({ action: action, userId: u ? u.id : null, nonce: Math.random().toString(36).slice(2) });
+  var scope = action === 'connect'
+    ? 'user-read-email user-read-recently-played user-library-read user-follow-read'
+    : 'user-read-email';
+  var params = new URLSearchParams({
+    client_id: SPOTIFY_CLIENT_ID,
+    response_type: 'code',
+    redirect_uri: SPOTIFY_REDIRECT_URI,
+    scope: scope,
+    state: encodeURIComponent(state),
+    show_dialog: action === 'connect' ? 'true' : 'false',
+  });
+  window.location.href = 'https://accounts.spotify.com/authorize?' + params.toString();
+}
+
+function doGoogleOAuth(action) {
+  // Fetch Google client ID from backend (set in Netlify env vars)
+  fetch('/api/get-plan?provider=google')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var clientId = d.googleClientId;
+      if (!clientId) { plToast('Google login coming soon \u2014 use email or Spotify for now'); return; }
+      var u = plUser();
+      var state = JSON.stringify({ action: action, userId: u ? u.id : null, nonce: Math.random().toString(36).slice(2) });
+      var params = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        response_type: 'code',
+        scope: 'openid email profile',
+        state: encodeURIComponent(state),
+        access_type: 'offline',
+        prompt: 'select_account',
+      });
+      window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
+    })
+    .catch(function() { plToast('Google login coming soon \u2014 use email or Spotify for now'); });
+}
+
+function handleSocialLogin(userData) {
+  // Called after Spotify/Google OAuth callback redirects back
+  if (!userData) return;
+  var u = {
+    id: userData.id, name: userData.name, email: userData.email,
+    avatar: userData.avatar || '', plan: userData.plan,
+    signupDate: userData.signupDate, trialEndsAt: userData.trialEndsAt,
+    analysesThisWeek: userData.analysesThisWeek || 0,
+    weekResetDate: userData.weekResetDate, joinedAt: userData.joinedAt,
+    authProvider: userData.authProvider,
+  };
+  setPlUser(u);
+  // Clean URL
+  var cleanUrl = window.location.pathname;
+  history.replaceState({}, '', cleanUrl);
+  renderNavAuth();
+  renderHomeState();
+  syncPlanFromStripe(u);
+  if (userData.isNewUser) {
+    showToast('Welcome to Podlens \u2014 your 7-day trial has started');
+    setTimeout(function() { openModal('onboarding'); }, 800);
+  } else {
+    showToast('Welcome back, ' + (u.name ? u.name.split(' ')[0] : 'there') + '!');
+  }
+}
+
+// ── SPOTIFY IMPORT + POST-CONNECTION OVERLAY ──
+function openSpotifyConnectedOverlay() {
+  document.getElementById('modal-spotify-connected').classList.add('on');
+  var u = plUser();
+  if (!u) return;
+  var tokenKey = 'pl-spotify-token-' + u.id;
+  var stored = sessionStorage.getItem(tokenKey);
+  if (!stored) { renderSpotifyConnectedError('No Spotify connection found.'); return; }
+  var token;
+  try { token = JSON.parse(stored).accessToken; } catch { renderSpotifyConnectedError('Connection error. Try again.'); return; }
+  loadSpotifyImport(token, u);
+}
+
+function loadSpotifyImport(token, u) {
+  fetch('/api/spotify-import', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ spotifyAccessToken: token, userId: u.id, userPlan: u.plan }),
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { renderSpotifyConnected(d, u); })
+    .catch(function() { renderSpotifyConnectedError('Could not load your Spotify library.'); });
+}
+
+function renderSpotifyConnected(data, u) {
+  var shows = data.followedShows || [];
+  var fp = data.preliminaryFingerprint;
+  var fpLocked = data.fingerprintLocked;
+  var suggestions = data.suggestedAnalyses || [];
+  var plan = (u.plan || 'free').toLowerCase();
+  var isPaid = ['creator','operator','studio'].indexOf(plan) > -1;
+
+  var html = '<div class="sp-conn-body">';
+  html += '<div class="sp-conn-hd">';
+  html += '<h2>Your Spotify library is connected</h2>';
+  html += '<p>Found ' + (data.totalFollowed || 0) + ' shows you follow</p>';
+  html += '</div>';
+
+  // Shows grid
+  if (shows.length) {
+    html += '<div class="sp-shows-grid">';
+    shows.forEach(function(s) {
+      var artHtml = s.artwork
+        ? '<img class="sp-show-art" src="' + s.artwork + '" alt="" onerror="this.style.display=\'none\'">'
+        : '<div class="sp-show-art" style="display:flex;align-items:center;justify-content:center;font-size:20px">&#127897;</div>';
+      var statusHtml = s.analyzed
+        ? '<span class="sp-show-status analyzed">Analyzed</span>'
+        : '<span class="sp-show-status unanalyzed">Not yet analyzed</span>';
+      html += '<div class="sp-show-card">' + artHtml;
+      if (s.analyzed && s.biasData) {
+        html += '<div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:4px;overflow:hidden">'
+          + '<div style="height:100%;background:var(--left);width:' + s.biasData.leftPct + '%;float:left"></div>'
+          + '<div style="height:100%;background:var(--right);width:' + s.biasData.rightPct + '%;float:left"></div>'
+          + '</div>';
+      }
+      html += '<div class="sp-show-name">' + s.name + '</div>' + statusHtml + '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Fingerprint section
+  html += '<div class="sp-fp-section">';
+  html += '<div class="sp-fp-label">Your listening fingerprint</div>';
+  if (fpLocked) {
+    html += '<div class="sp-fp-blurred">'
+      + '<div style="height:10px;background:linear-gradient(90deg,var(--left) 40%,var(--center-gray,#D1CFC9) 20%,var(--right) 40%);border-radius:5px;margin-bottom:8px"></div>'
+      + '<div style="font-size:12px;color:var(--text3)">40% left &nbsp; 20% center &nbsp; 40% right</div>'
+      + '</div>';
+    html += '<div class="sp-fp-gate"><p>Fingerprint analysis is a Creator+ feature</p>'
+      + '<button onclick="window.location=\'/pricing.html\'">Unlock for $12/mo &rarr;</button></div>';
+  } else if (fp) {
+    var leftW = fp.leftPct, centW = fp.centerPct, rightW = fp.rightPct;
+    html += '<div style="height:10px;background:var(--bg4);border-radius:5px;overflow:hidden;display:flex;margin-bottom:8px">'
+      + '<div style="width:' + leftW + '%;background:var(--left)"></div>'
+      + '<div style="width:' + centW + '%;background:#D1CFC9"></div>'
+      + '<div style="width:' + rightW + '%;background:var(--right)"></div>'
+      + '</div>';
+    html += '<div style="display:flex;gap:16px;font-size:12px;color:var(--text3)">'
+      + '<span>\uD83D\uDD34 ' + leftW + '% left</span>'
+      + '<span>\u2B1C ' + centW + '% center</span>'
+      + '<span>\uD83D\uDD35 ' + rightW + '% right</span>'
+      + '<span style="margin-left:auto;color:var(--text3)">Based on ' + fp.basedOn + ' analyzed show' + (fp.basedOn===1?'':'s') + '</span>'
+      + '</div>';
+  } else {
+    html += '<p style="font-size:12px;color:var(--text3)">Analyze a few of your shows to see your fingerprint here.</p>';
+  }
+  html += '</div>';
+
+  // Suggestions
+  if (suggestions.length) {
+    html += '<div class="sp-suggestions"><h4>Analyze these shows from your library</h4><div class="sp-sug-list">';
+    suggestions.forEach(function(s) {
+      var artHtml = s.artwork
+        ? '<img class="sp-sug-art" src="' + s.artwork + '" alt="">'
+        : '<div class="sp-sug-art" style="display:flex;align-items:center;justify-content:center">&#127897;</div>';
+      html += '<div class="sp-sug-item">' + artHtml
+        + '<div class="sp-sug-name">' + s.name + '</div>'
+        + '<button class="sp-sug-btn" onclick="document.getElementById(\'url-input\').value=' + JSON.stringify(s.spotifyUrl || s.name) + ';document.getElementById(\'modal-spotify-connected\').classList.remove(\'on\')">Analyze &rarr;</button>'
+        + '</div>';
+    });
+    html += '</div></div>';
+  }
+
+  html += '<div class="sp-conn-footer"><button class="sp-dash-btn" onclick="document.getElementById(\'modal-spotify-connected\').classList.remove(\'on\')">Go to my dashboard &rarr;</button></div>';
+  html += '</div>';
+
+  document.getElementById('sp-conn-body').innerHTML = html;
+}
+
+function renderSpotifyConnectedError(msg) {
+  document.getElementById('sp-conn-body').innerHTML = '<div style="padding:40px 32px;text-align:center;color:var(--text3);font-size:13px">' + msg + '</div>';
 }
 
 // ── AUTO INIT ──

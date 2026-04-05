@@ -100,6 +100,30 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2)}
 .footer-bottom{max-width:960px;margin:0 auto;font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .podlens-wordmark{font-family:var(--ffs,"Playfair Display",Georgia,serif);letter-spacing:.08em;line-height:1;display:inline}.podlens-wordmark .pod{font-weight:400;color:inherit}.podlens-wordmark .lens{font-weight:700;color:inherit}
+
+/* ── CONNECTED ACCOUNTS ── */
+.conn-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.conn-card-head{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.conn-platform-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.conn-platform-icon.spotify{background:#1DB954}
+.conn-platform-icon.youtube{background:#FF0000}
+.conn-platform-icon.apple{background:#FC3C44}
+.conn-card-title{flex:1}
+.conn-card-title h3{font-size:14px;font-weight:600;margin-bottom:2px}
+.conn-card-title p{font-size:12px;color:var(--text3)}
+.conn-status{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:10px}
+.conn-status.connected{background:rgba(29,185,84,.1);color:#1DB954}
+.conn-status.disconnected{background:var(--bg3);color:var(--text3)}
+.conn-status.coming-soon{background:var(--bg3);color:var(--text3)}
+.conn-card-body{padding:16px 20px}
+.conn-card-body p{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.conn-btn{padding:8px 16px;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:opacity .15s}
+.conn-btn.connect-spotify{background:#1DB954;color:#fff}
+.conn-btn.connect-youtube{background:#FF0000;color:#fff}
+.conn-btn.disconnect{background:transparent;color:var(--left);border:1px solid var(--left)}
+.conn-btn:hover{opacity:.8}
+.conn-btn:disabled{opacity:.5;cursor:default}
+.conn-permissions{font-size:11px;color:var(--text3);margin-top:8px}
 </style>
 </head>
 <body>
@@ -118,6 +142,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2
     <div class="tab-link" onclick="showTab('privacy')">Privacy</div>
     <div class="tab-link" onclick="showTab('subscription')">Subscription</div>
     <div class="tab-link" onclick="showTab('notifications')">Notifications</div>
+    <div class="tab-link" onclick="showTab('connected')">Connected</div>
   </div>
 
   <!-- Tab panels -->
@@ -269,6 +294,14 @@ footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2
       </div>
     </div>
 
+    <!-- CONNECTED ACCOUNTS -->
+    <div class="tab-panel" id="tab-connected">
+      <div class="settings-card">
+        <div class="card-head"><h3>Connected accounts</h3><p>Link your listening platforms to unlock your bias fingerprint and import your library</p></div>
+        <div class="card-body" id="connected-cards"><!-- rendered by JS --></div>
+      </div>
+    </div>
+
     <!-- NOTIFICATIONS -->
     <div class="tab-panel" id="tab-notifications">
       <div class="settings-card">
@@ -308,10 +341,19 @@ function doLogout() {
   window.location.href = '/';
 }
 function showTab(id) {
+  showTab_by_id(id);
+  if (event && event.target) event.target.classList.add('on');
+}
+function showTab_by_id(id) {
   document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.tab-link').forEach(function(l){l.classList.remove('on');});
-  document.getElementById('tab-'+id).classList.add('on');
-  event.target.classList.add('on');
+  var panel = document.getElementById('tab-'+id);
+  if (panel) panel.classList.add('on');
+  // find matching tab link
+  document.querySelectorAll('.tab-link').forEach(function(l){
+    if (l.getAttribute('onclick') && l.getAttribute('onclick').indexOf("'"+id+"'") > -1) l.classList.add('on');
+  });
+  if (id === 'connected') renderConnectedCards();
 }
 function setTheme(t) {
   localStorage.setItem('pl-theme', t);
@@ -354,11 +396,141 @@ function toggleCat(btn, cat) {
   localStorage.setItem('pl-prefs', JSON.stringify(prefs));
   btn.classList.toggle('on', cats.indexOf(cat) > -1);
 }
+var SPOTIFY_CLIENT_ID = '1eb72bc291654bfba6cd9ce1679c5774';
+var SPOTIFY_REDIRECT_URI = 'https://podlens.app/auth/spotify/callback';
+var GOOGLE_REDIRECT_URI  = 'https://podlens.app/auth/google/callback';
+
+function connectSpotify() {
+  var u = plUser();
+  if (!u) { window.location.href = '/'; return; }
+  var state = JSON.stringify({ action: 'connect', userId: u.id, nonce: Math.random().toString(36).slice(2) });
+  var params = new URLSearchParams({
+    client_id: SPOTIFY_CLIENT_ID,
+    response_type: 'code',
+    redirect_uri: SPOTIFY_REDIRECT_URI,
+    scope: 'user-read-email user-read-recently-played user-library-read user-follow-read',
+    state: encodeURIComponent(state),
+    show_dialog: 'true',
+  });
+  window.location.href = 'https://accounts.spotify.com/authorize?' + params.toString();
+}
+
+function disconnectSpotify() {
+  if (!confirm('Disconnect Spotify? Your listening data will be removed from this device.')) return;
+  var u = plUser();
+  if (u) sessionStorage.removeItem('pl-spotify-token-' + u.id);
+  localStorage.removeItem('pl-spotify-connected');
+  renderConnectedCards();
+  showSettingsToast('Spotify disconnected.');
+}
+
+function connectYouTube() {
+  fetch('/api/get-plan?provider=google')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var clientId = d.googleClientId;
+      if (!clientId) { showSettingsToast('Google/YouTube login coming soon.'); return; }
+      var u = plUser();
+      var state = JSON.stringify({ action: 'connect-youtube', userId: u ? u.id : null, nonce: Math.random().toString(36).slice(2) });
+      var params = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        response_type: 'code',
+        scope: 'openid email profile https://www.googleapis.com/auth/youtube.readonly',
+        state: encodeURIComponent(state),
+        access_type: 'offline',
+        prompt: 'consent',
+      });
+      window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
+    })
+    .catch(function() { showSettingsToast('Google/YouTube login coming soon.'); });
+}
+
+function renderConnectedCards() {
+  var u = plUser();
+  var spotifyConnected = u && !!sessionStorage.getItem('pl-spotify-token-' + u.id);
+  var localConnected = localStorage.getItem('pl-spotify-connected') === '1';
+  var isConnected = spotifyConnected || localConnected;
+
+  var html = '';
+
+  // Spotify
+  html += '<div class="conn-card">'
+    + '<div class="conn-card-head">'
+    + '<div class="conn-platform-icon spotify"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></div>'
+    + '<div class="conn-card-title"><h3>Spotify</h3><p>Import your followed shows and listening history</p></div>'
+    + '<span class="conn-status ' + (isConnected ? 'connected' : 'disconnected') + '">'
+    + (isConnected ? '&#10003; Connected' : 'Not connected') + '</span>'
+    + '</div>'
+    + '<div class="conn-card-body">'
+    + '<p>Connect Spotify to import your followed shows, see which ones Podlens has analyzed, and build your listening fingerprint automatically.</p>'
+    + (isConnected
+      ? '<button class="conn-btn disconnect" onclick="disconnectSpotify()">Disconnect Spotify</button>'
+      : '<button class="conn-btn connect-spotify" onclick="connectSpotify()">Connect Spotify</button>'
+    + '<div class="conn-permissions">Permissions: read your email, followed shows, and recently played episodes. Podlens never controls your playback.</div>')
+    + '</div>'
+    + '</div>';
+
+  // YouTube / Google
+  var ytConnected = u && !!localStorage.getItem('pl-youtube-connected-' + u.id);
+  html += '<div class="conn-card">'
+    + '<div class="conn-card-head">'
+    + '<div class="conn-platform-icon youtube"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></div>'
+    + '<div class="conn-card-title"><h3>YouTube / Google</h3><p>Link your Google account for YouTube history (coming soon)</p></div>'
+    + '<span class="conn-status ' + (ytConnected ? 'connected' : 'coming-soon') + '">'
+    + (ytConnected ? '&#10003; Connected' : 'Coming soon') + '</span>'
+    + '</div>'
+    + '<div class="conn-card-body">'
+    + '<p>Connecting YouTube will let Podlens detect podcasts from your watch history and suggest analyses based on what you already watch.</p>'
+    + '<button class="conn-btn connect-youtube" onclick="connectYouTube()" disabled style="opacity:.5;cursor:default">Connect YouTube</button>'
+    + '<div class="conn-permissions">Requires Google sign-in with YouTube read-only access.</div>'
+    + '</div>'
+    + '</div>';
+
+  // Apple Podcasts
+  html += '<div class="conn-card">'
+    + '<div class="conn-card-head">'
+    + '<div class="conn-platform-icon apple"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></div>'
+    + '<div class="conn-card-title"><h3>Apple Podcasts</h3><p>Import your Apple Podcasts library (iOS only — coming soon)</p></div>'
+    + '<span class="conn-status coming-soon">iOS waitlist</span>'
+    + '</div>'
+    + '<div class="conn-card-body">'
+    + '<p>Apple Podcasts integration requires the iOS app, which is on our roadmap. Join the waitlist to be notified when it launches.</p>'
+    + '<button class="conn-btn" style="background:var(--bg3);color:var(--text2);border:1px solid var(--border2)" onclick="showSettingsToast(\'Waitlist coming soon \u2014 email hello@podlens.app to be notified\')">Join iOS waitlist</button>'
+    + '</div>'
+    + '</div>';
+
+  document.getElementById('connected-cards').innerHTML = html;
+}
+
+function showSettingsToast(msg) {
+  var t = document.getElementById('settings-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'settings-toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f2027;color:#fff;padding:12px 20px;border-radius:4px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() { t.style.opacity = '0'; }, 3000);
+}
+
 function init() {
   var u = plUser();
   if (!u) { window.location.href = '/'; return; }
   document.getElementById('field-name').value = u.name || '';
   document.getElementById('field-email').value = u.email || '';
+
+  // Handle Spotify connect return
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('connected') === 'spotify') {
+    localStorage.setItem('pl-spotify-connected', '1');
+    history.replaceState({}, '', '/settings');
+    showTab_by_id('connected');
+    showSettingsToast('Spotify connected successfully!');
+  }
 
   // Theme
   var theme = localStorage.getItem('pl-theme') || 'auto';

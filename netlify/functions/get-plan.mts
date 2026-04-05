@@ -4,6 +4,15 @@ import { getStore } from "@netlify/blobs";
 export default async (req: Request) => {
   const url = new URL(req.url);
   const userId = url.searchParams.get("userId");
+  const provider = url.searchParams.get("provider");
+
+  // Return public OAuth client IDs (safe — these are publishable)
+  if (provider === "google") {
+    const googleClientId = Netlify.env.get("GOOGLE_CLIENT_ID") || "";
+    return new Response(JSON.stringify({ googleClientId: googleClientId || null }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
+  }
 
   if (!userId) {
     return new Response(JSON.stringify({ error: "userId required" }), {
