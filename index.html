@@ -783,6 +783,22 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .sp-cmp-win{color:var(--right)}
 .sp-back-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:13px;font-family:var(--ff);transition:all .1s;margin-bottom:20px}
 .sp-back-btn:hover{border-color:var(--text);color:var(--text)}
+/* ── YOUTUBE CHANNEL PROFILE ── */
+.yt-banner{width:100%;height:120px;object-fit:cover;border-radius:var(--r);display:block;background:var(--bg3);margin-bottom:-48px;position:relative;z-index:0}
+.yt-channel-header{position:relative;z-index:1;display:flex;gap:16px;align-items:flex-end;margin-bottom:24px;padding:0 4px}
+.yt-avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--bg);flex-shrink:0}
+.yt-avatar-ph{width:80px;height:80px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid var(--bg);flex-shrink:0}
+.yt-channel-info{flex:1;padding-bottom:4px}
+.yt-channel-name{font-family:var(--ffs);font-size:22px;font-weight:700;margin-bottom:4px}
+.yt-channel-stats{display:flex;gap:16px;font-size:12px;color:var(--text2);flex-wrap:wrap}
+.yt-channel-stat strong{color:var(--text);font-weight:600}
+.yt-videos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+@media(max-width:600px){.yt-videos-grid{grid-template-columns:repeat(2,1fr)}}
+.yt-video-card{cursor:pointer;transition:opacity .1s}
+.yt-video-card:hover{opacity:.8}
+.yt-video-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--r);background:var(--bg3);display:block}
+.yt-video-title{font-size:11px;font-weight:500;line-height:1.3;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-video-views{font-size:10px;color:var(--text3);margin-top:2px}
 
 /* ── SPECTRUM ── */
 .spectrum-wrap{padding:14px 20px;border-top:1px solid var(--border)}
@@ -823,6 +839,29 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .rp-section{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
 .rp-section:last-child{border-bottom:none}
 .rp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:10px}
+
+/* ── PODCAST SPOTLIGHT ── */
+.spotlight-section{margin-bottom:28px}
+.spotlight-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.spotlight-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3)}
+.spotlight-refresh{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:0;font-family:var(--ff)}
+.spotlight-refresh:hover{color:var(--text2)}
+.spotlight-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:700px){.spotlight-grid{grid-template-columns:repeat(2,1fr)}}
+.spotlight-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:border-color .15s;position:relative}
+.spotlight-card:hover{border-color:var(--border2)}
+.spotlight-card-art{width:48px;height:48px;border-radius:var(--r);background:var(--bg3);object-fit:cover;margin-bottom:10px}
+.spotlight-card-name{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.spotlight-card-sub{font-size:11px;color:var(--text3);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spotlight-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.05em}
+.sb-staff{background:#F0FDF4;color:#166534}
+.sb-new{background:#EFF6FF;color:#1e40af}
+.sb-underrated{background:#FFF7ED;color:#92400e}
+.sb-korean{background:#FEF9C3;color:#713f12}
+.spotlight-card-lean{margin-top:8px;display:flex;height:4px;border-radius:2px;overflow:hidden}
+.spotlight-card-lean-l{background:#E24B4A}
+.spotlight-card-lean-c{background:#D1CFC9}
+.spotlight-card-lean-r{background:#378ADD}
 
 /* ── UPGRADE MODAL ── */
 /* ── PRICING MODAL ── */
@@ -1618,6 +1657,14 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
           <div id="kr-shows-section" style="display:none;margin-bottom:32px">
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:14px">🇰🇷 한국 인기 팟캐스트 <span class="beta-pill">베타</span></div>
             <div class="kr-shows-grid" id="kr-shows-grid"></div>
+          </div>
+          <!-- Podcast Spotlight -->
+          <div class="spotlight-section" id="spotlight-section">
+            <div class="spotlight-header">
+              <span class="spotlight-label">✦ Podcast Spotlight</span>
+              <button class="spotlight-refresh" onclick="rotateSpotlight()">Refresh ↻</button>
+            </div>
+            <div class="spotlight-grid" id="spotlight-grid"></div>
           </div>
           <div id="hero-wrap"></div>
           <div class="feed-loading" id="feed-loading"><div class="feed-spin"></div></div>
@@ -3973,41 +4020,80 @@ async function fetchItunesMeta(showName) {
 }
 function renderShowProfile(data,slug,compareSlug,itunes) {
   var show=data.show||{}, m=data.metrics||{}, episodes=data.episodes||[], driftData=data.driftData||[];
+  var yt=data.youtubeChannel||null;
   var el=document.getElementById('sp-content');
 
-  // FIX 2: prefer real iTunes artwork over stored artwork
-  var artwork=(itunes&&itunes.artwork)||show.artwork||null;
-  var artHtml=artwork?'<img class="sp-art" src="'+artwork+'" alt="" onerror="this.className=\'sp-art-ph\';this.textContent=\'🎙\'">':"<div class='sp-art-ph'>&#127897;</div>";
-
+  var artwork=(itunes&&itunes.artwork)||show.artwork||(yt&&yt.thumbnailHigh)||null;
   var biasClass={['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[m.biasLabel]||'bp-center';
   var biasBadge=m.biasLabel?'<span class="bpill '+biasClass+'"><span class="dot"></span>'+m.biasLabel+'</span>':'';
   var displayName=(itunes&&itunes.name)||show.name||slug;
   var feedUrl=(itunes&&itunes.feedUrl)||show.feedUrl||null;
-  var html='';
-  html+='<div class="sp-header">'+artHtml+'<div class="sp-header-body">';
-  html+='<div class="sp-show-label">Podcast'+(itunes&&itunes.category?' &middot; '+itunes.category:'')+'</div>';
-  html+='<div class="sp-name">'+displayName+'</div>';
-  if (itunes&&itunes.artist) html+='<div style="font-size:13px;color:var(--text3);margin-bottom:8px">'+itunes.artist+'</div>';
-  html+='<div class="sp-badges">'+biasBadge;
-  if (data.episodeCount>0) html+='<span class="bpill" style="background:var(--bg3);border-color:var(--border2);color:var(--text2)">'+data.episodeCount+' episode'+(data.episodeCount===1?'':'s')+' analyzed</span>';
-  html+='</div>';
-
-  // FIX 4: Platform links from iTunes data
   var eName=encodeURIComponent(displayName);
-  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">';
-  html+='<a href="https://open.spotify.com/search/'+eName+'/podcasts" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Spotify</a>';
-  if (itunes&&itunes.itunesUrl) html+='<a href="'+itunes.itunesUrl+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Apple Podcasts</a>';
-  html+='<a href="https://youtube.com/results?search_query='+eName+'+podcast" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; YouTube</a>';
-  html+='</div>';
+  var html='';
 
-  html+='<div class="sp-actions"><button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
-  if (data.episodeCount>0) html+='<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share card &#8599;</button>';
-  html+='</div></div></div>';
+  // YouTube channel layout — banner + avatar + stats + video grid
+  if (yt) {
+    if (yt.channelBanner) html+='<img class="yt-banner" src="'+yt.channelBanner+'" alt="" onerror="this.style.display=\'none\'">';
+    var ytAvatar=yt.thumbnailHigh?'<img class="yt-avatar" src="'+yt.thumbnailHigh+'" alt="" onerror="this.className=\'yt-avatar-ph\';this.innerHTML=\'📺\'">':"<div class='yt-avatar-ph'>📺</div>";
+    html+='<div class="yt-channel-header">';
+    html+=ytAvatar;
+    html+='<div class="yt-channel-info">';
+    html+='<div class="yt-channel-name">'+displayName+'</div>';
+    html+='<div class="yt-channel-stats">';
+    if (yt.subscriberCount) {
+      var subNum=parseInt(yt.subscriberCount,10);
+      var subFmt=subNum>=1000000?(subNum/1000000).toFixed(1)+'M':subNum>=1000?(subNum/1000).toFixed(0)+'K':String(subNum);
+      html+='<span><strong>'+subFmt+'</strong> subscribers</span>';
+    }
+    if (yt.videoCount) html+='<span><strong>'+parseInt(yt.videoCount,10).toLocaleString()+'</strong> videos</span>';
+    html+='</div>';
+    html+='<div class="sp-badges" style="margin-top:8px">'+biasBadge;
+    if (data.episodeCount>0) html+='<span class="bpill" style="background:var(--bg3);border-color:var(--border2);color:var(--text2)">'+data.episodeCount+' episode'+(data.episodeCount===1?'':'s')+' analyzed</span>';
+    html+='<span class="bpill" style="background:#FFF0F0;border-color:#FFCCCC;color:#991b1b">▶ YouTube</span>';
+    html+='</div>';
+    html+='<div class="sp-actions" style="margin-top:10px"><button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
+    if (yt.channelId) html+='<a href="https://youtube.com/channel/'+yt.channelId+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:12px;font-weight:600;color:var(--text2);text-decoration:none">View channel ↗</a>';
+    if (data.episodeCount>0) html+='<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share &#8599;</button>';
+    html+='</div></div></div>';
+    // Recent videos grid
+    if (yt.recentVideos&&yt.recentVideos.length) {
+      html+='<div class="sp-section"><div class="sp-section-lbl">Recent videos ('+yt.recentVideos.length+')</div>';
+      html+='<div class="yt-videos-grid">';
+      yt.recentVideos.forEach(function(v){
+        var viewsFmt='';
+        if(v.viewCount){var vn=parseInt(v.viewCount,10);viewsFmt=vn>=1000000?(vn/1000000).toFixed(1)+'M views':vn>=1000?(vn/1000).toFixed(0)+'K views':vn+' views';}
+        html+='<div class="yt-video-card" onclick="window.open(\'https://youtube.com/watch?v='+v.videoId+'\',\'_blank\')">';
+        html+='<img class="yt-video-thumb" src="'+v.thumbnail+'" alt="" onerror="this.style.display=\'none\'">';
+        html+='<div class="yt-video-title">'+v.title+'</div>';
+        if(viewsFmt) html+='<div class="yt-video-views">'+viewsFmt+'</div>';
+        html+='</div>';
+      });
+      html+='</div></div>';
+    }
+  } else {
+    // Standard podcast layout
+    var artHtml=artwork?'<img class="sp-art" src="'+artwork+'" alt="" onerror="this.className=\'sp-art-ph\';this.textContent=\'🎙\'">':"<div class='sp-art-ph'>&#127897;</div>";
+    html+='<div class="sp-header">'+artHtml+'<div class="sp-header-body">';
+    html+='<div class="sp-show-label">Podcast'+(itunes&&itunes.category?' &middot; '+itunes.category:'')+'</div>';
+    html+='<div class="sp-name">'+displayName+'</div>';
+    if (itunes&&itunes.artist) html+='<div style="font-size:13px;color:var(--text3);margin-bottom:8px">'+itunes.artist+'</div>';
+    html+='<div class="sp-badges">'+biasBadge;
+    if (data.episodeCount>0) html+='<span class="bpill" style="background:var(--bg3);border-color:var(--border2);color:var(--text2)">'+data.episodeCount+' episode'+(data.episodeCount===1?'':'s')+' analyzed</span>';
+    html+='</div>';
+    html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">';
+    html+='<a href="https://open.spotify.com/search/'+eName+'/podcasts" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Spotify</a>';
+    if (itunes&&itunes.itunesUrl) html+='<a href="'+itunes.itunesUrl+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Apple Podcasts</a>';
+    html+='<a href="https://youtube.com/results?search_query='+eName+'+podcast" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; YouTube</a>';
+    html+='</div>';
+    html+='<div class="sp-actions"><button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
+    if (data.episodeCount>0) html+='<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share card &#8599;</button>';
+    html+='</div></div></div>';
+  }
 
-  if (data.episodeCount===0) {
+  if (data.episodeCount===0 && !yt) {
     html+='<div class="sp-empty">';
-    html+='<h3>No episodes analyzed yet</h3>';
-    html+='<p style="margin-bottom:20px">Be the first to analyze an episode from '+displayName+'.</p>';
+    html+='<h3>Nothing analyzed from this show yet</h3>';
+    html+='<p style="margin-bottom:20px">You\'d be the first to find out what '+(displayName)+' actually sounds like.</p>';
     if (feedUrl) {
       html+='<button class="sp-analyze-btn" style="font-size:15px;padding:12px 28px" onclick="goAnalyze(&quot;'+feedUrl.replace(/"/g,'&quot;')+'&quot;)">Analyze an episode &rarr;</button>';
     } else {
@@ -5777,5 +5863,102 @@ function dismissNudge() {
   <button class="nudge-cta" onclick="window.location.href='/pricing.html'">Upgrade for $8/mo →</button>
   <button class="nudge-dismiss" onclick="dismissNudge()" aria-label="Dismiss">×</button>
 </div>
+
+<script>
+// ── TASK 3: PODCAST SPOTLIGHT ─────────────────────────────────────────────────
+var SPOTLIGHT_POOL = [
+  { name:'Maintenance Phase', artist:'Aubrey Gordon & Michael Hobbes', badge:'underrated', badge_text:'🔍 Underrated', lean:{l:52,c:28,r:20}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/07/42/29/074229f2-2ef2-d62c-54e3-0c98b1c8e8d7/mza_16327541327882183316.jpg/100x100bb.jpg' },
+  { name:'Hard Fork', artist:'The New York Times', badge:'staff', badge_text:'⭐ Staff Pick', lean:{l:42,c:38,r:20}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/83/e4/b0/83e4b0f2-1a45-7e5c-aaca-c3f2e5b9b6ed/mza_17942665891286453024.jpg/100x100bb.jpg' },
+  { name:'The Weeds', artist:'Vox Media', badge:'new', badge_text:'🆕 New', lean:{l:58,c:26,r:16}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts126/v4/2b/e2/4c/2be24cbc-c62e-2a43-b96e-6e574e3cb8c2/mza_4920277808576688327.jpg/100x100bb.jpg' },
+  { name:'Conan O\'Brien Needs a Friend', artist:'Team Coco', badge:'staff', badge_text:'⭐ Staff Pick', lean:{l:28,c:56,r:16}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts113/v4/29/da/3f/29da3f0e-4b6c-aadb-b489-64a62a9b8620/mza_9781562012764539167.jpg/100x100bb.jpg' },
+  { name:'Planet Money', artist:'NPR', badge:'staff', badge_text:'⭐ Staff Pick', lean:{l:36,c:44,r:20}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/d7/cb/6f/d7cb6f14-b823-db35-0b97-4c93e8e7e91b/mza_16434866568748638498.jpg/100x100bb.jpg' },
+  { name:'Darknet Diaries', artist:'Jack Rhysider', badge:'underrated', badge_text:'🔍 Underrated', lean:{l:22,c:60,r:18}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/90/16/d6/9016d690-baf9-6a21-5416-d17f4f1a7754/mza_5699671598940673432.jpg/100x100bb.jpg' },
+  { name:'슬기로운 라디오생활', artist:'팟빵', badge:'korean', badge_text:'🇰🇷 Korean', lean:{l:30,c:48,r:22}, art:'' },
+  { name:'The Rest Is History', artist:'Goalhanger Podcasts', badge:'new', badge_text:'🆕 New', lean:{l:25,c:52,r:23}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/23/a3/93/23a3932a-a68d-be8e-a4c0-aace1abd6bd2/mza_4849742068867789064.jpg/100x100bb.jpg' },
+  { name:'How I Built This', artist:'NPR', badge:'staff', badge_text:'⭐ Staff Pick', lean:{l:24,c:62,r:14}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/ef/72/c7/ef72c79d-a41b-2af6-4e50-24b16d1fb5e4/mza_17023742700553085297.jpg/100x100bb.jpg' },
+  { name:'You\'re Wrong About', artist:'Michael Hobbes & Sarah Marshall', badge:'underrated', badge_text:'🔍 Underrated', lean:{l:46,c:34,r:20}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/e5/ae/b1/e5aeb174-97e9-a60a-74f0-b6e9f9f4d9b3/mza_9741527735477729386.jpg/100x100bb.jpg' },
+  { name:'Intelligence Squared', artist:'Intelligence Squared', badge:'staff', badge_text:'⭐ Staff Pick', lean:{l:28,c:58,r:14}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/56/c7/59/56c759cf-7e27-6823-9b55-46b99b1b92e1/mza_14432695283476855765.jpg/100x100bb.jpg' },
+  { name:'Radiolab', artist:'WNYC Studios', badge:'new', badge_text:'🆕 New', lean:{l:38,c:44,r:18}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/5f/a3/80/5fa38055-8a8b-8e38-da12-be6dde6de5e0/mza_5596636835563413524.jpg/100x100bb.jpg' },
+];
+
+var _spotlightPage = 0;
+var _spotlightShuffled = null;
+
+function shuffleArray(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function renderSpotlight() {
+  var el = document.getElementById('spotlight-grid');
+  if (!el) return;
+  if (!_spotlightShuffled) {
+    // Check weekly cache
+    var cached = null;
+    try {
+      var raw = localStorage.getItem('pl_spotlight_v1');
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        var weekMs = 7 * 24 * 60 * 60 * 1000;
+        if (Date.now() - parsed.ts < weekMs) cached = parsed.order;
+      }
+    } catch(e) {}
+    if (cached) {
+      _spotlightShuffled = cached.map(function(i){ return SPOTLIGHT_POOL[i]; }).filter(Boolean);
+    } else {
+      _spotlightShuffled = shuffleArray(SPOTLIGHT_POOL);
+      try {
+        var order = _spotlightShuffled.map(function(s){ return SPOTLIGHT_POOL.indexOf(s); });
+        localStorage.setItem('pl_spotlight_v1', JSON.stringify({ts:Date.now(),order:order}));
+      } catch(e) {}
+    }
+  }
+  var page = _spotlightPage % Math.ceil(_spotlightShuffled.length / 4);
+  var shows = _spotlightShuffled.slice(page * 4, page * 4 + 4);
+  var badgeClass = {staff:'sb-staff',new:'sb-new',underrated:'sb-underrated',korean:'sb-korean'};
+  el.innerHTML = shows.map(function(s) {
+    var artHtml = s.art
+      ? '<img class="spotlight-card-art" src="'+s.art+'" alt="" onerror="this.style.display=\'none\'">'
+      : '<div class="spotlight-card-art"></div>';
+    var bc = badgeClass[s.badge] || 'sb-staff';
+    return '<div class="spotlight-card" onclick="doSearch(\''+s.name.replace(/'/g,'\\\'')+'\')">'
+      + artHtml
+      + '<div class="spotlight-card-name">'+s.name+'</div>'
+      + '<div class="spotlight-card-sub">'+s.artist+'</div>'
+      + '<span class="spotlight-badge '+bc+'">'+s.badge_text+'</span>'
+      + '<div class="spotlight-card-lean"><div class="spotlight-card-lean-l" style="width:'+s.lean.l+'%"></div><div class="spotlight-card-lean-c" style="width:'+s.lean.c+'%"></div><div class="spotlight-card-lean-r" style="width:'+s.lean.r+'%"></div></div>'
+      + '</div>';
+  }).join('');
+}
+
+function rotateSpotlight() {
+  _spotlightPage++;
+  renderSpotlight();
+}
+
+// Initialize spotlight when discover view loads
+(function() {
+  var origShowView = window.showView;
+  if (typeof origShowView === 'function') {
+    window.showView = function(name) {
+      origShowView.call(this, name);
+      if (name === 'discover') renderSpotlight();
+    };
+  }
+  // Also render on DOM ready if discover is already active
+  if (document.getElementById('view-discover') && document.getElementById('view-discover').classList.contains('on')) {
+    renderSpotlight();
+  }
+  // Render on any init
+  document.addEventListener('DOMContentLoaded', function() {
+    renderSpotlight();
+  });
+  setTimeout(renderSpotlight, 200);
+})();
+</script>
 </body>
 </html>

@@ -1,6 +1,57 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
+async function fetchYouTubeChannelData(channelId: string): Promise<{
+  subscriberCount?: string; videoCount?: string; viewCount?: string;
+  channelBanner?: string; channelDescription?: string; thumbnailHigh?: string;
+  recentVideos?: Array<{ videoId: string; title: string; thumbnail: string; publishedAt: string; viewCount?: string }>;
+} | null> {
+  const apiKey = Netlify.env.get("YOUTUBE_API_KEY");
+  if (!apiKey) return null;
+  try {
+    const chanRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,brandingSettings&id=${channelId}&key=${apiKey}`
+    );
+    const chanJson = await chanRes.json() as any;
+    const item = chanJson.items?.[0];
+    if (!item) return null;
+    const stats = item.statistics || {};
+    const branding = item.brandingSettings?.image || {};
+    const snippet = item.snippet || {};
+    const thumbnailHigh = snippet.thumbnails?.high?.url || snippet.thumbnails?.medium?.url || "";
+
+    // Fetch recent 12 videos
+    const searchRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=12&order=date&type=video&key=${apiKey}`
+    );
+    const searchJson = await searchRes.json() as any;
+    const videoIds = (searchJson.items || []).map((v: any) => v.id?.videoId).filter(Boolean);
+    let recentVideos: Array<{ videoId: string; title: string; thumbnail: string; publishedAt: string; viewCount?: string }> = [];
+    if (videoIds.length) {
+      const vidRes = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoIds.join(",")}&key=${apiKey}`
+      );
+      const vidJson = await vidRes.json() as any;
+      recentVideos = (vidJson.items || []).map((v: any) => ({
+        videoId: v.id,
+        title: v.snippet?.title || "",
+        thumbnail: v.snippet?.thumbnails?.medium?.url || "",
+        publishedAt: v.snippet?.publishedAt || "",
+        viewCount: v.statistics?.viewCount,
+      }));
+    }
+    return {
+      subscriberCount: stats.subscriberCount,
+      videoCount: stats.videoCount,
+      viewCount: stats.viewCount,
+      channelBanner: branding.bannerExternalUrl || branding.bannerImageUrl || null,
+      channelDescription: snippet.description || null,
+      thumbnailHigh,
+      recentVideos,
+    };
+  } catch { return null; }
+}
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const slug = url.searchParams.get("id") || url.searchParams.get("slug") || "";
@@ -107,9 +158,19 @@ export default async (req: Request) => {
         episodeTitle: e.episodeTitle || "",
       }));
 
+    // Detect YouTube channel and fetch channel data
+    let youtubeChannel: any = null;
+    const feedUrl: string = show.feedUrl || "";
+    const ytChannelMatch = feedUrl.match(/youtube\.com\/feeds\/videos\.xml\?channel_id=([^&]+)/);
+    if (ytChannelMatch) {
+      youtubeChannel = await fetchYouTubeChannelData(ytChannelMatch[1]);
+      if (youtubeChannel) youtubeChannel.channelId = ytChannelMatch[1];
+    }
+
     return new Response(JSON.stringify({
       show,
       episodeCount: completed.length,
+      youtubeChannel,
       metrics: {
         avgBiasScore, biasLabel, avgTrustScore, avgAudioLean,
         consistencyScore, factualPct, factCounts: fc,

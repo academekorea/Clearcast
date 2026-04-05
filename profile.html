@@ -151,6 +151,27 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
 
 /* Canvas (hidden, used for image generation) */
 #wrapped-canvas{display:none}
+
+/* ── MEMBERSHIP STATUS ── */
+.membership-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:16px}
+.mc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mc-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3)}
+.mc-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.06em}
+.mc-badge.founding{background:#FEF3C7;color:#92400E}
+.mc-badge.pilot{background:#EFF6FF;color:#1e40af}
+.mc-row{font-size:12px;color:var(--text2);display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--border)}
+.mc-row:last-child{border-bottom:none}
+.mc-row strong{color:var(--text)}
+.mc-since{font-size:11px;color:var(--text3);margin-top:8px;font-style:italic}
+
+/* ── DIET SCORE ── */
+.diet-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:16px}
+.diet-header{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px}
+.diet-score{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.diet-num{font-family:var(--ffs);font-size:36px;font-weight:700;line-height:1}
+.diet-label{font-size:12px;color:var(--text2);line-height:1.4}
+.diet-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;margin-bottom:6px}
+.diet-footnote{font-size:10px;color:var(--text3);font-style:italic}
 </style>
 </head>
 <body>
@@ -197,6 +218,30 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
       </div>
       <div style="font-size:10px;color:var(--text3);margin-top:10px;font-style:italic">Based on your last <span id="fp-count">0</span> analyses</div>
     </div>
+
+    <!-- Diet Score (Creator+) -->
+    <div class="diet-card" id="diet-card" style="display:none">
+      <div class="diet-header">Listening Diet Score</div>
+      <div class="diet-score">
+        <div class="diet-num" id="diet-num">—</div>
+        <div class="diet-label" id="diet-label">Based on your recent analyses</div>
+      </div>
+      <div class="diet-bar" id="diet-bar">
+        <div class="fp-l" style="width:33%"></div>
+        <div class="fp-c" style="width:34%"></div>
+        <div class="fp-r" style="width:33%"></div>
+      </div>
+      <div class="diet-footnote">Higher score = more balanced listening diet</div>
+    </div>
+
+    <!-- Membership Status -->
+    <div class="membership-card" id="membership-card" style="display:none">
+      <div class="mc-header">
+        <span class="mc-title">Membership</span>
+        <span class="mc-badge" id="mc-badge-type">Member</span>
+      </div>
+      <div id="mc-details"></div>
+    </div>
   </div>
 
   <div class="profile-main">
@@ -214,7 +259,7 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
           <div class="section-head-title">Recent analyses</div>
           <div class="section-head-sub" id="recent-count"></div>
         </div>
-        <div id="recent-list"><div class="empty-state">No analyses yet. <a href="/">Analyze your first episode &rarr;</a></div></div>
+        <div id="recent-list"><div class="empty-state">Nothing analyzed yet &mdash; your first episode is the hardest.<br><a href="/">Pick something to listen to &rarr;</a></div></div>
       </div>
 
       <div class="section-card">
@@ -222,7 +267,7 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
           <div class="section-head-title">Shows you follow</div>
           <div class="section-head-sub" id="shows-count"></div>
         </div>
-        <div id="shows-list"><div class="empty-state">No shows followed yet. Browse shows on the <a href="/">home page</a>.</div></div>
+        <div id="shows-list"><div class="empty-state">You haven&rsquo;t followed any shows yet.<br><a href="/">Explore shows &rarr;</a></div></div>
       </div>
     </div>
 
@@ -352,6 +397,73 @@ function renderProfile() {
     document.getElementById('fp-c').textContent = avgC + '%';
     document.getElementById('fp-r').textContent = avgR + '%';
     document.getElementById('fp-count').textContent = withLean.length;
+
+    // Diet score (Creator+)
+    var plan = u.plan || 'free';
+    if (['creator','operator','studio','trial'].indexOf(plan) >= 0) {
+      var dietCard = document.getElementById('diet-card');
+      if (dietCard) {
+        dietCard.style.display = 'block';
+        // Score 0-100: higher center = higher score, balance left/right = bonus
+        var balance = 100 - Math.abs(avgL - avgR);
+        var dietScore = Math.round((avgC * 0.5) + (balance * 0.5));
+        var dietLabelText = dietScore >= 70 ? 'Well-balanced diet' : dietScore >= 50 ? 'Moderately balanced' : dietScore >= 30 ? 'Leans one direction' : 'Narrow listening range';
+        var dietColor = dietScore >= 70 ? '#166534' : dietScore >= 50 ? '#92400e' : '#991b1b';
+        document.getElementById('diet-num').textContent = dietScore;
+        document.getElementById('diet-num').style.color = dietColor;
+        document.getElementById('diet-label').textContent = dietLabelText;
+        document.getElementById('diet-bar').innerHTML =
+          '<div class="fp-l" style="width:'+avgL+'%"></div>'+
+          '<div class="fp-c" style="width:'+avgC+'%"></div>'+
+          '<div class="fp-r" style="width:'+avgR+'%"></div>';
+      }
+    }
+  }
+
+  // Streak calculation
+  var streakDays = 0;
+  if (recent.length) {
+    var dates = recent.map(function(r){ return r.analyzedAt ? new Date(r.analyzedAt).toDateString() : null; }).filter(Boolean);
+    var uniqueDates = dates.filter(function(d,i,a){ return a.indexOf(d) === i; }).sort(function(a,b){ return new Date(b)-new Date(a); });
+    var today = new Date().toDateString();
+    var yesterday = new Date(Date.now()-86400000).toDateString();
+    if (uniqueDates[0] === today || uniqueDates[0] === yesterday) {
+      streakDays = 1;
+      for (var si = 1; si < uniqueDates.length; si++) {
+        var prev = new Date(uniqueDates[si-1]);
+        var curr = new Date(uniqueDates[si]);
+        var diff = Math.round((prev - curr) / 86400000);
+        if (diff === 1) streakDays++;
+        else break;
+      }
+    }
+  }
+  document.getElementById('stat-streak').textContent = streakDays;
+
+  // Membership status card
+  var mcCard = document.getElementById('membership-card');
+  if (mcCard && (u.foundingMember || u.pilotMember)) {
+    mcCard.style.display = 'block';
+    var mcBadge = document.getElementById('mc-badge-type');
+    var mcDetails = document.getElementById('mc-details');
+    if (u.pilotMember) {
+      mcBadge.textContent = 'Pilot Member';
+      mcBadge.className = 'mc-badge pilot';
+      var pilotExpiry = u.pilotExpiresAt ? new Date(u.pilotExpiresAt) : null;
+      var pilotDays = pilotExpiry ? Math.max(0, Math.ceil((pilotExpiry - Date.now()) / 86400000)) : 0;
+      mcDetails.innerHTML = '<div class="mc-row"><span>Status</span><strong>Free until ' + (pilotExpiry ? pilotExpiry.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—') + '</strong></div>'
+        + '<div class="mc-row"><span>After pilot</span><strong>Founding rate (33% off)</strong></div>'
+        + (pilotDays > 0 ? '<div class="mc-since">' + pilotDays + ' days remaining on free access</div>' : '');
+    } else if (u.foundingMember) {
+      mcBadge.textContent = 'Founding Member';
+      mcBadge.className = 'mc-badge founding';
+      var since = u.foundingMemberSince ? new Date(u.foundingMemberSince).toLocaleDateString('en-US',{month:'long',year:'numeric'}) : null;
+      var signupNum = u.signupCount || null;
+      mcDetails.innerHTML = '<div class="mc-row"><span>Discount</span><strong>33% off — forever</strong></div>'
+        + '<div class="mc-row"><span>Creator</span><strong>$8/mo</strong></div>'
+        + '<div class="mc-row"><span>Operator</span><strong>$26/mo</strong></div>'
+        + (signupNum ? '<div class="mc-since">Early user #' + signupNum + ' of 500' + (since ? ' · Since ' + since : '') + '</div>' : (since ? '<div class="mc-since">Member since ' + since + '</div>' : ''));
+    }
   }
 }
 
