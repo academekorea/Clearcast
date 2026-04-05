@@ -1,6 +1,78 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
+async function sha256hex(text: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function assignFoundingStatus(
+  userData: any,
+  email: string,
+  isNewUser: boolean
+): Promise<void> {
+  if (!isNewUser) return;
+
+  const metaStore = getStore("podlens-meta");
+
+  // Check abuse blocklist
+  if (email) {
+    const hash = await sha256hex(email.toLowerCase().trim());
+    const blockKey = `used-promo-${hash}`;
+    try {
+      const blocked = await metaStore.get(blockKey, { type: "json" }) as any;
+      if (blocked?.foundingUsed) {
+        userData.foundingBlocklisted = true;
+        return; // Don't assign founding status
+      }
+    } catch {}
+  }
+
+  const now = new Date();
+  const foundingEndRaw = Netlify.env.get("FOUNDING_COUPON_END_DATE") || "2026-07-05";
+  const foundingMax = parseInt(Netlify.env.get("FOUNDING_MAX_SIGNUPS") || "500", 10);
+  const isFoundingPeriod = now < new Date(foundingEndRaw);
+
+  if (!isFoundingPeriod) return;
+
+  // Check + increment founding counter atomically (best-effort)
+  let signupCount = 1;
+  try {
+    const existing = await metaStore.get("founding-signups-count", { type: "json" }) as any;
+    signupCount = (existing?.count ?? 0) + 1;
+    if (signupCount > foundingMax) return; // Slots full
+    await metaStore.setJSON("founding-signups-count", { count: signupCount, updatedAt: now.toISOString() });
+  } catch {}
+
+  userData.foundingMember = true;
+  userData.foundingMemberSince = now.toISOString();
+  userData.signupCount = signupCount;
+
+  // Persist founding status under user ID
+  try {
+    const userMetaStore = getStore("podlens-users");
+    await userMetaStore.setJSON(`founding-${userData.id}`, {
+      foundingMember: true,
+      foundingMemberSince: now.toISOString(),
+      pilotMember: false,
+      signupCount,
+    });
+  } catch {}
+
+  // Write abuse-prevention fingerprint for this email
+  if (email) {
+    try {
+      const hash = await sha256hex(email.toLowerCase().trim());
+      await metaStore.setJSON(`used-promo-${hash}`, {
+        foundingUsed: true,
+        pilotUsed: false,
+        deletedAt: null,
+        email: hash,
+      });
+    } catch {}
+  }
+}
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
@@ -45,7 +117,7 @@ export default async (req: Request) => {
 
   const { access_token, id_token } = tokenData;
 
-  // Decode the id_token JWT payload (no verification needed — we just fetched it from Google)
+  // Decode the id_token JWT payload
   let profile: any = {};
   try {
     const parts = id_token.split(".");
@@ -57,7 +129,6 @@ export default async (req: Request) => {
       avatar: payload.picture || "",
     };
   } catch {
-    // Fallback: fetch profile from userinfo endpoint
     try {
       const infoRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -97,11 +168,17 @@ export default async (req: Request) => {
       signupDate: new Date(now).toISOString(),
       trialEndsAt,
       analysesThisWeek: 0,
+      analysesThisMonth: 0,
+      monthResetDate: new Date(now + 30 * 24 * 60 * 60 * 1000).toISOString(),
       weekResetDate: new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString(),
       googleId: googleUserId,
       authProvider: "google",
       joinedAt: now,
     };
+
+    // Assign founding member status
+    await assignFoundingStatus(userData, googleEmail, isNewUser);
+
     try {
       await userStore.setJSON(`google-${googleUserId}`, userData);
       if (googleEmail) {
@@ -120,10 +197,17 @@ export default async (req: Request) => {
     signupDate: userData.signupDate,
     trialEndsAt: userData.trialEndsAt,
     analysesThisWeek: userData.analysesThisWeek || 0,
+    analysesThisMonth: userData.analysesThisMonth || 0,
     weekResetDate: userData.weekResetDate,
+    monthResetDate: userData.monthResetDate,
     joinedAt: userData.joinedAt,
     authProvider: "google",
     isNewUser,
+    foundingMember: userData.foundingMember || false,
+    foundingMemberSince: userData.foundingMemberSince || null,
+    signupCount: userData.signupCount || null,
+    pilotMember: userData.pilotMember || false,
+    pilotExpiresAt: userData.pilotExpiresAt || null,
   }));
 
   return Response.redirect(`/?google_login=${loginPayload}`, 302);

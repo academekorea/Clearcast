@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bulk Scanner — Podlens</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="theme-color" content="#0f2027">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-navy: #0f2027;
+  --color-navy-mid: #1a3a4a;
+  --color-cream: #FAF9F6;
+  --color-text: #1a1a1a;
+  --color-muted: #666666;
+  --color-border: #e0ddd8;
+  --color-left: #E24B4A;
+  --color-center: #D1CFC9;
+  --color-right: #378ADD;
+  --color-studio: #B8860B;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--color-cream); color: var(--color-text); min-height: 100vh; }
+.nav { background: var(--color-navy); padding: 0 40px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-family: var(--font-display); color: white; font-size: 20px; text-decoration: none; }
+.nav-logo .lens { font-weight: 700; }
+.nav-back { color: rgba(255,255,255,0.7); font-size: var(--text-sm); text-decoration: none; }
+.nav-back:hover { color: white; }
+.container { max-width: 900px; margin: 0 auto; padding: 48px 24px; }
+.page-header { margin-bottom: 32px; }
+.page-title { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--color-navy); }
+.page-sub { color: var(--color-muted); font-size: var(--text-base); margin-top: 8px; }
+.studio-badge { display: inline-block; background: var(--color-studio); color: white; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 3px; text-transform: uppercase; margin-bottom: 12px; }
+
+/* Gate */
+.gate-card { background: white; border: 1px solid var(--color-border); border-radius: 8px; padding: 48px 32px; text-align: center; }
+.gate-icon { font-size: 48px; margin-bottom: 16px; }
+.gate-title { font-size: var(--text-xl); font-weight: 600; color: var(--color-navy); margin-bottom: 12px; }
+.gate-sub { color: var(--color-muted); font-size: var(--text-base); max-width: 400px; margin: 0 auto 24px; }
+.btn-primary { background: var(--color-navy); color: white; border: none; border-radius: 4px; padding: 12px 24px; font-family: var(--font-body); font-size: var(--text-sm); font-weight: 500; cursor: pointer; text-decoration: none; display: inline-block; }
+.btn-primary:hover { background: var(--color-navy-mid); }
+
+/* Scan form */
+.scan-card { background: white; border: 1px solid var(--color-border); border-radius: 8px; padding: 32px; margin-bottom: 24px; }
+.scan-label { font-size: var(--text-sm); font-weight: 600; color: var(--color-navy); margin-bottom: 8px; display: block; }
+.scan-sub { font-size: var(--text-sm); color: var(--color-muted); margin-bottom: 12px; }
+.scan-textarea { width: 100%; min-height: 200px; font-family: var(--font-body); font-size: var(--text-sm); border: 1px solid var(--color-border); border-radius: 4px; padding: 12px; resize: vertical; background: var(--color-cream); color: var(--color-text); outline: none; }
+.scan-textarea:focus { border-color: var(--color-navy); }
+.scan-controls { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.url-count { font-size: var(--text-sm); color: var(--color-muted); }
+.btn-secondary { background: transparent; color: var(--color-navy); border: 1px solid var(--color-navy); border-radius: 4px; padding: 11px 24px; font-family: var(--font-body); font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
+.btn-secondary:hover { background: var(--color-navy); color: white; }
+.btn-clear { background: none; border: none; color: var(--color-muted); font-size: var(--text-sm); cursor: pointer; padding: 4px 8px; }
+.btn-clear:hover { color: var(--color-text); }
+
+/* Progress */
+.progress-bar-wrap { background: var(--color-border); border-radius: 4px; height: 6px; margin: 16px 0; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--color-navy); border-radius: 4px; transition: width 0.3s ease; }
+.progress-label { font-size: var(--text-sm); color: var(--color-muted); }
+
+/* Results table */
+.results-card { background: white; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
+.results-header { padding: 16px 20px; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; }
+.results-title { font-size: var(--text-base); font-weight: 600; color: var(--color-navy); }
+.btn-export { background: var(--color-studio); color: white; border: none; border-radius: 4px; padding: 8px 16px; font-family: var(--font-body); font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
+.btn-export:hover { opacity: 0.9; }
+.results-table { width: 100%; border-collapse: collapse; }
+.results-table th { background: var(--color-cream); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-muted); padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--color-border); }
+.results-table td { padding: 12px 16px; font-size: var(--text-sm); border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+.results-table tr:last-child td { border-bottom: none; }
+.results-table tr:hover td { background: var(--color-cream); }
+.status-pill { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 10px; }
+.status-pending { background: #f0ede8; color: var(--color-muted); }
+.status-scanning { background: #fff3cd; color: #856404; }
+.status-complete { background: #d4edda; color: #155724; }
+.status-error { background: #f8d7da; color: #721c24; }
+.bias-pill { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 10px; }
+.bias-left { background: rgba(226,75,74,0.12); color: var(--color-left); }
+.bias-right { background: rgba(55,138,221,0.12); color: var(--color-right); }
+.bias-balanced { background: rgba(209,207,201,0.4); color: var(--color-muted); }
+.url-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-muted); font-size: 12px; }
+.empty-results { padding: 48px; text-align: center; color: var(--color-muted); font-size: var(--text-sm); }
+@media (max-width: 600px) {
+  .container { padding: 24px 16px; }
+  .scan-controls { flex-direction: column; align-items: stretch; }
+  .results-table th:nth-child(3), .results-table td:nth-child(3) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="/"><span class="pod">POD</span><span class="lens">LENS</span></a>
+  <a class="nav-back" href="/">← Back to Podlens</a>
+</nav>
+
+<div class="container">
+
+  <!-- STUDIO GATE -->
+  <div id="gate-section" style="display:none">
+    <div class="gate-card">
+      <div class="gate-icon">🔒</div>
+      <div class="gate-title">Bulk Scanner is a Studio feature</div>
+      <div class="gate-sub">Scan up to 20 URLs at once, export all results as CSV, and get full analysis data for every episode.</div>
+      <a href="/pricing.html" class="btn-primary">See Studio plans →</a>
+    </div>
+  </div>
+
+  <!-- MAIN SCANNER -->
+  <div id="scanner-section" style="display:none">
+    <div class="page-header">
+      <div class="studio-badge">Studio</div>
+      <h1 class="page-title">Bulk Scanner</h1>
+      <p class="page-sub">Analyze up to 20 podcast URLs or YouTube links at once. Export full results as CSV.</p>
+    </div>
+
+    <div class="scan-card">
+      <label class="scan-label">Paste up to 20 URLs — one per line</label>
+      <div class="scan-sub">Supports YouTube, RSS feeds, direct MP3 links, Spotify episode links</div>
+      <textarea class="scan-textarea" id="bulk-urls" placeholder="https://www.youtube.com/watch?v=...&#10;https://feeds.simplecast.com/...&#10;https://traffic.libsyn.com/..." oninput="updateCount()"></textarea>
+      <div class="scan-controls">
+        <button class="btn-primary" id="start-btn" onclick="startBulkScan()">Analyze all →</button>
+        <button class="btn-secondary" id="export-btn" onclick="exportCsv()" style="display:none">Export CSV</button>
+        <button class="btn-clear" onclick="clearAll()">Clear</button>
+        <span class="url-count" id="url-count">0 / 20 URLs</span>
+      </div>
+      <div id="progress-wrap" style="display:none">
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="progress-label" id="progress-label">Preparing…</div>
+      </div>
+    </div>
+
+    <div class="results-card" id="results-card" style="display:none">
+      <div class="results-header">
+        <div class="results-title" id="results-title">Results</div>
+        <button class="btn-export" onclick="exportCsv()">Export CSV</button>
+      </div>
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Show / Episode</th>
+            <th>URL</th>
+            <th>Bias</th>
+            <th>Label</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="results-tbody">
+          <tr><td colspan="6" class="empty-results">Results will appear here as each episode finishes scanning.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ── AUTH CHECK ─────────────────────────────────────────────────────────────────
+(function() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('podlens_user') || 'null'); } catch {}
+  if (!user || user.plan !== 'studio') {
+    document.getElementById('gate-section').style.display = 'block';
+  } else {
+    document.getElementById('scanner-section').style.display = 'block';
+  }
+})();
+
+var _results = [];
+var _scanning = false;
+
+function updateCount() {
+  var ta = document.getElementById('bulk-urls');
+  var lines = (ta.value || '').split('\n').map(s => s.trim()).filter(Boolean);
+  var count = Math.min(lines.length, 20);
+  document.getElementById('url-count').textContent = count + ' / 20 URLs';
+  if (lines.length > 20) {
+    document.getElementById('url-count').style.color = '#dc3545';
+  } else {
+    document.getElementById('url-count').style.color = '';
+  }
+}
+
+function clearAll() {
+  document.getElementById('bulk-urls').value = '';
+  document.getElementById('results-card').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('export-btn').style.display = 'none';
+  _results = [];
+  updateCount();
+}
+
+async function startBulkScan() {
+  if (_scanning) return;
+  var ta = document.getElementById('bulk-urls');
+  var lines = (ta.value || '').split('\n').map(s => s.trim()).filter(Boolean).slice(0, 20);
+  if (!lines.length) { alert('Paste at least one URL to analyze.'); return; }
+
+  _scanning = true;
+  _results = lines.map((url, i) => ({
+    index: i + 1, url, show: '', episode: '', biasLabel: '', biasDir: '', status: 'pending', jobId: null
+  }));
+
+  document.getElementById('start-btn').disabled = true;
+  document.getElementById('start-btn').textContent = 'Scanning…';
+  document.getElementById('progress-wrap').style.display = 'block';
+  document.getElementById('results-card').style.display = 'block';
+  renderResults();
+
+  var completed = 0;
+  for (var i = 0; i < _results.length; i++) {
+    var row = _results[i];
+    row.status = 'scanning';
+    renderResults();
+    updateProgress(i + 1, _results.length, 'Analyzing ' + (i + 1) + ' of ' + _results.length + '…');
+
+    try {
+      var user = JSON.parse(localStorage.getItem('podlens_user') || '{}');
+      var res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-pl-plan': user.plan || 'studio' },
+        body: JSON.stringify({ url: row.url, userId: user.id || '', deepAnalysis: true }),
+      });
+      var data = await res.json();
+      if (data.jobId) {
+        row.jobId = data.jobId;
+        // Poll for completion (max 3 min)
+        var pollStart = Date.now();
+        while (Date.now() - pollStart < 180000) {
+          await sleep(5000);
+          var statusRes = await fetch('/api/status/' + data.jobId);
+          var statusData = await statusRes.json();
+          if (statusData.status === 'complete') {
+            row.status = 'complete';
+            row.show = statusData.showName || '';
+            row.episode = statusData.episodeTitle || '';
+            var lean = statusData.audioLean || {};
+            row.biasDir = lean.leftPct > lean.rightPct ? 'left' : lean.rightPct > lean.leftPct ? 'right' : 'balanced';
+            row.biasLabel = statusData.biasLabel || leanLabel(lean);
+            row.leftPct = lean.leftPct || 0;
+            row.rightPct = lean.rightPct || 0;
+            row.centerPct = lean.centerPct || 0;
+            break;
+          } else if (statusData.status === 'error') {
+            row.status = 'error';
+            row.episode = statusData.error || 'Analysis failed';
+            break;
+          }
+        }
+        if (row.status === 'scanning') {
+          row.status = 'error';
+          row.episode = 'Timed out';
+        }
+      } else {
+        row.status = 'error';
+        row.episode = data.error || 'Failed to start';
+      }
+    } catch(e) {
+      row.status = 'error';
+      row.episode = e.message || 'Network error';
+    }
+
+    completed++;
+    renderResults();
+    updateProgress(completed, _results.length, completed === _results.length ? 'Complete!' : 'Analyzing ' + (completed + 1) + ' of ' + _results.length + '…');
+  }
+
+  _scanning = false;
+  document.getElementById('start-btn').disabled = false;
+  document.getElementById('start-btn').textContent = 'Analyze all →';
+  document.getElementById('export-btn').style.display = '';
+  document.getElementById('results-title').textContent = 'Results — ' + completed + ' episodes';
+}
+
+function leanLabel(lean) {
+  var l = lean.leftPct || 0, r = lean.rightPct || 0;
+  var diff = Math.abs(l - r);
+  if (diff < 20) return 'Mostly balanced';
+  if (diff < 40) return 'Lightly one-sided';
+  if (diff < 60) return 'Moderately one-sided';
+  if (diff < 80) return 'Heavily one-sided';
+  return 'Extremely one-sided';
+}
+
+function updateProgress(done, total, label) {
+  var pct = Math.round((done / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = label;
+}
+
+function renderResults() {
+  var tbody = document.getElementById('results-tbody');
+  if (!_results.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-results">No results yet.</td></tr>'; return; }
+  tbody.innerHTML = _results.map(function(r) {
+    var statusClass = 'status-' + r.status;
+    var statusLabel = { pending: 'Waiting', scanning: 'Scanning…', complete: 'Complete', error: 'Error' }[r.status] || r.status;
+    var biasClass = r.biasDir === 'left' ? 'bias-left' : r.biasDir === 'right' ? 'bias-right' : 'bias-balanced';
+    return '<tr>'
+      + '<td style="color:var(--color-muted);font-size:12px">' + r.index + '</td>'
+      + '<td><div style="font-weight:500;font-size:13px">' + (r.episode || (r.status === 'pending' ? '—' : r.status === 'scanning' ? 'Analyzing…' : '—')) + '</div>'
+        + (r.show ? '<div style="font-size:11px;color:var(--color-muted)">' + r.show + '</div>' : '') + '</td>'
+      + '<td><div class="url-cell">' + r.url + '</div></td>'
+      + '<td>' + (r.biasDir ? '<span class="bias-pill ' + biasClass + '">' + (r.leftPct !== undefined ? (r.leftPct + '% L / ' + r.rightPct + '% R') : r.biasDir) + '</span>' : '—') + '</td>'
+      + '<td>' + (r.biasLabel ? '<span style="font-size:12px">' + r.biasLabel + '</span>' : '—') + '</td>'
+      + '<td><span class="status-pill ' + statusClass + '">' + statusLabel + '</span></td>'
+      + '</tr>';
+  }).join('');
+}
+
+function exportCsv() {
+  if (!_results.length) return;
+  var header = ['#', 'URL', 'Show', 'Episode', 'Left%', 'Right%', 'Center%', 'Bias Label', 'Status'];
+  var rows = _results.map(function(r) {
+    return [
+      r.index,
+      '"' + r.url.replace(/"/g, '""') + '"',
+      '"' + (r.show || '').replace(/"/g, '""') + '"',
+      '"' + (r.episode || '').replace(/"/g, '""') + '"',
+      r.leftPct || '',
+      r.rightPct || '',
+      r.centerPct || '',
+      '"' + (r.biasLabel || '').replace(/"/g, '""') + '"',
+      r.status,
+    ].join(',');
+  });
+  var csv = [header.join(','), ...rows].join('\n');
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'podlens-bulk-scan-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+}
+
+function sleep(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+</script>
+</body>
+</html>

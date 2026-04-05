@@ -1,6 +1,74 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
+async function sha256hex(text: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function assignFoundingStatus(
+  userData: any,
+  email: string,
+  isNewUser: boolean
+): Promise<void> {
+  if (!isNewUser) return;
+
+  const metaStore = getStore("podlens-meta");
+
+  // Check abuse blocklist
+  if (email) {
+    const hash = await sha256hex(email.toLowerCase().trim());
+    try {
+      const blocked = await metaStore.get(`used-promo-${hash}`, { type: "json" }) as any;
+      if (blocked?.foundingUsed) {
+        userData.foundingBlocklisted = true;
+        return;
+      }
+    } catch {}
+  }
+
+  const now = new Date();
+  const foundingEndRaw = Netlify.env.get("FOUNDING_COUPON_END_DATE") || "2026-07-05";
+  const foundingMax = parseInt(Netlify.env.get("FOUNDING_MAX_SIGNUPS") || "500", 10);
+  const isFoundingPeriod = now < new Date(foundingEndRaw);
+
+  if (!isFoundingPeriod) return;
+
+  let signupCount = 1;
+  try {
+    const existing = await metaStore.get("founding-signups-count", { type: "json" }) as any;
+    signupCount = (existing?.count ?? 0) + 1;
+    if (signupCount > foundingMax) return;
+    await metaStore.setJSON("founding-signups-count", { count: signupCount, updatedAt: now.toISOString() });
+  } catch {}
+
+  userData.foundingMember = true;
+  userData.foundingMemberSince = now.toISOString();
+  userData.signupCount = signupCount;
+
+  try {
+    const userMetaStore = getStore("podlens-users");
+    await userMetaStore.setJSON(`founding-${userData.id}`, {
+      foundingMember: true,
+      foundingMemberSince: now.toISOString(),
+      pilotMember: false,
+      signupCount,
+    });
+  } catch {}
+
+  if (email) {
+    try {
+      const hash = await sha256hex(email.toLowerCase().trim());
+      await metaStore.setJSON(`used-promo-${hash}`, {
+        foundingUsed: true,
+        pilotUsed: false,
+        deletedAt: null,
+        email: hash,
+      });
+    } catch {}
+  }
+}
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
@@ -11,6 +79,7 @@ export default async (req: Request) => {
   }
 
   const appKey = Netlify.env.get("KAKAO_APP_KEY");
+  const clientSecret = Netlify.env.get("KAKAO_CLIENT_SECRET") || "";
   const redirectUri = "https://podlens.app/auth/kakao/callback";
 
   if (!appKey) {
@@ -20,15 +89,18 @@ export default async (req: Request) => {
   // Exchange authorization code for access token
   let tokenData: any;
   try {
+    const tokenParams: Record<string, string> = {
+      grant_type: "authorization_code",
+      client_id: appKey,
+      redirect_uri: redirectUri,
+      code,
+    };
+    if (clientSecret) tokenParams.client_secret = clientSecret;
+
     const tokenRes = await fetch("https://kauth.kakao.com/oauth/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        client_id: appKey,
-        redirect_uri: redirectUri,
-        code,
-      }).toString(),
+      body: new URLSearchParams(tokenParams).toString(),
       signal: AbortSignal.timeout(8000),
     });
     if (!tokenRes.ok) return Response.redirect("/?kakao_error=token_failed", 302);
@@ -83,11 +155,16 @@ export default async (req: Request) => {
       signupDate: new Date(now).toISOString(),
       trialEndsAt,
       analysesThisWeek: 0,
+      analysesThisMonth: 0,
+      monthResetDate: new Date(now + 30 * 24 * 60 * 60 * 1000).toISOString(),
       weekResetDate: new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString(),
       kakaoId,
       authProvider: "kakao",
       joinedAt: now,
     };
+
+    await assignFoundingStatus(userData, kakaoEmail, isNewUser);
+
     try {
       await userStore.setJSON(`kakao-${kakaoId}`, userData);
       if (kakaoEmail) {
@@ -106,10 +183,17 @@ export default async (req: Request) => {
     signupDate: userData.signupDate,
     trialEndsAt: userData.trialEndsAt,
     analysesThisWeek: userData.analysesThisWeek || 0,
+    analysesThisMonth: userData.analysesThisMonth || 0,
     weekResetDate: userData.weekResetDate,
+    monthResetDate: userData.monthResetDate,
     joinedAt: userData.joinedAt,
     authProvider: "kakao",
     isNewUser,
+    foundingMember: userData.foundingMember || false,
+    foundingMemberSince: userData.foundingMemberSince || null,
+    signupCount: userData.signupCount || null,
+    pilotMember: userData.pilotMember || false,
+    pilotExpiresAt: userData.pilotExpiresAt || null,
   }));
 
   return Response.redirect(`/?kakao_login=${loginPayload}`, 302);

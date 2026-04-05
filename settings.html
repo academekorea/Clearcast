@@ -286,6 +286,12 @@ footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2
         </div>
       </div>
 
+      <!-- MEMBERSHIP STATUS CARD — rendered by JS -->
+      <div id="membership-status-card" style="display:none" class="settings-card">
+        <div class="card-head"><h3>YOUR MEMBERSHIP STATUS</h3></div>
+        <div class="card-body" id="membership-status-body"></div>
+      </div>
+
       <div class="settings-card">
         <div class="card-head"><h3>Billing</h3></div>
         <div class="card-body">
@@ -520,6 +526,18 @@ function showSettingsToast(msg) {
 function init() {
   var u = plUser();
   if (!u) { window.location.href = '/'; return; }
+
+  // Pilot expiry warnings
+  if (u.pilotMember && u.pilotExpiresAt) {
+    var daysLeft = Math.ceil((new Date(u.pilotExpiresAt).getTime() - Date.now()) / 86400000);
+    if (daysLeft <= 1 && daysLeft >= 0) {
+      showSettingsToast('⚠ Last day of free access — upgrade now at your founding rate');
+    } else if (daysLeft <= 7) {
+      showSettingsToast('Your free Podlens access expires in ' + daysLeft + ' days');
+    } else if (daysLeft <= 30) {
+      showSettingsToast('Your free Podlens access — ' + daysLeft + ' days remaining');
+    }
+  }
   document.getElementById('field-name').value = u.name || '';
   document.getElementById('field-email').value = u.email || '';
 
@@ -550,10 +568,62 @@ function init() {
   };
   var features = featureMap[plan] || featureMap.listener;
   document.getElementById('sub-features').innerHTML = features.map(function(f){return '<li>'+f+'</li>';}).join('');
-  if (plan === 'listener') document.getElementById('upgrade-banner').style.display = 'flex';
+  if (plan === 'free' || plan === 'listener') document.getElementById('upgrade-banner').style.display = 'flex';
 
+  renderMembershipStatus(u, plan);
   renderCats();
 }
+
+function renderMembershipStatus(u, plan) {
+  var card = document.getElementById('membership-status-card');
+  var body = document.getElementById('membership-status-body');
+  if (!card || !body) return;
+
+  var isPilot = u.pilotMember || false;
+  var isFounding = u.foundingMember || false;
+  if (!isPilot && !isFounding) return;
+
+  card.style.display = '';
+  var html = '';
+
+  if (isPilot) {
+    var expiresAt = u.pilotExpiresAt ? new Date(u.pilotExpiresAt) : null;
+    var now = new Date();
+    var daysLeft = expiresAt ? Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / 86400000)) : 0;
+    var start = u.signupDate ? new Date(u.signupDate) : now;
+    var totalDays = expiresAt ? Math.ceil((expiresAt.getTime() - start.getTime()) / 86400000) : 90;
+    var usedDays = Math.min(totalDays, totalDays - daysLeft);
+    var pct = Math.round((usedDays / totalDays) * 100);
+    var urgency = daysLeft <= 1 ? 'red' : daysLeft <= 7 ? '#c07000' : daysLeft <= 30 ? '#a05000' : '#1a7a2e';
+
+    html += '<div style="margin-bottom:16px">'
+      + '<div style="font-size:18px;margin-bottom:4px">🎁 Pilot Member</div>'
+      + '<div style="font-size:13px;color:'+urgency+';font-weight:600;margin-bottom:12px">Free access expires in <strong>'+daysLeft+'</strong> day'+(daysLeft!==1?'s':'')+'</div>'
+      + '<div style="background:var(--bg3);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px">'
+      + '<div style="background:var(--navy);height:100%;border-radius:4px;width:'+pct+'%"></div></div>'
+      + '<div style="font-size:11px;color:var(--text3);display:flex;justify-content:space-between"><span>'+start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</span><span>'+(expiresAt?expiresAt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'')+'</span></div>'
+      + '</div>'
+      + '<div style="background:#f8f4ff;border:1px solid #d8ccff;border-radius:6px;padding:14px;margin-bottom:16px">'
+      + '<div style="font-size:13px;font-weight:600;color:#5a4fcf;margin-bottom:6px">🔒 Early User Pricing locked in</div>'
+      + '<div style="font-size:12px;color:var(--text2);margin-bottom:10px">When your pilot ends you\'ll get 33% off forever. No action needed.</div>'
+      + '<div style="font-size:12px;color:var(--text2)">Creator <s style="color:var(--text3)">$12/mo</s> → <strong>$8/mo</strong></div>'
+      + '<div style="font-size:12px;color:var(--text2)">Operator <s style="color:var(--text3)">$39/mo</s> → <strong>$26/mo</strong></div>'
+      + '<div style="font-size:12px;color:var(--text2)">Studio <s style="color:var(--text3)">$99/mo</s> → <strong>$66/mo</strong></div>'
+      + '</div>';
+  } else if (isFounding) {
+    var num = u.signupCount || '?';
+    html += '<div style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:#f0fff0;border:1px solid #b2e4b2;border-radius:6px">'
+      + '<div style="font-size:24px">🔒</div>'
+      + '<div><div style="font-size:14px;font-weight:600;color:#155724;margin-bottom:4px">Early User — Founding Member</div>'
+      + '<div style="font-size:13px;color:var(--text2);margin-bottom:4px">You\'re #'+num+' of 500</div>'
+      + '<div style="font-size:13px;font-weight:600;color:#155724;margin-bottom:4px">33% off locked in forever</div>'
+      + '<div style="font-size:12px;color:var(--text3)">Applies automatically when you upgrade</div></div>'
+      + '</div>';
+  }
+
+  body.innerHTML = html;
+}
+
 init();
 </script>
 </body>

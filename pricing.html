@@ -35,17 +35,33 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 [data-theme="dark"] .logo{color:var(--text)}
 .nl{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:var(--r);text-decoration:none}
 .nl:hover{background:var(--bg3);color:var(--text)}
-.hero{padding:80px 24px 60px;text-align:center}
+
+/* Founding banner */
+.founding-banner{background:#FFF8E7;border-bottom:1px solid #F0C040;padding:12px 24px;text-align:center;font-size:14px;color:#92600A}
+.founding-banner strong{font-weight:600}
+.founding-spots{font-size:12px;color:#B8860B;display:inline-block;margin-left:8px}
+.founding-progress-wrap{display:inline-block;vertical-align:middle;width:80px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden;margin:0 8px}
+.founding-progress-fill{height:100%;background:#F0C040;border-radius:2px}
+
+.hero{padding:80px 24px 48px;text-align:center}
 .hero h1{font-family:var(--ffs);font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:16px;letter-spacing:-.02em}
 .hero p{font-size:17px;color:var(--text2);max-width:480px;margin:0 auto;line-height:1.7}
-.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;max-width:960px;margin:48px auto;padding:0 24px}
-.plan{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:32px 28px;display:flex;flex-direction:column}
+.billing-toggle{display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:var(--bg3);border-radius:24px;padding:4px 6px}
+.bt-opt{font-size:13px;color:var(--text2);cursor:pointer;padding:6px 16px;border-radius:20px;transition:all .15s;font-weight:500}
+.bt-opt.on{background:var(--navy);color:#fff}
+.bt-save{font-size:11px;font-weight:600;color:#1a7a2e;background:#dcf5dc;padding:2px 8px;border-radius:10px}
+
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;max-width:980px;margin:48px auto;padding:0 24px}
+.plan{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:32px 28px;display:flex;flex-direction:column;position:relative}
 .plan.featured{border-color:var(--navy);border-width:2px}
 .plan-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#fff;background:var(--navy);padding:3px 10px;border-radius:var(--r);align-self:flex-start;margin-bottom:16px}
 .plan-name{font-family:var(--ffs);font-size:24px;font-weight:700;margin-bottom:8px}
-.plan-price{font-size:36px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px;font-family:var(--ffs)}
+.plan-price-wrap{margin-bottom:4px}
+.plan-price-original{font-size:15px;color:var(--text3);text-decoration:line-through;display:none}
+.plan-price{font-size:36px;font-weight:700;letter-spacing:-.02em;font-family:var(--ffs)}
 .plan-price span{font-size:14px;font-weight:400;color:var(--text3)}
-.plan-desc{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.plan-founding-note{font-size:11px;font-weight:600;color:#1a7a2e;margin-top:2px;display:none}
+.plan-desc{font-size:13px;color:var(--text2);margin-top:8px;margin-bottom:24px;line-height:1.6;padding-bottom:24px;border-bottom:1px solid var(--border)}
 .plan-features{flex:1;margin-bottom:24px}
 .pf{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:13px;color:var(--text2)}
 .pf-check{color:var(--navy);font-weight:700;flex-shrink:0;margin-top:2px}
@@ -56,6 +72,7 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .plan-btn:hover{background:var(--navy);color:#fff}
 .plan.featured .plan-btn{background:var(--navy);color:#fff}
 .plan.featured .plan-btn:hover{opacity:.85}
+
 .compare{max-width:900px;margin:40px auto 80px;padding:0 24px}
 .compare h2{font-family:var(--ffs);font-size:28px;font-weight:600;margin-bottom:24px;text-align:center;letter-spacing:-.01em}
 .compare-table{width:100%;border-collapse:collapse;font-size:13px}
@@ -78,110 +95,138 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
 </style>
 </head>
 <body>
+
 <nav>
   <a class="logo" href="/"><span class="podlens-wordmark"><span class="pod">POD</span><span class="lens">LENS</span></span></a>
   <a class="nl" href="/about.html">About</a>
   <a class="nl" href="/how-it-works.html">How it works</a>
 </nav>
 
+<!-- Founding banner (shown dynamically) -->
+<div class="founding-banner" id="pricing-founding-banner" style="display:none">
+  <strong>🎉 Early User Pricing</strong> — Lock in 33% off forever.
+  <span class="founding-spots" id="founding-spots-label"></span>
+  <div class="founding-progress-wrap"><div class="founding-progress-fill" id="founding-progress-fill"></div></div>
+  <span id="founding-ends-label"></span>
+</div>
+
 <div class="hero">
   <h1>Simple, transparent pricing</h1>
   <p>Start free. Each tier unlocks a new level of understanding.</p>
+  <div class="billing-toggle">
+    <span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span>
+    <span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span>
+    <span class="bt-save" id="annual-save-badge" style="display:none">Save 33%</span>
+  </div>
 </div>
 
 <div class="plans">
+  <!-- Listener -->
   <div class="plan">
     <div class="plan-name">Listener</div>
-    <div class="plan-price">Free</div>
-    <div class="plan-desc"><em>Is this worth my time?</em> Browse pre-analyzed episodes and run 3 analyses per week.</div>
+    <div class="plan-price-wrap">
+      <div class="plan-price">Free</div>
+    </div>
+    <div class="plan-desc"><em>Is this worth my time?</em> Browse pre-analyzed episodes and run 4 analyses per month.</div>
     <div class="plan-features">
-      <div class="pf"><span class="pf-check">&#10003;</span>3 analyses per week</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>4 analyses per month</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Browse analyzed episodes with bias bars</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Basic bias label &amp; lean bar</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Follow shows (read-only feed)</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Bias label always visible</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Follow shows</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Profile stays forever</div>
       <div class="pf dim"><span class="pf-check">&mdash;</span>Audio briefing player</div>
       <div class="pf dim"><span class="pf-check">&mdash;</span>Bias fingerprint</div>
-      <div class="pf dim"><span class="pf-check">&mdash;</span>Source citations</div>
     </div>
     <a class="plan-btn" href="/">Start free</a>
   </div>
 
+  <!-- Creator -->
   <div class="plan">
     <div class="plan-name">Creator</div>
-    <div class="plan-price">$12 <span>/mo</span> <small style="font-size:13px;color:var(--text3)">or $99/yr</small></div>
+    <div class="plan-price-wrap">
+      <div class="plan-price-original" id="creator-original"></div>
+      <div class="plan-price"><span id="creator-price">$12</span> <span id="creator-period">/mo</span></div>
+      <div class="plan-founding-note" id="creator-founding-note">🔒 Locked in forever for early users</div>
+    </div>
     <div class="plan-desc"><em>What is my listening doing to me?</em> A mirror for your information diet.</div>
     <div class="plan-features">
-      <div class="pf"><span class="pf-check">&#10003;</span>Unlimited quick analyses (~30 sec)</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Unlimited quick analyses</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Personal bias fingerprint over time</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Audio briefing player (90-sec context)</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Weekly Bias Digest email</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Shareable bias cards</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Full analysis history</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>1 Unheard story per week</div>
       <div class="pf dim"><span class="pf-check">&mdash;</span>Source citations</div>
-      <div class="pf dim"><span class="pf-check">&mdash;</span>Unheard report</div>
-      <div class="pf dim"><span class="pf-check">&mdash;</span>Show comparison</div>
+      <div class="pf dim"><span class="pf-check">&mdash;</span>Full Unheard report</div>
     </div>
-    <button class="plan-btn" onclick="startCheckout('creator','monthly')">Start 7-day free trial &rarr;</button>
+    <button class="plan-btn" onclick="startCheckout('creator')">Start 7-day free trial &rarr;</button>
   </div>
 
+  <!-- Operator -->
   <div class="plan featured">
     <div class="plan-badge">Most Popular</div>
     <div class="plan-name">Operator</div>
-    <div class="plan-price">$39 <span>/mo</span> <small style="font-size:13px;color:var(--text3)">or $299/yr</small></div>
+    <div class="plan-price-wrap">
+      <div class="plan-price-original" id="operator-original"></div>
+      <div class="plan-price"><span id="operator-price">$39</span> <span id="operator-period">/mo</span></div>
+      <div class="plan-founding-note" id="operator-founding-note">🔒 Locked in forever for early users</div>
+    </div>
     <div class="plan-desc"><em>What am I missing?</em> The full critical thinking layer for serious listeners.</div>
     <div class="plan-features">
       <div class="pf"><span class="pf-check">&#10003;</span>Everything in Creator</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Unlimited deep analyses (2–5 min)</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Source citations for every finding</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Missing voices &amp; Unheard report</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>All 5 Unheard stories weekly</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Show comparison side-by-side</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Chrome extension access</div>
     </div>
-    <button class="plan-btn" onclick="startCheckout('operator','monthly')">Start 7-day free trial &rarr;</button>
+    <button class="plan-btn" onclick="startCheckout('operator')">Start 7-day free trial &rarr;</button>
   </div>
 
+  <!-- Studio -->
   <div class="plan">
     <div class="plan-name">Studio</div>
-    <div class="plan-price">$99 <span>/mo</span> <small style="font-size:13px;color:var(--text3)">or $799/yr</small></div>
-    <div class="plan-desc"><em>What is our organization missing?</em> Institutional intelligence for teams and networks.</div>
+    <div class="plan-price-wrap">
+      <div class="plan-price-original" id="studio-original"></div>
+      <div class="plan-price"><span id="studio-price">$99</span> <span id="studio-period">/mo</span></div>
+      <div class="plan-founding-note" id="studio-founding-note">🔒 Locked in forever for early users</div>
+    </div>
+    <div class="plan-desc"><em>What is our organization missing?</em> Institutional intelligence for teams.</div>
     <div class="plan-features">
       <div class="pf"><span class="pf-check">&#10003;</span>Everything in Operator</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Bulk/batch episode scanning</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>API access for your own tools</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>White-label reports</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Priority support + SLA</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>5 team seats</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Bulk scanner (up to 20 URLs)</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>API access</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>CSV export of all analyses</div>
     </div>
-    <a class="plan-btn" href="mailto:hello@podlens.app?subject=Studio%20plan">Contact us</a>
+    <button class="plan-btn" onclick="startCheckout('studio')">Start 7-day free trial &rarr;</button>
   </div>
 </div>
 
-<p class="trial-note">Creator and Operator include a 7-day free trial. No credit card required. Annual plans save 33%. &nbsp;&middot;&nbsp; No ads. No conflicts of interest. Ever.</p>
+<p class="trial-note">All paid plans include a 7-day free trial. No credit card required upfront. &nbsp;&middot;&nbsp; No ads. No conflicts of interest. Ever.</p>
 
 <div class="compare">
   <h2>Feature comparison</h2>
   <table class="compare-table">
     <thead>
-      <tr>
-        <th>Feature</th>
-        <th>Listener</th>
-        <th>Creator</th>
-        <th>Operator</th>
-        <th>Studio</th>
-      </tr>
+      <tr><th>Feature</th><th>Listener</th><th>Creator</th><th>Operator</th><th>Studio</th></tr>
     </thead>
     <tbody>
-      <tr><td>Analyses per month</td><td>5</td><td>50</td><td>Unlimited</td><td>Unlimited</td></tr>
-      <tr><td>Bias bar (Left/Center/Right)</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Plain-English bias label</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Audio summary player</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Source citations</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Topic breakdown</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Key quotes + missing voices</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Analyses per month</td><td>4</td><td>Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>Bias label (always visible)</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Full bias scores</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Audio briefing player</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
       <tr><td>Bias fingerprint</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Show intelligence profiles</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Sponsor conflict detection</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Weekly Bias Digest email</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Unheard (stories you're missing)</td><td class="check-n">&mdash;</td><td>1 of 5</td><td class="check-y">All 5</td><td class="check-y">All 5</td></tr>
+      <tr><td>Source citations</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Deep analysis (full transcript)</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Show comparison</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Chrome extension</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>CSV export</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Team seats (5)</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Bulk scanner (20 URLs)</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
       <tr><td>API access</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Team seats</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
     </tbody>
   </table>
 </div>
@@ -191,25 +236,93 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
     <div class="footer-col"><h4>Discover</h4><a href="/">Home</a><a href="/#discover">Browse shows</a></div>
     <div class="footer-col"><h4>Company</h4><a href="/about.html">About</a><a href="/pricing.html">Pricing</a><a href="mailto:hello@podlens.app">Contact</a></div>
     <div class="footer-col"><h4>Help</h4><a href="/how-it-works.html">How it works</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
-    <div class="footer-col"><h4>Tools</h4><a href="/extension.html">Browser extension</a></div>
+    <div class="footer-col"><h4>Tools</h4><a href="/extension.html">Browser extension</a><a href="/bulk-scan.html">Bulk Scanner</a></div>
   </div>
   <div class="footer-bottom"><span>&copy; 2026 Podlens &middot; podlens.app</span><span><a href="mailto:hello@podlens.app">hello@podlens.app</a></span></div>
 </footer>
+
 <script>
-var PODLENS_PRICES = {
-  creator_monthly:  '',
-  creator_yearly:   '',
-  operator_monthly: '',
-  operator_yearly:  '',
+// ── Founding period + pricing ────────────────────────────────────────────────
+var _billing = 'monthly';
+var _foundingActive = false;
+
+// Full and founding prices
+var PRICES = {
+  monthly: {
+    creator:  { full: '$12', founding: '$8',  period: '/mo', priceKey: 'creator_monthly' },
+    operator: { full: '$39', founding: '$26', period: '/mo', priceKey: 'operator_monthly' },
+    studio:   { full: '$99', founding: '$66', period: '/mo', priceKey: 'studio_monthly' },
+  },
+  annual: {
+    creator:  { full: '$99',  founding: '$66',  period: '/yr', priceKey: 'creator_annual' },
+    operator: { full: '$299', founding: '$200', period: '/yr', priceKey: 'operator_annual' },
+    studio:   { full: '$799', founding: '$535', period: '/yr', priceKey: 'studio_annual' },
+  },
 };
 
-function startCheckout(planName, billing) {
-  billing = billing || 'monthly';
-  var key = planName + '_' + billing;
-  var priceId = PODLENS_PRICES[key] || '';
-  var stored = localStorage.getItem('pl-user');
+// Stripe price IDs (passed via env at build time or fetched)
+var PRICE_IDS = {
+  creator_monthly:  '',
+  creator_annual:   '',
+  operator_monthly: '',
+  operator_annual:  '',
+  studio_monthly:   '',
+  studio_annual:    '',
+};
+
+function setBilling(billing) {
+  _billing = billing;
+  document.getElementById('bt-monthly').classList.toggle('on', billing === 'monthly');
+  document.getElementById('bt-annual').classList.toggle('on', billing === 'annual');
+  document.getElementById('annual-save-badge').style.display = billing === 'annual' ? '' : 'none';
+  renderPrices();
+}
+
+function renderPrices() {
+  ['creator','operator','studio'].forEach(function(plan) {
+    var p = PRICES[_billing][plan];
+    var priceEl = document.getElementById(plan + '-price');
+    var periodEl = document.getElementById(plan + '-period');
+    var origEl = document.getElementById(plan + '-original');
+    var noteEl = document.getElementById(plan + '-founding-note');
+    if (!priceEl) return;
+    if (_foundingActive) {
+      if (origEl) { origEl.textContent = p.full + p.period; origEl.style.display = 'block'; }
+      priceEl.textContent = p.founding;
+      if (noteEl) noteEl.style.display = 'block';
+    } else {
+      if (origEl) origEl.style.display = 'none';
+      priceEl.textContent = p.full;
+      if (noteEl) noteEl.style.display = 'none';
+    }
+    if (periodEl) periodEl.textContent = p.period;
+  });
+}
+
+// Load founding status
+fetch('/api/get-plan?action=founding').then(function(r){return r.json();}).then(function(d){
+  _foundingActive = !!(d && d.foundingActive);
+  if (_foundingActive) {
+    var banner = document.getElementById('pricing-founding-banner');
+    if (banner) banner.style.display = '';
+    var spotsEl = document.getElementById('founding-spots-label');
+    var fillEl = document.getElementById('founding-progress-fill');
+    var endsEl = document.getElementById('founding-ends-label');
+    var spotsLeft = d.spotsLeft || 0;
+    var max = d.foundingMax || 500;
+    if (spotsEl) spotsEl.textContent = spotsLeft + ' of ' + max + ' spots remaining';
+    if (fillEl) fillEl.style.width = Math.round(((max - spotsLeft) / max) * 100) + '%';
+    if (endsEl && d.foundingEndsAt) endsEl.textContent = 'Ends ' + new Date(d.foundingEndsAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  }
+  renderPrices();
+}).catch(function(){ renderPrices(); });
+
+function startCheckout(planName) {
+  var key = planName + '_' + (_billing === 'annual' ? 'annual' : 'monthly');
+  var priceId = PRICE_IDS[key] || '';
+  var stored = localStorage.getItem('podlens_user');
   var u = stored ? JSON.parse(stored) : null;
-  if (!u) { window.location.href = '/?upgrade=' + planName; return; }
+  if (!u || !u.id) { window.location.href = '/?upgrade=' + planName; return; }
   if (!priceId) {
     window.location.href = 'mailto:hello@podlens.app?subject=' + encodeURIComponent('Upgrade to ' + planName);
     return;
@@ -217,11 +330,11 @@ function startCheckout(planName, billing) {
   fetch('/api/create-checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName })
+    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName }),
   })
   .then(function(r){ return r.json(); })
   .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })
-  .catch(function(){ alert('Could not start checkout. Try again.'); });
+  .catch(function(){ alert('Could not start checkout. Please try again.'); });
 }
 </script>
 </body>

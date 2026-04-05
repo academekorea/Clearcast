@@ -1,4 +1,5 @@
 import type { Config } from "@netlify/functions";
+import { getStore } from "@netlify/blobs";
 import Stripe from "stripe";
 
 export default async (req: Request) => {
@@ -24,7 +25,39 @@ export default async (req: Request) => {
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
+    // ── Founding period coupon ─────────────────────────────────────────────────
+    const FOUNDING_END = new Date(
+      Netlify.env.get("FOUNDING_COUPON_END_DATE") || "2026-07-05"
+    );
+    const FOUNDING_MAX = parseInt(Netlify.env.get("FOUNDING_MAX_SIGNUPS") || "500", 10);
+    const isFoundingPeriod = new Date() < FOUNDING_END;
+
+    let spotsLeft = FOUNDING_MAX;
+    let timesRedeemed = 0;
+
+    // Get live redemption count from Stripe
+    if (isFoundingPeriod) {
+      try {
+        const coupon = await stripe.coupons.retrieve("FOUNDING");
+        timesRedeemed = coupon.times_redeemed || 0;
+        spotsLeft = FOUNDING_MAX - timesRedeemed;
+      } catch {
+        // Coupon may not exist yet — cache from Blobs
+        try {
+          const metaStore = getStore("podlens-meta");
+          const cached = await metaStore.get("founding-signups-count", { type: "json" }) as any;
+          timesRedeemed = cached?.count ?? 0;
+          spotsLeft = FOUNDING_MAX - timesRedeemed;
+        } catch {}
+      }
+    }
+
+    const applyFounding = isFoundingPeriod && spotsLeft > 0;
+
+    const discounts: { coupon: string }[] = [];
+    if (applyFounding) discounts.push({ coupon: "FOUNDING" });
+
+    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       payment_method_types: ["card"],
       mode: "subscription",
       customer_email: userEmail,
@@ -35,10 +68,21 @@ export default async (req: Request) => {
       },
       success_url: "https://podlens.app/account?upgraded=true&session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "https://podlens.app/pricing?cancelled=true",
-      metadata: { userId, planName: planName || "" },
-    });
+      metadata: { userId, planName: planName || "", foundingApplied: applyFounding ? "true" : "false" },
+      allow_promotion_codes: !applyFounding,
+    };
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    if (discounts.length > 0) {
+      (sessionParams as any).discounts = discounts;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
+
+    return new Response(JSON.stringify({
+      url: session.url,
+      foundingApplied: applyFounding,
+      spotsLeft,
+    }), {
       status: 200, headers: { "Content-Type": "application/json" },
     });
   } catch (e: any) {

@@ -168,6 +168,32 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .hrp-topic-lean{font-size:11px;color:rgba(255,255,255,.45);margin-left:auto;flex-shrink:0}
 .hrp-social{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:6px 14px;font-size:12px;color:rgba(255,255,255,.7)}
 .hrp-social strong{color:#fff;font-weight:600}
+/* Bias snapshot widget */
+.bias-snap-loading{padding:8px 0}
+.bias-snap-section{margin-bottom:12px}
+.bias-snap-heading{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px}
+.bias-snap-item{font-size:13px;color:rgba(255,255,255,.8);padding:3px 0;cursor:pointer}
+.bias-snap-item:hover{color:#fff}
+.bias-snap-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;flex-shrink:0}
+.bias-snap-sample{font-size:10px;color:rgba(255,255,255,.35);margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}
+/* Founding banner */
+.founding-banner{background:#FFF8E7;border-bottom:1px solid #F0C040;padding:10px 40px}
+.founding-banner-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.founding-badge{font-size:13px;font-weight:600;color:#92600A}
+.founding-text{font-size:13px;color:#666;flex:1}
+.founding-spots{font-size:12px;font-weight:600;color:#92600A}
+.founding-progress-wrap{width:80px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden}
+.founding-progress-fill{height:100%;background:#F0C040;border-radius:2px;transition:width .5s}
+.founding-ends{font-size:11px;color:#999}
+@media(max-width:768px){.founding-banner{padding:10px 16px}.founding-progress-wrap{display:none}.founding-ends{display:none}}
+/* Engagement nudge banner */
+.nudge-banner{position:fixed;bottom:0;left:0;right:0;background:var(--navy);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:12px;z-index:9000;transform:translateY(100%);transition:transform .3s ease;font-size:13px}
+.nudge-banner.on{transform:translateY(0)}
+.nudge-text{flex:1}
+.nudge-text strong{display:block;font-weight:600;margin-bottom:2px}
+.nudge-founding{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.nudge-cta{background:#fff;color:var(--navy);border:none;border-radius:4px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.nudge-dismiss{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;padding:4px;font-size:18px;flex-shrink:0}
 /* Category pills */
 .cat-pills-wrap{max-width:1400px;margin:0 auto;padding:24px 80px 0;overflow-x:auto;display:flex;gap:8px}
 @media(max-width:1024px){.cat-pills-wrap{padding:20px 24px 0}}
@@ -1243,16 +1269,11 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
   <div class="topbar-r">
     <div class="region-sel" id="region-sel">
       <button class="region-btn" id="region-btn" onclick="toggleRegionMenu(event)">
-        <span id="region-flag">🌍</span>&nbsp;<span id="region-currency-label">USD</span>
+        <span id="region-flag">🌍</span>&nbsp;<span id="region-currency-label">International</span>
       </button>
       <div class="region-menu" id="region-menu">
-        <button onclick="setRegion('INTL','en','USD','us')">🌍 International (USD)</button>
-        <button onclick="setRegion('US','en','USD','us')">🇺🇸 United States (USD)</button>
-        <button onclick="setRegion('GB','en','GBP','gb')">🇬🇧 United Kingdom (GBP)</button>
-        <button onclick="setRegion('EU','en','EUR','eu')">🇪🇺 Europe (EUR)</button>
-        <button onclick="setRegion('AU','en','AUD','au')">🇦🇺 Australia (AUD)</button>
-        <button onclick="setRegion('CA','en','CAD','ca')">🇨🇦 Canada (CAD)</button>
-        <button onclick="setRegion('KR','ko','KRW','kr')">🇰🇷 한국어 (KRW) <span class="beta-pill">베타</span></button>
+        <button onclick="setRegion('INTL','en','USD','us')">🌍 International</button>
+        <button onclick="setRegion('KR','ko','KRW','kr')">🇰🇷 한국 <span class="beta-pill">베타</span></button>
       </div>
     </div>
     <div id="topbar-date"></div>
@@ -1291,6 +1312,17 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
   <!-- STATE A: Logged out -->
   <div id="home-loggedout">
 
+    <!-- FOUNDING BANNER — shown during founding period only -->
+    <div class="founding-banner" id="founding-banner" style="display:none">
+      <div class="founding-banner-inner">
+        <span class="founding-badge">🎉 Early User Pricing</span>
+        <span class="founding-text">Lock in 33% off — forever</span>
+        <span class="founding-spots" id="founding-spots-text"></span>
+        <div class="founding-progress-wrap"><div class="founding-progress-fill" id="founding-progress-fill"></div></div>
+        <span class="founding-ends" id="founding-ends-text"></span>
+      </div>
+    </div>
+
     <!-- HERO — 60/40 Grid -->
     <section class="home-hero">
       <div class="hero-inner">
@@ -1306,20 +1338,17 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
           </div>
           <p class="hero-platforms">Supports &middot; YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
         </div>
-        <!-- Right 40%: This week on Podlens -->
+        <!-- Right 40%: Bias Snapshot Today -->
         <div class="hero-right-panel" id="hero-stats-panel">
-          <div class="hrp-eyebrow">This week on Podlens</div>
-          <div class="hrp-counter-wrap">
-            <div class="hrp-counter-num" id="hrp-counter">—</div>
-            <div class="hrp-counter-label">episodes analyzed this week</div>
-          </div>
-          <div class="hrp-topics" id="hrp-topics">
-            <div class="hrp-topic"><span class="hrp-topic-dot" style="background:#E24B4A"></span>US Election Integrity<span class="hrp-topic-lean">Right-leaning coverage</span></div>
-            <div class="hrp-topic"><span class="hrp-topic-dot" style="background:#378ADD"></span>Climate Emergency Framing<span class="hrp-topic-lean">Left-leaning coverage</span></div>
-            <div class="hrp-topic"><span class="hrp-topic-dot" style="background:#D1CFC9"></span>AI Regulation Debate<span class="hrp-topic-lean">Mostly balanced</span></div>
-          </div>
-          <div class="hrp-social" id="hrp-social-proof">
-            <strong id="hrp-listener-count">Join listeners</strong>&nbsp;building their bias awareness
+          <div class="hrp-eyebrow" id="bias-snap-eyebrow">📊 BIAS SNAPSHOT</div>
+          <div id="bias-snapshot-widget">
+            <div class="bias-snap-loading">
+              <div class="skel" style="height:11px;width:60%;margin-bottom:8px"></div>
+              <div class="skel" style="height:13px;width:80%;margin-bottom:6px"></div>
+              <div class="skel" style="height:13px;width:70%;margin-bottom:16px"></div>
+              <div class="skel" style="height:11px;width:50%;margin-bottom:6px"></div>
+              <div class="skel" style="height:13px;width:75%;margin-bottom:6px"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1369,7 +1398,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
           <div class="proof-note">Example analysis &mdash; paste any episode URL to analyze</div>
         </div>
         <div class="proof-card">
-          <img class="proof-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/71/cd/94/71cd9435-de69-6254-f329-b8ef4e0bd2e4/mza_16830576572061832205.jpg/300x300bb.jpg" alt="The Daily" onerror="this.style.display='none'"/>
+          <img class="proof-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/600x600bb.jpg" alt="The Daily" onerror="this.style.display='none'"/>
           <div class="proof-show">News &middot; Politics</div>
           <div class="proof-name">The Daily (NYT)</div>
           <div class="proof-meta">Sample from 1,200+ episodes</div>
@@ -1803,6 +1832,9 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <div class="pmod-head">
       <div class="pmod-title">Choose your plan</div>
       <div class="pmod-sub">Start free. Upgrade when you need the full picture.</div>
+      <div id="upgrade-founding-banner" style="display:none;background:#FFF8E7;border:1px solid #F0C040;border-radius:6px;padding:8px 14px;margin-top:12px;font-size:13px;color:#92600A;font-weight:600">
+        🎉 You're joining as an early user — this price is locked in forever.
+      </div>
       <div class="billing-toggle">
         <span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span>
         <label class="bt-switch"><input type="checkbox" id="billing-annual-toggle" onchange="setBilling(this.checked?'annual':'monthly')"><div class="bt-track"></div></label>
@@ -1821,7 +1853,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
         <hr class="tcard-divider">
         <div class="tcard-feats">
           <div class="tf"><span class="tf-y">✓</span>Browse pre-analyzed episodes with bias bars</div>
-          <div class="tf"><span class="tf-y">✓</span>3 analyses per week</div>
+          <div class="tf"><span class="tf-y">✓</span>4 analyses per month</div>
           <div class="tf"><span class="tf-y">✓</span>Basic bias label &amp; lean bar</div>
           <div class="tf"><span class="tf-y">✓</span>Follow shows (read-only feed)</div>
           <div class="tf"><span class="tf-y">✓</span>Profile stays forever</div>
@@ -2265,11 +2297,16 @@ function enforcePlanRules() {
       setTimeout(function() { showTrialExpiryRecap(u); }, 800);
     }
   }
-  // Weekly reset for free plan
-  if (u.plan === 'free' && u.weekResetDate) {
-    if (now > new Date(u.weekResetDate).getTime()) {
-      u.analysesThisWeek = 0;
-      u.weekResetDate = new Date(now + 7*24*60*60*1000).toISOString();
+  // Monthly reset for free plan
+  if (u.plan === 'free') {
+    if (u.monthResetDate && now > new Date(u.monthResetDate).getTime()) {
+      u.analysesThisMonth = 0;
+      u.monthResetDate = new Date(now + 30*24*60*60*1000).toISOString();
+      changed = true;
+    }
+    if (!u.monthResetDate) {
+      u.monthResetDate = new Date(now + 30*24*60*60*1000).toISOString();
+      u.analysesThisMonth = u.analysesThisMonth || 0;
       changed = true;
     }
   }
@@ -2282,9 +2319,20 @@ function checkAnalysisLimit() {
   var u = plUser();
   if (!u) return false;
   var plan = (u.plan || '').toLowerCase();
-  if (plan === 'free' && (u.analysesThisWeek || 0) >= 3) {
-    showAnalysisLimitBanner(u);
-    return true;
+  if (plan === 'free') {
+    // Free tier: 4 analyses/month (FREE_TIER_MONTHLY_ANALYSES=4)
+    var monthLimit = 4;
+    // Reset monthly counter if needed
+    if (u.monthResetDate && Date.now() > new Date(u.monthResetDate).getTime()) {
+      u.analysesThisMonth = 0;
+      u.monthResetDate = new Date(Date.now() + 30*24*60*60*1000).toISOString();
+      setPlUser(u);
+    }
+    if ((u.analysesThisMonth || 0) >= monthLimit) {
+      showAnalysisLimitBanner(u);
+      maybeShowNudge('analysis_limit');
+      return true;
+    }
   }
   return false;
 }
@@ -2480,13 +2528,42 @@ var _episodes = [];
 var TOPICS = ['Israel-Gaza','Iran war','Fed rates','AI regulation','Trump tariffs','Ukraine','Climate','Supreme Court','Immigration','Economy'];
 
 var CURATED_SHOWS = [
-  {name:'The Daily',artist:'The New York Times',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/71/cd/94/71cd9435-de69-6254-f329-b8ef4e0bd2e4/mza_16830576572061832205.jpg/300x300bb.jpg',feedUrl:'https://feeds.simplecast.com/54nAGcIl'},
-  {name:'Pod Save America',artist:'Crooked Media',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/2b/aa/84/2baa8432-81c0-1a20-7bbf-2ee81b4ef293/mza_12979092553960538479.jpg/300x300bb.jpg',feedUrl:'https://feeds.megaphone.fm/pod-save-america'},
-  {name:'Lex Fridman Podcast',artist:'Lex Fridman',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/03/dc/cb/03dccb52-4087-ae0c-fa7f-5e0ab1c5e1cd/mza_2733415673219272476.jpg/300x300bb.jpg',feedUrl:'https://lexfridman.com/feed/podcast/'},
-  {name:'NPR Politics Podcast',artist:'NPR',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/0a/44/62/0a4462c5-6c5a-b5e3-7c57-a7c6e6bc6c0e/mza_6985833205595065928.jpg/300x300bb.jpg',feedUrl:'https://feeds.npr.org/510310/podcast.xml'},
-  {name:'The Ben Shapiro Show',artist:'Daily Wire',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/41/97/01/41970122-d970-3de7-0cfc-0b2958b7e0c2/mza_12154807429261989379.jpg/300x300bb.jpg',feedUrl:'https://feeds.megaphone.fm/WWO3519750917'},
-  {name:'Planet Money',artist:'NPR',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/58/96/56/58965665-7e50-2bb4-7f7a-92bd1882e27a/mza_12661574892354567111.jpg/300x300bb.jpg',feedUrl:'https://feeds.npr.org/510289/podcast.xml'},
+  {name:'The Daily',artist:'The New York Times',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/600x600bb.jpg',feedUrl:'https://feeds.simplecast.com/54nAGcIl'},
+  {name:'Pod Save America',artist:'Crooked Media',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/44/dc/61/44dc6141-25e9-5bb3-e19e-a2337233d19e/mza_5506771870755587769.jpg/600x600bb.jpg',feedUrl:'https://feeds.megaphone.fm/pod-save-america'},
+  {name:'Lex Fridman Podcast',artist:'Lex Fridman',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/3e/e3/9c/3ee39c89-de08-47a6-7f3d-3849cef6d255/mza_16657851278549137484.png/600x600bb.jpg',feedUrl:'https://lexfridman.com/feed/podcast/'},
+  {name:'NPR Politics Podcast',artist:'NPR',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/71/15/1d/71151d33-32e7-f0e1-2a6b-412bf4835c5d/mza_9550948332778108059.jpg/600x600bb.jpg',feedUrl:'https://feeds.npr.org/510310/podcast.xml'},
+  {name:'The Ben Shapiro Show',artist:'Daily Wire',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/b6/2c/2c/b62c2c46-3fd6-5733-2c82-b95b781a4b40/mza_17718419788103424619.jpg/600x600bb.jpg',feedUrl:'https://feeds.megaphone.fm/WWO3519750917'},
+  {name:'Planet Money',artist:'NPR',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/85/df/53/85df5334-0fae-28a9-2bc4-b97b81061d0e/mza_10839245066228881011.jpg/600x600bb.jpg',feedUrl:'https://feeds.npr.org/510289/podcast.xml'},
 ];
+
+// ── CURATED ARTWORK SELF-HEALING ──
+// Checks artwork URLs on page load; refreshes stale ones from iTunes.
+// Results cached in localStorage for 24 hours to avoid hammering the API.
+(function refreshCuratedArtwork() {
+  var CACHE_KEY = 'pl_curated_artwork_v1';
+  var TTL = 24 * 60 * 60 * 1000;
+  try {
+    var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (cached && cached.ts && (Date.now() - cached.ts) < TTL && cached.urls) {
+      CURATED_SHOWS.forEach(function(s, i) { if (cached.urls[i]) s.artwork = cached.urls[i]; });
+      return;
+    }
+  } catch(e) {}
+  // Asynchronously fetch fresh artwork from iTunes for each show
+  var promises = CURATED_SHOWS.map(function(s) {
+    return fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(s.name) + '&media=podcast&limit=1')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var r = d.results && d.results[0];
+        return (r && (r.artworkUrl600 || r.artworkUrl100)) || s.artwork;
+      })
+      .catch(function() { return s.artwork; });
+  });
+  Promise.all(promises).then(function(urls) {
+    urls.forEach(function(url, i) { if (url) CURATED_SHOWS[i].artwork = url; });
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), urls: urls})); } catch(e) {}
+  });
+})();
 
 // ── VIEWS ──
 function showView(name) {
@@ -3035,12 +3112,36 @@ function pollStatus(jobId, audioUrl) {
   },4000);
 }
 
-function startTranscriptionFallback(youtubeUrl, epTitle, showName) {
+async function startTranscriptionFallback(youtubeUrl, epTitle, showName) {
+  document.getElementById('ld-title').textContent='Finding podcast feed\u2026';
+  document.getElementById('ld-msg').textContent='Checking if this YouTube channel has an RSS feed\u2026';
+  document.getElementById('loading').classList.add('on');
+
+  // Task 1: Try resolve-youtube first — if we get a podcast RSS, use it directly (cheaper + faster)
+  try {
+    var resolved = await fetch('/api/resolve-youtube', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: youtubeUrl }),
+    }).then(function(r) { return r.json(); });
+
+    if (resolved && resolved.feedType === 'podcast-rss' && resolved.feedUrl) {
+      // Found a real podcast RSS — show episode picker instead of audio extraction
+      document.getElementById('ld-title').textContent='Podcast feed found!';
+      document.getElementById('ld-msg').textContent='Showing episodes from the RSS feed\u2026';
+      setTimeout(function() {
+        document.getElementById('loading').classList.remove('on');
+        showEpisodePickerFromYT(resolved.feedUrl, resolved.channelTitle || showName || '', resolved.thumbnail || '', resolved.channelTitle || '');
+      }, 500);
+      return;
+    }
+  } catch(e) {}
+
+  // Fall back to audio extraction
   document.getElementById('ld-title').textContent='No captions found \u2014 extracting audio\u2026';
   document.getElementById('ld-msg').textContent='Usually takes 2\u20133 minutes for a 1-hour podcast';
   document.getElementById('ld-progress-wrap').style.display='block';
   document.getElementById('ld-progress-bar').style.width='0%';
-  document.getElementById('loading').classList.add('on');
   var jobId='yt-bg-'+Date.now();
   fetch('/api/transcribe/background',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jobId:jobId,youtubeUrl:youtubeUrl})})
     .catch(function(){});
@@ -4110,7 +4211,15 @@ function renderRecentlyAnalyzed() {
 }
 
 // ── UPGRADE ──
-function showUpgrade(){ document.getElementById('upgrade-modal').classList.add('on'); }
+function showUpgrade(){
+  document.getElementById('upgrade-modal').classList.add('on');
+  // Show founding banner inside modal if founding period active
+  try {
+    var fd = JSON.parse(localStorage.getItem('pl_founding_v1') || 'null');
+    var banner = document.getElementById('upgrade-founding-banner');
+    if (banner) banner.style.display = (fd && fd.data && fd.data.foundingActive) ? '' : 'none';
+  } catch {}
+}
 // selPlan removed — replaced by 4-tier pricing modal
 
 // ── KEYBOARD ──
@@ -4176,25 +4285,37 @@ function canAccess(feature) {
   var plan = enforcePlanRules() || u.plan || 'free';
   plan = plan.toLowerCase();
   var tiers = {
-    audioBriefing:       ['creator','operator','studio'],
-    fullBiasScores:      ['creator','operator','studio'],
-    biasFingerprint:     ['creator','operator','studio'],
-    shareCards:          ['creator','operator','studio'],
-    downloadBasic:       ['creator','operator','studio'],
-    transcriptTop10:     ['creator','operator','studio'],
-    sourceCitations:     ['operator','studio'],
-    missingVoicesDetail: ['operator','studio'],
-    deepAnalysis:        ['operator','studio'],
-    unheard:             ['operator','studio'],
-    showComparison:      ['operator','studio'],
-    extension:           ['operator','studio'],
-    fullTranscript:      ['operator','studio'],
-    downloadFull:        ['operator','studio'],
-    timestampMarkers:    ['operator','studio'],
-    csvExport:           ['studio'],
-    bulkScan:            ['studio'],
-    apiAccess:           ['studio'],
+    audioBriefing:           ['creator','operator','studio'],
+    fullBiasScores:          ['creator','operator','studio'],
+    biasFingerprint:         ['creator','operator','studio'],
+    shareCards:              ['creator','operator','studio'],
+    downloadBasic:           ['creator','operator','studio'],
+    transcriptTop10:         ['creator','operator','studio'],
+    mediaStats:              ['creator','operator','studio'],
+    biasStreak:              ['creator','operator','studio'],
+    showAlerts:              ['creator','operator','studio'],
+    weeklyDigest:            ['creator','operator','studio'],
+    episodeCompareSameShow:  ['creator','operator','studio'],
+    unheard:                 ['creator','operator','studio'], // creator=1 story, operator+=all
+    sourceCitations:         ['operator','studio'],
+    missingVoicesDetail:     ['operator','studio'],
+    deepAnalysis:            ['operator','studio'],
+    crossShowComparison:     ['operator','studio'],
+    extension:               ['operator','studio'],
+    fullTranscript:          ['operator','studio'],
+    downloadFull:            ['operator','studio'],
+    timestampMarkers:        ['operator','studio'],
+    unheardFull:             ['operator','studio'],
+    hostTrustBreakdown:      ['operator','studio'],
+    showBiasTrend:           ['operator','studio'],
+    csvExport:               ['studio'],
+    bulkScan:                ['studio'],
+    apiAccess:               ['studio'],
+    teamSeats:               ['studio'],
+    usageDashboard:          ['studio'],
   };
+  // Legacy alias
+  tiers.showComparison = tiers.crossShowComparison;
   // Trial gets Operator minus 4 specific features
   if (plan === 'trial') {
     var trialBlocked = ['audioBriefing','sourceCitations','deepAnalysis','extension'];
@@ -4859,15 +4980,14 @@ function setRegion(region, lang, currency, store) {
 }
 
 function updateRegionUI() {
-  var r = _settings.region, c = _settings.currency;
+  var r = _settings.region;
   var flagEl = document.getElementById('region-flag');
   var curEl = document.getElementById('region-currency-label');
-  if (flagEl) flagEl.textContent = regionFlags[r] || '\uD83C\uDF0D';
-  if (curEl) curEl.textContent = c;
-  // highlight active
+  if (flagEl) flagEl.textContent = r === 'KR' ? '🇰🇷' : '🌍';
+  if (curEl) curEl.textContent = r === 'KR' ? '한국' : 'International';
+  // Highlight active
   document.querySelectorAll('.region-menu button').forEach(function(btn) {
-    var txt = btn.textContent;
-    btn.classList.toggle('on', txt.indexOf(c) > -1 || (r === 'KR' && txt.indexOf('KRW') > -1));
+    btn.classList.toggle('on', (r === 'KR' && btn.textContent.indexOf('한국') > -1) || (r !== 'KR' && btn.textContent.indexOf('International') > -1));
   });
 }
 
@@ -5065,15 +5185,23 @@ function doGoogleOAuth(action) {
 }
 
 function handleSocialLogin(userData) {
-  // Called after Spotify/Google OAuth callback redirects back
+  // Called after Spotify/Google/Kakao OAuth callback redirects back
   if (!userData) return;
   var u = {
     id: userData.id, name: userData.name, email: userData.email,
     avatar: userData.avatar || '', plan: userData.plan,
     signupDate: userData.signupDate, trialEndsAt: userData.trialEndsAt,
     analysesThisWeek: userData.analysesThisWeek || 0,
-    weekResetDate: userData.weekResetDate, joinedAt: userData.joinedAt,
+    analysesThisMonth: userData.analysesThisMonth || 0,
+    weekResetDate: userData.weekResetDate,
+    monthResetDate: userData.monthResetDate || new Date(Date.now() + 30*24*60*60*1000).toISOString(),
+    joinedAt: userData.joinedAt,
     authProvider: userData.authProvider,
+    foundingMember: userData.foundingMember || false,
+    foundingMemberSince: userData.foundingMemberSince || null,
+    signupCount: userData.signupCount || null,
+    pilotMember: userData.pilotMember || false,
+    pilotExpiresAt: userData.pilotExpiresAt || null,
   };
   setPlUser(u);
   // Clean URL
@@ -5083,7 +5211,11 @@ function handleSocialLogin(userData) {
   renderHomeState();
   syncPlanFromStripe(u);
   if (userData.isNewUser) {
-    showToast('Welcome to Podlens \u2014 your 7-day trial has started');
+    if (u.foundingMember) {
+      showToast('Welcome, Early User #' + (u.signupCount || '?') + ' — 33% off locked in forever');
+    } else {
+      showToast('Welcome to Podlens \u2014 your 7-day trial has started');
+    }
     setTimeout(function() { openModal('onboarding'); }, 800);
   } else {
     showToast('Welcome back, ' + (u.name ? u.name.split(' ')[0] : 'there') + '!');
@@ -5262,10 +5394,10 @@ async function _execOverlaySearch(q) {
     var url = 'https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&media=podcast&entity=podcastAndEpisode&limit=12&country=' + store;
     var data = await fetch(url, { signal: AbortSignal.timeout(7000) }).then(function(r){ return r.json(); });
     var results = (data.results || []);
-    // Separate shows from episodes
-    var shows = results.filter(function(r){ return r.kind === 'podcast' || r.wrapperType === 'track'; });
+    // Separate shows from episodes — iTunes: shows have kind='podcast', episodes have kind='podcast-episode'
+    var shows = results.filter(function(r){ return r.kind === 'podcast' || r.wrapperType === 'track' && r.kind !== 'podcast-episode'; });
     var episodes = results.filter(function(r){ return r.kind === 'podcast-episode'; });
-    _searchResults = { shows: shows, episodes: episodes, all: results };
+    _searchResults = { shows: shows, episodes: episodes, all: results, _query: q };
     renderSearchResults();
   } catch(e) {
     el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Search failed. Try again.</div>';
@@ -5280,7 +5412,11 @@ function renderSearchResults() {
   var html = '';
 
   if (!shows.length && !episodes.length) {
-    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">No results found. Try a different search term.</div>';
+    var q2 = (_searchResults._query || '').replace(/'/g, "\\'");
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">'
+      + 'No results found.'
+      + '<div style="margin-top:12px;font-size:12px">Can\'t find it? <button class="recovery-btn" style="font-size:12px;margin-left:4px" onclick="closeSearchOverlay();document.getElementById(\'url-input\').value=\''+q2+'\';showView(\'analyze\')">Paste a URL instead →</button></div>'
+      + '</div>';
     return;
   }
 
@@ -5385,7 +5521,7 @@ function _renderTrendingFallback(el) {
     var safeUrl = s.feedUrl.replace(/'/g, "\\'");
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')">'
-      + '<div class="tg-art-wrap"><img class="tg-art" src="' + s.artwork + '" alt="" loading="lazy"></div>'
+      + '<div class="tg-art-wrap">' + (s.artwork ? '<img class="tg-art" src="' + s.artwork + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<div class=tg-art-ph>🎙</div>\'">' : '<div class="tg-art-ph">🎙</div>') + '</div>'
       + '<div class="tg-card-body">'
       + '<div class="tg-card-name">' + s.name + '</div>'
       + '<div class="tg-card-artist">' + s.artist + '</div>'
@@ -5489,6 +5625,157 @@ if (!handleUrlRouting()) {
   renderHomeState();
   showHome();
 }
+
+// ── TASK 15: FOUNDING BANNER ──────────────────────────────────────────────────
+(function loadFoundingBanner() {
+  var CACHE_KEY = 'pl_founding_v1';
+  var CACHE_TTL = 60 * 60 * 1000; // 1hr
+  function renderBanner(data) {
+    if (!data || !data.foundingActive) return;
+    var banner = document.getElementById('founding-banner');
+    if (!banner) return;
+    var spotsLeft = data.spotsLeft || 0;
+    var endsAt = data.foundingEndsAt ? new Date(data.foundingEndsAt) : null;
+    var usedPct = data.foundingMax ? Math.round(((data.foundingMax - spotsLeft) / data.foundingMax) * 100) : 0;
+    var spotsEl = document.getElementById('founding-spots-text');
+    var fillEl = document.getElementById('founding-progress-fill');
+    var endsEl = document.getElementById('founding-ends-text');
+    if (spotsEl) spotsEl.textContent = spotsLeft + ' of ' + (data.foundingMax || 500) + ' spots remaining';
+    if (fillEl) fillEl.style.width = usedPct + '%';
+    if (endsEl && endsAt) endsEl.textContent = 'Offer ends ' + endsAt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    banner.style.display = '';
+  }
+  try {
+    var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL) { renderBanner(cached.data); return; }
+  } catch {}
+  fetch('/api/get-plan?action=founding').then(function(r){return r.json();}).then(function(d){
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),data:d})); } catch {}
+    renderBanner(d);
+  }).catch(function(){});
+})();
+
+// ── TASK 9: ENGAGEMENT NUDGE SYSTEM ──────────────────────────────────────────
+var _lockedClickCount = 0;
+var _lastNudgeShown = parseInt(localStorage.getItem('pl_nudge_last') || '0', 10);
+var NUDGE_COOLDOWN = 7 * 24 * 60 * 60 * 1000;
+
+function trackLockedClick() {
+  _lockedClickCount++;
+  if (_lockedClickCount >= 3) maybeShowNudge('feature_block');
+}
+
+function maybeShowNudge(trigger) {
+  var u = plUser();
+  if (!u) return;
+  var plan = (u.plan || '').toLowerCase();
+  if (['creator','operator','studio','pilot'].indexOf(plan) > -1) return;
+  if (Date.now() - _lastNudgeShown < NUDGE_COOLDOWN) return;
+  _lastNudgeShown = Date.now();
+  localStorage.setItem('pl_nudge_last', String(_lastNudgeShown));
+
+  var analyzed = (u.analyzedEpisodes || []).length;
+  var daysSinceSignup = u.signupDate ? Math.floor((Date.now() - new Date(u.signupDate).getTime()) / 86400000) : 0;
+  var monthAnalyses = u.analysesThisMonth || 0;
+
+  // Determine if nudge should fire
+  var shouldNudge = (
+    trigger === 'analysis_limit' ||
+    trigger === 'feature_block' ||
+    (daysSinceSignup >= 30 && analyzed >= 2)
+  );
+  if (!shouldNudge) return;
+
+  var foundingActive = false;
+  try { var fd = JSON.parse(localStorage.getItem('pl_founding_v1') || 'null'); foundingActive = fd && fd.data && fd.data.foundingActive; } catch {}
+
+  var nudgeEl = document.getElementById('nudge-banner');
+  if (!nudgeEl) return;
+  var textEl = nudgeEl.querySelector('.nudge-text');
+  if (textEl) {
+    textEl.innerHTML = '<strong>You\'ve analyzed ' + analyzed + ' episode' + (analyzed !== 1 ? 's' : '') + ' — your bias fingerprint is taking shape.</strong>'
+      + 'Upgrade to Creator — unlimited analyses, full scores, and weekly insights.'
+      + (foundingActive ? '<div class="nudge-founding">33% off locked forever as an early user</div>' : '');
+  }
+  nudgeEl.classList.add('on');
+}
+
+function dismissNudge() {
+  var el = document.getElementById('nudge-banner');
+  if (el) el.classList.remove('on');
+}
+
+// ── TASK 2: BIAS SNAPSHOT WIDGET ─────────────────────────────────────────────
+(function loadBiasSnapshot() {
+  var el = document.getElementById('bias-snapshot-widget');
+  if (!el) return;
+  var CACHE_KEY = 'pl_bias_snap_v1';
+  var CACHE_TTL = 60 * 60 * 1000;
+  var SAMPLE_DATA = {
+    left: ['Pod Save America','Democracy Now!'],
+    balanced: ['Radiolab','Freakonomics Radio'],
+    right: ['The Ben Shapiro Show','The Daily Wire'],
+    isSample: true,
+  };
+  var krSample = {
+    left: ['시사인 팟캐스트','뉴스룸'],
+    balanced: ['사이언스 스튜디오','머니투데이'],
+    right: ['펜앤드마이크','신의한수'],
+    isSample: true,
+  };
+
+  function render(data) {
+    var isKr = typeof isKoreanMode === 'function' && isKoreanMode();
+    var sample = isKr ? krSample : SAMPLE_DATA;
+    var src = data || sample;
+    var isSample = src.isSample || !data;
+    var html = '';
+    if (src.left && src.left.length) {
+      html += '<div class="bias-snap-section"><div class="bias-snap-heading">Most Left-Leaning</div>';
+      html += src.left.slice(0,2).map(function(n){return '<div class="bias-snap-item"><span class="bias-snap-dot" style="background:var(--color-left,#E24B4A)"></span>'+n+'</div>';}).join('');
+      html += '</div>';
+    }
+    if (src.balanced && src.balanced.length) {
+      html += '<div class="bias-snap-section"><div class="bias-snap-heading">Most Balanced</div>';
+      html += src.balanced.slice(0,2).map(function(n){return '<div class="bias-snap-item"><span class="bias-snap-dot" style="background:var(--color-center,#D1CFC9)"></span>'+n+'</div>';}).join('');
+      html += '</div>';
+    }
+    if (src.right && src.right.length) {
+      html += '<div class="bias-snap-section"><div class="bias-snap-heading">Most Right-Leaning</div>';
+      html += src.right.slice(0,2).map(function(n){return '<div class="bias-snap-item"><span class="bias-snap-dot" style="background:var(--color-right,#378ADD)"></span>'+n+'</div>';}).join('');
+      html += '</div>';
+    }
+    if (isSample) html += '<div class="bias-snap-sample">Sample · Updates with real analyses</div>';
+    el.innerHTML = html;
+  }
+
+  try {
+    var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL) { render(cached.data); return; }
+  } catch {}
+  render(null); // Show sample immediately while fetching
+  // Attempt to load real data from blindspot API
+  fetch('/api/blindspot', { headers: { 'x-pl-plan': 'free' } })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d && d.totalAnalyzed >= 6) {
+        var real = {
+          left: d.leftLeaning?.topShows || [],
+          balanced: d.balanced?.topShows || [],
+          right: d.rightLeaning?.topShows || [],
+        };
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),data:real})); } catch {}
+        if (real.left.length || real.right.length) render(real);
+      }
+    }).catch(function(){});
+})();
 </script>
+
+<!-- Engagement Nudge Banner -->
+<div class="nudge-banner" id="nudge-banner" role="status" aria-label="Upgrade prompt">
+  <div class="nudge-text"></div>
+  <button class="nudge-cta" onclick="window.location.href='/pricing.html'">Upgrade for $8/mo →</button>
+  <button class="nudge-dismiss" onclick="dismissNudge()" aria-label="Dismiss">×</button>
+</div>
 </body>
 </html>

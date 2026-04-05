@@ -417,6 +417,49 @@ function isAudioUrl(url: string): boolean {
   );
 }
 
+// ── TIER LIMITS ───────────────────────────────────────────────────────────
+
+const PLAN_MONTHLY_LIMITS: Record<string, number> = {
+  free:     3,
+  creator:  25,
+  operator: 100,
+  studio:   Infinity,
+  trial:    100,   // trial gets operator-level access
+};
+
+async function checkAndIncrementUsage(
+  userStore: ReturnType<typeof getStore>,
+  userId: string,
+  plan: string
+): Promise<{ allowed: boolean; used: number; limit: number }> {
+  const limit = PLAN_MONTHLY_LIMITS[plan.toLowerCase()] ?? 3;
+  if (!isFinite(limit)) return { allowed: true, used: 0, limit: Infinity };
+
+  const key = `user-plan-${userId}`;
+  let data: any = {};
+  try { data = (await userStore.get(key, { type: "json" })) ?? {}; } catch {}
+
+  const now = Date.now();
+  const resetDate = data.monthResetDate ? new Date(data.monthResetDate).getTime() : 0;
+  const isNewMonth = now > resetDate;
+
+  const used = isNewMonth ? 0 : (data.analysesThisMonth ?? 0);
+  if (used >= limit) return { allowed: false, used, limit };
+
+  // Increment + write back (fire-and-forget — don't block the analysis)
+  const nextReset = new Date(now);
+  nextReset.setMonth(nextReset.getMonth() + 1, 1);
+  nextReset.setHours(0, 0, 0, 0);
+
+  userStore.setJSON(key, {
+    ...data,
+    analysesThisMonth: used + 1,
+    monthResetDate: isNewMonth ? nextReset.toISOString() : (data.monthResetDate || nextReset.toISOString()),
+  }).catch(() => {});
+
+  return { allowed: true, used: used + 1, limit };
+}
+
 // ── HANDLER ───────────────────────────────────────────────────────────────
 
 export default async (req: Request) => {
@@ -426,7 +469,22 @@ export default async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { url: rawUrl, showName, showSlug, showArtwork, showFeedUrl, episodeTitle, store = "us" } = body;
+    const { url: rawUrl, showName, showSlug, showArtwork, showFeedUrl, episodeTitle, store = "us", userId, userPlan } = body;
+
+    // ── Tier enforcement ──────────────────────────────────────────────────
+    if (userId && userPlan) {
+      const userStore = getStore("podlens-users");
+      const check = await checkAndIncrementUsage(userStore, userId, userPlan);
+      if (!check.allowed) {
+        return new Response(JSON.stringify({
+          error: "limit_reached",
+          used: check.used,
+          limit: check.limit,
+          plan: userPlan,
+          message: `You've used all ${check.limit} analyses on your ${userPlan} plan this month.`,
+        }), { status: 429, headers: { "Content-Type": "application/json" } });
+      }
+    }
 
     // ── Korean platform detection (before YouTube path) ──
     const koreanRss = extractKoreanPlatformRss(rawUrl || "");
