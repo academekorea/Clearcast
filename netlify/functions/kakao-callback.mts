@@ -1,6 +1,7 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import { getSupabaseAdmin } from "./lib/supabase.js";
+import { isSuperAdmin, applySuperAdminOverrides, superAdminSupabaseFields } from "./lib/admin.js";
 
 async function sha256hex(text: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -166,6 +167,9 @@ export default async (req: Request) => {
 
     await assignFoundingStatus(userData, kakaoEmail, isNewUser);
 
+    // Super admin override
+    if (isSuperAdmin(kakaoEmail)) applySuperAdminOverrides(userData, kakaoEmail);
+
     try {
       await userStore.setJSON(`kakao-${kakaoId}`, userData);
       if (kakaoEmail) {
@@ -173,12 +177,15 @@ export default async (req: Request) => {
         await userStore.setJSON(emailKey, userData);
       }
     } catch {}
+  } else if (isSuperAdmin(kakaoEmail)) {
+    applySuperAdminOverrides(userData, kakaoEmail);
+    try { await userStore.setJSON(`kakao-${kakaoId}`, userData); } catch {}
   }
 
   // Upsert user to Supabase (fire-and-forget)
   const sb = getSupabaseAdmin();
   if (sb) {
-    sb.from('users').upsert({
+    const supaFields: Record<string, unknown> = {
       id: userData.id,
       email: kakaoEmail,
       name: userData.name,
@@ -194,7 +201,9 @@ export default async (req: Request) => {
       pilot_expires_at: userData.pilotExpiresAt || null,
       created_at: userData.signupDate || new Date().toISOString(),
       last_seen_at: new Date().toISOString(),
-    }, { onConflict: 'id' }).then(() => {}).catch(() => {});
+    };
+    if (isSuperAdmin(kakaoEmail)) Object.assign(supaFields, superAdminSupabaseFields());
+    sb.from('users').upsert(supaFields, { onConflict: 'id' }).then(() => {}).catch(() => {});
   }
 
   const loginPayload = encodeURIComponent(JSON.stringify({
@@ -212,6 +221,7 @@ export default async (req: Request) => {
     joinedAt: userData.joinedAt,
     authProvider: "kakao",
     isNewUser,
+    isSuperAdmin: isSuperAdmin(kakaoEmail),
     foundingMember: userData.foundingMember || false,
     foundingMemberSince: userData.foundingMemberSince || null,
     signupCount: userData.signupCount || null,

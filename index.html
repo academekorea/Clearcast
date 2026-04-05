@@ -1414,7 +1414,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 <!-- Hotjar / ContentSquare -->
 <script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
 <!-- PostHog -->
-<script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),i=0;i<o.length;i++)g(u,o[i]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ',{api_host:'https://us.i.posthog.com',capture_pageview:true,capture_pageleave:true});</script>
+<script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),i=0;i<o.length;i++)g(u,o[i]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ',{api_host:'https://us.i.posthog.com',person_profiles:'identified_only',capture_pageview:true,capture_pageleave:true});</script>
 <!-- Sentry -->
 <script src="https://browser.sentry-cdn.com/7.x.x/bundle.min.js" crossorigin="anonymous"></script>
 <script>if(window.Sentry)Sentry.init({dsn:"https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128",environment:"production",tracesSampleRate:0.2});</script>
@@ -1502,11 +1502,11 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <!-- FOUNDING BANNER — shown during founding period only -->
     <div class="founding-banner" id="founding-banner" style="display:none">
       <div class="founding-banner-inner">
-        <span class="founding-badge">🎉 Early User Pricing</span>
-        <span class="founding-text">Lock in 33% off — forever</span>
-        <span class="founding-spots" id="founding-spots-text"></span>
-        <div class="founding-progress-wrap"><div class="founding-progress-fill" id="founding-progress-fill"></div></div>
-        <span class="founding-ends" id="founding-ends-text"></span>
+        <span class="founding-badge">🎉 Founding Member Pricing</span>
+        <span class="founding-text">33% off forever — <span style="font-style:italic">only available during our launch period</span></span>
+        <span class="founding-spots" id="founding-spots-text" style="display:none"></span>
+        <div class="founding-progress-wrap" style="display:none"><div class="founding-progress-fill" id="founding-progress-fill"></div></div>
+        <span class="founding-ends" id="founding-ends-text" style="display:none"></span>
       </div>
     </div>
 
@@ -2043,7 +2043,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
       <div class="pmod-title">Choose your plan</div>
       <div class="pmod-sub">Start free. Upgrade when you need the full picture.</div>
       <div id="upgrade-founding-banner" style="display:none;background:#FFF8E7;border:1px solid #F0C040;border-radius:6px;padding:8px 14px;margin-top:12px;font-size:13px;color:#92600A;font-weight:600">
-        🎉 You're joining as an early user — this price is locked in forever.
+        🎉 Founding Member Pricing — 33% off forever. Only available during our launch period.
       </div>
       <div class="billing-toggle">
         <span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span>
@@ -2171,6 +2171,15 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
         <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
         Continue with Apple
       </button>
+      <div class="auth-divider" style="margin-top:8px">or sign in without a password</div>
+      <div id="magic-link-section">
+        <div style="display:flex;gap:8px;margin-bottom:4px">
+          <input type="email" id="magic-email" placeholder="your@email.com" autocomplete="email"
+            style="flex:1;padding:10px 12px;border:1px solid var(--border2);border-radius:4px;font-size:14px;background:var(--bg2);color:var(--text)">
+          <button id="magic-btn" onclick="doMagicLink()" style="padding:10px 16px;background:var(--navy);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">Send link</button>
+        </div>
+        <div id="magic-msg" style="font-size:12px;color:var(--text3);min-height:18px"></div>
+      </div>
       <div class="auth-switch">Don&rsquo;t have an account? <button onclick="closeModal('login');openModal('signup')">Sign up</button></div>
     </div>
   </div>
@@ -2378,6 +2387,9 @@ function renderNavAuth() {
     var initials = (u.name || u.email || 'U').trim().split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
     var planBadge = (u.plan && u.plan !== 'free' && u.plan !== 'trial')
       ? '<span style="font-size:9px;background:var(--color-operator);color:#fff;border-radius:2px;padding:1px 5px;margin-left:4px;vertical-align:middle;font-weight:700">' + u.plan.toUpperCase() + '</span>' : '';
+    var adminTab = u.isSuperAdmin
+      ? '<a href="/admin.html" style="color:#dc2626;font-weight:700">Admin <span style="display:inline-block;width:7px;height:7px;background:#dc2626;border-radius:50%;vertical-align:middle;margin-left:2px"></span></a>'
+      : '';
     el.innerHTML = '<div class="notif-bell-wrap" id="notif-bell-wrap">'
       + '<button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifDropdown()" title="Notifications">🔔</button>'
       + '<span class="notif-badge" id="notif-badge"></span>'
@@ -2391,6 +2403,7 @@ function renderNavAuth() {
       + '<a href="/profile.html#bias">My Bias</a>'
       + '<a href="/library.html">My Library</a>'
       + '<a href="/settings.html">Settings</a>'
+      + adminTab
       + '<button onclick="doLogout()">Log out</button>'
       + '</div></div>';
     loadNotifCount(u.id);
@@ -3347,7 +3360,8 @@ function startAnalysis(audioUrl, epTitle, showName) {
   var _stageIdx=0;
   var _stages=[['Checking cache\u2026','Looking up previous results\u2026'],['Reading captions\u2026','Fetching YouTube auto-captions\u2026'],['Searching podcast directories\u2026','Checking Apple Podcasts and Podcast Index\u2026']];
   _analyzeStages=setInterval(function(){ _stageIdx=Math.min(_stageIdx+1,_stages.length-1); document.getElementById('ld-title').textContent=_stages[_stageIdx][0]; document.getElementById('ld-msg').textContent=_stages[_stageIdx][1]; },3500);
-  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl,episodeTitle:epTitle||undefined,showName:showName||undefined})})
+  var _analyzeUser=plUser()||{};
+  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
     .then(function(r){ return r.json(); })
     .then(function(d){
       clearInterval(_analyzeStages);
@@ -4256,6 +4270,25 @@ function handleUrlRouting() {
   if (kakaoError) {
     history.replaceState({}, '', window.location.pathname);
     plToast('\uce74\uce74\uc624 \ub85c\uadf8\uc778\uc5d0 \uc2e4\ud328\ud588\uc2b5\ub2c8\ub2e4. \ub2e4\uc2dc \uc2dc\ub3c4\ud574\uc8fc\uc138\uc694.');
+    return false;
+  }
+
+  // Handle magic link login
+  var magicLogin = params.get('magic_login');
+  if (magicLogin) {
+    try { handleSocialLogin(JSON.parse(decodeURIComponent(magicLogin))); } catch(e) {}
+    return false;
+  }
+  var magicError = params.get('magic_error');
+  if (magicError) {
+    history.replaceState({}, '', window.location.pathname);
+    var magicErrMsg = {
+      'invalid': 'That sign-in link is invalid. Please request a new one.',
+      'expired': 'That sign-in link has expired. Please request a new one.',
+      'used': 'That sign-in link has already been used. Please request a new one.',
+      'locked': 'Too many failed attempts. Please wait 15 minutes and try again.',
+    }[magicError] || 'Sign-in failed. Please try again.';
+    plToast(magicErrMsg);
     return false;
   }
 
@@ -5626,6 +5659,39 @@ function doSpotifyOAuth(action) {
   window.location.href = 'https://accounts.spotify.com/authorize?' + params.toString();
 }
 
+function doMagicLink() {
+  var email = (document.getElementById('magic-email') || {}).value || '';
+  var msgEl = document.getElementById('magic-msg');
+  var btn = document.getElementById('magic-btn');
+  email = email.trim();
+  if (!email || !email.includes('@')) {
+    if (msgEl) msgEl.textContent = 'Please enter a valid email address.';
+    return;
+  }
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+  if (msgEl) msgEl.textContent = '';
+  fetch('/api/send-magic-link', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email }),
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Send link'; }
+    if (d.ok) {
+      if (msgEl) msgEl.innerHTML = '<span style="color:#15803d">✓ Check your email — link expires in 15 minutes</span>';
+    } else if (d.locked) {
+      if (msgEl) msgEl.innerHTML = '<span style="color:#dc2626">' + (d.error || 'Too many attempts — wait 15 minutes') + '</span>';
+    } else {
+      if (msgEl) msgEl.innerHTML = '<span style="color:#dc2626">' + (d.error || 'Could not send — try again') + '</span>';
+    }
+  })
+  .catch(function() {
+    if (btn) { btn.disabled = false; btn.textContent = 'Send link'; }
+    if (msgEl) msgEl.innerHTML = '<span style="color:#dc2626">Something went wrong. Try again.</span>';
+  });
+}
+
 function doGoogleOAuth(action) {
   // Fetch Google client ID from backend (set in Netlify env vars)
   fetch('/api/get-plan?provider=google')
@@ -5654,7 +5720,7 @@ function handleSocialLogin(userData) {
   if (!userData) return;
   var u = {
     id: userData.id, name: userData.name, email: userData.email,
-    avatar: userData.avatar || '', plan: userData.plan,
+    avatar: userData.avatar || '', plan: userData.isSuperAdmin ? 'studio' : userData.plan,
     signupDate: userData.signupDate, trialEndsAt: userData.trialEndsAt,
     analysesThisWeek: userData.analysesThisWeek || 0,
     analysesThisMonth: userData.analysesThisMonth || 0,
@@ -5662,6 +5728,7 @@ function handleSocialLogin(userData) {
     monthResetDate: userData.monthResetDate || new Date(Date.now() + 30*24*60*60*1000).toISOString(),
     joinedAt: userData.joinedAt,
     authProvider: userData.authProvider,
+    isSuperAdmin: !!(userData.isSuperAdmin),
     foundingMember: userData.foundingMember || false,
     foundingMemberSince: userData.foundingMemberSince || null,
     signupCount: userData.signupCount || null,

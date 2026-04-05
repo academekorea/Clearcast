@@ -1,6 +1,17 @@
 // Supabase client for Netlify Functions
 // Admin client — server-side only, never expose service key to browser
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { getStore } from '@netlify/blobs'
+
+// ── Blobs fallback queue ──────────────────────────────────────────────────────
+// If Supabase unavailable, queue write in Blobs for retry
+async function queueWrite(table: string, data: Record<string, unknown>): Promise<void> {
+  try {
+    const store = getStore('supabase-queue')
+    const key = `queue-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    await store.setJSON(key, { table, data, timestamp: new Date().toISOString() })
+  } catch { /* non-critical */ }
+}
 
 let _admin: SupabaseClient | null = null
 let _public: SupabaseClient | null = null
@@ -21,23 +32,27 @@ export function getSupabasePublic(): SupabaseClient | null {
   return _public
 }
 
-// Fire-and-forget Supabase write — never throws, never blocks
+// Fire-and-forget Supabase write — falls back to Blobs queue if Supabase unavailable
 export async function sbInsert(table: string, data: Record<string, unknown>): Promise<void> {
   try {
     const sb = getSupabaseAdmin()
-    if (!sb) return
+    if (!sb) { await queueWrite(table, data); return }
     await sb.from(table).insert(data)
-  } catch { /* non-critical — never block main flow */ }
+  } catch {
+    await queueWrite(table, data)
+  }
 }
 
 export async function sbUpsert(table: string, data: Record<string, unknown>, onConflict?: string): Promise<void> {
   try {
     const sb = getSupabaseAdmin()
-    if (!sb) return
+    if (!sb) { await queueWrite(table, data); return }
     const q = sb.from(table).upsert(data)
     if (onConflict) (q as any).onConflict(onConflict)
     await q
-  } catch { /* non-critical */ }
+  } catch {
+    await queueWrite(table, data)
+  }
 }
 
 export async function sbUpdate(table: string, match: Record<string, unknown>, data: Record<string, unknown>): Promise<void> {

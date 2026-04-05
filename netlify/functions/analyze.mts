@@ -1,19 +1,29 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import { trackEvent, sbUpsert } from "./lib/supabase.js";
+import { isSuperAdmin } from "./lib/admin.js";
 
 // ── URL NORMALIZATION ─────────────────────────────────────────────────────
 
 function extractVideoId(url: string): string | null {
   const m = url.match(
-    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    /(?:(?:music\.|podcasts\.)?youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
   );
+  return m ? m[1] : null;
+}
+
+function extractPlaylistId(url: string): string | null {
+  const m = url.match(/[?&]list=([^&#]+)/);
   return m ? m[1] : null;
 }
 
 function normalizeYouTubeUrl(url: string): string | null {
   const id = extractVideoId(url);
   return id ? `https://www.youtube.com/watch?v=${id}` : null;
+}
+
+function isYouTubeUrl(url: string): boolean {
+  return /(?:youtube\.com|youtu\.be|music\.youtube\.com|podcasts\.youtube\.com)/.test(url);
 }
 
 // ── PRE-FLIGHT CHECK ──────────────────────────────────────────────────────
@@ -470,12 +480,15 @@ export default async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { url: rawUrl, showName, showSlug, showArtwork, showFeedUrl, episodeTitle, store = "us", userId, userPlan } = body;
+    const { url: rawUrl, showName, showSlug, showArtwork, showFeedUrl, episodeTitle, store = "us", userId, userPlan, userEmail } = body;
+
+    // ── Super admin bypass ────────────────────────────────────────────────
+    const superAdmin = isSuperAdmin(userEmail || "");
 
     // ── Track analysis_started event ──
     trackEvent(userId, 'analysis_started', {
       url: rawUrl || '',
-      plan: userPlan || 'anonymous',
+      plan: superAdmin ? 'studio' : (userPlan || 'anonymous'),
     });
     // Upsert usage record
     if (userId) {
@@ -484,7 +497,7 @@ export default async (req: Request) => {
     }
 
     // ── Tier enforcement ──────────────────────────────────────────────────
-    if (userId && userPlan) {
+    if (!superAdmin && userId && userPlan) {
       const userStore = getStore("podlens-users");
       const check = await checkAndIncrementUsage(userStore, userId, userPlan);
       if (!check.allowed) {
@@ -518,6 +531,36 @@ export default async (req: Request) => {
     }
 
     const blobStore = getStore("podlens-jobs");
+
+    // ── YouTube playlist → episode picker ────────────────────────────────
+    const playlistId = extractPlaylistId(rawUrl);
+    if (playlistId && isYouTubeUrl(rawUrl) && !extractVideoId(rawUrl)) {
+      const ytApiKey = Netlify.env.get("YOUTUBE_API_KEY");
+      if (ytApiKey) {
+        try {
+          const plRes = await fetch(
+            `https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&part=snippet&maxResults=20&key=${ytApiKey}`,
+            { signal: AbortSignal.timeout(8000) }
+          );
+          if (plRes.ok) {
+            const plData = await plRes.json();
+            const episodes = (plData.items || []).map((item: any) => ({
+              title: item.snippet?.title || "",
+              videoId: item.snippet?.resourceId?.videoId || "",
+              thumbnail: item.snippet?.thumbnails?.medium?.url || "",
+              publishedAt: item.snippet?.publishedAt || "",
+              url: `https://www.youtube.com/watch?v=${item.snippet?.resourceId?.videoId}`,
+            })).filter((e: any) => e.videoId);
+            return new Response(JSON.stringify({
+              status: "needs_episode_selection",
+              playlistId,
+              episodes,
+              showName: plData.items?.[0]?.snippet?.channelTitle || "",
+            }), { status: 200, headers: { "Content-Type": "application/json" } });
+          }
+        } catch { /* fall through to normal path */ }
+      }
+    }
 
     // ── YouTube path ──────────────────────────────────────────────────────
     const normalizedYt = normalizeYouTubeUrl(rawUrl);

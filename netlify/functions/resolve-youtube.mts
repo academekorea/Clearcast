@@ -5,11 +5,12 @@ import { getStore } from "@netlify/blobs";
 
 function extractVideoId(url: string): string | null {
   const patterns = [
-    /[?&]v=([^&#]+)/,
-    /youtu\.be\/([^?&#/]+)/,
-    /youtube\.com\/embed\/([^?&#/]+)/,
-    /youtube\.com\/shorts\/([^?&#/]+)/,
-    /youtube\.com\/v\/([^?&#/]+)/,
+    /[?&]v=([a-zA-Z0-9_-]{11})/,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com|music\.youtube\.com|podcasts\.youtube\.com)\/embed\/([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com|music\.youtube\.com|podcasts\.youtube\.com)\/shorts\/([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com|music\.youtube\.com)\/v\/([a-zA-Z0-9_-]{11})/,
+    /podcasts\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
   ];
   for (const p of patterns) {
     const m = url.match(p);
@@ -19,12 +20,17 @@ function extractVideoId(url: string): string | null {
 }
 
 function extractHandle(url: string): string | null {
-  const m = url.match(/youtube\.com\/@([^/?&#]+)/);
+  const m = url.match(/(?:youtube\.com|music\.youtube\.com)\/@([^/?&#]+)/);
   return m?.[1] ?? null;
 }
 
 function extractChannelId(url: string): string | null {
   const m = url.match(/youtube\.com\/channel\/([^/?&#]+)/);
+  return m?.[1] ?? null;
+}
+
+function extractPlaylistId(url: string): string | null {
+  const m = url.match(/[?&]list=([^&#]+)/);
   return m?.[1] ?? null;
 }
 
@@ -99,6 +105,7 @@ export default async (req: Request) => {
   const videoId = extractVideoId(inputUrl);
   const handle = extractHandle(inputUrl);
   const channelIdFromUrl = extractChannelId(inputUrl);
+  const playlistId = extractPlaylistId(inputUrl);
 
   // Check Blobs cache (24h TTL)
   const store = getStore("podlens-youtube-feeds");
@@ -108,6 +115,8 @@ export default async (req: Request) => {
     ? `handle-${handle}`
     : channelIdFromUrl
     ? `channel-${channelIdFromUrl}`
+    : playlistId
+    ? `playlist-${playlistId}`
     : null;
 
   if (cacheKey) {
@@ -205,6 +214,7 @@ export default async (req: Request) => {
     feedUrl,
     feedType,
     videoId: videoId ?? null,
+    playlistId: playlistId ?? null,
     thumbnail,
     resolvedAt: new Date().toISOString(),
     method: feedType,

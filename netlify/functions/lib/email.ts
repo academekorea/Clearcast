@@ -152,6 +152,45 @@ export function weeklyDigestEmail(opts: {
   `)
 }
 
+export function magicLinkEmail(opts: {
+  name: string
+  magicUrl: string
+  expiryMinutes: number
+}): string {
+  const { name, magicUrl, expiryMinutes } = opts
+  return baseTemplate(`
+    <div class="h1">Your sign-in link</div>
+    <p>Hi ${name || 'there'},</p>
+    <p>Click the button below to sign in to Podlens. This link expires in ${expiryMinutes} minutes and can only be used once.</p>
+    <a class="btn" href="${magicUrl}">Sign in to Podlens →</a>
+    <p class="muted">If you didn't request this, you can safely ignore this email. Someone may have typed your address by mistake.</p>
+  `)
+}
+
+export function newDeviceAlertEmail(opts: {
+  name: string
+  deviceInfo: string
+  location: string
+  time: string
+  secureUrl: string
+}): string {
+  const { name, deviceInfo, location, time, secureUrl } = opts
+  return baseTemplate(`
+    <div class="h1">New sign-in detected</div>
+    <p>Hi ${name || 'there'},</p>
+    <div class="warning">
+      <strong>Your Podlens account was accessed from a new device.</strong>
+    </div>
+    <div style="background:#f8f8f6;border-radius:6px;padding:14px 16px;margin:14px 0;border:1px solid #e0ddd8;font-size:13px">
+      <div style="margin-bottom:6px"><strong>Device:</strong> ${deviceInfo}</div>
+      <div style="margin-bottom:6px"><strong>Location:</strong> ${location}</div>
+      <div><strong>Time:</strong> ${time}</div>
+    </div>
+    <p>If this was you, no action is needed. If you don't recognize this sign-in, secure your account immediately.</p>
+    <a class="btn" href="${secureUrl}">Review account security →</a>
+  `)
+}
+
 // ── Send helper ──────────────────────────────────────────────────────────────
 
 export async function sendEmail(opts: {

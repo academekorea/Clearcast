@@ -7,6 +7,16 @@
   node_bundler = "esbuild"
   included_files = ["netlify/functions/lib/**"]
 
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    X-XSS-Protection = "1; mode=block"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
 [[redirects]]
   from = "/show/*"
   to = "/"
@@ -60,4 +70,24 @@
 [[redirects]]
   from = "/api/push-subscribe"
   to = "/.netlify/functions/push-subscribe"
+  status = 200
+
+[[redirects]]
+  from = "/api/send-magic-link"
+  to = "/.netlify/functions/send-magic-link"
+  status = 200
+
+[[redirects]]
+  from = "/api/verify-magic-link"
+  to = "/.netlify/functions/verify-magic-link"
+  status = 200
+
+[[redirects]]
+  from = "/auth/google/callback"
+  to = "/.netlify/functions/google-callback"
+  status = 200
+
+[[redirects]]
+  from = "/auth/kakao/callback"
+  to = "/.netlify/functions/kakao-callback"
   status = 200

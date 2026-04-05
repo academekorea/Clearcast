@@ -1,6 +1,8 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import { getSupabaseAdmin } from "./lib/supabase.js";
+import { isSuperAdmin, applySuperAdminOverrides, superAdminSupabaseFields } from "./lib/admin.js";
+import { sendEmail, newDeviceAlertEmail } from "./lib/email.js";
 
 async function sha256hex(text: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -180,6 +182,9 @@ export default async (req: Request) => {
     // Assign founding member status
     await assignFoundingStatus(userData, googleEmail, isNewUser);
 
+    // Super admin override
+    if (isSuperAdmin(googleEmail)) applySuperAdminOverrides(userData, googleEmail);
+
     try {
       await userStore.setJSON(`google-${googleUserId}`, userData);
       if (googleEmail) {
@@ -187,12 +192,41 @@ export default async (req: Request) => {
         await userStore.setJSON(emailKey, userData);
       }
     } catch {}
+  } else if (isSuperAdmin(googleEmail)) {
+    // Returning super admin — always upgrade
+    applySuperAdminOverrides(userData, googleEmail);
+    try { await userStore.setJSON(`google-${googleUserId}`, userData); } catch {}
+  }
+
+  // New device detection (existing users only)
+  if (!isNewUser && googleEmail) {
+    const ua = req.headers.get("user-agent") || "";
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ua.slice(0, 200)));
+    const fp = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    const deviceKey = `device-${userData.id}-${fp}`;
+    try {
+      const known = await userStore.get(deviceKey, { type: "json" });
+      if (!known) {
+        await userStore.setJSON(deviceKey, { firstSeen: new Date().toISOString(), userAgent: ua.slice(0, 200) });
+        sendEmail({
+          to: googleEmail,
+          subject: "New sign-in to your Podlens account",
+          html: newDeviceAlertEmail({
+            name: userData.name || "",
+            deviceInfo: ua.slice(0, 100) || "Unknown device",
+            location: "Unknown",
+            time: new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC",
+            secureUrl: "https://podlens.app/settings#security",
+          }),
+        }).catch(() => {});
+      }
+    } catch {}
   }
 
   // Upsert user to Supabase (fire-and-forget)
   const sb = getSupabaseAdmin();
   if (sb) {
-    sb.from('users').upsert({
+    const supaFields: Record<string, unknown> = {
       id: userData.id,
       email: googleEmail,
       name: googleName || userData.name,
@@ -208,7 +242,9 @@ export default async (req: Request) => {
       pilot_expires_at: userData.pilotExpiresAt || null,
       created_at: userData.signupDate || new Date().toISOString(),
       last_seen_at: new Date().toISOString(),
-    }, { onConflict: 'id' }).then(() => {}).catch(() => {});
+    };
+    if (isSuperAdmin(googleEmail)) Object.assign(supaFields, superAdminSupabaseFields());
+    sb.from('users').upsert(supaFields, { onConflict: 'id' }).then(() => {}).catch(() => {});
   }
 
   const loginPayload = encodeURIComponent(JSON.stringify({
@@ -226,6 +262,7 @@ export default async (req: Request) => {
     joinedAt: userData.joinedAt,
     authProvider: "google",
     isNewUser,
+    isSuperAdmin: isSuperAdmin(googleEmail),
     foundingMember: userData.foundingMember || false,
     foundingMemberSince: userData.foundingMemberSince || null,
     signupCount: userData.signupCount || null,

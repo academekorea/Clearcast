@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { isSuperAdmin } from "./lib/admin.js";
 
 export default async (req: Request) => {
   const url = new URL(req.url);
@@ -40,6 +41,16 @@ export default async (req: Request) => {
       spotsLeft,
       signupCount,
       foundingMax,
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
+  }
+
+  // Super admin check by email param
+  const emailParam = url.searchParams.get("email") || "";
+  if (emailParam && isSuperAdmin(emailParam)) {
+    return new Response(JSON.stringify({
+      plan: "studio", isActive: true, currentPeriodEnd: null,
+      isSuperAdmin: true, bypassLimits: true,
+      foundingMember: false, pilotMember: false,
     }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
