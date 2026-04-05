@@ -1,6 +1,8 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
+const BASE_URL = "https://podlens.app";
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
@@ -8,7 +10,7 @@ export default async (req: Request) => {
   const errorParam = url.searchParams.get("error");
 
   if (errorParam) {
-    return Response.redirect("/?spotify_error=access_denied", 302);
+    return Response.redirect(`${BASE_URL}/?spotify_error=access_denied`, 302);
   }
 
   let state: any = {};
@@ -19,7 +21,7 @@ export default async (req: Request) => {
   const redirectUri = "https://podlens.app/auth/spotify/callback";
 
   if (!code || !clientId || !clientSecret) {
-    return Response.redirect("/?spotify_error=missing_config", 302);
+    return Response.redirect(`${BASE_URL}/?spotify_error=missing_config`, 302);
   }
 
   // Exchange authorization code for access token
@@ -38,10 +40,10 @@ export default async (req: Request) => {
       }).toString(),
       signal: AbortSignal.timeout(8000),
     });
-    if (!tokenRes.ok) return Response.redirect("/?spotify_error=token_failed", 302);
+    if (!tokenRes.ok) return Response.redirect(`${BASE_URL}/?spotify_error=token_failed`, 302);
     tokenData = await tokenRes.json();
   } catch {
-    return Response.redirect("/?spotify_error=token_timeout", 302);
+    return Response.redirect(`${BASE_URL}/?spotify_error=token_timeout`, 302);
   }
 
   const { access_token, refresh_token, expires_in } = tokenData;
@@ -53,10 +55,10 @@ export default async (req: Request) => {
       headers: { Authorization: `Bearer ${access_token}` },
       signal: AbortSignal.timeout(8000),
     });
-    if (!profileRes.ok) return Response.redirect("/?spotify_error=profile_failed", 302);
+    if (!profileRes.ok) return Response.redirect(`${BASE_URL}/?spotify_error=profile_failed`, 302);
     profile = await profileRes.json();
   } catch {
-    return Response.redirect("/?spotify_error=profile_timeout", 302);
+    return Response.redirect(`${BASE_URL}/?spotify_error=profile_timeout`, 302);
   }
 
   const spotifyUserId = profile.id || "";
@@ -80,7 +82,7 @@ export default async (req: Request) => {
   // ── CONNECT flow: link Spotify to existing Podlens account ──
   if (action === "connect" && state.userId) {
     try { await store.setJSON(`spotify-token-${state.userId}`, storedToken); } catch {}
-    return Response.redirect("/settings?connected=spotify", 302);
+    return Response.redirect(`${BASE_URL}/settings?connected=spotify`, 302);
   }
 
   // ── LOGIN / SIGNUP flow ──
@@ -141,7 +143,7 @@ export default async (req: Request) => {
     isNewUser,
   }));
 
-  return Response.redirect(`/?spotify_login=${loginPayload}`, 302);
+  return Response.redirect(`${BASE_URL}/?spotify_login=${loginPayload}`, 302);
 };
 
 export const config: Config = { path: "/auth/spotify/callback" };

@@ -71,13 +71,15 @@ async function assignFoundingStatus(
   }
 }
 
+const BASE_URL = "https://podlens.app";
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const errorParam = url.searchParams.get("error");
 
   if (errorParam || !code) {
-    return Response.redirect("/?kakao_error=access_denied", 302);
+    return Response.redirect(`${BASE_URL}/?kakao_error=access_denied`, 302);
   }
 
   const appKey = Netlify.env.get("KAKAO_APP_KEY");
@@ -85,7 +87,7 @@ export default async (req: Request) => {
   const redirectUri = "https://podlens.app/auth/kakao/callback";
 
   if (!appKey) {
-    return Response.redirect("/?kakao_error=missing_config", 302);
+    return Response.redirect(`${BASE_URL}/?kakao_error=missing_config`, 302);
   }
 
   // Exchange authorization code for access token
@@ -105,10 +107,10 @@ export default async (req: Request) => {
       body: new URLSearchParams(tokenParams).toString(),
       signal: AbortSignal.timeout(8000),
     });
-    if (!tokenRes.ok) return Response.redirect("/?kakao_error=token_failed", 302);
+    if (!tokenRes.ok) return Response.redirect(`${BASE_URL}/?kakao_error=token_failed`, 302);
     tokenData = await tokenRes.json();
   } catch {
-    return Response.redirect("/?kakao_error=token_timeout", 302);
+    return Response.redirect(`${BASE_URL}/?kakao_error=token_timeout`, 302);
   }
 
   const { access_token } = tokenData;
@@ -120,10 +122,10 @@ export default async (req: Request) => {
       headers: { Authorization: `Bearer ${access_token}` },
       signal: AbortSignal.timeout(8000),
     });
-    if (!profileRes.ok) return Response.redirect("/?kakao_error=profile_failed", 302);
+    if (!profileRes.ok) return Response.redirect(`${BASE_URL}/?kakao_error=profile_failed`, 302);
     profile = await profileRes.json();
   } catch {
-    return Response.redirect("/?kakao_error=profile_timeout", 302);
+    return Response.redirect(`${BASE_URL}/?kakao_error=profile_timeout`, 302);
   }
 
   const kakaoId = String(profile.id || "");
@@ -229,7 +231,7 @@ export default async (req: Request) => {
     pilotExpiresAt: userData.pilotExpiresAt || null,
   }));
 
-  return Response.redirect(`/?kakao_login=${loginPayload}`, 302);
+  return Response.redirect(`${BASE_URL}/?kakao_login=${loginPayload}`, 302);
 };
 
 export const config: Config = { path: "/auth/kakao/callback" };

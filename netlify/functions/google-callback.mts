@@ -76,6 +76,8 @@ async function assignFoundingStatus(
   }
 }
 
+const BASE_URL = "https://podlens.app";
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
@@ -83,7 +85,7 @@ export default async (req: Request) => {
   const errorParam = url.searchParams.get("error");
 
   if (errorParam) {
-    return Response.redirect("/?google_error=access_denied", 302);
+    return Response.redirect(`${BASE_URL}/?google_error=access_denied`, 302);
   }
 
   let state: any = {};
@@ -94,7 +96,7 @@ export default async (req: Request) => {
   const redirectUri = "https://podlens.app/auth/google/callback";
 
   if (!code || !clientId || !clientSecret) {
-    return Response.redirect("/?google_error=missing_config", 302);
+    return Response.redirect(`${BASE_URL}/?google_error=missing_config`, 302);
   }
 
   // Exchange authorization code for access token
@@ -112,10 +114,10 @@ export default async (req: Request) => {
       }).toString(),
       signal: AbortSignal.timeout(8000),
     });
-    if (!tokenRes.ok) return Response.redirect("/?google_error=token_failed", 302);
+    if (!tokenRes.ok) return Response.redirect(`${BASE_URL}/?google_error=token_failed`, 302);
     tokenData = await tokenRes.json();
   } catch {
-    return Response.redirect("/?google_error=token_timeout", 302);
+    return Response.redirect(`${BASE_URL}/?google_error=token_timeout`, 302);
   }
 
   const { access_token, id_token } = tokenData;
@@ -270,7 +272,7 @@ export default async (req: Request) => {
     pilotExpiresAt: userData.pilotExpiresAt || null,
   }));
 
-  return Response.redirect(`/?google_login=${loginPayload}`, 302);
+  return Response.redirect(`${BASE_URL}/?google_login=${loginPayload}`, 302);
 };
 
 export const config: Config = { path: "/auth/google/callback" };
