@@ -4,13 +4,7 @@ import { getStore } from "@netlify/blobs";
 // Runs every 24h — checks RSS feeds for new episodes for followed shows
 // On new episode: stores notification + (stub) sends email alert to Creator+ users
 
-export default async (req: Request) => {
-  const secret = Netlify.env.get("RATE_LIMIT_SECRET") || "";
-  const authHeader = req.headers.get("x-pl-secret") || "";
-  if (secret && authHeader !== secret) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
+export default async (_req: Request) => {
   const userStore = getStore("podlens-users");
   const metaStore = getStore("podlens-meta");
 

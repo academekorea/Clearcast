@@ -105,6 +105,11 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
 .pl-wm-lens{font-weight:700}
 .pl-lockup-tagline{display:block;font-family:'Inter',-apple-system,sans-serif;font-size:9.5px;color:var(--text3,#999);letter-spacing:.02em;line-height:1.3;white-space:nowrap}
 @media(max-width:480px){nav .pl-lockup-divider,nav .pl-lockup-text{display:none}nav .pl-lockup-icon{width:30px;height:30px}}
+
+.mode-toggle{background:none;border:none;font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:transform .2s ease,background .2s;line-height:1;flex-shrink:0}
+.mode-toggle:hover{transform:scale(1.25);background:rgba(128,128,128,0.1)}
+:root{--bg-primary:#0A0F1E;--bg-secondary:#111827;--bg-card:#111827;--bg-hover:#1a2233;--text-primary:#F9FAFB;--text-secondary:#9CA3AF;--text-muted:#6B7280;--accent:#818CF8;--accent-hover:#A5B4FC;--border-new:#1F2937;--border-subtle:#374151}
+body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6;--bg-card:#FFFFFF;--bg-hover:#F0F0F0;--text-primary:#0A0A0A;--text-secondary:#374151;--text-muted:#9CA3AF;--accent:#6366F1;--accent-hover:#4F46E5;--border-new:#E5E7EB;--border-subtle:#F3F4F6}
 </style>
 <!-- Hotjar / ContentSquare -->
 <script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
@@ -114,6 +119,10 @@ footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2
 <script src="https://browser.sentry-cdn.com/7.x.x/bundle.min.js" crossorigin="anonymous"></script>
 <script>if(window.Sentry)Sentry.init({dsn:"https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128",environment:"production",tracesSampleRate:0.2});</script>
 <link rel="canonical" href="https://podlens.app/how-it-works">
+<script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()
+function toggleMode(){var isNowLight=document.body.classList.toggle('light-mode');document.documentElement.setAttribute('data-theme',isNowLight?'light':'dark');document.querySelectorAll('.mode-toggle').forEach(function(btn){btn.textContent=isNowLight?'☀️':'🌙';});localStorage.setItem('podlens-mode',isNowLight?'light':'dark');localStorage.setItem('pl-theme',isNowLight?'light':'dark');}
+document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.body.classList.add('light-mode');document.documentElement.setAttribute('data-theme','light');document.querySelectorAll('.mode-toggle').forEach(function(b){b.textContent='☀️';});}});
+</script>
 </head>
 <body>
 <nav>

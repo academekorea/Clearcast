@@ -121,3 +121,13 @@
   from = "/launch"
   to = "/launch.html"
   status = 200
+
+[[redirects]]
+  from = "/api/showcases"
+  to = "/.netlify/functions/get-showcases"
+  status = 200
+
+[[redirects]]
+  from = "/api/build-showcases"
+  to = "/.netlify/functions/build-showcases-background"
+  status = 202

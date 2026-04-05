@@ -211,15 +211,13 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .bias-snap-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;flex-shrink:0}
 .bias-snap-sample{font-size:10px;color:rgba(255,255,255,.35);margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}
 /* Founding banner */
-.founding-banner{background:var(--color-founding,#FFF8E7);border-bottom:1px solid var(--color-founding-border,#F0C040);padding:10px 40px}
-.founding-banner-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.founding-badge{font-size:13px;font-weight:600;color:#92600A}
-.founding-text{font-size:13px;color:#666;flex:1}
-.founding-spots{font-size:12px;font-weight:600;color:#92600A}
-.founding-progress-wrap{width:80px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden}
-.founding-progress-fill{height:100%;background:var(--color-founding-border,#F0C040);border-radius:2px;transition:width .5s}
-.founding-ends{font-size:11px;color:#999}
-@media(max-width:768px){.founding-banner{padding:10px 16px}.founding-progress-wrap{display:none}.founding-ends{display:none}}
+#founding-banner{display:flex;justify-content:center;align-items:center;width:100%;padding:10px 24px;text-align:center;text-decoration:none;cursor:pointer;transition:opacity .2s ease;background:#FFF8E7;border-bottom:1px solid #F0C040;color:#92400E}
+#founding-banner:hover{opacity:.85}
+.founding-banner-inner{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;max-width:800px}
+.founding-emoji{font-size:16px;flex-shrink:0}
+.founding-sub{margin-left:6px;opacity:.8;font-size:.9em}
+[data-theme="dark"] #founding-banner{background:#2A2200;border-bottom-color:#664D00;color:#FFD966}
+@media(max-width:480px){.founding-banner-inner{flex-direction:column;gap:4px}.founding-sub{margin-left:0}}
 /* Engagement nudge banner */
 .nudge-banner{position:fixed;bottom:0;left:0;right:0;background:var(--navy);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:12px;z-index:9000;transform:translateY(100%);transition:transform .3s ease;font-size:13px}
 .nudge-banner.on{transform:translateY(0)}
@@ -1412,6 +1410,58 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 .trending-card:hover{border-color:var(--navy)}
 .trending-card-title{font-size:12px;font-weight:600;line-height:1.35;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .trending-card-show{font-size:10px;color:var(--text3)}
+/* Showcase section */
+.showcase-section{padding:80px 24px;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border)}
+.showcase-header{text-align:center;margin-bottom:48px}
+.showcase-header h2{font-size:2rem;font-weight:700;color:var(--text);margin-bottom:8px;font-family:var(--ffs)}
+.showcase-header p{color:var(--text2);font-size:1.1rem}
+.showcase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-bottom:48px}
+.showcase-card{background:var(--bg-card,var(--bg2));border:1px solid var(--border-new,var(--border));border-radius:16px;padding:24px;transition:transform .2s,border-color .2s;cursor:default}
+.showcase-card:hover{transform:translateY(-4px);border-color:var(--accent,var(--navy))}
+.showcase-card.bias-right{border-top:3px solid #EF4444;background:linear-gradient(160deg,rgba(239,68,68,.06) 0%,var(--bg-card,var(--bg2)) 40%)}
+.showcase-card.bias-left{border-top:3px solid #3B82F6;background:linear-gradient(160deg,rgba(59,130,246,.06) 0%,var(--bg-card,var(--bg2)) 40%)}
+.showcase-card.bias-balanced{border-top:3px solid #10B981;background:linear-gradient(160deg,rgba(16,185,129,.06) 0%,var(--bg-card,var(--bg2)) 40%)}
+.showcase-card-header{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px}
+.showcase-artwork{width:64px;height:64px;border-radius:12px;object-fit:cover;flex-shrink:0;background:var(--bg-secondary,var(--bg3))}
+.showcase-show-name{font-size:.9rem;font-weight:700;color:var(--text-primary,var(--text));margin:0 0 4px;line-height:1.3}
+.showcase-episode{font-size:.78rem;color:var(--text-secondary,var(--text2));margin:0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.showcase-bias-section{margin-bottom:12px}
+.bias-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.bias-track{flex:1;height:6px;background:var(--border-new,var(--border));border-radius:3px;position:relative}
+.bias-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--accent,var(--navy));border:2px solid var(--bg-card,var(--bg2));box-shadow:0 0 0 2px var(--accent,var(--navy))}
+.bias-end-label{font-size:.6rem;color:var(--text-muted,var(--text3));font-weight:700;letter-spacing:.08em}
+.bias-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin-bottom:16px}
+.bias-pill.right{background:rgba(239,68,68,.15);color:#F87171}
+.bias-pill.left{background:rgba(59,130,246,.15);color:#60A5FA}
+.bias-pill.balanced{background:rgba(16,185,129,.15);color:#34D399}
+.showcase-finding{font-style:italic;color:var(--text-secondary,var(--text2));font-size:.85rem;border-left:2px solid var(--border-new,var(--border));padding-left:12px;margin:0 0 18px;line-height:1.6}
+.showcase-see-more{color:var(--accent,var(--navy));font-size:.85rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:gap .15s}
+.showcase-see-more:hover{gap:8px}
+.showcase-footer{text-align:center;color:var(--text2)}
+.showcase-footer p{margin:0 0 6px}
+.showcase-skeleton{background:var(--bg-card,var(--bg2));border:1px solid var(--border-new,var(--border));border-radius:16px;padding:24px;animation:skeleton-pulse 1.5s ease infinite}
+@keyframes skeleton-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.skeleton-line{background:var(--border-new,var(--border));border-radius:4px;margin-bottom:12px}
+@media(max-width:768px){.showcase-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.showcase-section{padding:48px 16px}.showcase-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:16px;padding-bottom:16px;grid-template-columns:unset}.showcase-card{min-width:280px;scroll-snap-align:start;flex-shrink:0}}
+/* Mode toggle */
+.mode-toggle{background:none;border:none;font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:transform .2s ease,background .2s;line-height:1;flex-shrink:0}
+.mode-toggle:hover{transform:scale(1.25);background:rgba(128,128,128,0.1)}
+/* New semantic CSS vars (used by showcase, admin, new components) */
+:root{
+  --bg-primary:#0A0F1E;--bg-secondary:#111827;--bg-card:#111827;--bg-hover:#1a2233;
+  --text-primary:#F9FAFB;--text-secondary:#9CA3AF;--text-muted:#6B7280;
+  --accent:#818CF8;--accent-hover:#A5B4FC;
+  --border-new:#1F2937;--border-subtle:#374151;
+  --success:#34D399;--warning:#FBBF24;--danger:#F87171;
+}
+body.light-mode,[data-theme="light"]{
+  --bg-primary:#FAFAFA;--bg-secondary:#F3F4F6;--bg-card:#FFFFFF;--bg-hover:#F0F0F0;
+  --text-primary:#0A0A0A;--text-secondary:#374151;--text-muted:#9CA3AF;
+  --accent:#6366F1;--accent-hover:#4F46E5;
+  --border-new:#E5E7EB;--border-subtle:#F3F4F6;
+  --success:#059669;--warning:#D97706;--danger:#DC2626;
+}
 /* Hero platform buttons */
 .hero-platform-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;color:white}
 .hero-platform-btn:hover{opacity:.88}
@@ -1467,7 +1517,12 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 </head>
 <body>
 
-<script>(function(){var s=localStorage.getItem('pl-theme');if(s)document.documentElement.setAttribute('data-theme',s);})()</script>
+<script>(function(){
+  var s=localStorage.getItem('pl-theme')||localStorage.getItem('podlens-mode');
+  if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}
+  else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}
+  else if(s){document.documentElement.setAttribute('data-theme',s);}
+})()</script>
 
 <!-- BRANDED SPLASH SCREEN -->
 <div class="pl-splash" id="pl-splash">
@@ -1532,6 +1587,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
     <input type="text" id="nav-search-q" class="nav-search" placeholder="Search episodes or shows&hellip;" readonly style="cursor:pointer" onclick="openSearchOverlay()"/>
     <button class="nav-search-btn" onclick="openSearchOverlay()">&#128269;</button>
   </div>
+  <button class="mode-toggle" id="mode-toggle-btn" onclick="toggleMode()" aria-label="Toggle dark/light mode">🌙</button>
   <div class="nav-r" id="nav-auth-area">
     <!-- rendered by renderNavAuth() -->
   </div>
@@ -1546,15 +1602,15 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
   <div id="home-loggedout">
 
     <!-- FOUNDING BANNER — shown during founding period only -->
-    <div class="founding-banner" id="founding-banner" style="display:none">
+    <a href="/pricing" id="founding-banner" style="display:none">
       <div class="founding-banner-inner">
-        <span class="founding-badge">🎉 Founding Member Pricing</span>
-        <span class="founding-text">33% off forever — <span style="font-style:italic">only available during our launch period</span></span>
-        <span class="founding-spots" id="founding-spots-text" style="display:none"></span>
-        <div class="founding-progress-wrap" style="display:none"><div class="founding-progress-fill" id="founding-progress-fill"></div></div>
-        <span class="founding-ends" id="founding-ends-text" style="display:none"></span>
+        <span class="founding-emoji">🎉</span>
+        <span class="founding-text">
+          <strong>Founding Member Pricing — 33% off forever</strong>
+          <span class="founding-sub">Only available during our launch period →</span>
+        </span>
       </div>
-    </div>
+    </a>
 
     <!-- HERO — 60/40 Grid -->
     <section class="home-hero">
@@ -1614,6 +1670,24 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- SHOWCASE SECTION -->
+    <section class="showcase-section" id="see-it">
+      <div class="showcase-header">
+        <h2>See it in action</h2>
+        <p>Real analysis. Real podcasts. No signup needed.</p>
+      </div>
+      <div class="showcase-grid" id="showcase-grid">
+        <div class="showcase-skeleton"><div class="skeleton-line" style="height:64px;width:100%;margin-bottom:16px"></div><div class="skeleton-line" style="height:16px;width:70%"></div><div class="skeleton-line" style="height:14px;width:90%"></div></div>
+        <div class="showcase-skeleton"><div class="skeleton-line" style="height:64px;width:100%;margin-bottom:16px"></div><div class="skeleton-line" style="height:16px;width:60%"></div><div class="skeleton-line" style="height:14px;width:85%"></div></div>
+        <div class="showcase-skeleton"><div class="skeleton-line" style="height:64px;width:100%;margin-bottom:16px"></div><div class="skeleton-line" style="height:16px;width:75%"></div><div class="skeleton-line" style="height:14px;width:80%"></div></div>
+      </div>
+      <div class="showcase-footer">
+        <p>These are real analyses of real episodes.</p>
+        <p>Connect your podcasts to see what <em>you</em> actually listen to.</p>
+        <a href="#" onclick="openModal('signup');return false;" class="btn-primary" style="margin-top:16px;display:inline-block;text-decoration:none;padding:12px 28px">Get started free &rarr;</a>
       </div>
     </section>
 
@@ -7185,6 +7259,82 @@ function rotateSpotlight() {
   }
 })();
 
+// ── SHOWCASE SECTION ─────────────────────────────────────────────────────────
+(function initShowcases() {
+  var grid = document.getElementById('showcase-grid');
+  if (!grid) return;
+
+  var region = (function() {
+    try {
+      var cookie = document.cookie.split(';').find(function(c) { return c.trim().startsWith('pl_region='); });
+      return cookie ? cookie.split('=')[1] : 'INTL';
+    } catch { return 'INTL'; }
+  })();
+
+  fetch('/api/showcases?region=' + region)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.showcases || !data.showcases.length) {
+        var sec = document.querySelector('.showcase-section');
+        if (sec) sec.remove();
+        return;
+      }
+      grid.innerHTML = data.showcases.map(renderShowcaseCard).join('');
+    })
+    .catch(function() {
+      var sec = document.querySelector('.showcase-section');
+      if (sec) sec.remove();
+    });
+})();
+
+function renderShowcaseCard(c) {
+  var dir = c.bias_direction || 'balanced';
+  var score = Math.max(5, Math.min(95, c.bias_score || 50));
+  var href = c.analysis_url || '#see-it';
+  var onclick = c.analysis_url
+    ? ''
+    : ' onclick="showToast(\'Analysis coming soon — check back shortly\',3000);return false;"';
+  return '<article class="showcase-card bias-' + dir + '">'
+    + '<div class="showcase-card-header">'
+    + '<img src="' + _esc(c.show_artwork || '') + '" alt="' + _esc(c.show_name || '') + '" class="showcase-artwork" onerror="this.src=\'/favicon.svg\'">'
+    + '<div class="showcase-meta"><h3 class="showcase-show-name">' + _esc(c.show_name || '') + '</h3>'
+    + '<p class="showcase-episode">' + _esc(c.episode_title || '') + '</p></div>'
+    + '</div>'
+    + '<div class="showcase-bias-section">'
+    + '<div class="bias-bar-row">'
+    + '<span class="bias-end-label">LEFT</span>'
+    + '<div class="bias-track"><div class="bias-dot" style="left:' + score + '%"></div></div>'
+    + '<span class="bias-end-label">RIGHT</span>'
+    + '</div>'
+    + '<span class="bias-pill ' + dir + '">' + _esc(c.bias_label || '') + '</span>'
+    + '</div>'
+    + '<blockquote class="showcase-finding">&ldquo;' + _esc(c.top_finding || '') + '&rdquo;</blockquote>'
+    + '<a href="' + _esc(href) + '" class="showcase-see-more"' + onclick + '>See full analysis &rarr;</a>'
+    + '</article>';
+}
+
+function _esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── MODE TOGGLE ──────────────────────────────────────────────────────────────
+function toggleMode() {
+  var isNowLight = document.body.classList.toggle('light-mode');
+  document.documentElement.setAttribute('data-theme', isNowLight ? 'light' : 'dark');
+  document.querySelectorAll('.mode-toggle').forEach(function(btn) {
+    btn.textContent = isNowLight ? '☀️' : '🌙';
+  });
+  localStorage.setItem('podlens-mode', isNowLight ? 'light' : 'dark');
+  localStorage.setItem('pl-theme', isNowLight ? 'light' : 'dark');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = localStorage.getItem('podlens-mode') || localStorage.getItem('pl-theme');
+  if (saved === 'light') {
+    document.body.classList.add('light-mode');
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.querySelectorAll('.mode-toggle').forEach(function(btn) { btn.textContent = '☀️'; });
+  }
+});
+
 // ── HERO PLATFORM CONNECT ────────────────────────────────────────────────────
 function heroConnectSpotify() {
   var u = plUser();
@@ -7476,6 +7626,30 @@ function _renderAdminTab(tab, d) {
       + '</select>'
       + '<button onclick="_admConfirmSetPlan()" class="btn-primary" style="font-size:12px;padding:8px 14px">Set Plan</button>'
       + '</div>';
+
+    // Showcase management
+    html += '<div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">'
+      + '<div style="font-size:13px;font-weight:700;margin-bottom:16px">Showcase Management</div>'
+      + '<p style="font-size:12px;color:var(--text3);margin-bottom:16px">Showcase analyses appear on the homepage. Run full analysis pipeline on most recent episode of each show.</p>';
+
+    var showcases = [
+      {slug:'jre', name:'The Joe Rogan Experience'},
+      {slug:'lex-fridman', name:'Lex Fridman Podcast'},
+      {slug:'the-daily', name:'The Daily (NYT)'},
+      {slug:'fresh-air', name:'NPR Fresh Air'},
+      {slug:'korean-showcase', name:'Korean Showcase'},
+    ];
+    html += '<table class="adm-table"><thead><tr><th>Show</th><th>Action</th></tr></thead><tbody>';
+    showcases.forEach(function(s) {
+      html += '<tr><td>' + s.name + '</td>'
+        + '<td><button onclick="_admRefreshShowcase(\'' + s.slug + '\')" style="font-size:11px;border:1px solid var(--border);border-radius:3px;padding:3px 8px;cursor:pointer;background:none">Refresh</button></td>'
+        + '</tr>';
+    });
+    html += '</tbody></table>';
+    html += '<div style="margin-top:12px">'
+      + '<button onclick="_admRefreshAllShowcases()" class="btn-primary" style="font-size:12px;padding:8px 16px">🔄 Refresh all showcases</button>'
+      + '<div id="adm-showcase-status" style="margin-top:8px;font-size:12px;color:var(--text3)"></div>'
+      + '</div></div>';
   }
 
   el.innerHTML = html;
@@ -7530,6 +7704,34 @@ function _admConfirmSetPlan() {
   if (!userId) { alert('Enter a user ID'); return; }
   if (!confirm('Set plan to "' + plan + '" for user ' + userId + '?')) return;
   _admControlAction({ action: 'set-plan', userId: userId, value: plan });
+}
+
+function _admRefreshShowcase(slug) {
+  var u = plUser(); if (!u) return;
+  var statusEl = document.getElementById('adm-showcase-status');
+  if (statusEl) statusEl.textContent = 'Starting refresh for ' + slug + '…';
+  fetch('/api/build-showcases', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug: slug })
+  }).then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (statusEl) statusEl.textContent = d.ok ? '✓ Refresh triggered for ' + slug + ' (takes 5-10 min)' : '✗ Error: ' + (d.error || 'unknown');
+    }).catch(function() { if (statusEl) statusEl.textContent = '✗ Network error'; });
+}
+
+function _admRefreshAllShowcases() {
+  var u = plUser(); if (!u) return;
+  var statusEl = document.getElementById('adm-showcase-status');
+  if (statusEl) statusEl.textContent = 'Starting refresh for all showcases…';
+  fetch('/api/build-showcases', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({})
+  }).then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (statusEl) statusEl.textContent = d.ok ? '✓ Refresh triggered for all showcases (takes 10-15 min)' : '✗ Error: ' + (d.error || 'unknown');
+    }).catch(function() { if (statusEl) statusEl.textContent = '✗ Network error'; });
 }
 
 function _admControlAction(body) {
