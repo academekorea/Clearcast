@@ -517,7 +517,7 @@ export default async (req: Request) => {
       });
     }
 
-    const store = getStore("podlens-jobs");
+    const blobStore = getStore("podlens-jobs");
 
     // ── YouTube path ──────────────────────────────────────────────────────
     const normalizedYt = normalizeYouTubeUrl(rawUrl);
@@ -530,7 +530,7 @@ export default async (req: Request) => {
         const cached = await ytCache.get(videoId, { type: "json" }) as any;
         if (cached?.transcript && cached.createdAt && Date.now() - cached.createdAt < 7 * 24 * 60 * 60 * 1000) {
           const jobId = `yt-${videoId}-cached-${Date.now()}`;
-          await store.setJSON(jobId, {
+          await blobStore.setJSON(jobId, {
             status: "transcribed", jobId, url: normalizedYt,
             transcript: cached.transcript, duration: cached.duration || "",
             createdAt: Date.now(),
@@ -572,7 +572,7 @@ export default async (req: Request) => {
 
       const saveCaption = async (cap: { text: string; duration: string }, source: string) => {
         const jobId = `yt-${videoId}-${Date.now()}`;
-        await store.setJSON(jobId, {
+        await blobStore.setJSON(jobId, {
           status: "transcribed", jobId, url: normalizedYt,
           transcript: cap.text, duration: cap.duration, createdAt: Date.now(),
           episodeTitle: episodeTitle || pageData.videoTitle || null,
@@ -599,7 +599,7 @@ export default async (req: Request) => {
       // ── Layers 2-4: run in parallel ──
       console.log(`[analyze] Layers 2-4 parallel: channelTitle="${channelTitle}", videoTitle="${videoTitle}", channelId="${channelId}"`);
       const [appleResult, podcastIndexResult, rssRetryResult] = await Promise.allSettled([
-        searchApplePodcasts(channelTitle, store),          // Layer 2
+        searchApplePodcasts(channelTitle, store as string),          // Layer 2
         searchPodcastIndex(channelTitle),                   // Layer 3
         retryFromYouTubeChannelRss(channelId, videoId),    // Layer 4 (caption retry)
       ]);
@@ -668,7 +668,7 @@ export default async (req: Request) => {
     return submitToAssemblyAI(audioUrl, url, {
       episodeTitle: episodeTitle || null, showName: showName || null,
       showSlug: showSlug || null, showArtwork: showArtwork || null, showFeedUrl: showFeedUrl || null,
-    }, store, assemblyKey);
+    }, blobStore, assemblyKey);
 
   } catch (e: any) {
     console.error("Analyze error:", e);
