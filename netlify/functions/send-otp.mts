@@ -1,15 +1,21 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import { sendEmail } from "./lib/email.js";
+import { generateOTP, hashOTP, checkRateLimit, getClientIp, rateLimitResponse } from "./lib/security.js";
 
-function hashEmail(email: string): string {
-  let h = 5381;
-  for (let i = 0; i < email.length; i++) h = ((h << 5) + h) ^ email.charCodeAt(i);
-  return Math.abs(h).toString(36);
+async function sha256hex(email: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(email));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
 export default async (req: Request) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
+
+  const clientIp = getClientIp(req);
+
+  // Rate limit: max 5 OTP requests per 10 minutes per IP
+  const rl = await checkRateLimit(clientIp, "send-otp", 5, 600);
+  if (!rl.allowed) return rateLimitResponse(rl.resetIn);
 
   let body: any = {};
   try { body = await req.json(); } catch {}
@@ -20,27 +26,39 @@ export default async (req: Request) => {
   }
 
   const store = getStore("podlens-auth");
-  const key = `otp-${hashEmail(email.toLowerCase())}`;
+  const emailHash = await sha256hex(email.toLowerCase());
+  const key = `otp-${emailHash}`;
 
-  // Rate limit: max 3 OTPs per 10 minutes
+  // Per-email rate limit: max 3 codes per 10 minutes
   try {
     const existing = await store.get(key, { type: "json" }) as any;
-    if (existing && existing.attempts >= 3 && Date.now() - new Date(existing.createdAt).getTime() < 600_000) {
+    if (
+      existing &&
+      existing.sendCount >= 3 &&
+      Date.now() - new Date(existing.createdAt).getTime() < 600_000
+    ) {
       return json({ error: "Too many codes sent. Please wait 10 minutes." }, 429);
     }
   } catch {}
 
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+  // Generate cryptographically secure OTP
+  const code = generateOTP();
+  // Shorten expiry for admin_action (5 min) vs normal (10 min)
+  const expiryMs = purpose === "admin_action" ? 5 * 60 * 1000 : 10 * 60 * 1000;
+  const expiresAt = new Date(Date.now() + expiryMs).toISOString();
+
+  // Hash OTP before storing — never store plaintext
+  const hashedCode = await hashOTP(code);
 
   await store.setJSON(key, {
-    code,
+    hashedCode,
     email: email.toLowerCase(),
     purpose,
     expiresAt,
     createdAt: new Date().toISOString(),
     used: false,
     attempts: 0,
+    sendCount: 1,
   });
 
   const purposeLabel: Record<string, string> = {
@@ -65,7 +83,7 @@ export default async (req: Request) => {
         <div style="background:#0A0F1E;color:white;font-size:36px;font-weight:700;text-align:center;padding:24px;border-radius:8px;letter-spacing:8px;margin-bottom:24px">
           ${code}
         </div>
-        <p style="font-size:13px;color:#888;margin:0">This code expires in 10 minutes. Never share it with anyone.<br>If you didn't request this, you can safely ignore this email.</p>
+        <p style="font-size:13px;color:#888;margin:0">This code expires in ${purpose === "admin_action" ? "5" : "10"} minutes. Never share it with anyone.<br>If you didn't request this, you can safely ignore this email.</p>
       </div>
     `,
   });

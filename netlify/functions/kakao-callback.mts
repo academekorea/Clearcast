@@ -2,6 +2,7 @@ import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import { getSupabaseAdmin } from "./lib/supabase.js";
 import { isSuperAdmin, applySuperAdminOverrides, superAdminSupabaseFields } from "./lib/admin.js";
+import { checkAuthLockout, recordAuthFailure, clearAuthLockout, getClientIp } from "./lib/security.js";
 
 async function sha256hex(text: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -74,9 +75,15 @@ async function assignFoundingStatus(
 const BASE_URL = "https://podlens.app";
 
 export default async (req: Request) => {
+  const clientIp = getClientIp(req);
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const errorParam = url.searchParams.get("error");
+
+  // Check auth lockout
+  if (await checkAuthLockout(clientIp)) {
+    return Response.redirect(`${BASE_URL}/?kakao_error=too_many_attempts`, 302);
+  }
 
   if (errorParam || !code) {
     return Response.redirect(`${BASE_URL}/?kakao_error=access_denied`, 302);
@@ -107,9 +114,13 @@ export default async (req: Request) => {
       body: new URLSearchParams(tokenParams).toString(),
       signal: AbortSignal.timeout(8000),
     });
-    if (!tokenRes.ok) return Response.redirect(`${BASE_URL}/?kakao_error=token_failed`, 302);
+    if (!tokenRes.ok) {
+      await recordAuthFailure(clientIp);
+      return Response.redirect(`${BASE_URL}/?kakao_error=token_failed`, 302);
+    }
     tokenData = await tokenRes.json();
   } catch {
+    await recordAuthFailure(clientIp);
     return Response.redirect(`${BASE_URL}/?kakao_error=token_timeout`, 302);
   }
 
@@ -207,6 +218,9 @@ export default async (req: Request) => {
     if (isSuperAdmin(kakaoEmail)) Object.assign(supaFields, superAdminSupabaseFields());
     sb.from('users').upsert(supaFields, { onConflict: 'id' }).then(() => {}).catch(() => {});
   }
+
+  // Successful auth — clear lockout
+  await clearAuthLockout(clientIp);
 
   const loginPayload = encodeURIComponent(JSON.stringify({
     id: userData.id,

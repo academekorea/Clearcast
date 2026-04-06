@@ -7910,13 +7910,36 @@ function adminRefresh() {
   _fetchAdminData(_adminCurrentTab, _adminPage);
 }
 
+// Admin session auto-lock
+var _adminLastActivity = Date.now();
+var _adminLocked = false;
+var _ADMIN_TIMEOUT_MS = 2 * 60 * 60 * 1000; // 2 hours
+(function initAdminAutoLock() {
+  function touch() { _adminLastActivity = Date.now(); }
+  document.addEventListener('click', touch);
+  document.addEventListener('keypress', touch);
+  setInterval(function() {
+    if (_adminLocked) return;
+    var adminPanel = document.getElementById('view-admin');
+    if (!adminPanel || adminPanel.style.display === 'none') return;
+    if (Date.now() - _adminLastActivity > _ADMIN_TIMEOUT_MS) {
+      _adminLocked = true;
+      adminPanel.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:60vh;flex-direction:column;gap:16px"><div style="font-size:48px">🔒</div><div style="font-size:18px;font-weight:600">Admin session expired</div><div style="font-size:14px;color:var(--text3)">Please sign in again to continue.</div><button onclick="location.reload()" style="margin-top:12px;padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-family:var(--ff)">Sign in again</button></div>';
+    }
+  }, 60000);
+})();
+
 function _fetchAdminData(tab, page) {
   var u = plUser();
   if (!u || !u.isSuperAdmin) return;
+  if (_adminLocked) return;
   var el = document.getElementById('adm-content');
   if (!el) return;
   el.innerHTML = '<div class="adm-loading">Loading ' + tab + '…</div>';
-  fetch('/api/admin-data?tab=' + tab + '&email=' + encodeURIComponent(u.email) + '&page=' + page)
+  var adminToken = u.adminToken || '';
+  var apiUrl = '/api/admin-data?tab=' + tab + '&email=' + encodeURIComponent(u.email)
+    + '&userId=' + encodeURIComponent(u.id || '') + '&page=' + page;
+  fetch(apiUrl, { headers: adminToken ? { 'x-admin-token': adminToken } : {} })
     .then(function(r){ return r.json(); })
     .then(function(d){ _renderAdminTab(tab, d); })
     .catch(function(e){ el.innerHTML = '<div class="adm-loading" style="color:#dc2626">Error loading data</div>'; });
@@ -8144,13 +8167,20 @@ function _admPager(page, total, perPage, onPage) {
   return html;
 }
 
+function _admAdminHeaders(u) {
+  var h = {};
+  if (u && u.adminToken) h['x-admin-token'] = u.adminToken;
+  return h;
+}
+
 function _admUserSearch() {
   var q = (document.getElementById('adm-user-search')||{}).value || '';
   var plan = (document.getElementById('adm-user-plan')||{}).value || '';
   var u = plUser();
   if (!u) return;
-  var el = document.getElementById('adm-content');
-  fetch('/api/admin-data?tab=users&email=' + encodeURIComponent(u.email) + '&q=' + encodeURIComponent(q) + '&plan=' + plan + '&page=1')
+  var url = '/api/admin-data?tab=users&email=' + encodeURIComponent(u.email)
+    + '&userId=' + encodeURIComponent(u.id||'') + '&q=' + encodeURIComponent(q) + '&plan=' + plan + '&page=1';
+  fetch(url, { headers: _admAdminHeaders(u) })
     .then(function(r){ return r.json(); })
     .then(function(d){ _renderAdminTab('users', d); });
 }
@@ -8159,7 +8189,9 @@ function _admEventFilter() {
   var type = (document.getElementById('adm-event-type')||{}).value || '';
   var u = plUser();
   if (!u) return;
-  fetch('/api/admin-data?tab=events&email=' + encodeURIComponent(u.email) + '&type=' + encodeURIComponent(type) + '&page=1')
+  var url = '/api/admin-data?tab=events&email=' + encodeURIComponent(u.email)
+    + '&userId=' + encodeURIComponent(u.id||'') + '&type=' + encodeURIComponent(type) + '&page=1';
+  fetch(url, { headers: _admAdminHeaders(u) })
     .then(function(r){ return r.json(); })
     .then(function(d){ _renderAdminTab('events', d); });
 }
@@ -8211,9 +8243,10 @@ function _admRefreshAllShowcases() {
 function _admControlAction(body) {
   var u = plUser();
   if (!u) return;
-  fetch('/api/admin-data?email=' + encodeURIComponent(u.email), {
+  var hdrs = Object.assign({'Content-Type':'application/json'}, _admAdminHeaders(u));
+  fetch('/api/admin-data?email=' + encodeURIComponent(u.email) + '&userId=' + encodeURIComponent(u.id||''), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: hdrs,
     body: JSON.stringify(body)
   })
     .then(function(r){ return r.json(); })

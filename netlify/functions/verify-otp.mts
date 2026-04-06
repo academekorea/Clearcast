@@ -1,14 +1,20 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { verifyOTPHash, checkRateLimit, getClientIp, rateLimitResponse } from "./lib/security.js";
 
-function hashEmail(email: string): string {
-  let h = 5381;
-  for (let i = 0; i < email.length; i++) h = ((h << 5) + h) ^ email.charCodeAt(i);
-  return Math.abs(h).toString(36);
+async function sha256hex(email: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(email));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
 export default async (req: Request) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
+
+  const clientIp = getClientIp(req);
+
+  // Rate limit: max 10 verification attempts per minute per IP
+  const rl = await checkRateLimit(clientIp, "verify-otp", 10, 60);
+  if (!rl.allowed) return rateLimitResponse(rl.resetIn);
 
   let body: any = {};
   try { body = await req.json(); } catch {}
@@ -17,7 +23,8 @@ export default async (req: Request) => {
   if (!email || !code) return json({ error: "email and code required" }, 400);
 
   const store = getStore("podlens-auth");
-  const key = `otp-${hashEmail(email.toLowerCase())}`;
+  const emailHash = await sha256hex(email.toLowerCase());
+  const key = `otp-${emailHash}`;
 
   let record: any = null;
   try { record = await store.get(key, { type: "json" }); } catch {}
@@ -41,14 +48,25 @@ export default async (req: Request) => {
   // Check used
   if (record.used) return json({ error: "Code already used. Please request a new one." }, 400);
 
-  // Verify code
-  if (record.code !== String(code).trim()) {
-    return json({ error: "Incorrect code. " + (5 - record.attempts) + " attempts remaining." }, 400);
-  }
-
   // Purpose check (optional)
   if (purpose && record.purpose !== purpose) {
     return json({ error: "Code was not issued for this purpose." }, 400);
+  }
+
+  // Verify code — supports both hashed (new) and plaintext (legacy migration)
+  let valid = false;
+  if (record.hashedCode) {
+    valid = await verifyOTPHash(String(code).trim(), record.hashedCode);
+  } else {
+    // Legacy: codes issued before hash migration
+    valid = record.code === String(code).trim();
+  }
+
+  if (!valid) {
+    return json(
+      { error: "Incorrect code. " + Math.max(0, 5 - record.attempts) + " attempts remaining." },
+      400
+    );
   }
 
   // Mark used

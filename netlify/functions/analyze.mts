@@ -2,6 +2,7 @@ import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import { trackEvent, sbUpsert } from "./lib/supabase.js";
 import { isSuperAdmin } from "./lib/admin.js";
+import { checkRateLimit, getClientIp, rateLimitResponse, sanitizeUrl, checkSuspiciousActivity } from "./lib/security.js";
 
 // ── URL NORMALIZATION ─────────────────────────────────────────────────────
 
@@ -479,11 +480,36 @@ export default async (req: Request) => {
   }
 
   try {
+    const clientIp = getClientIp(req);
+
+    // ── IP-level rate limit: 10 analyses per minute ───────────────────────
+    const rl = await checkRateLimit(clientIp, "analyze", 10, 60);
+    if (!rl.allowed) return rateLimitResponse(rl.resetIn);
+
     const body = await req.json();
     const { url: rawUrl, showName, showSlug, showArtwork, showFeedUrl, episodeTitle, store = "us", userId, userPlan, userEmail } = body;
 
     // ── Super admin bypass ────────────────────────────────────────────────
     const superAdmin = isSuperAdmin(userEmail || "");
+
+    // ── Suspicious activity detection ────────────────────────────────────
+    if (userId && userEmail && !superAdmin) {
+      try {
+        const sbUrl = Netlify.env.get("SUPABASE_URL");
+        const sbKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+        if (sbUrl && sbKey) {
+          const hourAgo = new Date(Date.now() - 3_600_000).toISOString();
+          const countRes = await fetch(
+            `${sbUrl}/rest/v1/analyses?user_id=eq.${userId}&created_at=gte.${hourAgo}&select=id`,
+            { headers: { apikey: sbKey, Authorization: `Bearer ${sbKey}`, Prefer: "count=exact" },
+              signal: AbortSignal.timeout(4000) }
+          );
+          const countHeader = countRes.headers.get("content-range");
+          const recentCount = countHeader ? parseInt(countHeader.split("/")[1] || "0", 10) : 0;
+          checkSuspiciousActivity(userId, userEmail, recentCount).catch(() => {});
+        }
+      } catch {}
+    }
 
     // ── Track analysis_started event ──
     trackEvent(userId, 'analysis_started', {

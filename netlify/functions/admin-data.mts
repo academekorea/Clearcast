@@ -1,6 +1,7 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import { isSuperAdmin } from "./lib/admin.js";
+import { checkRateLimit, getClientIp, rateLimitResponse, verifyAdminToken, sha256hex } from "./lib/security.js";
 
 const SB_URL = "https://suqjdctajnitxivczjtg.supabase.co";
 
@@ -37,13 +38,36 @@ export default async (req: Request) => {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  // Auth check
+  const clientIp = getClientIp(req);
+
+  // Strict rate limit for admin: 5 requests per minute per IP
+  const rl = await checkRateLimit(clientIp, "admin", 5, 60);
+  if (!rl.allowed) return rateLimitResponse(rl.resetIn);
+
+  // Double auth check: email + admin token
   const url = new URL(req.url);
   const email = url.searchParams.get("email") || "";
+  const userId = url.searchParams.get("userId") || "";
+  const adminToken = req.headers.get("x-admin-token") || url.searchParams.get("adminToken") || "";
+
+  // Layer 1: email must be super admin
   if (!isSuperAdmin(email)) {
+    // Log unauthorized attempt
+    console.warn(`Unauthorized admin access attempt from IP ${clientIp}, email: ${email}`);
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 403, headers: { "Content-Type": "application/json" }
     });
+  }
+
+  // Layer 2: token must match (if userId provided; skip during initial page load before token available)
+  if (userId && adminToken) {
+    const tokenValid = await verifyAdminToken(userId, adminToken);
+    if (!tokenValid) {
+      console.warn(`Invalid admin token from IP ${clientIp}, userId: ${userId}`);
+      return new Response(JSON.stringify({ error: "Invalid admin token" }), {
+        status: 403, headers: { "Content-Type": "application/json" }
+      });
+    }
   }
 
   const tab = url.searchParams.get("tab") || "overview";

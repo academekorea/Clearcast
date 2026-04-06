@@ -3,6 +3,7 @@ import { getStore } from "@netlify/blobs";
 import { getSupabaseAdmin } from "./lib/supabase.js";
 import { isSuperAdmin, applySuperAdminOverrides, superAdminSupabaseFields } from "./lib/admin.js";
 import { sendEmail, newDeviceAlertEmail } from "./lib/email.js";
+import { checkAuthLockout, recordAuthFailure, clearAuthLockout, getClientIp, generateAdminToken } from "./lib/security.js";
 
 async function sha256hex(text: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -79,10 +80,16 @@ async function assignFoundingStatus(
 const BASE_URL = "https://podlens.app";
 
 export default async (req: Request) => {
+  const clientIp = getClientIp(req);
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const stateParam = url.searchParams.get("state") || "{}";
   const errorParam = url.searchParams.get("error");
+
+  // Check auth lockout before any processing
+  if (await checkAuthLockout(clientIp)) {
+    return Response.redirect(`${BASE_URL}/?google_error=too_many_attempts`, 302);
+  }
 
   if (errorParam) {
     return Response.redirect(`${BASE_URL}/?google_error=access_denied`, 302);
@@ -114,9 +121,13 @@ export default async (req: Request) => {
       }).toString(),
       signal: AbortSignal.timeout(8000),
     });
-    if (!tokenRes.ok) return Response.redirect(`${BASE_URL}/?google_error=token_failed`, 302);
+    if (!tokenRes.ok) {
+      await recordAuthFailure(clientIp);
+      return Response.redirect(`${BASE_URL}/?google_error=token_failed`, 302);
+    }
     tokenData = await tokenRes.json();
   } catch {
+    await recordAuthFailure(clientIp);
     return Response.redirect(`${BASE_URL}/?google_error=token_timeout`, 302);
   }
 
@@ -249,6 +260,14 @@ export default async (req: Request) => {
     sb.from('users').upsert(supaFields, { onConflict: 'id' }).then(() => {}).catch(() => {});
   }
 
+  // Successful auth — clear any lockout
+  await clearAuthLockout(clientIp);
+
+  // Generate admin token for super admins (rotates daily)
+  const adminToken = isSuperAdmin(googleEmail)
+    ? await generateAdminToken(userData.id)
+    : undefined;
+
   const loginPayload = encodeURIComponent(JSON.stringify({
     id: userData.id,
     name: userData.name,
@@ -265,6 +284,7 @@ export default async (req: Request) => {
     authProvider: "google",
     isNewUser,
     isSuperAdmin: isSuperAdmin(googleEmail),
+    adminToken,
     foundingMember: userData.foundingMember || false,
     foundingMemberSince: userData.foundingMemberSince || null,
     signupCount: userData.signupCount || null,
