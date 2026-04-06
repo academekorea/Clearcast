@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — Podlens</title>
+<meta name="description" content="Your personal media intelligence dashboard.">
+<meta property="og:title" content="Dashboard — Podlens">
+<meta property="og:image" content="https://podlens.app/og-image.png">
+<meta name="theme-color" content="#0f2027">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://podlens.app/dashboard">
+<script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;
+  --text:#1a1a1a;--text2:#555;--text3:#999;--navy:#0f2027;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --left:#E24B4A;--center:#D1CFC9;--right:#378ADD;
+  --ff:'Inter',-apple-system,sans-serif;--ffs:'Playfair Display',Georgia,serif;--r:8px;
+  --card-shadow:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
+}
+[data-theme="dark"]{
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --card-shadow:0 1px 4px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.2);
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --card-shadow:0 1px 4px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.2);
+}}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--navy);text-decoration:none}
+[data-theme="dark"] a{color:var(--text)}
+
+/* ── NAV ── */
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:200;gap:8px}
+.pl-lockup{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.pl-lockup-icon{width:28px;height:28px;flex-shrink:0;border-radius:6px;display:block}
+.pl-lockup-divider{width:1px;height:30px;background:var(--border2);flex-shrink:0}
+.pl-lockup-text{display:flex;flex-direction:column;gap:3px;line-height:1}
+.pl-lockup-wm{font-family:var(--ffs);font-size:18px;line-height:1;color:var(--navy);letter-spacing:0;display:block}
+[data-theme="dark"] .pl-lockup-wm{color:var(--text)}
+.pl-wm-pod{font-weight:400}.pl-wm-lens{font-weight:700}
+.pl-lockup-tagline{display:block;font-size:9.5px;color:var(--text3);letter-spacing:.02em;line-height:1.3;white-space:nowrap}
+@media(max-width:480px){.pl-lockup-divider,.pl-lockup-text{display:none}.pl-lockup-icon{width:30px;height:30px}}
+
+/* ── PAGE LAYOUT ── */
+.page{max-width:760px;margin:0 auto;padding:48px 24px 80px}
+@media(max-width:640px){.page{padding:32px 16px 60px}}
+
+/* ── GREETING ── */
+.greeting{margin-bottom:40px}
+.greeting-time{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:6px}
+.greeting-headline{font-family:var(--ffs);font-size:28px;font-weight:700;letter-spacing:-.01em;line-height:1.2;margin-bottom:6px}
+.greeting-date{font-size:13px;color:var(--text2)}
+
+/* ── SECTION CARDS ── */
+.section-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px;box-shadow:var(--card-shadow)}
+.section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:4px}
+.section-title{font-family:var(--ffs);font-size:18px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
+.section-sub{font-size:13px;color:var(--text2);margin-bottom:16px}
+.section-divider{height:1px;background:var(--border);margin:16px 0}
+
+/* ── SKELETON ── */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skel{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:800px 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--r)}
+
+/* ── BIAS BAR ── */
+.bias-bar-wrap{margin-bottom:16px}
+.bias-bar{height:12px;border-radius:999px;overflow:hidden;display:flex;margin-bottom:10px}
+.bias-bar-left{background:var(--left)}
+.bias-bar-center{background:var(--center)}
+.bias-bar-right{background:var(--right)}
+.bias-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--text2)}
+.bias-label-item{display:flex;align-items:center;gap:4px}
+.bias-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.bias-insight{font-size:13px;color:var(--text2);padding:12px 14px;background:var(--bg3);border-radius:var(--r);line-height:1.6;margin-top:12px}
+.bias-insight strong{color:var(--text)}
+.bias-locked{text-align:center;padding:20px;color:var(--text3)}
+.bias-locked-sub{font-size:12px;margin-top:4px}
+.bias-bar-locked{height:12px;border-radius:999px;background:var(--bg4);margin-bottom:10px;position:relative;overflow:hidden}
+
+/* ── SMART QUEUE ── */
+.sq-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.sq-row:last-child{border-bottom:none}
+.sq-art{width:40px;height:40px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.sq-art-ph{width:40px;height:40px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;font-family:var(--ffs);flex-shrink:0}
+.sq-info{flex:1;min-width:0}
+.sq-show{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sq-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.badge-new{font-size:9px;font-weight:700;background:#eff6ff;color:#1e40af;padding:2px 6px;border-radius:2px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
+[data-theme="dark"] .badge-new{background:#1e3a5f;color:#93c5fd}
+.sq-btn{padding:5px 12px;font-size:11px;font-weight:600;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-family:var(--ff);white-space:nowrap;flex-shrink:0;transition:opacity .15s}
+.sq-btn:hover{opacity:.85}
+.sq-empty{text-align:center;padding:20px;color:var(--text3);font-size:13px}
+.sq-empty-sub{font-size:12px;margin-top:4px}
+
+/* ── RECENT ANALYSES ── */
+.recent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+@media(max-width:560px){.recent-grid{grid-template-columns:1fr}}
+.recent-card{background:var(--bg3);border-radius:var(--r);padding:12px;display:flex;gap:10px;align-items:flex-start}
+.recent-art{width:40px;height:40px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg4)}
+.recent-art-ph{width:40px;height:40px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;font-family:var(--ffs);flex-shrink:0}
+.recent-info{flex:1;min-width:0}
+.recent-title{font-size:12px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
+.recent-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.recent-view{font-size:11px;color:var(--navy);font-weight:600;margin-top:6px;display:block}
+[data-theme="dark"] .recent-view{color:var(--text2)}
+.see-all{font-size:13px;font-weight:500;color:var(--navy)}
+[data-theme="dark"] .see-all{color:var(--text2)}
+
+/* ── BIAS PILL (reused) ── */
+.bias-pill{font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.bias-pill.left{color:#378ADD;background:rgba(55,138,221,.12)}
+.bias-pill.right{color:#E24B4A;background:rgba(226,75,74,.12)}
+.bias-pill.balanced{color:#16a34a;background:rgba(22,163,74,.12)}
+.bias-pill.lightly-left{color:#60a5fa;background:rgba(96,165,250,.12)}
+.bias-pill.lightly-right{color:#f87171;background:rgba(248,113,113,.12)}
+
+/* ── DIGEST ── */
+.digest-empty{color:var(--text3);font-size:13px;padding:16px 0}
+.digest-toggle-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.digest-toggle-label{font-size:13px;font-weight:500}
+.toggle{position:relative;width:40px;height:22px;cursor:pointer;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:var(--bg4);border-radius:999px;transition:background .2s}
+.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.toggle input:checked + .toggle-slider{background:var(--navy)}
+.toggle input:checked + .toggle-slider:before{transform:translateX(18px)}
+
+/* ── PLAN ── */
+.plan-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.plan-badge{display:inline-flex;align-items:center;padding:5px 12px;border-radius:var(--r);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.plan-badge.free{background:var(--bg3);color:var(--text3)}
+.plan-badge.trial{background:#eff6ff;color:#1e40af}
+.plan-badge.creator{background:#f5f3ff;color:#6d28d9}
+.plan-badge.operator{background:#0f2027;color:#fff}
+.plan-badge.studio{background:#78350f;color:#fef3c7}
+[data-theme="dark"] .plan-badge.free{background:var(--bg3);color:var(--text2)}
+[data-theme="dark"] .plan-badge.trial{background:#1e3a5f;color:#93c5fd}
+[data-theme="dark"] .plan-badge.creator{background:#2e1065;color:#c4b5fd}
+[data-theme="dark"] .plan-badge.studio{background:#451a03;color:#fed7aa}
+.plan-renewal{font-size:12px;color:var(--text3)}
+.plan-meter-wrap{margin-bottom:8px}
+.plan-meter-label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.plan-meter-track{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.plan-meter-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.plan-meter-fill.green{background:#22c55e}
+.plan-meter-fill.amber{background:#f59e0b}
+.plan-meter-fill.red{background:#ef4444}
+.plan-upgrade-hint{font-size:12px;color:#ef4444;font-weight:500}
+
+/* ── RECOMMENDED ── */
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:560px){.rec-grid{grid-template-columns:1fr}}
+.rec-card{background:var(--bg3);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px}
+.rec-art-wrap{display:flex;gap:10px;align-items:center}
+.rec-art{width:40px;height:40px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg4)}
+.rec-art-ph{width:40px;height:40px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;font-family:var(--ffs);flex-shrink:0}
+.rec-show{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:1px}
+.rec-title{font-size:12px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rec-tag{font-size:10px;color:var(--text3)}
+.btn-analyze-sm{padding:6px 12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff);width:100%;transition:opacity .15s}
+.btn-analyze-sm:hover{opacity:.85}
+
+/* ── LINK BUTTON ── */
+.link-btn{display:inline-block;padding:8px 18px;background:transparent;color:var(--navy);border:1px solid var(--navy);border-radius:var(--r);font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;font-family:var(--ff);transition:all .12s;white-space:nowrap}
+.link-btn:hover{background:var(--navy);color:#fff}
+[data-theme="dark"] .link-btn{color:var(--text);border-color:var(--border2)}
+[data-theme="dark"] .link-btn:hover{background:var(--text);color:var(--bg)}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2);text-align:center;font-size:12px;color:var(--text3)}
+footer a{color:var(--text3)}footer a:hover{color:var(--text)}
+</style>
+<script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" crossorigin="anonymous"></script>
+<script>if(window.Sentry)Sentry.init({dsn:'https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128',environment:'production'});</script>
+</head>
+<body>
+
+<nav>
+  <a class="pl-lockup" href="/" aria-label="Podlens home">
+    <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="28" height="28">
+    <span class="pl-lockup-divider"></span>
+    <span class="pl-lockup-text">
+      <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
+      <span class="pl-lockup-tagline">Know what you're actually listening to</span>
+    </span>
+  </a>
+</nav>
+<script src="/nav.js" defer></script>
+
+<div class="page">
+
+  <!-- GREETING -->
+  <div class="greeting" id="greeting">
+    <div class="greeting-time" id="greeting-time">Good morning</div>
+    <div class="greeting-headline" id="greeting-headline">Here's your media intelligence.</div>
+    <div class="greeting-date" id="greeting-date"></div>
+  </div>
+
+  <!-- § 1: BIAS PROFILE -->
+  <div class="section-card" id="s-bias">
+    <div class="section-label">Media Diet</div>
+    <div class="section-title">Your Bias Profile</div>
+    <div class="section-sub" id="bias-sub">Based on your recent analyses</div>
+    <div id="bias-bar-area"></div>
+  </div>
+
+  <!-- § 2: SMART QUEUE (Creator+ only) -->
+  <div class="section-card" id="s-sq" style="display:none">
+    <div class="section-label">Automation</div>
+    <div class="section-title">Smart Queue</div>
+    <div class="section-sub">Shows set to auto-detect new episodes</div>
+    <div id="sq-content"></div>
+  </div>
+
+  <!-- § 3: RECENT ACTIVITY -->
+  <div class="section-card" id="s-recent">
+    <div class="section-label">Activity</div>
+    <div class="section-title">Recent Analyses</div>
+    <div id="recent-content"></div>
+    <a href="/library.html?tab=analyzed" class="see-all">See all in Library →</a>
+  </div>
+
+  <!-- § 4: WEEKLY DIGEST -->
+  <div class="section-card" id="s-digest">
+    <div class="section-label">Intelligence</div>
+    <div class="section-title">This Week's Intelligence</div>
+    <div id="digest-content"></div>
+    <div class="digest-toggle-row">
+      <span class="digest-toggle-label">Email me the weekly digest</span>
+      <label class="toggle"><input type="checkbox" id="digest-toggle" onchange="saveDigestPref(this.checked)"><span class="toggle-slider"></span></label>
+    </div>
+  </div>
+
+  <!-- § 5: PLAN & USAGE -->
+  <div class="section-card" id="s-plan">
+    <div class="section-label">Account</div>
+    <div class="section-title">Your Plan</div>
+    <div id="plan-content"></div>
+  </div>
+
+  <!-- § 6: RECOMMENDED -->
+  <div class="section-card" id="s-rec">
+    <div class="section-label" id="rec-label">Recommended for You</div>
+    <div class="section-title">You Might Want to Analyze</div>
+    <div id="rec-content" style="margin-top:14px"></div>
+  </div>
+
+</div>
+
+<footer>
+  <div style="margin-bottom:8px">
+    <a href="/">Home</a> &middot; <a href="/library.html">Library</a> &middot; <a href="/pricing.html">Pricing</a> &middot; <a href="/privacy.html">Privacy</a>
+  </div>
+  &copy; 2026 Podlens &middot; podlens.app
+</footer>
+
+<script>
+(function () {
+  /* ── HELPERS ── */
+  function plUser() { try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch (e) { return null; } }
+  function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function timeAgo(iso) {
+    if (!iso) return '';
+    var d = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (d < 60) return 'just now';
+    if (d < 3600) return Math.floor(d / 60) + 'm ago';
+    if (d < 86400) return Math.floor(d / 3600) + 'h ago';
+    if (d < 604800) return Math.floor(d / 86400) + 'd ago';
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  function biasPillClass(l, r) {
+    var diff = Math.abs((l || 0) - (r || 0));
+    if (diff < 20) return 'balanced';
+    var dir = (l || 0) > (r || 0) ? 'left' : 'right';
+    return diff < 40 ? 'lightly-' + dir : dir;
+  }
+  function biasPillLabel(l, r) {
+    var diff = Math.abs((l || 0) - (r || 0));
+    if (diff < 20) return 'Mostly Balanced';
+    var dir = (l || 0) > (r || 0) ? 'Left-Leaning' : 'Right-Leaning';
+    if (diff < 40) return 'Lightly ' + dir;
+    if (diff < 60) return dir;
+    return 'Strongly ' + dir;
+  }
+  function artHtml(src, name, cls) {
+    var initial = (name || 'P').charAt(0).toUpperCase();
+    var ph = cls + '-ph';
+    return src
+      ? '<img class="' + cls + '" src="' + esc(src) + '" alt="" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;' + ph + '&quot;>' + initial + '</div>\'">'
+      : '<div class="' + ph + '">' + initial + '</div>';
+  }
+  function getPlanLimits(plan) {
+    if (plan === 'trial') return { max: 30, label: 'trial period', unlimited: false };
+    if (plan === 'creator') return { max: 25, label: 'this week', unlimited: false };
+    if (plan === 'operator' || plan === 'studio') return { max: 0, label: '', unlimited: true };
+    return { max: 3, label: 'this week', unlimited: false };
+  }
+  function suggestBalance(leftPct, rightPct) {
+    var diff = (leftPct || 0) - (rightPct || 0);
+    var shows = ['Lex Fridman Podcast', 'Radiolab', 'Hidden Brain', '99% Invisible'];
+    var pick = shows[Math.floor(Math.random() * shows.length)];
+    if (diff > 20) return 'Your listening leans left. You might be missing perspectives from <strong>' + pick + '</strong>.';
+    if (diff < -20) return 'Your listening leans right. You might enjoy the balance of <strong>' + pick + '</strong>.';
+    return 'Your media diet is well-balanced — you\'re hearing from multiple perspectives.';
+  }
+
+  /* ── AUTH GATE ── */
+  var u = plUser();
+  if (!u || !u.id) {
+    sessionStorage.setItem('pl-auth-toast', 'Sign in to access your Dashboard');
+    window.location.href = '/';
+    return;
+  }
+
+  /* ── GREETING ── */
+  (function initGreeting() {
+    var h = new Date().getHours();
+    var tod = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    var firstName = (u.name || '').split(' ')[0] || '';
+    document.getElementById('greeting-time').textContent = tod + (firstName ? ', ' + firstName : '') + '.';
+    document.getElementById('greeting-headline').textContent = "Here's your media intelligence.";
+    document.getElementById('greeting-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  })();
+
+  /* ── § 1: BIAS PROFILE ── */
+  (function initBias() {
+    var fp = u.biasFingerprint || {};
+    var total = fp.totalEpisodes || (u.analyzedEpisodes || []).length || 0;
+    var sub = document.getElementById('bias-sub');
+    var area = document.getElementById('bias-bar-area');
+
+    if (total < 3) {
+      sub.textContent = 'Analyze ' + (3 - total) + ' more episode' + (3 - total !== 1 ? 's' : '') + ' to build your bias profile';
+      area.innerHTML = '<div class="bias-bar-locked skel"></div>'
+        + '<div style="text-align:center;font-size:12px;color:var(--text3);margin-top:4px">Bias profile unlocks after 3+ analyses</div>';
+      return;
+    }
+
+    sub.textContent = 'Based on ' + total + ' analys' + (total === 1 ? 'is' : 'es');
+    var left = fp.leftPct || 0;
+    var center = fp.centerPct || 0;
+    var right = fp.rightPct || 0;
+    // Normalise to 100%
+    var sum = left + center + right || 1;
+    var lp = Math.round(left / sum * 100);
+    var cp = Math.round(center / sum * 100);
+    var rp = 100 - lp - cp;
+
+    area.innerHTML = '<div class="bias-bar-wrap">'
+      + '<div class="bias-bar">'
+      + '<div class="bias-bar-left" style="width:' + lp + '%"></div>'
+      + '<div class="bias-bar-center" style="width:' + cp + '%"></div>'
+      + '<div class="bias-bar-right" style="width:' + rp + '%"></div>'
+      + '</div>'
+      + '<div class="bias-labels">'
+      + '<span class="bias-label-item"><span class="bias-dot" style="background:var(--left)"></span>🔴 ' + lp + '% left</span>'
+      + '<span class="bias-label-item"><span class="bias-dot" style="background:var(--center)"></span>⬜ ' + cp + '% center</span>'
+      + '<span class="bias-label-item"><span class="bias-dot" style="background:var(--right)"></span>🔵 ' + rp + '% right</span>'
+      + '</div>'
+      + '<div class="bias-insight">' + suggestBalance(lp, rp) + '</div>'
+      + '</div>';
+  })();
+
+  /* ── § 2: SMART QUEUE ── */
+  (function initSmartQueue() {
+    var plan = u.plan || 'free';
+    var hasAccess = ['creator', 'operator', 'studio', 'trial'].includes(plan);
+    if (!hasAccess) return;
+    var card = document.getElementById('s-sq');
+    card.style.display = '';
+    var el = document.getElementById('sq-content');
+    var sqShows = (u.followedShows || []).filter(function (s) { return s.smartQueue; });
+    if (!sqShows.length) {
+      el.innerHTML = '<div class="sq-empty">No shows have Smart Queue enabled.<div class="sq-empty-sub"><a href="/account?tab=settings">Enable per-show in Settings →</a></div></div>';
+      return;
+    }
+    el.innerHTML = sqShows.map(function (s) {
+      var analyzeUrl = s.feedUrl || s.youtubeUrl || '';
+      var hasNew = !s.lastAnalyzedAt || (s.latestEpDate && new Date(s.latestEpDate) > new Date(s.lastAnalyzedAt));
+      return '<div class="sq-row">'
+        + artHtml(s.artwork, s.name, 'sq-art')
+        + '<div class="sq-info"><div class="sq-show">' + esc(s.name || '') + '</div>'
+        + '<div class="sq-meta">' + (s.lastAnalyzedAt ? 'Last analyzed ' + timeAgo(s.lastAnalyzedAt) : 'Not yet analyzed') + '</div></div>'
+        + (hasNew ? '<span class="badge-new">New</span>' : '')
+        + (analyzeUrl ? '<button class="sq-btn" onclick="window.location.href=\'/?analyze=' + esc(analyzeUrl) + '\'">' + (hasNew ? 'Analyze now →' : 'View →') + '</button>' : '')
+        + '</div>';
+    }).join('');
+  })();
+
+  /* ── § 3: RECENT ACTIVITY ── */
+  (function initRecent() {
+    var el = document.getElementById('recent-content');
+    var recents = (u.analyzedEpisodes || []).slice().sort(function (a, b) {
+      return new Date(b.analyzedAt || 0) - new Date(a.analyzedAt || 0);
+    }).slice(0, 3);
+    if (!recents.length) {
+      el.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:12px 0">No analyses yet. <a href="/">Analyze your first episode →</a></div>';
+      return;
+    }
+    el.innerHTML = '<div class="recent-grid">' + recents.map(function (ep) {
+      var pillCls = biasPillClass(ep.leftPct, ep.rightPct);
+      var pillLabel = ep.biasLabel || biasPillLabel(ep.leftPct, ep.rightPct);
+      var viewUrl = ep.jobId ? '/?jobId=' + ep.jobId : '/';
+      return '<div class="recent-card">'
+        + artHtml(ep.artwork, ep.showName, 'recent-art')
+        + '<div class="recent-info">'
+        + '<div class="recent-title">' + esc(ep.episodeTitle || 'Episode') + '</div>'
+        + '<div class="recent-meta">'
+        + (pillLabel ? '<span class="bias-pill ' + pillCls + '">' + pillLabel + '</span>' : '')
+        + '</div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:4px">' + timeAgo(ep.analyzedAt) + '</div>'
+        + (ep.jobId ? '<a href="' + esc(viewUrl) + '" class="recent-view">View →</a>' : '')
+        + '</div>'
+        + '</div>';
+    }).join('') + '</div>';
+  })();
+
+  /* ── § 4: WEEKLY DIGEST ── */
+  (function initDigest() {
+    var el = document.getElementById('digest-content');
+    var follows = u.followedShows || [];
+    var analyses = u.analyzedEpisodes || [];
+    // Find this week's analyses (past 7 days)
+    var weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    var thisWeek = analyses.filter(function (ep) { return new Date(ep.analyzedAt || 0) > weekAgo; });
+
+    if (!thisWeek.length) {
+      el.innerHTML = '<div class="digest-empty">Your weekly digest arrives every Monday morning.<div style="margin-top:4px;font-size:12px">Analyze episodes throughout the week to build it.</div></div>';
+    } else {
+      // Group by show
+      var byShow = {};
+      thisWeek.forEach(function (ep) {
+        var key = ep.showName || 'Unknown';
+        if (!byShow[key]) byShow[key] = { count: 0, label: ep.biasLabel };
+        byShow[key].count++;
+      });
+      var lines = Object.keys(byShow).map(function (show) {
+        var s = byShow[show];
+        return '<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">'
+          + '<strong>' + esc(show) + '</strong> published ' + s.count + ' episode' + (s.count !== 1 ? 's' : '') + ' this week'
+          + (s.label ? ' — <span style="color:var(--text3)">' + esc(s.label) + '</span>' : '')
+          + '</div>';
+      }).join('');
+      el.innerHTML = lines + '<div style="font-size:12px;color:var(--text3);margin-top:8px">' + thisWeek.length + ' episode' + (thisWeek.length !== 1 ? 's' : '') + ' analyzed this week</div>';
+    }
+
+    // Load digest preference from settings
+    try {
+      var settings = JSON.parse(localStorage.getItem('pl-settings-' + u.id) || '{}');
+      document.getElementById('digest-toggle').checked = !!settings.digestEmail;
+    } catch (e) { }
+  })();
+
+  window.saveDigestPref = function (val) {
+    try {
+      var key = 'pl-settings-' + u.id;
+      var settings = JSON.parse(localStorage.getItem(key) || '{}');
+      settings.digestEmail = val;
+      localStorage.setItem(key, JSON.stringify(settings));
+      // Also persist via API
+      fetch('/api/update-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: u.id, digestEmail: val })
+      }).catch(function () { });
+    } catch (e) { }
+  };
+
+  /* ── § 5: PLAN & USAGE ── */
+  (function initPlan() {
+    var el = document.getElementById('plan-content');
+    var plan = u.plan || 'free';
+    var lim = getPlanLimits(plan);
+    var used = u.analysesThisWeek || 0;
+    var isAdmin = u.email === 'academekorea@gmail.com' || u.isSuperAdmin;
+    var renewalLine = u.trialEndsAt && plan === 'trial'
+      ? '<span class="plan-renewal">Trial ends ' + new Date(u.trialEndsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + '</span>'
+      : '';
+    var planLabel = isAdmin ? 'Admin' : plan.charAt(0).toUpperCase() + plan.slice(1);
+    var meterHtml = '';
+    if (!lim.unlimited && !isAdmin) {
+      var pct = Math.min(100, Math.round(used / lim.max * 100));
+      var fillCls = pct >= 80 ? 'red' : pct >= 60 ? 'amber' : 'green';
+      meterHtml = '<div class="plan-meter-wrap">'
+        + '<div class="plan-meter-label">' + used + ' of ' + lim.max + ' analyses used ' + lim.label + '</div>'
+        + '<div class="plan-meter-track"><div class="plan-meter-fill ' + fillCls + '" style="width:' + pct + '%"></div></div>'
+        + (pct >= 80 ? '<div class="plan-upgrade-hint">Running low — upgrade for more analyses <a href="/pricing.html" style="color:inherit;font-weight:700">Upgrade →</a></div>' : '')
+        + '</div>';
+    } else {
+      meterHtml = '<div class="plan-meter-label" style="color:var(--text3)">Unlimited analyses</div>';
+    }
+    el.innerHTML = '<div class="plan-row">'
+      + '<span class="plan-badge ' + plan + '">' + planLabel + '</span>'
+      + renewalLine
+      + '</div>'
+      + meterHtml
+      + (plan === 'free' ? '<a href="/pricing.html" class="link-btn" style="margin-top:12px">View upgrade options →</a>' : '');
+  })();
+
+  /* ── § 6: RECOMMENDED ── */
+  (function initRecommended() {
+    var el = document.getElementById('rec-content');
+    var recLabel = document.getElementById('rec-label');
+    var follows = u.followedShows || [];
+    var POPULAR_FALLBACK = [
+      { show: 'The Daily', ep: 'The News Briefing', artwork: '', url: 'https://feeds.simplecast.com/54nAGcIl' },
+      { show: 'Lex Fridman Podcast', ep: 'Latest Episode', artwork: '', url: 'https://lexfridman.com/feed/podcast/' },
+      { show: 'Radiolab', ep: 'Latest Episode', artwork: '', url: 'https://feeds.wnyc.org/radiolab' },
+    ];
+    var recs;
+    if (!follows.length) {
+      recLabel.textContent = 'Popular This Week';
+      recs = POPULAR_FALLBACK;
+    } else {
+      recLabel.textContent = 'Recommended for You';
+      // Suggest episodes from followed shows not recently analyzed
+      var recentUrls = new Set((u.analyzedEpisodes || []).slice(0, 10).map(function (e) { return e.showName; }));
+      var candidates = follows.filter(function (s) { return !recentUrls.has(s.name); }).slice(0, 3);
+      if (!candidates.length) candidates = follows.slice(0, 3);
+      recs = candidates.map(function (s) {
+        return { show: s.name, ep: s.latestEp || 'Latest Episode', artwork: s.artwork, url: s.feedUrl || s.youtubeUrl || '' };
+      });
+    }
+    el.innerHTML = '<div class="rec-grid">' + recs.map(function (r) {
+      return '<div class="rec-card">'
+        + '<div class="rec-art-wrap">'
+        + artHtml(r.artwork, r.show, 'rec-art')
+        + '<div><div class="rec-show">' + esc(r.show) + '</div><div class="rec-title">' + esc(r.ep) + '</div></div>'
+        + '</div>'
+        + (r.url ? '<button class="btn-analyze-sm" onclick="window.location.href=\'/?analyze=' + esc(r.url) + '\'">Analyze →</button>' : '')
+        + '</div>';
+    }).join('') + '</div>';
+  })();
+
+})();
+</script>
+</body>
+</html>

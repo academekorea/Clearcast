@@ -2,370 +2,608 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>My Library — Podlens</title>
-<meta name="description" content="Your personal podcast library — followed shows, recent episodes, and analyzed content.">
-<meta property="og:title" content="My Library — Podlens">
-<meta property="og:description" content="Your personal podcast library on Podlens.">
+<title>Your Library — Podlens</title>
+<meta name="description" content="Your followed shows, analyzed episodes, saved content, and downloads.">
+<meta property="og:title" content="Your Library — Podlens">
 <meta property="og:image" content="https://podlens.app/og-image.png">
-<meta property="og:url" content="https://podlens.app/library.html">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://podlens.app/og-image.png">
-<meta name="theme-color" content="#0A0F1E">
+<meta name="theme-color" content="#0f2027">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
+<link rel="canonical" href="https://podlens.app/library">
+<script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;
   --text:#1a1a1a;--text2:#555;--text3:#999;--navy:#0f2027;
-  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15);
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
   --left:#E24B4A;--center:#D1CFC9;--right:#378ADD;
-  --ff:'Inter',-apple-system,sans-serif;--ffs:'Playfair Display',Georgia,serif;--r:4px;
+  --ff:'Inter',-apple-system,sans-serif;--ffs:'Playfair Display',Georgia,serif;--r:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+}
+[data-theme="dark"]{
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
   --text:#FAF9F6;--text2:#888;--text3:#555;
-  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
 }}
-[data-theme="dark"]{--bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;--text:#FAF9F6;--text2:#888;--text3:#555;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14)}
 html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 a{color:var(--navy);text-decoration:none}
-nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
-.pl-lockup{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;margin-right:auto}
+[data-theme="dark"] a{color:var(--text)}
+
+/* ── NAV ── */
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:200;gap:8px}
+.pl-lockup{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
 .pl-lockup-icon{width:28px;height:28px;flex-shrink:0;border-radius:6px;display:block}
 .pl-lockup-divider{width:1px;height:30px;background:var(--border2);flex-shrink:0}
-.pl-lockup-wm{font-family:'Playfair Display',Georgia,serif;font-size:18px;line-height:1;color:var(--navy);letter-spacing:0;display:block}
+.pl-lockup-text{display:flex;flex-direction:column;gap:3px;line-height:1}
+.pl-lockup-wm{font-family:var(--ffs);font-size:18px;line-height:1;color:var(--navy);letter-spacing:0;display:block}
+[data-theme="dark"] .pl-lockup-wm{color:var(--text)}
 .pl-wm-pod{font-weight:400}.pl-wm-lens{font-weight:700}
 .pl-lockup-tagline{display:block;font-size:9.5px;color:var(--text3);letter-spacing:.02em;line-height:1.3;white-space:nowrap}
-.nl{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:var(--r);text-decoration:none}
-.nl:hover{background:var(--bg3);color:var(--text)}
-.page{max-width:1400px;margin:0 auto;padding:48px 80px}
-@media(max-width:1024px){.page{padding:40px 24px}}
-.page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;gap:16px;flex-wrap:wrap}
-.page-title{font-family:var(--ffs);font-size:32px;font-weight:700;letter-spacing:-.01em}
+@media(max-width:480px){.pl-lockup-divider,.pl-lockup-text{display:none}.pl-lockup-icon{width:30px;height:30px}}
+
+/* ── PAGE ── */
+.page{max-width:1100px;margin:0 auto;padding:40px 80px 80px}
+@media(max-width:1024px){.page{padding:32px 24px 60px}}
+.page-header{margin-bottom:28px}
+.page-title{font-family:var(--ffs);font-size:28px;font-weight:700;letter-spacing:-.01em}
 .page-sub{font-size:14px;color:var(--text2);margin-top:4px}
-.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
-.filter-btn{padding:6px 16px;border:1px solid var(--border2);border-radius:20px;font-size:12px;font-weight:500;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff);transition:all .1s}
-.filter-btn:hover{border-color:var(--navy);color:var(--navy)}
-.filter-btn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.sort-select{padding:6px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:12px;background:var(--bg);color:var(--text);font-family:var(--ff);cursor:pointer;outline:none;margin-left:auto}
-/* Shows grid */
-.shows-section{margin-bottom:48px}
-.section-head{display:flex;align-items:center;gap:8px;margin-bottom:16px}
-.section-title{font-family:var(--ffs);font-size:20px;font-weight:600}
-.shows-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-@media(max-width:1000px){.shows-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:700px){.shows-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:460px){.shows-grid{grid-template-columns:1fr}}
-.show-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:border-color .1s;display:flex;flex-direction:column;gap:10px}
-.show-card:hover{border-color:var(--navy)}
-.show-card-top{display:flex;gap:10px;align-items:center}
-.show-art{width:48px;height:48px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
-.show-art-ph{width:48px;height:48px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:var(--ffs);font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
-.show-name{font-size:13px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.show-platform{font-size:10px;color:var(--text3);margin-top:2px}
-.show-bias-bar{height:4px;border-radius:2px;overflow:hidden;display:flex}
-.show-stats{display:flex;gap:8px;font-size:10px;color:var(--text3);align-items:center}
-.show-analyzed-badge{background:var(--bg3);border-radius:2px;padding:2px 6px;font-size:9px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.05em}
-/* Episodes list */
-.episodes-section{margin-bottom:48px}
+
+/* ── SEARCH ── */
+.lib-search{position:relative;margin-bottom:20px}
+.lib-search-input{width:100%;padding:10px 16px 10px 38px;border:1px solid var(--border2);border-radius:var(--r);font-size:14px;background:var(--bg2);color:var(--text);font-family:var(--ff);outline:none;transition:border-color .15s}
+.lib-search-input:focus{border-color:var(--navy)}
+.lib-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
+
+/* ── TABS ── */
+.lib-tabs{display:flex;gap:0;border-bottom:1px solid var(--border2);margin-bottom:24px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.lib-tabs::-webkit-scrollbar{display:none}
+.lib-tab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;font-family:var(--ff);border-bottom:2px solid transparent;white-space:nowrap;transition:color .12s,border-color .12s;margin-bottom:-1px;position:relative;top:1px}
+.lib-tab:hover{color:var(--text)}
+.lib-tab.active{color:var(--navy);font-weight:600;border-bottom-color:var(--navy)}
+[data-theme="dark"] .lib-tab.active{color:var(--text);border-bottom-color:var(--text)}
+.lib-tab .tab-count{font-size:10px;font-weight:600;background:var(--bg3);color:var(--text3);padding:1px 5px;border-radius:10px;margin-left:5px;font-family:var(--ff)}
+.lib-tab.active .tab-count{background:var(--navy);color:#fff}
+[data-theme="dark"] .lib-tab.active .tab-count{background:var(--text);color:var(--bg)}
+
+/* ── TAB PANELS ── */
+.lib-panel{display:none;animation:fadeIn .18s ease}
+.lib-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SKELETON SHIMMER ── */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skel{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:800px 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--r)}
+
+/* ── FOLLOWING GRID ── */
+.following-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.following-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.following-grid{grid-template-columns:1fr}}
+
+.show-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;position:relative;transition:border-color .12s,box-shadow .12s}
+.show-card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.show-card-top{display:flex;gap:12px;align-items:flex-start}
+.show-art-lg{width:72px;height:72px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.show-art-lg-ph{width:72px;height:72px;border-radius:6px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:var(--ffs);font-size:22px;font-weight:700;color:#fff;flex-shrink:0}
+.show-info{flex:1;min-width:0}
+.show-name{font-size:13px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:2px}
+.show-host{font-size:11px;color:var(--text3);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.show-latest-ep{font-size:11px;color:var(--text2);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}
+.show-card-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bias-pill{font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.bias-pill.left{color:#378ADD;background:rgba(55,138,221,.12)}
+.bias-pill.right{color:#E24B4A;background:rgba(226,75,74,.12)}
+.bias-pill.balanced{color:#16a34a;background:rgba(22,163,74,.12)}
+.bias-pill.lightly-left{color:#60a5fa;background:rgba(96,165,250,.12)}
+.bias-pill.lightly-right{color:#f87171;background:rgba(248,113,113,.12)}
+.bias-pill.amber{color:#d97706;background:rgba(217,119,6,.12)}
+.sq-toggle-wrap{display:flex;align-items:center;gap:5px;margin-left:auto;flex-shrink:0}
+.sq-label{font-size:10px;color:var(--text3)}
+.sq-toggle{position:relative;width:28px;height:16px;cursor:pointer;flex-shrink:0}
+.sq-toggle input{opacity:0;width:0;height:0;position:absolute}
+.sq-slider{position:absolute;inset:0;background:var(--bg4);border-radius:999px;transition:background .2s}
+.sq-slider:before{content:'';position:absolute;width:12px;height:12px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:transform .2s}
+.sq-toggle input:checked + .sq-slider{background:var(--navy)}
+.sq-toggle input:checked + .sq-slider:before{transform:translateX(12px)}
+.show-actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn-analyze{padding:6px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:opacity .15s;white-space:nowrap}
+.btn-analyze:hover{opacity:.85}
+.btn-unfollow{padding:6px 10px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--r);font-size:11px;cursor:pointer;font-family:var(--ff);transition:all .15s}
+.btn-unfollow:hover{color:#dc2626;border-color:#dc2626}
+
+/* ── USAGE METER ── */
+.usage-meter{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.usage-label{font-size:13px;font-weight:500;flex-shrink:0}
+.usage-track{flex:1;min-width:120px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.usage-fill{height:100%;border-radius:3px;transition:width .4s ease;background:#22c55e}
+.usage-fill.amber{background:#f59e0b}
+.usage-fill.red{background:#ef4444}
+.usage-pct{font-size:11px;color:var(--text3);flex-shrink:0;white-space:nowrap}
+.usage-upgrade{font-size:11px;font-weight:600;color:#ef4444;text-decoration:none;flex-shrink:0}
+
+/* ── ANALYZED LIST ── */
 .ep-list{display:flex;flex-direction:column;gap:8px}
-.ep-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .1s}
-.ep-item:hover{border-color:var(--navy)}
-.ep-art{width:44px;height:44px;border-radius:3px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
-.ep-art-ph{width:44px;height:44px;border-radius:3px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;font-family:var(--ffs);flex-shrink:0}
+.ep-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px;transition:border-color .1s}
+.ep-row:hover{border-color:var(--border2)}
+.ep-art-sm{width:48px;height:48px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.ep-art-sm-ph{width:48px;height:48px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;font-family:var(--ffs);flex-shrink:0}
 .ep-body{flex:1;min-width:0}
-.ep-show{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:2px}
-.ep-title{font-size:13px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
-.ep-meta{font-size:11px;color:var(--text3);margin-top:3px;display:flex;gap:10px;align-items:center}
-.ep-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px;text-transform:uppercase;letter-spacing:.05em}
-.ep-badge-analyzed{background:#DCFCE7;color:#166534}
-.ep-badge-new{background:#EFF6FF;color:#1e40af}
-.ep-badge-preanalyzed{background:#F0FDF4;color:#166534}
-.ep-bias-mini{width:48px;height:6px;border-radius:3px;overflow:hidden;display:flex;flex-shrink:0}
-.ep-play-btn{padding:7px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap;flex-shrink:0;transition:opacity .15s}
-.ep-play-btn:hover{opacity:.85}
-/* Empty states */
-.empty-state{text-align:center;padding:60px 24px;color:var(--text3)}
-.empty-icon{font-size:40px;margin-bottom:16px}
-.empty-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px}
-.empty-sub{font-size:14px;line-height:1.6;max-width:360px;margin:0 auto 20px}
-.empty-cta{display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none;transition:opacity .15s}
-.empty-cta:hover{opacity:.85;color:#fff}
-/* Download history */
-.dl-history-section{margin-bottom:48px}
-.dl-table{width:100%;border-collapse:collapse}
-.dl-table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:8px 12px;border-bottom:1px solid var(--border);text-align:left}
-.dl-table td{font-size:12px;color:var(--text);padding:10px 12px;border-bottom:1px solid var(--border)}
-.dl-table tr:last-child td{border-bottom:none}
-.dl-type-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px;text-transform:uppercase;background:var(--bg3);color:var(--text3)}
-.dl-redownload{font-size:11px;color:var(--navy);cursor:pointer;font-weight:600}
-footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2);text-align:center;font-size:12px;color:var(--text3)}
-footer a{color:var(--text3);text-decoration:none}footer a:hover{color:var(--text)}
+.ep-show-name{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:2px}
+.ep-title{font-size:13px;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.ep-meta{font-size:11px;color:var(--text3);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ep-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}
+.btn-view{padding:6px 12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap;text-decoration:none;display:inline-block}
+.btn-view:hover{opacity:.85;color:#fff}
+.btn-reanalyze{padding:6px 12px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);font-size:11px;cursor:pointer;font-family:var(--ff);white-space:nowrap;transition:all .1s}
+.btn-reanalyze:hover{border-color:var(--navy);color:var(--navy)}
 
-.mode-toggle{background:none;border:none;font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:transform .2s ease,background .2s;line-height:1;flex-shrink:0}
-.mode-toggle:hover{transform:scale(1.25);background:rgba(128,128,128,0.1)}
-:root{--bg-primary:#0A0F1E;--bg-secondary:#111827;--bg-card:#111827;--bg-hover:#1a2233;--text-primary:#F9FAFB;--text-secondary:#9CA3AF;--text-muted:#6B7280;--accent:#818CF8;--accent-hover:#A5B4FC;--border-new:#1F2937;--border-subtle:#374151}
-body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6;--bg-card:#FFFFFF;--bg-hover:#F0F0F0;--text-primary:#0A0A0A;--text-secondary:#374151;--text-muted:#9CA3AF;--accent:#6366F1;--accent-hover:#4F46E5;--border-new:#E5E7EB;--border-subtle:#F3F4F6}
+/* ── SAVED GRID ── */
+.saved-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.saved-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.saved-grid{grid-template-columns:1fr}}
+.saved-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;gap:12px;align-items:flex-start;transition:border-color .1s}
+.saved-card:hover{border-color:var(--border2)}
+.saved-art{width:56px;height:56px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.saved-art-ph{width:56px;height:56px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;font-family:var(--ffs);flex-shrink:0}
+.saved-info{flex:1;min-width:0}
+.saved-show{font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.saved-title{font-size:12px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
+.saved-card-actions{display:flex;gap:6px}
+.btn-remove{padding:4px 8px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--r);font-size:10px;cursor:pointer;font-family:var(--ff);transition:all .1s}
+.btn-remove:hover{color:#dc2626;border-color:#dc2626}
+
+/* ── DOWNLOADS ── */
+.dl-list{display:flex;flex-direction:column;gap:8px}
+.dl-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px}
+.dl-art{width:44px;height:44px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.dl-body{flex:1;min-width:0}
+.dl-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.dl-meta{font-size:11px;color:var(--text3)}
+.dl-player{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.dl-play-btn{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:opacity .15s}
+.dl-play-btn:hover{opacity:.85}
+.btn-del{padding:5px 10px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--r);font-size:11px;cursor:pointer;font-family:var(--ff);transition:all .1s}
+.btn-del:hover{color:#dc2626;border-color:#dc2626}
+.upgrade-gate{text-align:center;padding:60px 24px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r)}
+.upgrade-gate-icon{font-size:36px;margin-bottom:12px}
+.upgrade-gate-title{font-size:16px;font-weight:600;margin-bottom:8px}
+.upgrade-gate-sub{font-size:13px;color:var(--text2);margin-bottom:20px;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.6}
+.btn-upgrade{display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none}
+.btn-upgrade:hover{opacity:.85;color:#fff}
+
+/* ── EMPTY STATES ── */
+.empty-state{text-align:center;padding:64px 24px}
+.empty-icon{font-size:40px;margin-bottom:14px}
+.empty-title{font-size:17px;font-weight:600;margin-bottom:8px}
+.empty-sub{font-size:13px;color:var(--text2);max-width:340px;margin:0 auto 20px;line-height:1.6}
+.btn-cta{display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none;transition:opacity .15s}
+.btn-cta:hover{opacity:.85;color:#fff}
+
+/* ── ERROR STATE ── */
+.error-banner{background:#fef2f2;border:1px solid #fecaca;border-radius:var(--r);padding:12px 16px;font-size:13px;color:#dc2626;margin-bottom:20px;display:none}
+[data-theme="dark"] .error-banner{background:#2d1515;border-color:#7f1d1d;color:#fca5a5}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2);text-align:center;font-size:12px;color:var(--text3)}
+footer a{color:var(--text3)}footer a:hover{color:var(--text)}
 </style>
-
-<!-- Hotjar/ContentSquare -->
-<script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
-<!-- PostHog -->
-<script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),i=0;i<o.length;i++)g(u,o[i]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ',{api_host:'https://us.i.posthog.com',person_profiles:'identified_only',capture_pageview:true,capture_pageleave:true});</script>
-<!-- Sentry -->
 <script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" crossorigin="anonymous"></script>
 <script>if(window.Sentry)Sentry.init({dsn:'https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128',environment:'production'});</script>
-<link rel="canonical" href="https://podlens.app/library">
-<script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()</script>
 </head>
 <body>
+
 <nav>
   <a class="pl-lockup" href="/" aria-label="Podlens home">
     <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="28" height="28">
     <span class="pl-lockup-divider"></span>
-    <span style="display:flex;flex-direction:column;gap:3px;line-height:1">
+    <span class="pl-lockup-text">
       <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
       <span class="pl-lockup-tagline">Know what you're actually listening to</span>
     </span>
   </a>
-  <a class="nl" href="/">Home</a>
-  <a class="nl" href="/profile.html">Profile</a>
-  <a class="nl" href="/settings.html">Settings</a>
 </nav>
+<script src="/nav.js" defer></script>
 
 <div class="page">
+  <div id="error-banner" class="error-banner">Couldn't load your library. Try refreshing.</div>
+
   <div class="page-header">
-    <div>
-      <div class="page-title">My Library</div>
-      <div class="page-sub" id="lib-sub">Your followed shows and analyzed episodes</div>
-    </div>
-    <a href="/" style="padding:9px 18px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">+ Analyze episode</a>
+    <div class="page-title">Your Library</div>
+    <div class="page-sub">Shows you follow and episodes you've analyzed</div>
   </div>
 
-  <div class="filter-row" id="filter-row">
-    <button class="filter-btn on" onclick="setFilter('all')">All</button>
-    <button class="filter-btn" onclick="setFilter('unlistened')">Unlistened</button>
-    <button class="filter-btn" onclick="setFilter('analyzed')">Analyzed</button>
-    <button class="filter-btn" onclick="setFilter('saved')">Saved</button>
-    <select class="sort-select" id="sort-select" onchange="resort()">
-      <option value="newest">Newest first</option>
-      <option value="show">By show</option>
-      <option value="analyzed">Most analyzed</option>
-    </select>
+  <!-- Search -->
+  <div class="lib-search">
+    <span class="lib-search-icon">🔍</span>
+    <input type="text" class="lib-search-input" id="lib-search" placeholder="Search your library…" oninput="filterLib(this.value)">
   </div>
 
-  <!-- Followed Shows -->
-  <div class="shows-section" id="shows-section">
-    <div class="section-head">
-      <div class="section-title">Followed Shows</div>
-      <span id="shows-count" style="font-size:12px;color:var(--text3)"></span>
-    </div>
-    <div class="shows-grid" id="shows-grid">
-      <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text3)">
-        <div style="font-size:24px;margin-bottom:8px">📻</div>
-        <div style="font-weight:600;color:var(--text);margin-bottom:4px">No followed shows yet</div>
-        <div style="font-size:13px">Follow shows from any analysis page, or connect Spotify/YouTube in <a href="/settings.html" style="color:var(--navy);font-weight:500">Settings</a></div>
-      </div>
-    </div>
+  <!-- Tabs -->
+  <div class="lib-tabs" role="tablist">
+    <button class="lib-tab active" id="tab-following" role="tab" aria-selected="true" onclick="switchTab('following')">Following <span class="tab-count" id="tc-following">0</span></button>
+    <button class="lib-tab" id="tab-analyzed" role="tab" aria-selected="false" onclick="switchTab('analyzed')">Analyzed <span class="tab-count" id="tc-analyzed">0</span></button>
+    <button class="lib-tab" id="tab-saved" role="tab" aria-selected="false" onclick="switchTab('saved')">Saved <span class="tab-count" id="tc-saved">0</span></button>
+    <button class="lib-tab" id="tab-downloads" role="tab" aria-selected="false" onclick="switchTab('downloads')">Downloads <span class="tab-count" id="tc-downloads">0</span></button>
   </div>
 
-  <!-- Recent Episodes -->
-  <div class="episodes-section" id="episodes-section">
-    <div class="section-head">
-      <div class="section-title">Recent Episodes</div>
-      <span id="episodes-count" style="font-size:12px;color:var(--text3)"></span>
-    </div>
-    <div class="ep-list" id="ep-list">
-      <div style="text-align:center;padding:40px;color:var(--text3)">
-        <div style="font-size:24px;margin-bottom:8px">🎙️</div>
-        <div style="font-weight:600;color:var(--text);margin-bottom:4px">No analyses yet</div>
-        <div style="font-size:13px;margin-bottom:16px">Analyze your first podcast episode to start building your library</div>
-        <a href="/" class="empty-cta">Analyze an episode →</a>
-      </div>
-    </div>
+  <!-- Following Panel -->
+  <div class="lib-panel active" id="panel-following">
+    <div id="following-content"></div>
   </div>
 
-  <!-- Download History -->
-  <div class="dl-history-section" id="dl-history-section" style="display:none">
-    <div class="section-head">
-      <div class="section-title">Download History</div>
-    </div>
-    <table class="dl-table">
-      <thead>
-        <tr>
-          <th>Show & Episode</th>
-          <th>Type</th>
-          <th>Date</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="dl-table-body"></tbody>
-    </table>
+  <!-- Analyzed Panel -->
+  <div class="lib-panel" id="panel-analyzed">
+    <div id="usage-meter-wrap"></div>
+    <div id="analyzed-content"></div>
+  </div>
+
+  <!-- Saved Panel -->
+  <div class="lib-panel" id="panel-saved">
+    <div id="saved-content"></div>
+  </div>
+
+  <!-- Downloads Panel -->
+  <div class="lib-panel" id="panel-downloads">
+    <div id="downloads-content"></div>
   </div>
 </div>
 
 <footer>
   <div style="margin-bottom:8px">
-    <a href="/">Home</a> &middot; <a href="/about.html">About</a> &middot; <a href="/pricing.html">Pricing</a> &middot; <a href="/privacy.html">Privacy</a>
+    <a href="/">Home</a> &middot; <a href="/pricing.html">Pricing</a> &middot; <a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a>
   </div>
   &copy; 2026 Podlens &middot; podlens.app
 </footer>
 
 <script>
-(function() {
-  var user = null;
-  var analyses = [];
+(function () {
+  /* ── HELPERS ── */
+  function plUser() { try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch (e) { return null; } }
+  function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function timeAgo(iso) {
+    if (!iso) return '';
+    var d = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (d < 60) return 'just now';
+    if (d < 3600) return Math.floor(d / 60) + 'm ago';
+    if (d < 86400) return Math.floor(d / 3600) + 'h ago';
+    if (d < 604800) return Math.floor(d / 86400) + 'd ago';
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  function biasPillClass(leftPct, rightPct) {
+    var diff = Math.abs((leftPct || 0) - (rightPct || 0));
+    if (diff < 20) return 'balanced';
+    var dir = (leftPct || 0) > (rightPct || 0) ? 'left' : 'right';
+    if (diff < 40) return 'lightly-' + dir;
+    return dir;
+  }
+  function biasPillLabel(leftPct, rightPct) {
+    var diff = Math.abs((leftPct || 0) - (rightPct || 0));
+    if (diff < 20) return 'Mostly Balanced';
+    var dir = (leftPct || 0) > (rightPct || 0) ? 'Left-Leaning' : 'Right-Leaning';
+    if (diff < 40) return 'Lightly ' + dir;
+    if (diff < 60) return dir;
+    return 'Strongly ' + dir;
+  }
+  function biasFromEp(ep) {
+    return biasPillLabel(ep.leftPct, ep.rightPct);
+  }
+  function biasCls(ep) {
+    return biasPillClass(ep.leftPct, ep.rightPct);
+  }
+  function artHtml(src, name, cls) {
+    var initial = (name || 'P').charAt(0).toUpperCase();
+    var phCls = cls.replace('-', '-ph');
+    if (src) {
+      return '<img class="' + cls + '" src="' + esc(src) + '" alt="" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;' + phCls + '&quot;>' + initial + '</div>\'">';
+    }
+    return '<div class="' + phCls + '">' + initial + '</div>';
+  }
+
+  /* ── DATA ── */
+  var u = plUser();
   var follows = [];
+  var analyses = [];
+  var saved = [];
   var downloads = [];
-  var activeFilter = 'all';
+  var activeTab = 'following';
+  var searchQuery = '';
 
-  function init() {
-    try { user = JSON.parse(localStorage.getItem('podlens_user') || '{}'); } catch(e) {}
-    if (!user || !user.id) {
-      // Not logged in — show empty state
-      document.getElementById('lib-sub').textContent = 'Sign in to see your library';
-      return;
-    }
-
-    // PostHog identify
-    if (window.posthog) {
-      posthog.identify(user.id, { email: user.email, tier: user.plan });
-    }
-
-    loadLibrary();
+  function getPlanLimits() {
+    if (!u) return { max: 3, label: 'week', unlimited: false };
+    var plan = u.plan || 'free';
+    if (plan === 'trial') return { max: 30, label: 'trial', unlimited: false };
+    if (plan === 'creator') return { max: 25, label: 'week', unlimited: false };
+    if (plan === 'operator') return { max: 100, label: 'week', unlimited: false };
+    if (plan === 'studio') return { max: 0, label: '', unlimited: true };
+    return { max: 3, label: 'week', unlimited: false };
   }
 
-  function loadLibrary() {
-    // Load from localStorage (analyses history)
+  /* ── AUTH GATE ── */
+  if (!u || !u.id) {
+    sessionStorage.setItem('pl-auth-toast', 'Sign in to access your Library');
+    window.location.href = '/';
+    return;
+  }
+
+  /* ── LOAD DATA ── */
+  function loadData() {
     try {
-      var ep = user.analyzedEpisodes || [];
-      analyses = ep.slice(0, 50);
-    } catch(e) { analyses = []; }
+      follows = (u.followedShows || []).slice();
+      analyses = (u.analyzedEpisodes || []).slice().sort(function (a, b) {
+        return new Date(b.analyzedAt || 0) - new Date(a.analyzedAt || 0);
+      });
+    } catch (e) { }
+    try { saved = JSON.parse(localStorage.getItem('pl-saved-episodes') || '[]'); } catch (e) { saved = []; }
+    try { downloads = JSON.parse(localStorage.getItem('pl-downloads') || '[]'); } catch (e) { downloads = []; }
 
-    // Load followed shows
-    try {
-      follows = user.followedShows || [];
-    } catch(e) { follows = []; }
+    // Update tab counts
+    document.getElementById('tc-following').textContent = follows.length;
+    document.getElementById('tc-analyzed').textContent = analyses.length;
+    document.getElementById('tc-saved').textContent = saved.length;
+    document.getElementById('tc-downloads').textContent = downloads.length;
 
-    render();
+    renderAll();
   }
 
-  function render() {
-    renderShows();
-    renderEpisodes();
+  /* ── RENDER ── */
+  function renderAll() {
+    renderFollowing();
+    renderAnalyzed();
+    renderSaved();
+    renderDownloads();
   }
 
-  function renderShows() {
-    var grid = document.getElementById('shows-grid');
-    var count = document.getElementById('shows-count');
-    if (!follows.length) {
-      count.textContent = '0 shows';
-      return;
-    }
-    count.textContent = follows.length + ' show' + (follows.length !== 1 ? 's' : '');
-    grid.innerHTML = follows.map(function(s) {
-      var initial = (s.name || 'P').charAt(0).toUpperCase();
-      var artHtml = s.artwork
-        ? '<img class="show-art" src="'+escHtml(s.artwork)+'" alt="" onerror="this.parentElement.innerHTML=\'<div class=show-art-ph>'+initial+'</div>\'">'
-        : '<div class="show-art-ph">'+initial+'</div>';
-      var l = s.bias ? s.bias.l || 0 : 30;
-      var c = s.bias ? s.bias.c || 40 : 40;
-      var r = s.bias ? s.bias.r || 30 : 30;
-      return '<div class="show-card" onclick="window.location.href=\'/?show='+encodeURIComponent(s.feedUrl||s.name||'')+'\'">'
-        + '<div class="show-card-top">'+artHtml+'<div>'
-        + '<div class="show-name">'+escHtml(s.name||'')+'</div>'
-        + '<div class="show-platform">'+escHtml(s.platform||'Podcast')+'</div>'
-        + '</div></div>'
-        + '<div class="show-bias-bar"><div style="width:'+l+'%;background:#E24B4A"></div><div style="width:'+c+'%;background:#D1CFC9"></div><div style="width:'+r+'%;background:#378ADD"></div></div>'
-        + '<div class="show-stats">'
-        + (s.episodeCount ? s.episodeCount + ' episodes' : '')
-        + (s.analyzeCount ? ' &middot; <span class="show-analyzed-badge">'+s.analyzeCount+' analyzed</span>' : '')
-        + '</div>'
-        + '</div>';
-    }).join('');
-  }
-
-  function renderEpisodes() {
-    var list = document.getElementById('ep-list');
-    var count = document.getElementById('episodes-count');
-
-    var filtered = analyses.filter(function(ep) {
-      if (activeFilter === 'analyzed') return ep.biasLabel;
-      if (activeFilter === 'unlistened') return !ep.played;
-      if (activeFilter === 'saved') return ep.saved;
-      return true;
+  function applySearch(arr, fields) {
+    if (!searchQuery) return arr;
+    var q = searchQuery.toLowerCase();
+    return arr.filter(function (item) {
+      return fields.some(function (f) { return (item[f] || '').toLowerCase().includes(q); });
     });
+  }
 
-    count.textContent = filtered.length + ' episode' + (filtered.length !== 1 ? 's' : '');
-
-    if (!filtered.length) {
-      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">'
-        + '<div style="font-size:24px;margin-bottom:8px">🎙️</div>'
-        + '<div style="font-weight:600;color:var(--text);margin-bottom:4px">No episodes here yet</div>'
-        + '<div style="font-size:13px">Try a different filter</div>'
+  /* Following */
+  function renderFollowing() {
+    var el = document.getElementById('following-content');
+    var items = applySearch(follows, ['name', 'host', 'latestEp']);
+    if (!items.length) {
+      el.innerHTML = '<div class="empty-state">'
+        + '<div class="empty-icon">🎧</div>'
+        + '<div class="empty-title">' + (follows.length ? 'No matching shows' : "You haven't followed any shows yet") + '</div>'
+        + '<div class="empty-sub">' + (follows.length ? 'Try a different search term.' : 'Head to Discover to find podcasts to follow.') + '</div>'
+        + (!follows.length ? '<a href="/" class="btn-cta">Go to Discover →</a>' : '')
         + '</div>';
       return;
     }
-
-    list.innerHTML = filtered.slice(0, 30).map(function(ep) {
-      var initial = (ep.showName || 'P').charAt(0).toUpperCase();
-      var artHtml = ep.artwork
-        ? '<img class="ep-art" src="'+escHtml(ep.artwork)+'" alt="" onerror="this.parentElement.innerHTML=\'<div class=ep-art-ph>'+initial+'</div>\'">'
-        : '<div class="ep-art-ph">'+initial+'</div>';
-      var l = ep.leftPct || 0, c = ep.centerPct || 0, r = ep.rightPct || 0;
-      var badge = ep.biasLabel
-        ? '<span class="ep-badge ep-badge-analyzed">✓ Analyzed</span>'
-        : '<span class="ep-badge ep-badge-new">New</span>';
-      var dateStr = ep.analyzedAt ? new Date(ep.analyzedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
-      var shareUrl = ep.jobId ? '/analysis/'+ep.jobId : '#';
-      return '<div class="ep-item">'
-        + artHtml
-        + '<div class="ep-body">'
-        + '<div class="ep-show">'+escHtml(ep.showName||'')+'</div>'
-        + '<div class="ep-title">'+escHtml(ep.episodeTitle||'Episode')+'</div>'
-        + '<div class="ep-meta">'+badge+(dateStr?' &middot; '+dateStr:'')+'</div>'
+    var plan = u.plan || 'free';
+    var showSQ = ['creator', 'operator', 'studio', 'trial'].includes(plan);
+    el.innerHTML = '<div class="following-grid">' + items.map(function (s, i) {
+      var sqId = 'sq-' + i;
+      var sqChecked = s.smartQueue ? 'checked' : '';
+      var sqHtml = showSQ
+        ? '<div class="sq-toggle-wrap" title="Smart Queue — auto-analyze new episodes"><span class="sq-label">SQ</span><label class="sq-toggle"><input type="checkbox" ' + sqChecked + ' onchange="toggleSmartQueue(' + i + ',this.checked)"><span class="sq-slider"></span></label></div>'
+        : '';
+      var bias = s.bias || {};
+      var pillCls = biasPillClass(bias.l, bias.r);
+      var pillLabel = biasPillLabel(bias.l, bias.r);
+      var analyzeUrl = s.feedUrl || s.youtubeUrl || '';
+      return '<div class="show-card">'
+        + '<div class="show-card-top">'
+        + artHtml(s.artwork, s.name, 'show-art-lg')
+        + '<div class="show-info">'
+        + '<div class="show-name">' + esc(s.name || '') + '</div>'
+        + '<div class="show-host">' + esc(s.host || '') + '</div>'
+        + (s.latestEp ? '<div class="show-latest-ep">' + esc(s.latestEp) + '</div>' : '')
         + '</div>'
-        + '<div class="ep-bias-mini"><div style="width:'+l+'%;background:#E24B4A"></div><div style="width:'+c+'%;background:#D1CFC9"></div><div style="width:'+r+'%;background:#378ADD"></div></div>'
-        + (ep.jobId ? '<button class="ep-play-btn" onclick="event.stopPropagation();window.location.href=\'/?jobId='+escHtml(ep.jobId)+'\'">View ↗</button>' : '')
+        + '</div>'
+        + '<div class="show-card-footer">'
+        + '<span class="bias-pill ' + pillCls + '">' + pillLabel + '</span>'
+        + sqHtml
+        + '</div>'
+        + '<div class="show-actions">'
+        + (analyzeUrl ? '<button class="btn-analyze" onclick="analyzeLatest(\'' + esc(analyzeUrl) + '\',\'' + esc(s.name || '') + '\')">Analyze latest →</button>' : '')
+        + '<button class="btn-unfollow" onclick="unfollowShow(' + i + ')">Unfollow</button>'
+        + '</div>'
         + '</div>';
-    }).join('');
+    }).join('') + '</div>';
   }
 
-  window.setFilter = function(f) {
-    activeFilter = f;
-    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('on'); });
-    event.target.classList.add('on');
-    renderEpisodes();
-  };
-
-  window.resort = function() {
-    var v = document.getElementById('sort-select').value;
-    if (v === 'newest') {
-      analyses.sort(function(a, b) { return new Date(b.analyzedAt||0) - new Date(a.analyzedAt||0); });
-    } else if (v === 'show') {
-      analyses.sort(function(a, b) { return (a.showName||'').localeCompare(b.showName||''); });
+  /* Analyzed */
+  function renderAnalyzed() {
+    var el = document.getElementById('analyzed-content');
+    var items = applySearch(analyses, ['episodeTitle', 'showName']);
+    // Usage meter
+    var lim = getPlanLimits();
+    var used = u.analysesThisWeek || 0;
+    var umHtml = '';
+    if (!lim.unlimited) {
+      var pct = Math.min(100, Math.round(used / lim.max * 100));
+      var fillCls = pct >= 100 ? 'red' : pct >= 80 ? 'amber' : '';
+      umHtml = '<div class="usage-meter">'
+        + '<span class="usage-label">' + used + ' of ' + lim.max + ' analyses used this ' + lim.label + '</span>'
+        + '<div class="usage-track"><div class="usage-fill ' + fillCls + '" style="width:' + pct + '%"></div></div>'
+        + '<span class="usage-pct">' + pct + '%</span>'
+        + (pct >= 80 ? '<a href="/pricing.html" class="usage-upgrade">Upgrade for more →</a>' : '')
+        + '</div>';
+    } else {
+      umHtml = '<div class="usage-meter"><span class="usage-label" style="color:var(--text3)">Unlimited analyses</span></div>';
     }
-    renderEpisodes();
-  };
+    document.getElementById('usage-meter-wrap').innerHTML = umHtml;
 
-  function escHtml(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    if (!items.length) {
+      el.innerHTML = '<div class="empty-state">'
+        + '<div class="empty-icon">📊</div>'
+        + '<div class="empty-title">' + (analyses.length ? 'No matching analyses' : 'No analyses yet') + '</div>'
+        + '<div class="empty-sub">' + (analyses.length ? 'Try a different search.' : 'Analyze any podcast episode to see it here.') + '</div>'
+        + (!analyses.length ? '<a href="/" class="btn-cta">Analyze an episode →</a>' : '')
+        + '</div>';
+      return;
+    }
+    el.innerHTML = '<div class="ep-list">' + items.map(function (ep) {
+      var pillCls = biasCls(ep);
+      var pillLabel = ep.biasLabel || biasFromEp(ep);
+      var viewUrl = ep.jobId ? '/?jobId=' + ep.jobId : '#';
+      return '<div class="ep-row">'
+        + artHtml(ep.artwork, ep.showName, 'ep-art-sm')
+        + '<div class="ep-body">'
+        + '<div class="ep-show-name">' + esc(ep.showName || '') + '</div>'
+        + '<div class="ep-title">' + esc(ep.episodeTitle || 'Episode') + '</div>'
+        + '<div class="ep-meta">'
+        + (pillLabel ? '<span class="bias-pill ' + pillCls + '">' + pillLabel + '</span>' : '')
+        + '<span>' + timeAgo(ep.analyzedAt) + '</span>'
+        + '</div>'
+        + '</div>'
+        + '<div class="ep-actions">'
+        + (ep.jobId ? '<a href="' + esc(viewUrl) + '" class="btn-view">View →</a>' : '')
+        + (ep.url ? '<button class="btn-reanalyze" onclick="reAnalyze(\'' + esc(ep.url) + '\',\'' + esc(ep.episodeTitle || '') + '\',\'' + esc(ep.showName || '') + '\')">Re-analyze</button>' : '')
+        + '</div>'
+        + '</div>';
+    }).join('') + '</div>';
   }
 
-  init();
-})();
+  /* Saved */
+  function renderSaved() {
+    var el = document.getElementById('saved-content');
+    var items = applySearch(saved, ['episode_title', 'show_name']);
+    if (!items.length) {
+      el.innerHTML = '<div class="empty-state">'
+        + '<div class="empty-icon">🔖</div>'
+        + '<div class="empty-title">' + (saved.length ? 'No matching saved episodes' : 'Nothing saved yet') + '</div>'
+        + '<div class="empty-sub">Save episodes from any show profile to analyze them later.</div>'
+        + '</div>';
+      return;
+    }
+    el.innerHTML = '<div class="saved-grid">' + items.map(function (ep, i) {
+      var analyzeUrl = ep.episode_url || '';
+      return '<div class="saved-card">'
+        + artHtml(ep.artwork_url, ep.show_name, 'saved-art')
+        + '<div class="saved-info">'
+        + '<div class="saved-show">' + esc(ep.show_name || '') + '</div>'
+        + '<div class="saved-title">' + esc(ep.episode_title || 'Episode') + '</div>'
+        + '<div class="saved-card-actions">'
+        + (analyzeUrl ? '<button class="btn-analyze" onclick="analyzeLatest(\'' + esc(analyzeUrl) + '\',\'' + esc(ep.show_name || '') + '\')">Analyze now →</button>' : '')
+        + '<button class="btn-remove" onclick="removeSaved(' + i + ')">Remove</button>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }).join('') + '</div>';
+  }
 
-function toggleMode(){var isNowLight=document.body.classList.toggle('light-mode');document.documentElement.setAttribute('data-theme',isNowLight?'light':'dark');document.querySelectorAll('.mode-toggle').forEach(function(btn){btn.textContent=isNowLight?'☀️':'🌙';});localStorage.setItem('podlens-mode',isNowLight?'light':'dark');localStorage.setItem('pl-theme',isNowLight?'light':'dark');}
-document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.body.classList.add('light-mode');document.documentElement.setAttribute('data-theme','light');document.querySelectorAll('.mode-toggle').forEach(function(b){b.textContent='☀️';});}});
+  /* Downloads */
+  function renderDownloads() {
+    var el = document.getElementById('downloads-content');
+    var plan = u.plan || 'free';
+    var hasAccess = ['creator', 'operator', 'studio', 'trial'].includes(plan);
+    if (!hasAccess) {
+      el.innerHTML = '<div class="upgrade-gate">'
+        + '<div class="upgrade-gate-icon">🎧</div>'
+        + '<div class="upgrade-gate-title">Audio briefings are available on Creator plan and above</div>'
+        + '<div class="upgrade-gate-sub">Get 90-second spoken summaries of every episode you analyze, playable offline.</div>'
+        + '<a href="/pricing.html" class="btn-upgrade">Upgrade to Creator →</a>'
+        + '</div>';
+      return;
+    }
+    var items = applySearch(downloads, ['title', 'show_name']);
+    if (!items.length) {
+      el.innerHTML = '<div class="empty-state">'
+        + '<div class="empty-icon">📥</div>'
+        + '<div class="empty-title">' + (downloads.length ? 'No matching downloads' : 'No downloads yet') + '</div>'
+        + '<div class="empty-sub">Audio briefings you download will appear here.</div>'
+        + '</div>';
+      return;
+    }
+    el.innerHTML = '<div class="dl-list">' + items.map(function (dl, i) {
+      return '<div class="dl-row">'
+        + (dl.artwork ? '<img class="dl-art" src="' + esc(dl.artwork) + '" alt="">' : '<div class="dl-art" style="background:var(--navy)"></div>')
+        + '<div class="dl-body">'
+        + '<div class="dl-title">' + esc(dl.title || 'Audio Briefing') + '</div>'
+        + '<div class="dl-meta">' + (dl.duration || '') + (dl.downloaded_at ? ' &middot; Downloaded ' + timeAgo(dl.downloaded_at) : '') + '</div>'
+        + '</div>'
+        + '<div class="dl-player">'
+        + (dl.audio_url ? '<button class="dl-play-btn" onclick="playDownload(\'' + esc(dl.audio_url) + '\')">▶</button>' : '')
+        + '<button class="btn-del" onclick="deleteDownload(' + i + ')">Delete</button>'
+        + '</div>'
+        + '</div>';
+    }).join('') + '</div>';
+  }
+
+  /* ── TAB SWITCHING ── */
+  window.switchTab = function (tab) {
+    activeTab = tab;
+    document.querySelectorAll('.lib-tab').forEach(function (t) {
+      t.classList.toggle('active', t.id === 'tab-' + tab);
+      t.setAttribute('aria-selected', t.id === 'tab-' + tab ? 'true' : 'false');
+    });
+    document.querySelectorAll('.lib-panel').forEach(function (p) {
+      p.classList.toggle('active', p.id === 'panel-' + tab);
+    });
+  };
+
+  /* ── SEARCH ── */
+  window.filterLib = function (q) {
+    searchQuery = q;
+    if (activeTab === 'following') renderFollowing();
+    else if (activeTab === 'analyzed') renderAnalyzed();
+    else if (activeTab === 'saved') renderSaved();
+    else renderDownloads();
+  };
+
+  /* ── ACTIONS ── */
+  window.toggleSmartQueue = function (idx, val) {
+    if (!u.followedShows[idx]) return;
+    u.followedShows[idx].smartQueue = val;
+    localStorage.setItem('pl-user', JSON.stringify(u));
+    follows = u.followedShows.slice();
+  };
+
+  window.unfollowShow = function (idx) {
+    if (!confirm('Unfollow "' + (follows[idx] && follows[idx].name || 'this show') + '"?')) return;
+    u.followedShows.splice(idx, 1);
+    localStorage.setItem('pl-user', JSON.stringify(u));
+    follows = u.followedShows.slice();
+    document.getElementById('tc-following').textContent = follows.length;
+    renderFollowing();
+  };
+
+  window.analyzeLatest = function (url, showName) {
+    window.location.href = '/?analyze=' + encodeURIComponent(url) + '&show=' + encodeURIComponent(showName || '');
+  };
+
+  window.reAnalyze = function (url, epTitle, showName) {
+    window.location.href = '/?analyze=' + encodeURIComponent(url) + '&ep=' + encodeURIComponent(epTitle || '') + '&show=' + encodeURIComponent(showName || '');
+  };
+
+  window.removeSaved = function (idx) {
+    saved.splice(idx, 1);
+    localStorage.setItem('pl-saved-episodes', JSON.stringify(saved));
+    document.getElementById('tc-saved').textContent = saved.length;
+    renderSaved();
+  };
+
+  window.deleteDownload = function (idx) {
+    downloads.splice(idx, 1);
+    localStorage.setItem('pl-downloads', JSON.stringify(downloads));
+    document.getElementById('tc-downloads').textContent = downloads.length;
+    renderDownloads();
+  };
+
+  window.playDownload = function (url) {
+    var audio = new Audio(url);
+    audio.play().catch(function () { });
+  };
+
+  loadData();
+})();
 </script>
 </body>
 </html>

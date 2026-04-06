@@ -1952,7 +1952,8 @@ body.light-mode,[data-theme="light"]{
     <!-- LOGGED IN: app links -->
     <div class="nav-links-logged-in" id="nav-logged-in">
       <button class="nav-link" id="nl-discover" onclick="showView('discover')">Discover</button>
-      <button class="nav-link" id="nl-library" onclick="showView('library')">Library</button>
+      <a class="nav-link" id="nl-library" href="/library.html">Library</a>
+      <a class="nav-link" id="nl-dashboard" href="/dashboard.html">Dashboard</a>
       <button class="nav-theme-toggle" onclick="toggleMode()" id="mode-toggle-btn"
               aria-label="Toggle dark/light mode">🌙</button>
       <div id="lang-switch-wrap"></div>
@@ -3251,6 +3252,7 @@ function _renderNavAvatar(u) {
     + '<div class="dropdown-tier">' + tierLabel + ' plan</div></div></div>'
     + '<div class="dropdown-divider"></div>'
     + adminRows
+    + '<a href="/dashboard.html" class="dropdown-item">📊 Dashboard</a>'
     + '<a href="/account?tab=profile" class="dropdown-item">\uD83D\uDC64 View &amp; Edit Profile</a>'
     + '<a href="/account?tab=settings" class="dropdown-item">\u2699\uFE0F Settings</a>'
     + '<a href="/account?tab=billing" class="dropdown-item">\uD83D\uDCB3 Billing &amp; Plans</a>'
