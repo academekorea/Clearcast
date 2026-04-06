@@ -455,6 +455,24 @@ body.player-on .lap{bottom:72px}
 .bias-bar-l{background:var(--left-bar)}
 .bias-bar-c{background:var(--center-bar)}
 .bias-bar-r{background:var(--right-bar)}
+/* ── Gradient bias bar widget ── */
+.bias-bar-widget{width:100%;margin:8px 0}
+.bias-bar-labels{display:flex;justify-content:space-between;font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin-bottom:5px;text-transform:uppercase}
+.bias-bar-track{position:relative;height:10px;border-radius:5px;overflow:visible;margin-bottom:12px}
+.bias-bar-gradient{position:absolute;inset:0;border-radius:5px;background:linear-gradient(to right,#3B82F6,#60A5FA,#94A3B8,#FCA5A5,#EF4444)}
+.bias-bar-center-line{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:rgba(255,255,255,.5);transform:translateX(-50%);border-radius:1px}
+.bias-bar-marker{position:absolute;top:50%;transform:translate(-50%,-50%);z-index:2;transition:left .8s cubic-bezier(.34,1.56,.64,1)}
+.bias-marker-line{width:4px;height:20px;background:#fff;border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.bias-result-label{text-align:center;font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:4px 14px;border-radius:20px;display:block;width:fit-content;margin:0 auto}
+.bias-result-label.left{color:#60A5FA;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25)}
+.bias-result-label.right{color:#F87171;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25)}
+.bias-result-label.balanced{color:#34D399;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25)}
+/* ── Legend pill badges ── */
+.legend-pills{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.legend-pill{padding:3px 10px;border-radius:12px;font-size:.68rem;font-weight:700;letter-spacing:.04em}
+.legend-pill.left{color:#60A5FA;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25)}
+.legend-pill.right{color:#F87171;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25)}
+.legend-pill.balanced{color:#34D399;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25)}
 .bias-counts{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap}
 .bias-count{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}
 .bias-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
@@ -1835,10 +1853,8 @@ body.light-mode,[data-theme="light"]{
           <div class="proof-name">Lex Fridman Podcast</div>
           <div class="proof-meta">Sample from 847 episodes</div>
           <div class="proof-bar-wrap">
-            <div class="bias-bar"><div class="bias-bar-l" style="width:22%"></div><div class="bias-bar-c" style="width:54%"></div><div class="bias-bar-r" style="width:24%"></div></div>
-            <div class="bias-counts"><span class="bias-count"><span class="bias-dot" style="background:var(--left-bar)"></span>22% left</span><span class="bias-count"><span class="bias-dot" style="background:var(--center-bar)"></span>54% center</span><span class="bias-count"><span class="bias-dot" style="background:var(--right-bar)"></span>24% right</span></div>
+            <div class="bias-bar-widget"><div class="bias-bar-labels"><span>&#9668; LEFT</span><span>CENTER</span><span>RIGHT &#9658;</span></div><div class="bias-bar-track"><div class="bias-bar-gradient"></div><div class="bias-bar-center-line"></div><div class="bias-bar-marker" style="left:51%"><div class="bias-marker-line"></div></div></div><div class="bias-result-label balanced">Mostly balanced</div></div>
           </div>
-          <div class="bias-plain-label">Mostly balanced</div>
           <div class="proof-note">Example analysis &mdash; paste any episode URL to analyze</div>
         </div>
         <div class="proof-card">
@@ -1847,10 +1863,8 @@ body.light-mode,[data-theme="light"]{
           <div class="proof-name">The Daily (NYT)</div>
           <div class="proof-meta">Sample from 1,200+ episodes</div>
           <div class="proof-bar-wrap">
-            <div class="bias-bar"><div class="bias-bar-l" style="width:46%"></div><div class="bias-bar-c" style="width:32%"></div><div class="bias-bar-r" style="width:22%"></div></div>
-            <div class="bias-counts"><span class="bias-count"><span class="bias-dot" style="background:var(--left-bar)"></span>46% left</span><span class="bias-count"><span class="bias-dot" style="background:var(--center-bar)"></span>32% center</span><span class="bias-count"><span class="bias-dot" style="background:var(--right-bar)"></span>22% right</span></div>
+            <div class="bias-bar-widget"><div class="bias-bar-labels"><span>&#9668; LEFT</span><span>CENTER</span><span>RIGHT &#9658;</span></div><div class="bias-bar-track"><div class="bias-bar-gradient"></div><div class="bias-bar-center-line"></div><div class="bias-bar-marker" style="left:38%"><div class="bias-marker-line"></div></div></div><div class="bias-result-label left">Moderately biased</div></div>
           </div>
-          <div class="bias-plain-label">Moderately biased</div>
           <div class="proof-note">Example analysis &mdash; paste any episode URL to analyze</div>
         </div>
         <div class="proof-card">
@@ -1859,10 +1873,8 @@ body.light-mode,[data-theme="light"]{
           <div class="proof-name">The Joe Rogan Experience</div>
           <div class="proof-meta">Sample from 2,400+ episodes</div>
           <div class="proof-bar-wrap">
-            <div class="bias-bar"><div class="bias-bar-l" style="width:20%"></div><div class="bias-bar-c" style="width:39%"></div><div class="bias-bar-r" style="width:41%"></div></div>
-            <div class="bias-counts"><span class="bias-count"><span class="bias-dot" style="background:var(--left-bar)"></span>20% left</span><span class="bias-count"><span class="bias-dot" style="background:var(--center-bar)"></span>39% center</span><span class="bias-count"><span class="bias-dot" style="background:var(--right-bar)"></span>41% right</span></div>
+            <div class="bias-bar-widget"><div class="bias-bar-labels"><span>&#9668; LEFT</span><span>CENTER</span><span>RIGHT &#9658;</span></div><div class="bias-bar-track"><div class="bias-bar-gradient"></div><div class="bias-bar-center-line"></div><div class="bias-bar-marker" style="left:61%"><div class="bias-marker-line"></div></div></div><div class="bias-result-label right">Lightly one-sided</div></div>
           </div>
-          <div class="bias-plain-label">Lightly one-sided</div>
           <div class="proof-note">Example analysis &mdash; paste any episode URL to analyze</div>
         </div>
       </div>
@@ -3670,6 +3682,26 @@ async function loadForyouShows(region, user) {
 function ytId(url) { if (!url) return null; var m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/); return m?m[1]:null; }
 function ytEmbed(id) { return '<div class="yt-wrap"><iframe src="https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>'; }
 
+// ── GRADIENT BIAS BAR ──
+// score = position on 0-100 scale (0=far left, 50=center, 100=far right)
+// Derived from leftPct/rightPct as: 50 + (rightPct - leftPct) / 2
+function renderBiasBar(leftPct, centerPct, rightPct) {
+  leftPct = leftPct || 0; centerPct = centerPct || 0; rightPct = rightPct || 0;
+  var score = 50 + (rightPct - leftPct) / 2;
+  score = Math.max(2, Math.min(98, score));
+  var direction = score > 55 ? 'right' : score < 45 ? 'left' : 'balanced';
+  var label = biasPlainLabel(leftPct, rightPct);
+  return '<div class="bias-bar-widget">'
+    + '<div class="bias-bar-labels"><span>&#9668; LEFT</span><span>CENTER</span><span>RIGHT &#9658;</span></div>'
+    + '<div class="bias-bar-track">'
+    + '<div class="bias-bar-gradient"></div>'
+    + '<div class="bias-bar-center-line"></div>'
+    + '<div class="bias-bar-marker" style="left:'+score.toFixed(1)+'%"><div class="bias-marker-line"></div></div>'
+    + '</div>'
+    + '<div class="bias-result-label '+direction+'">'+label+'</div>'
+    + '</div>';
+}
+
 // ── BIAS BAR HELPERS ──
 function biasPlainLabel(leftPct, rightPct) {
   var diff = Math.abs((leftPct||0) - (rightPct||0));
@@ -3680,29 +3712,18 @@ function biasPlainLabel(leftPct, rightPct) {
   return 'Extremely one-sided';
 }
 
-// ── COVERAGE BAR ──
+// ── COVERAGE BAR — uses gradient bias bar ──
 function covBar(ep, dark) {
   var al = ep.audioLean;
   if (al && typeof al.leftPct !== 'undefined') {
-    var lp=al.leftPct, cp=al.centerPct, rp=al.rightPct;
-    var bar='<div class="cov-bar">'
-      +(lp?'<div style="background:var(--left-bar);width:'+lp+'%"></div>':'')
-      +(cp?'<div style="background:var(--center-bar);width:'+cp+'%"></div>':'')
-      +(rp?'<div style="background:var(--right-bar);width:'+rp+'%"></div>':'')
-      +'</div>';
-    var counts='<div class="cov-counts">'
-      +(lp?'<span class="cc"><span class="ccd" style="background:var(--left-bar)"></span>'+lp+'% left</span>':'')
-      +(cp?'<span class="cc"><span class="ccd" style="background:var(--center-bar)"></span>'+cp+'% center</span>':'')
-      +(rp?'<span class="cc"><span class="ccd" style="background:var(--right-bar)"></span>'+rp+'% right</span>':'')
-      +'</div>';
-    return bar+counts;
+    return renderBiasBar(al.leftPct, al.centerPct, al.rightPct);
   }
-  var col=dark?'rgba(255,255,255,.5)':'var(--text3)';
-  var analyzeUrl=ep.youtubeUrl||ep.feedUrl||'';
-  var safeAnalyze=analyzeUrl.replace(/"/g,'&quot;');
+  var col = dark ? 'rgba(255,255,255,.5)' : 'var(--text3)';
+  var analyzeUrl = ep.youtubeUrl || ep.feedUrl || '';
+  var safeAnalyze = analyzeUrl.replace(/"/g,'&quot;');
   return '<div style="font-size:10px;color:'+col+';margin-top:3px">Analyze to see bias'
-    +(analyzeUrl?' &rarr; <span style="text-decoration:underline;cursor:pointer" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeAnalyze+'&quot;,&quot;'+(ep.epTitle||'').replace(/"/g,'').replace(/'/g,'')+'&quot;,&quot;'+(ep.showName||'').replace(/"/g,'').replace(/'/g,'')+'&quot;)">Analyze &#8599;</span>':'')
-    +'</div>';
+    + (analyzeUrl ? ' &rarr; <span style="text-decoration:underline;cursor:pointer" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeAnalyze+'&quot;,&quot;'+(ep.epTitle||'').replace(/"/g,'').replace(/'/g,'')+'&quot;,&quot;'+(ep.showName||'').replace(/"/g,'').replace(/'/g,'')+'&quot;)">Analyze &#8599;</span>' : '')
+    + '</div>';
 }
 
 // ── STORIES ──
@@ -6416,10 +6437,18 @@ var regionFlags = { INTL:'\uD83C\uDF0D', US:'\uD83C\uDDFA\uD83C\uDDF8', GB:'\uD8
 function setRegion(region, lang, currency, store) {
   _settings = { region: region, lang: lang, currency: currency, store: store };
   localStorage.setItem('pl_prefs_region', JSON.stringify(_settings));
+  // Sync podlens-region key used by detectUserRegion()
+  var plRegion = region === 'KR' ? 'ko-KR' : 'international';
+  localStorage.setItem('podlens-region', plRegion);
   document.getElementById('region-menu').classList.remove('on');
   updateRegionUI();
   applyTranslations(lang);
   applyKoreanMode();
+  // Refresh discovery content with new region
+  if (_feedInit) {
+    _feedInit = false;
+    initFeed();
+  }
 }
 
 function updateRegionUI() {
