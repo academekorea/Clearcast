@@ -2147,15 +2147,35 @@ body.light-mode,[data-theme="light"]{
       <button class="cat-pill-btn" onclick="filterTrendingGrid('sports',this)">Sports</button>
     </div>
 
-    <!-- TRENDING GRID (3 cols, full width) -->
+    <!-- TRENDING GRID (3 cols, full width) — static, no async -->
     <div class="trending-grid-section">
       <div class="tg-eyebrow">Trending</div>
       <div class="tg-title">Most analyzed this week</div>
       <div class="tg-grid" id="tg-grid">
-        <!-- Skeleton placeholders -->
-        <div class="tg-card"><div class="tg-card-top"><div class="tg-art-ph skel" style="background:var(--bg3)"></div><div style="flex:1"><div class="skel" style="height:11px;width:60%;margin-bottom:8px"></div><div class="skel" style="height:13px;width:90%;margin-bottom:4px"></div><div class="skel" style="height:13px;width:70%"></div></div></div><div class="skel" style="height:8px;border-radius:4px"></div></div>
-        <div class="tg-card"><div class="tg-card-top"><div class="tg-art-ph skel" style="background:var(--bg3)"></div><div style="flex:1"><div class="skel" style="height:11px;width:50%;margin-bottom:8px"></div><div class="skel" style="height:13px;width:85%;margin-bottom:4px"></div><div class="skel" style="height:13px;width:60%"></div></div></div><div class="skel" style="height:8px;border-radius:4px"></div></div>
-        <div class="tg-card"><div class="tg-card-top"><div class="tg-art-ph skel" style="background:var(--bg3)"></div><div style="flex:1"><div class="skel" style="height:11px;width:65%;margin-bottom:8px"></div><div class="skel" style="height:13px;width:80%;margin-bottom:4px"></div><div class="skel" style="height:13px;width:55%"></div></div></div><div class="skel" style="height:8px;border-radius:4px"></div></div>
+        <div class="tg-card" onclick="showView('show');loadShowProfile('the-daily','https://feeds.simplecast.com/54nAGcIl')">
+          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/600x600bb.jpg" alt="The Daily" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-card-body"><div class="tg-card-name">The Daily</div><div class="tg-card-artist">The New York Times</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
+        </div>
+        <div class="tg-card" onclick="showView('show');loadShowProfile('pod-save-america','https://feeds.megaphone.fm/pod-save-america')">
+          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/44/dc/61/44dc6141-25e9-5bb3-e19e-a2337233d19e/mza_5506771870755587769.jpg/600x600bb.jpg" alt="Pod Save America" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-card-body"><div class="tg-card-name">Pod Save America</div><div class="tg-card-artist">Crooked Media</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
+        </div>
+        <div class="tg-card" onclick="showView('show');loadShowProfile('lex-fridman-podcast','https://lexfridman.com/feed/podcast/')">
+          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/3e/e3/9c/3ee39c89-de08-47a6-7f3d-3849cef6d255/mza_16657851278549137484.png/600x600bb.jpg" alt="Lex Fridman Podcast" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-card-body"><div class="tg-card-name">Lex Fridman Podcast</div><div class="tg-card-artist">Lex Fridman</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
+        </div>
+        <div class="tg-card" onclick="showView('show');loadShowProfile('npr-politics-podcast','https://feeds.npr.org/510310/podcast.xml')">
+          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/71/15/1d/71151d33-32e7-f0e1-2a6b-412bf4835c5d/mza_9550948332778108059.jpg/600x600bb.jpg" alt="NPR Politics Podcast" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-card-body"><div class="tg-card-name">NPR Politics Podcast</div><div class="tg-card-artist">NPR</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
+        </div>
+        <div class="tg-card" onclick="showView('show');loadShowProfile('the-ben-shapiro-show','https://feeds.megaphone.fm/WWO3519750917')">
+          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/b6/2c/2c/b62c2c46-3fd6-5733-2c82-b95b781a4b40/mza_17718419788103424619.jpg/600x600bb.jpg" alt="The Ben Shapiro Show" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-card-body"><div class="tg-card-name">The Ben Shapiro Show</div><div class="tg-card-artist">Daily Wire</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
+        </div>
+        <div class="tg-card" onclick="showView('show');loadShowProfile('planet-money','https://feeds.npr.org/510289/podcast.xml')">
+          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/85/df/53/85df5334-0fae-28a9-2bc4-b97b81061d0e/mza_10839245066228881011.jpg/600x600bb.jpg" alt="Planet Money" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-card-body"><div class="tg-card-name">Planet Money</div><div class="tg-card-artist">NPR</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
+        </div>
       </div>
     </div>
 
@@ -8035,9 +8055,9 @@ document.addEventListener('keydown', function(e) {
 
 // ── HOMEPAGE FUNCTIONS ──
 function filterTrendingGrid(category, btn) {
+  // Static content — just update button state, no reload
   document.querySelectorAll('.cat-pill-btn').forEach(function(b){ b.classList.remove('on'); });
   if (btn) btn.classList.add('on');
-  loadTrendingGrid(category);
 }
 
 var _tgCategory = 'all';
@@ -8045,15 +8065,8 @@ var _tgCategory = 'all';
 var _genreKeyMap = {all:'all',news:'news',tech:'technology',technology:'technology',business:'business',society:'society',crime:'crime',comedy:'comedy',health:'health',sports:'sports',history:'history',science:'science'};
 
 function loadTrendingGrid(category) {
+  // Content is hardcoded in HTML — this function is intentionally a no-op
   _tgCategory = category || 'all';
-  var el = document.getElementById('tg-grid');
-  if (!el) return;
-  // Reuse cached For You trending data if available, else show curated shows immediately
-  if (window._foryouTrendingCache && window._foryouTrendingCache.length) {
-    _renderTrendingFromForYou(el, window._foryouTrendingCache);
-  } else {
-    _renderTrendingFallback(el);
-  }
 }
 
 function _renderTrendingFromForYou(el, shows) {

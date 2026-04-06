@@ -33,124 +33,107 @@
   }
 
   function injectCSS() {
-    if (document.getElementById('pl-nav-css')) return;
+    if (document.getElementById('nav-css')) return;
     var s = document.createElement('style');
-    s.id = 'pl-nav-css';
+    s.id = 'nav-css';
     s.textContent = [
       'nav{display:flex!important;align-items:center!important;width:100%!important}',
       '.nav-links{display:flex!important;align-items:center!important;gap:24px!important;margin-left:auto!important;flex-shrink:0!important}',
-      '.pl-nav-link{padding:6px 12px;font-size:13px;color:var(--text2,#6B7280);border-radius:4px;text-decoration:none;background:none;border:none;cursor:pointer;font-family:Inter,-apple-system,sans-serif;font-weight:500;transition:color .12s,background .12s;white-space:nowrap}',
-      '.pl-nav-link:hover{color:var(--text,#111);background:rgba(0,0,0,.05)}',
-      '.pl-nav-link.active{color:var(--text,#111);font-weight:600;border-bottom:2px solid currentColor;padding-bottom:4px}',
-      '.pl-nav-signin{background:#0f2027!important;color:#fff!important;border:none;border-radius:999px;padding:8px 20px;font-size:13px;font-weight:600;text-decoration:none!important;font-family:Inter,-apple-system,sans-serif;cursor:pointer;white-space:nowrap;transition:opacity .15s;margin-left:4px}',
-      '.pl-nav-signin:hover{opacity:.85}',
-      '.pl-nav-theme{background:none;border:none;cursor:pointer;font-size:16px;padding:6px;border-radius:8px;line-height:1;flex-shrink:0}',
-      '.pl-nav-avatar-btn{background:none;border:none;cursor:pointer;padding:0;border-radius:50%;display:flex;align-items:center;flex-shrink:0}',
-      '.pl-nav-avatar-img{width:32px;height:32px;border-radius:50%;object-fit:cover}',
-      '.pl-nav-avatar-ini{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;font-family:Inter,sans-serif}',
-      '.pl-nav-dd-wrap{position:relative;margin-left:4px}',
-      '.pl-nav-dd{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--bg,#fff);border:1px solid var(--border,#e0ddd8);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:210px;z-index:9999;overflow:hidden}',
-      '.pl-nav-dd.open{display:block}',
-      '.pl-nav-dd-head{padding:12px 16px;border-bottom:1px solid var(--border,#e0ddd8)}',
-      '.pl-nav-dd-name{font-size:13px;font-weight:600;color:var(--text,#111);font-family:Inter,sans-serif}',
-      '.pl-nav-dd-email{font-size:11px;color:var(--text3,#9CA3AF);margin-top:2px;font-family:Inter,sans-serif}',
-      '.pl-nav-dd-item{display:block;padding:10px 16px;font-size:13px;color:var(--text,#111);text-decoration:none;font-family:Inter,sans-serif;transition:background .1s;cursor:pointer;width:100%;text-align:left;background:none;border:none;box-sizing:border-box;line-height:1.2}',
-      '.pl-nav-dd-item:hover{background:var(--bg3,#F0EFE9)}',
-      '.pl-nav-dd-div{height:1px;background:var(--border,#e0ddd8);margin:4px 0}',
+      '.nav-link{padding:6px 12px;font-size:13px;color:var(--text2,#6B7280);border-radius:4px;text-decoration:none;background:none;border:none;cursor:pointer;font-family:Inter,-apple-system,sans-serif;font-weight:500;transition:color .12s,background .12s;white-space:nowrap}',
+      '.nav-link:hover{color:var(--text,#111);background:rgba(0,0,0,.05)}',
+      '.nav-link.active{color:var(--text,#111);font-weight:600;border-bottom:2px solid currentColor;padding-bottom:4px}',
+      '.nav-signin{background:#0f2027!important;color:#fff!important;border:none;border-radius:999px;padding:8px 20px;font-size:13px;font-weight:600;text-decoration:none!important;font-family:Inter,-apple-system,sans-serif;cursor:pointer;white-space:nowrap;transition:opacity .15s;margin-left:4px}',
+      '.nav-signin:hover{opacity:.85}',
+      '.nav-theme{background:none;border:none;cursor:pointer;font-size:16px;padding:6px;border-radius:8px;line-height:1;flex-shrink:0}',
+      '.nav-avatar-btn{background:none;border:none;cursor:pointer;padding:0;border-radius:50%;display:flex;align-items:center;flex-shrink:0}',
+      '.nav-avatar-img{width:32px;height:32px;border-radius:50%;object-fit:cover}',
+      '.nav-avatar-ini{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;font-family:Inter,sans-serif}',
+      '.nav-dd-wrap{position:relative;margin-left:4px}',
+      '.nav-dd{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--bg,#fff);border:1px solid var(--border,#e0ddd8);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:210px;z-index:9999;overflow:hidden}',
+      '.nav-dd.open{display:block}',
+      '.nav-dd-head{padding:12px 16px;border-bottom:1px solid var(--border,#e0ddd8)}',
+      '.nav-dd-name{font-size:13px;font-weight:600;color:var(--text,#111);font-family:Inter,sans-serif}',
+      '.nav-dd-email{font-size:11px;color:var(--text3,#9CA3AF);margin-top:2px;font-family:Inter,sans-serif}',
+      '.nav-dd-item{display:block;padding:10px 16px;font-size:13px;color:var(--text,#111);text-decoration:none;font-family:Inter,sans-serif;transition:background .1s;cursor:pointer;width:100%;text-align:left;background:none;border:none;box-sizing:border-box;line-height:1.2}',
+      '.nav-dd-item:hover{background:var(--bg3,#F0EFE9)}',
+      '.nav-dd-div{height:1px;background:var(--border,#e0ddd8);margin:4px 0}',
     ].join('');
     document.head.appendChild(s);
   }
 
-  function _isActivePath(href, currentPath) {
+  function _isActive(href, path) {
     if (href === '/discover') {
-      return currentPath === '/' || currentPath === '/discover' || currentPath === '/index.html';
+      return path === '/' || path === '/discover' || path === '/index.html';
     }
-    return currentPath === href || (href !== '/' && currentPath.includes(href.replace('.html', '')));
+    return path === href || (href.length > 1 && path.includes(href.replace('.html', '')));
   }
 
-  function _buildLoggedOut(navLinks, currentPath) {
-    var links = [
-      { label: 'Discover',     href: '/discover' },
-      { label: 'How it works', href: '/how-it-works.html' },
-      { label: 'Pricing',      href: '/pricing.html' },
-    ];
-    var html = links.map(function (lk) {
-      var active = _isActivePath(lk.href, currentPath) ? ' active' : '';
-      return '<a href="' + lk.href + '" class="pl-nav-link' + active + '">' + lk.label + '</a>';
-    }).join('');
-    html += '<a href="/" class="pl-nav-link pl-nav-signin" onclick="if(typeof openModal===\'function\'){openModal(\'login\');return false}">Sign in</a>';
-    navLinks.innerHTML = html;
+  function _buildLoggedOut(navLinks, path) {
+    navLinks.innerHTML =
+      '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '">Discover</a>'
+      + '<a href="/how-it-works.html" class="nav-link' + (_isActive('/how-it-works.html', path) ? ' active' : '') + '">How it works</a>'
+      + '<a href="/pricing.html" class="nav-link' + (_isActive('/pricing.html', path) ? ' active' : '') + '">Pricing</a>'
+      + '<a href="/" class="nav-link nav-signin" onclick="if(typeof openModal===\'function\'){openModal(\'login\');return false}">Sign in</a>';
   }
 
-  function _buildLoggedIn(navLinks, u, currentPath) {
+  function _buildLoggedIn(navLinks, u, path) {
     var displayName = (u.name || u.email || 'U').trim();
     var avatarUrl = u.avatar_custom_url || u.avatar_url || '';
     var isSuperAdmin = u.email === 'academekorea@gmail.com' || u.isSuperAdmin;
-
-    var links = [
-      { label: 'Discover',  href: '/discover' },
-      { label: 'Library',   href: '/library.html' },
-      { label: 'Dashboard', href: '/dashboard.html' },
-    ];
-    var linksHtml = links.map(function (lk) {
-      var active = _isActivePath(lk.href, currentPath) ? ' active' : '';
-      return '<a href="' + lk.href + '" class="pl-nav-link' + active + '">' + lk.label + '</a>';
-    }).join('');
-
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
     var avatarInner = avatarUrl
-      ? '<img class="pl-nav-avatar-img" src="' + _esc(avatarUrl) + '" alt="' + _esc(displayName) + '" onerror="this.style.display=\'none\'">'
-      : '<div class="pl-nav-avatar-ini" style="background:' + _avatarColor(displayName) + '">' + _initials(displayName) + '</div>';
+      ? '<img class="nav-avatar-img" src="' + _esc(avatarUrl) + '" alt="' + _esc(displayName) + '" onerror="this.style.display=\'none\'">'
+      : '<div class="nav-avatar-ini" style="background:' + _avatarColor(displayName) + '">' + _initials(displayName) + '</div>';
 
     var adminRow = isSuperAdmin
-      ? '<a href="/account?tab=admin" class="pl-nav-dd-item" style="color:#dc2626;font-weight:600">🔴 Admin Panel</a><div class="pl-nav-dd-div"></div>'
+      ? '<a href="/account?tab=admin" class="nav-dd-item" style="color:#dc2626;font-weight:600">🔴 Admin Panel</a><div class="nav-dd-div"></div>'
       : '';
 
     var planBadge = u.plan
       ? ' <span style="font-size:9px;font-weight:700;text-transform:uppercase;background:var(--bg3,#F0EFE9);color:var(--text3,#999);padding:1px 5px;border-radius:2px;letter-spacing:.04em;margin-left:4px">' + u.plan + '</span>'
       : '';
 
-    navLinks.innerHTML = linksHtml
-      + '<button class="pl-nav-theme" id="pl-nav-theme-btn" aria-label="Toggle theme">' + (isDark ? '🌙' : '☀️') + '</button>'
-      + '<div class="pl-nav-dd-wrap">'
-      + '<button class="pl-nav-avatar-btn" id="pl-nav-avatar-btn" aria-label="Profile menu">' + avatarInner + '</button>'
-      + '<div class="pl-nav-dd" id="pl-nav-dd">'
-      + '<div class="pl-nav-dd-head">'
-      + '<div class="pl-nav-dd-name">' + _esc(displayName) + planBadge + '</div>'
-      + '<div class="pl-nav-dd-email">' + _esc(u.email || '') + '</div>'
+    navLinks.innerHTML =
+      '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '">Discover</a>'
+      + '<a href="/library.html" class="nav-link' + (_isActive('/library.html', path) ? ' active' : '') + '">Library</a>'
+      + '<a href="/dashboard.html" class="nav-link' + (_isActive('/dashboard.html', path) ? ' active' : '') + '">Dashboard</a>'
+      + '<button class="nav-theme" id="nav-theme-btn" aria-label="Toggle theme">' + (isDark ? '🌙' : '☀️') + '</button>'
+      + '<div class="nav-dd-wrap">'
+      + '<button class="nav-avatar-btn" id="nav-avatar-btn" aria-label="Profile menu">' + avatarInner + '</button>'
+      + '<div class="nav-dd" id="nav-dd">'
+      + '<div class="nav-dd-head">'
+      + '<div class="nav-dd-name">' + _esc(displayName) + planBadge + '</div>'
+      + '<div class="nav-dd-email">' + _esc(u.email || '') + '</div>'
       + '</div>'
       + adminRow
-      + '<a href="/dashboard.html" class="pl-nav-dd-item">Dashboard</a>'
-      + '<a href="/account?tab=profile" class="pl-nav-dd-item">View &amp; Edit Profile</a>'
-      + '<a href="/account?tab=settings" class="pl-nav-dd-item">Settings</a>'
-      + '<a href="/account?tab=billing" class="pl-nav-dd-item">Billing &amp; Plans</a>'
-      + '<div class="pl-nav-dd-div"></div>'
-      + '<button onclick="localStorage.removeItem(\'pl-user\');window.location.href=\'/\'" class="pl-nav-dd-item">Sign out</button>'
+      + '<a href="/dashboard.html" class="nav-dd-item">Dashboard</a>'
+      + '<a href="/account?tab=profile" class="nav-dd-item">View &amp; Edit Profile</a>'
+      + '<a href="/account?tab=settings" class="nav-dd-item">Settings</a>'
+      + '<a href="/account?tab=billing" class="nav-dd-item">Billing &amp; Plans</a>'
+      + '<div class="nav-dd-div"></div>'
+      + '<button onclick="localStorage.removeItem(\'pl-user\');window.location.href=\'/\'" class="nav-dd-item">Sign out</button>'
       + '</div>'
       + '</div>';
 
-    // Theme toggle — calls page toggleMode() if defined, else does it inline
-    var themeBtn = document.getElementById('pl-nav-theme-btn');
+    var themeBtn = document.getElementById('nav-theme-btn');
     if (themeBtn) {
       themeBtn.onclick = function () {
         if (typeof toggleMode === 'function') {
           toggleMode();
-          var nowDark2 = document.documentElement.getAttribute('data-theme') === 'dark';
-          themeBtn.textContent = nowDark2 ? '🌙' : '☀️';
         } else {
-          var nowDark = document.documentElement.getAttribute('data-theme') === 'dark';
-          document.documentElement.setAttribute('data-theme', nowDark ? 'light' : 'dark');
-          themeBtn.textContent = nowDark ? '☀️' : '🌙';
-          localStorage.setItem('pl-theme', nowDark ? 'light' : 'dark');
-          localStorage.setItem('podlens-mode', nowDark ? 'light' : 'dark');
+          var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+          document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+          localStorage.setItem('pl-theme', dark ? 'light' : 'dark');
+          localStorage.setItem('podlens-mode', dark ? 'light' : 'dark');
         }
+        var nowDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        themeBtn.textContent = nowDark ? '🌙' : '☀️';
       };
     }
 
-    // Avatar dropdown toggle
-    var avatarBtn = document.getElementById('pl-nav-avatar-btn');
-    var dd = document.getElementById('pl-nav-dd');
+    var avatarBtn = document.getElementById('nav-avatar-btn');
+    var dd = document.getElementById('nav-dd');
     if (avatarBtn && dd) {
       avatarBtn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -165,25 +148,23 @@
   function initNav() {
     var navLinks = document.getElementById('nav-links');
     if (!navLinks) return;
-    if (navLinks.dataset.plNavDone) return;
-    navLinks.dataset.plNavDone = '1';
+    if (navLinks.dataset.navDone) return;
+    navLinks.dataset.navDone = '1';
 
     injectCSS();
 
     var u = plUser();
-    var currentPath = window.location.pathname;
+    var path = window.location.pathname;
 
-    // Update logo href: logged-in → /dashboard, logged-out → /
     var logo = document.querySelector('nav > a:first-child');
     if (logo) logo.href = (u && u.id) ? '/dashboard.html' : '/';
 
     if (u && u.id) {
-      _buildLoggedIn(navLinks, u, currentPath);
+      _buildLoggedIn(navLinks, u, path);
     } else {
-      _buildLoggedOut(navLinks, currentPath);
+      _buildLoggedOut(navLinks, path);
     }
 
-    // Show queued toast from auth redirects
     var msg = sessionStorage.getItem('pl-auth-toast');
     if (msg) {
       sessionStorage.removeItem('pl-auth-toast');
@@ -191,7 +172,6 @@
     }
   }
 
-  // Auth gate helper — call from pages that require login
   window.plRequireAuth = function (context) {
     var u = plUser();
     if (!u || !u.id) {
