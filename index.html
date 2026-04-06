@@ -1763,9 +1763,11 @@ body.light-mode,[data-theme="light"]{
 .nav-bar{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;padding:0 24px!important;height:60px!important;background:var(--bg,#FAFAF8)!important;border-bottom:1px solid var(--border,#E5E7EB)!important;position:sticky!important;top:36px!important;z-index:200!important;width:100%!important;box-sizing:border-box!important}
 .nav-logo{display:flex!important;align-items:center!important;gap:8px!important;text-decoration:none!important;color:var(--navy,#0f2027)!important;font-family:var(--ffs,'Playfair Display',Georgia,serif)!important;font-weight:700!important;font-size:1rem!important;letter-spacing:0.08em!important;flex-shrink:0!important}
 [data-theme="dark"] .nav-logo{color:var(--text,#FAF9F6)!important}
-.nav-logo p,.nav-logo span:not(.nav-logo-text),.nav-bar>p,.nav-bar>span:not(.nav-logo *){display:none!important}
-.nav-right{display:flex!important;align-items:center!important;gap:4px!important}
-.nav-links-logged-out,.nav-links-logged-in{display:flex!important;align-items:center!important;gap:4px!important}
+/* Right container — margin-left:auto pushes everything to the right edge */
+.nav-right{display:flex!important;align-items:center!important;gap:4px!important;margin-left:auto!important}
+/* display on these is controlled by initNav() — no !important so JS can override */
+.nav-links-logged-out{display:flex;align-items:center!important;gap:4px!important}
+.nav-links-logged-in{display:none;align-items:center!important;gap:4px!important}
 .nav-link{color:var(--text2,#6B7280)!important;text-decoration:none!important;font-size:0.875rem!important;font-weight:500!important;padding:6px 12px!important;border-radius:8px!important;white-space:nowrap!important;transition:color .15s,background .15s!important;background:none!important;border:none!important;cursor:pointer!important;font-family:var(--ff,'Inter',sans-serif)!important}
 .nav-link:hover{color:var(--text,#111)!important;background:var(--bg3,rgba(0,0,0,0.05))!important}
 .nav-link.active{background:var(--bg3)!important;color:var(--text)!important;font-weight:500!important}
@@ -1920,10 +1922,16 @@ body.light-mode,[data-theme="light"]{
 
 <!-- NAV -->
 <nav class="nav-bar" id="main-nav">
+
   <!-- LEFT: Logo only -->
-  <a href="/" class="nav-logo" onclick="if(typeof showHome==='function'){showHome();return false}" aria-label="Go to homepage">
-    <img src="/favicon-32x32.png" alt="Podlens" width="28" height="28" class="nav-logo-img">
-    <span class="nav-logo-text"><span style="font-weight:400">POD</span>LENS</span>
+  <a href="/" class="nav-logo"
+     onclick="if(typeof showHome==='function'){showHome();return false}"
+     aria-label="Go to homepage">
+    <img src="/favicon-32x32.png"
+         alt="Podlens"
+         width="28" height="28"
+         class="nav-logo-img">
+    <span class="nav-logo-text">PODLENS</span>
   </a>
 
   <!-- RIGHT: Everything else -->
@@ -1931,25 +1939,19 @@ body.light-mode,[data-theme="light"]{
 
     <!-- LOGGED OUT: marketing links -->
     <div class="nav-links-logged-out" id="nav-logged-out">
-      <a href="/how-it-works.html" class="nav-link" id="nav-how">
-        <span data-en>How it works</span><span data-ko style="display:none">작동 방식</span>
-      </a>
-      <a href="/pricing.html" class="nav-link" id="nav-pricing-link">
-        <span data-en>Pricing</span><span data-ko style="display:none">요금제</span>
-      </a>
-      <a href="#" class="nav-btn-signin" id="nav-signin" onclick="openModal('login');return false">
-        <span data-en>Sign in →</span><span data-ko style="display:none">로그인 →</span>
-      </a>
+      <a href="/how-it-works.html" class="nav-link" id="nav-how">How it works</a>
+      <a href="/pricing.html" class="nav-link" id="nav-pricing-link">Pricing</a>
+      <a href="#" class="nav-btn-signin" id="nav-signin"
+         onclick="openModal('login');return false">Sign in →</a>
     </div>
 
     <!-- LOGGED IN: app links -->
-    <div class="nav-links-logged-in" id="nav-logged-in" style="display:none">
-      <button class="nav-link" id="nl-discover" onclick="showView('discover')" data-i18n="navDiscover">Discover</button>
-      <button class="nav-link" id="nl-library" onclick="showView('library')">
-        <span data-en>Library</span><span data-ko style="display:none">라이브러리</span>
-      </button>
-      <button class="nav-theme-toggle" onclick="toggleMode()" id="mode-toggle-btn" aria-label="Toggle dark/light mode">🌙</button>
-      <span id="lang-switch-wrap"></span>
+    <div class="nav-links-logged-in" id="nav-logged-in">
+      <button class="nav-link" id="nl-discover" onclick="showView('discover')">Discover</button>
+      <button class="nav-link" id="nl-library" onclick="showView('library')">Library</button>
+      <button class="nav-theme-toggle" onclick="toggleMode()" id="mode-toggle-btn"
+              aria-label="Toggle dark/light mode">🌙</button>
+      <div id="lang-switch-wrap"></div>
       <div id="nav-auth-area" style="display:contents"><!-- rendered by initNav() --></div>
     </div>
 
