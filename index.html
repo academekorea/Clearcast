@@ -1267,12 +1267,43 @@ body.player-on .lap{bottom:72px}
 .pl-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:2000;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25)}
 .pl-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 /* Analysis limit banner */
-.limit-banner{background:var(--amber-bg);border:1px solid rgba(180,83,9,.2);border-radius:var(--r);padding:16px;margin-bottom:16px}
-.limit-banner-title{font-size:13px;font-weight:600;color:var(--amber);margin-bottom:4px}
-.limit-banner-sub{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.4}
-.limit-banner-btns{display:flex;gap:8px;flex-wrap:wrap}
-.lb-upgrade{padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)}
-.lb-later{padding:8px 12px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;font-size:12px;font-family:var(--ff)}
+.limit-banner{background:var(--amber-bg);border:1px solid rgba(180,83,9,.2);border-radius:var(--r);padding:24px;margin-bottom:16px;text-align:center}
+.limit-banner-icon{font-size:32px;margin-bottom:12px}
+.limit-banner-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+.limit-banner-sub{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.5;max-width:400px;margin-left:auto;margin-right:auto}
+.limit-banner-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.lb-upgrade{padding:10px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)}
+.lb-later{padding:10px 12px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;font-size:12px;font-family:var(--ff)}
+/* Upgrade trigger modal */
+.upgrade-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:10000;padding:24px}
+.upgrade-modal-inner{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px 28px;max-width:380px;width:100%;text-align:center;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.upgrade-modal-close-btn{position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.3rem;color:var(--text3);cursor:pointer;line-height:1;font-family:var(--ff)}
+.upgrade-modal-emoji{font-size:2.5rem;margin-bottom:12px}
+.upgrade-modal-inner h3{font-size:18px;font-weight:700;margin-bottom:10px}
+.upgrade-modal-inner p{color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:16px}
+.upgrade-modal-plan-pill{display:inline-block;padding:4px 14px;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.3);border-radius:20px;color:#818CF8;font-size:12px;font-weight:600;margin-bottom:20px}
+.upgrade-modal-cta{display:block;width:100%;padding:12px;background:var(--navy);color:#fff;text-decoration:none;border-radius:var(--r);font-size:14px;font-weight:600;margin-bottom:10px;cursor:pointer;border:none;font-family:var(--ff)}
+.upgrade-modal-later{background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;padding:4px;font-family:var(--ff)}
+.upgrade-modal-later:hover{color:var(--text2)}
+/* Free tier promise section (homepage) */
+.free-tier-promise{text-align:center;padding:64px 24px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.free-promise-label{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#34D399;margin-bottom:12px}
+.free-tier-promise h2{font-family:var(--ffs);font-size:clamp(24px,3.5vw,32px);font-weight:700;margin-bottom:12px;letter-spacing:-.01em}
+.free-tier-promise p{color:var(--text2);max-width:480px;margin:0 auto 24px;line-height:1.7;font-size:15px}
+.free-promise-items{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 24px;margin-bottom:28px}
+.free-promise-items span{font-size:13px;color:var(--text2);font-weight:500}
+.btn-start-free{display:inline-block;padding:12px 28px;background:var(--navy);color:#fff;text-decoration:none;border-radius:var(--r);font-weight:600;font-size:14px;transition:opacity .15s}
+.btn-start-free:hover{opacity:.85}
+/* Free access dashboard card */
+.free-access-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:16px}
+.free-access-header{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:12px}
+.free-access-items{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.free-item{font-size:12px;color:var(--text2);padding:4px 0}
+.upgrade-nudge{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-top:16px}
+.upgrade-nudge-text{flex:1;min-width:0}
+.upgrade-nudge-text strong{display:block;font-size:13px;margin-bottom:2px}
+.upgrade-nudge-text p{font-size:12px;color:var(--text2);margin:0;line-height:1.4}
+.btn-upgrade-sm{flex-shrink:0;padding:8px 14px;background:var(--navy);color:#fff;text-decoration:none;border-radius:var(--r);font-size:12px;font-weight:600;white-space:nowrap}
 /* Trial day-6 banner */
 .trial-day6-banner{background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:flex-start;gap:12px;margin:0 24px 0}
 @media(max-width:640px){.trial-day6-banner{margin:0 16px}}
@@ -1987,6 +2018,22 @@ body.light-mode,[data-theme="light"]{
       </div>
     </section>
 
+    <!-- FREE TIER PROMISE -->
+    <section class="free-tier-promise" id="free-promise">
+      <div class="free-promise-label">Free &mdash; Forever</div>
+      <h2>Start free. No credit card.</h2>
+      <p>4 analyses per month plus unlimited access to the Discover page, show profiles, your personal bias fingerprint, and weekly intelligence digest.</p>
+      <div class="free-promise-items">
+        <span>&#10003; 4 analyses/month</span>
+        <span>&#10003; Discover 1M+ shows</span>
+        <span>&#10003; Personal fingerprint</span>
+        <span>&#10003; Follow any show</span>
+        <span>&#10003; Weekly digest</span>
+        <span>&#10003; 1 Unheard Story/week</span>
+      </div>
+      <a href="#" onclick="openModal('signup');return false" class="btn-start-free">Get started free &rarr;</a>
+    </section>
+
     <!-- SHOWCASE SECTION -->
     <section class="showcase-section" id="see-it">
       <div class="showcase-header">
@@ -2262,6 +2309,27 @@ body.light-mode,[data-theme="light"]{
               <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Analyzed</div></div>
               <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Following</div></div>
               <div class="stat-card"><div class="stat-number">—</div><div class="stat-label">Your lean</div></div>
+            </div>
+            <!-- Free access card (shown to free users) -->
+            <div id="free-access-panel" style="display:none">
+              <div class="free-access-card">
+                <div class="free-access-header">&#10003; Your free access</div>
+                <div class="free-access-items">
+                  <div class="free-item">🔍 Discover page</div>
+                  <div class="free-item">📊 All show profiles</div>
+                  <div class="free-item">🧬 Bias fingerprint</div>
+                  <div class="free-item">🔔 Follow + alerts</div>
+                  <div class="free-item">📬 Weekly digest</div>
+                  <div class="free-item">💡 1 Unheard/week</div>
+                </div>
+              </div>
+              <div class="upgrade-nudge">
+                <div class="upgrade-nudge-text">
+                  <strong>Want deeper analysis?</strong>
+                  <p>Creator gives host trust scores, 5 citations, audio briefings and 25 analyses/month.</p>
+                </div>
+                <a href="/pricing.html" class="btn-upgrade-sm">See plans &rarr;</a>
+              </div>
             </div>
           </div>
         </div>
@@ -3382,11 +3450,12 @@ function showAnalysisLimitBanner(u) {
   var resetMs = u.weekResetDate ? (new Date(u.weekResetDate).getTime() - now) : 0;
   var resetDays = Math.max(1, Math.ceil(resetMs / (24*60*60*1000)));
   document.getElementById('results').innerHTML = '<div class="limit-banner">'
-    + '<div class="limit-banner-title">You\'ve used your 3 free analyses this week</div>'
-    + '<div class="limit-banner-sub">Resets in ' + resetDays + ' day' + (resetDays !== 1 ? 's' : '') + ' \u2014 or keep going with Operator.</div>'
+    + '<div class="limit-banner-icon">\ud83d\udcca</div>'
+    + '<div class="limit-banner-title">That was your 4th analysis this month</div>'
+    + '<div class="limit-banner-sub">Your free analyses reset in ' + resetDays + ' day' + (resetDays !== 1 ? 's' : '') + '. Upgrade for 25/month on Creator &mdash; $8/mo founding price.</div>'
     + '<div class="limit-banner-btns">'
-    + '<button class="lb-upgrade" onclick="showUpgrade()">Upgrade \u2014 $39/mo</button>'
-    + '<button class="lb-later" onclick="this.closest(\'.limit-banner\').remove()">Remind me later</button>'
+    + '<button class="lb-upgrade" onclick="showUpgrade()">Upgrade to Creator \u2014 $8/mo \u2192</button>'
+    + '<button class="lb-later" onclick="this.closest(\'.limit-banner\').remove()">Maybe later</button>'
     + '</div></div>';
 }
 
@@ -3432,7 +3501,7 @@ function showTrialExpiryRecap(u) {
     + (leanLabel ? '<div class="recap-stat"><span>Your listening leans</span><span class="recap-stat-val">' + leanLabel + '</span></div>' : '')
     + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:16px 0 8px">What stays free</div>'
     + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> Your profile, history &amp; bias fingerprint</div>'
-    + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> 3 analyses per week</div>'
+    + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> 4 analyses per month</div>'
     + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> Browse trending shows and episodes</div>'
     + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:16px 0 8px">What\'s now locked</div>'
     + '<div class="recap-change-row"><span class="recap-lose">\u2193</span> Unlimited analyses</div>'
@@ -5874,10 +5943,10 @@ function wrapText(ctx,text,x,y,maxW,lineH){var words=(text||'').split(' ');var l
 function getRecent() { try{ return JSON.parse(localStorage.getItem('pl-recent')||'[]'); }catch(e){return[];} }
 function trackAnalysis(data) {
   try {
-    // Increment weekly count for free users
+    // Increment monthly count for free users
     var cu = plUser();
     if (cu && cu.plan === 'free') {
-      cu.analysesThisWeek = (cu.analysesThisWeek || 0) + 1;
+      cu.analysesThisMonth = (cu.analysesThisMonth || 0) + 1;
       setPlUser(cu);
     }
     var recent=getRecent();
@@ -5912,6 +5981,80 @@ function showUpgrade(){
     if (banner) banner.style.display = (fd && fd.data && fd.data.foundingActive) ? '' : 'none';
   } catch {}
 }
+// ── CONTEXTUAL UPGRADE MODAL ──
+var _upgradeMessages = {
+  key_findings: {
+    title: 'Unlock all key findings',
+    desc: 'See every insight Podlens found \u2014 not just the first one.',
+    tier: 'Creator', price: '$8/mo'
+  },
+  host_trust: {
+    title: 'See the host trust score',
+    desc: 'Know how much influence this host has on their audience.',
+    tier: 'Creator', price: '$8/mo'
+  },
+  source_citations: {
+    title: 'See source citations',
+    desc: 'Verify every claim with the original sources Podlens found.',
+    tier: 'Creator', price: '$8/mo'
+  },
+  audio_briefing: {
+    title: 'Listen to your briefing',
+    desc: 'Get an AI-narrated audio summary of this analysis.',
+    tier: 'Creator', price: '$8/mo'
+  },
+  full_scores: {
+    title: 'Unlock full bias scores',
+    desc: 'See the exact percentages and what drove the lean.',
+    tier: 'Creator', price: '$8/mo'
+  },
+  transcript: {
+    title: 'Read the full transcript',
+    desc: 'Access the complete word-for-word transcript of this episode.',
+    tier: 'Operator', price: '$26/mo'
+  }
+};
+
+function showUpgradeModal(feature) {
+  var msg = _upgradeMessages[feature] || { title: 'Unlock this feature', desc: 'Upgrade your plan to access this.', tier: 'Creator', price: '$8/mo' };
+  var existing = document.getElementById('upgrade-trigger-modal');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'upgrade-trigger-modal';
+  el.className = 'upgrade-modal-overlay';
+  el.innerHTML = '<div class="upgrade-modal-inner">'
+    + '<button class="upgrade-modal-close-btn" onclick="document.getElementById(\'upgrade-trigger-modal\').remove()">&times;</button>'
+    + '<div class="upgrade-modal-emoji">\uD83D\uDD13</div>'
+    + '<h3>' + msg.title + '</h3>'
+    + '<p>' + msg.desc + '</p>'
+    + '<div class="upgrade-modal-plan-pill">' + msg.tier + ' plan &middot; ' + msg.price + ' founding</div>'
+    + '<a href="/pricing.html" class="upgrade-modal-cta">Upgrade to ' + msg.tier + ' &rarr;</a>'
+    + '<button class="upgrade-modal-later" onclick="document.getElementById(\'upgrade-trigger-modal\').remove()">Maybe later</button>'
+    + '</div>';
+  el.addEventListener('click', function(e) { if (e.target === el) el.remove(); });
+  document.body.appendChild(el);
+}
+
+// Attach upgrade trigger to all [data-upgrade] elements
+function initUpgradeTriggers() {
+  document.querySelectorAll('[data-upgrade]').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      var plan = (plUser() || {}).plan || 'free';
+      if (plan !== 'free') return;
+      e.stopPropagation();
+      showUpgradeModal(el.dataset.upgrade);
+    });
+  });
+}
+
+// Show free access panel on dashboard for free users
+function initFreeAccessPanel() {
+  var u = plUser();
+  if (!u || u.plan !== 'free') return;
+  var panel = document.getElementById('free-access-panel');
+  if (panel) panel.style.display = '';
+}
+
 // selPlan removed — replaced by 4-tier pricing modal
 
 // ── KEYBOARD ──
@@ -5993,20 +6136,23 @@ function canAccess(feature) {
   if (!u) return false;
   var plan = enforcePlanRules() || u.plan || 'free';
   plan = plan.toLowerCase();
+  var FREE_AND_UP = ['free','trial','creator','operator','studio'];
   var tiers = {
     audioBriefing:           ['creator','operator','studio'],
     fullBiasScores:          ['creator','operator','studio'],
-    biasFingerprint:         ['creator','operator','studio'],
-    shareCards:              ['creator','operator','studio'],
+    biasFingerprint:         FREE_AND_UP, // all logged-in users
+    shareCards:              FREE_AND_UP, // all logged-in users
+    showAlerts:              FREE_AND_UP, // all logged-in users
+    weeklyDigest:            FREE_AND_UP, // all logged-in users
+    unheard:                 FREE_AND_UP, // 1/week free, 5/week creator+
     downloadBasic:           ['creator','operator','studio'],
     transcriptTop10:         ['creator','operator','studio'],
     mediaStats:              ['creator','operator','studio'],
     biasStreak:              ['creator','operator','studio'],
-    showAlerts:              ['creator','operator','studio'],
-    weeklyDigest:            ['creator','operator','studio'],
     episodeCompareSameShow:  ['creator','operator','studio'],
-    unheard:                 ['creator','operator','studio'], // creator=1 story, operator+=all
-    sourceCitations:         ['operator','studio'],
+    unheardFull:             ['creator','operator','studio'], // all 5 stories
+    hostTrustBreakdown:      ['creator','operator','studio'], // was operator-only
+    sourceCitations:         ['creator','operator','studio'], // 5/analysis creator, all operator+
     missingVoicesDetail:     ['operator','studio'],
     deepAnalysis:            ['operator','studio'],
     crossShowComparison:     ['operator','studio'],
@@ -6014,8 +6160,6 @@ function canAccess(feature) {
     fullTranscript:          ['operator','studio'],
     downloadFull:            ['operator','studio'],
     timestampMarkers:        ['operator','studio'],
-    unheardFull:             ['operator','studio'],
-    hostTrustBreakdown:      ['operator','studio'],
     showBiasTrend:           ['operator','studio'],
     csvExport:               ['studio'],
     bulkScan:                ['studio'],
@@ -7586,6 +7730,8 @@ initNav();
 updateRegionUI();
 applyTranslations(_settings.lang);
 applyKoreanMode();
+initUpgradeTriggers();
+initFreeAccessPanel();
 // Pass store to startAnalysis for regional iTunes
 var _origStartAnalysis = startAnalysis;
 // Patch handleAnalyze to include store in body (TASK 6)
