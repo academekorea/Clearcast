@@ -1,6 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
-import { trackEvent, sbUpsert } from "./lib/supabase.js";
+import { trackEvent, sbUpsert, sbInsert } from "./lib/supabase.js";
 import { isSuperAdmin } from "./lib/admin.js";
 import { checkRateLimit, getClientIp, rateLimitResponse, sanitizeUrl, checkSuspiciousActivity } from "./lib/security.js";
 
