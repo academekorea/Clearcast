@@ -221,6 +221,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/test-analyze"
+  to = "/.netlify/functions/test-analyze"
+  status = 200
+
+[[redirects]]
   from = "/api/geo-detect"
   to = "/.netlify/functions/geo-detect"
   status = 200

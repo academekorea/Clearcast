@@ -4837,7 +4837,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
   var _stages=[['Checking cache\u2026','Looking up previous results\u2026'],['Reading captions\u2026','Fetching YouTube auto-captions\u2026'],['Searching podcast directories\u2026','Checking Apple Podcasts and Podcast Index\u2026']];
   _analyzeStages=setInterval(function(){ _stageIdx=Math.min(_stageIdx+1,_stages.length-1); document.getElementById('ld-title').textContent=_stages[_stageIdx][0]; document.getElementById('ld-msg').textContent=_stages[_stageIdx][1]; },3500);
   var _analyzeUser=plUser()||{};
-  safeFetch('/api/start-analysis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
+  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
     .then(function(d){
       clearInterval(_analyzeStages);
       // Guard: single YouTube video URLs should NEVER show feed lookup/episode picker
@@ -4907,7 +4907,7 @@ function pollStatus(jobId, audioUrl) {
   _poll=setInterval(async function(){
     try {
       var _statusPlan=(getPlUser()||{}).plan||'free';
-      var d=await safeFetch('/api/analysis-status?job_id='+jobId+'&plan='+encodeURIComponent(_statusPlan));
+      var d=await safeFetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_statusPlan));
       if (d.status==='partial'&&!shownPartial) {
         lafCompleteStep(si);
         si=Math.min(si+1,5);

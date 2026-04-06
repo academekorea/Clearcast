@@ -595,6 +595,15 @@ export default async (req: Request) => {
       const period = new Date().toISOString().slice(0, 7); // YYYY-MM
       sbUpsert('usage', { user_id: userId, period_start: period }, 'user_id,period_start').catch(() => {});
     }
+    // Record job to Supabase analysis_queue (fire-and-forget)
+    if (rawUrl) {
+      sbInsert("analysis_queue", {
+        user_id: userId || null,
+        episode_url: rawUrl,
+        status: "queued",
+        queued_at: new Date().toISOString(),
+      }).catch(() => {});
+    }
 
     // ── Tier enforcement ──────────────────────────────────────────────────
     if (!superAdmin && userId && userPlan) {
