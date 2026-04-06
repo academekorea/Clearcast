@@ -610,7 +610,12 @@ export default async (req: Request) => {
       sbInsert("analysis_queue", {
         user_id: userId || null,
         episode_url: rawUrl,
+        show_name: showName || "Unknown Show",
+        episode_title: episodeTitle || "Latest Episode",
         status: "queued",
+        tier: userPlan || "free",
+        counts_toward_limit: true,
+        priority: 5,
         queued_at: new Date().toISOString(),
       }).catch(() => {});
     }
