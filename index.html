@@ -1683,6 +1683,85 @@ body.light-mode,[data-theme="light"]{
 </head>
 <body>
 
+<script>
+(function() {
+  try {
+    var path = window.location.pathname
+
+    // Already on /kr — do nothing
+    if (path.startsWith('/kr')) return
+
+    // Check saved preference
+    var saved = ''
+    try {
+      saved = localStorage.getItem('podlens-region') || ''
+    } catch(e) {}
+
+    // User chose international — never redirect
+    if (saved === 'international') return
+
+    // User chose Korean — redirect to /kr
+    if (saved === 'ko-KR') {
+      window.location.replace('/kr' + path + window.location.search)
+      return
+    }
+
+    // Browser language is Korean — redirect
+    var lang = navigator.language || navigator.userLanguage || ''
+    if (lang.toLowerCase().startsWith('ko')) {
+      try { localStorage.setItem('podlens-region', 'ko-KR') } catch(e) {}
+      window.location.replace('/kr' + path + window.location.search)
+      return
+    }
+
+    // IP-based detection — async, only for first-time Korean visitors
+    // with non-Korean browser language (rare edge case)
+    fetch('/api/geo-detect')
+      .then(function(r) { return r.json() })
+      .then(function(data) {
+        if (data.isKorean) {
+          try { localStorage.setItem('podlens-region', 'ko-KR') } catch(e) {}
+          window.location.replace('/kr' + path + window.location.search)
+        }
+      })
+      .catch(function() {
+        // Geo API failed — do nothing, site loads normally
+      })
+
+  } catch(e) {
+    // Any error — do nothing, site loads normally
+  }
+})()
+</script>
+
+<script>
+(function() {
+  try {
+    var saved = ''
+    try { saved = localStorage.getItem('podlens-region') || '' } catch(e) {}
+    var lang = navigator.language || ''
+    var isKorean =
+      saved === 'ko-KR' ||
+      window.location.pathname.startsWith('/kr') ||
+      lang.toLowerCase().startsWith('ko')
+
+    if (!isKorean) {
+      // Remove Korean hreflang tags so Google doesn't
+      // show Korean sitelinks to non-Korean users
+      document.querySelectorAll(
+        'link[hreflang="ko"],link[hreflang="ko-KR"]'
+      ).forEach(function(el) {
+        el.parentNode.removeChild(el)
+      })
+
+      // Hide Korean language switcher
+      var switcher = document.getElementById('lang-switch-wrap')
+      if (switcher) switcher.style.display = 'none'
+    }
+  } catch(e) {}
+})()
+</script>
+
 <script>(function(){
   var s=localStorage.getItem('pl-theme')||localStorage.getItem('podlens-mode');
   if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}

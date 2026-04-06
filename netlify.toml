@@ -179,6 +179,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/geo-detect"
+  to = "/.netlify/functions/geo-detect"
+  status = 200
+
+[[redirects]]
   from = "/404"
   to = "/404.html"
   status = 404
