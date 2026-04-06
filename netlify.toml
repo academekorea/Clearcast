@@ -7,6 +7,12 @@
   node_bundler = "esbuild"
   included_files = ["netlify/functions/lib/**"]
 
+[functions."status"]
+  timeout = 26
+
+[functions."analysis-status"]
+  timeout = 30
+
 [[headers]]
   for = "/*"
   [headers.values]
@@ -196,6 +202,16 @@
 [[redirects]]
   from = "/api/for-you"
   to = "/.netlify/functions/for-you"
+  status = 200
+
+[[redirects]]
+  from = "/api/start-analysis"
+  to = "/.netlify/functions/start-analysis"
+  status = 200
+
+[[redirects]]
+  from = "/api/analysis-status"
+  to = "/.netlify/functions/analysis-status"
   status = 200
 
 [[redirects]]

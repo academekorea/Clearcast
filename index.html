@@ -3941,6 +3941,7 @@ var _browseInit = false;
 var _currentTopic = 'news';
 var _followedTopics = [];
 var _poll = null;
+var _fetchMetaToken = 0; // race-condition guard for fetchLoadingMeta
 var _analyzeStages = null;
 var _currentChannelTitle = '';
 var _episodes = [];
@@ -4763,7 +4764,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
   var _stages=[['Checking cache\u2026','Looking up previous results\u2026'],['Reading captions\u2026','Fetching YouTube auto-captions\u2026'],['Searching podcast directories\u2026','Checking Apple Podcasts and Podcast Index\u2026']];
   _analyzeStages=setInterval(function(){ _stageIdx=Math.min(_stageIdx+1,_stages.length-1); document.getElementById('ld-title').textContent=_stages[_stageIdx][0]; document.getElementById('ld-msg').textContent=_stages[_stageIdx][1]; },3500);
   var _analyzeUser=plUser()||{};
-  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
+  fetch('/api/start-analysis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
     .then(function(r){ return r.json(); })
     .then(function(d){
       clearInterval(_analyzeStages);
@@ -4834,7 +4835,7 @@ function pollStatus(jobId, audioUrl) {
   _poll=setInterval(async function(){
     try {
       var _statusPlan=(getPlUser()||{}).plan||'free';
-      var d=await fetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_statusPlan)).then(function(r){return r.json();});
+      var d=await fetch('/api/analysis-status?job_id='+jobId+'&plan='+encodeURIComponent(_statusPlan)).then(function(r){return r.json();});
       if (d.status==='partial'&&!shownPartial) {
         lafCompleteStep(si);
         si=Math.min(si+1,5);
@@ -6680,23 +6681,55 @@ function stopInsightCards() {
 async function fetchLoadingMeta(url) {
   var el = document.getElementById('laf-meta');
   if (!el) return;
-  // Try to extract a search term
-  var term = '';
-  var ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-  if (!ytMatch) {
-    // RSS / podcast URL — try domain name as search hint
-    try { var u2 = new URL(url); term = u2.hostname.replace('www.','').replace('.com','').replace('.fm',''); } catch(e) {}
-  }
-  if (!term) return;
+
+  // Extract correct hostname from submitted URL immediately — never from cache
+  var hostname = '';
+  try { hostname = new URL(url).hostname.replace(/^www\./, ''); } catch(e) { return; }
+  if (!hostname) return;
+
+  // Increment token — stale async responses must not overwrite this render
+  var token = ++_fetchMetaToken;
+
+  // Show correct domain IMMEDIATELY — synchronous, no API call
+  el.style.display = 'flex';
+  var faviconSrc = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(hostname) + '&sz=64';
+  el.innerHTML = '<img src="' + faviconSrc + '" style="width:44px;height:44px;border-radius:4px;flex-shrink:0;object-fit:cover" alt="" onerror="this.style.display=\'none\'">'
+    + '<div style="min-width:0">'
+    + '<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Analyzing from</div>'
+    + '<div style="font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + hostname + '</div>'
+    + '</div>';
+
+  // YouTube: favicon + hostname is enough — no iTunes lookup needed
+  if (/(?:youtube\.com|youtu\.be)/.test(hostname)) return;
+
+  // Try to enhance with iTunes artwork — ONLY if result matches submitted domain
   try {
-    var d = await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(term)+'&media=podcast&entity=podcast&limit=1',{signal:AbortSignal.timeout(4000)}).then(function(r){return r.json();});
-    var p = d.results && d.results[0];
-    if (!p) return;
-    el.style.display = 'flex';
-    el.innerHTML = (p.artworkUrl100?'<img src="'+p.artworkUrl100+'" style="width:44px;height:44px;border-radius:4px;flex-shrink:0" alt="">':'')
-      + '<div style="min-width:0"><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Analyzing from</div>'
-      + '<div style="font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(p.collectionName||p.trackName||'Podcast')+'</div>'
-      + (p.artistName?'<div style="font-size:11px;color:var(--text3)">'+p.artistName+'</div>':'')
+    var dominantPart = hostname.split('.')[0].toLowerCase();
+    var searchTerm = hostname.replace(/\.(com|fm|net|org|io|co|media|audio|podcast|radio)$/, '').replace(/\./g, ' ');
+    if (!searchTerm || searchTerm.length < 2) return;
+    var d = await fetch(
+      'https://itunes.apple.com/search?term=' + encodeURIComponent(searchTerm) + '&media=podcast&entity=podcast&limit=3',
+      { signal: AbortSignal.timeout(4000) }
+    ).then(function(r) { return r.json(); });
+    if (token !== _fetchMetaToken) return; // stale — newer analysis started
+    var results = d.results || [];
+    // Find a result that actually matches the submitted domain
+    var p = null;
+    for (var i = 0; i < results.length; i++) {
+      var r = results[i];
+      var feedUrl = (r.feedUrl || '').toLowerCase();
+      var collName = (r.collectionName || r.trackName || '').toLowerCase();
+      var artistUrl = (r.artistViewUrl || '').toLowerCase();
+      if (feedUrl.includes(dominantPart) || collName.includes(dominantPart) || artistUrl.includes(dominantPart)) {
+        p = r; break;
+      }
+    }
+    if (!p || token !== _fetchMetaToken) return; // no match or stale
+    el.innerHTML = (p.artworkUrl100 ? '<img src="' + p.artworkUrl100 + '" style="width:44px;height:44px;border-radius:4px;flex-shrink:0" alt="">' : '<img src="' + faviconSrc + '" style="width:44px;height:44px;border-radius:4px;flex-shrink:0;object-fit:cover" alt="" onerror="this.style.display=\'none\'">')
+      + '<div style="min-width:0">'
+      + '<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Analyzing from</div>'
+      + '<div style="font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (p.collectionName || p.trackName || hostname) + '</div>'
+      + (p.artistName ? '<div style="font-size:11px;color:var(--text3)">' + p.artistName + '</div>' : '')
       + '</div>';
   } catch(e) {}
 }

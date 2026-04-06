@@ -46,6 +46,12 @@ DROP POLICY IF EXISTS "users_own_saves" ON saved_episodes;
 CREATE POLICY "users_own_saves" ON saved_episodes
   FOR ALL USING (auth.uid() = user_id);
 
+-- ── ANALYSIS_QUEUE ADDITIONS ──────────────────────────────────────────────────
+
+ALTER TABLE analysis_queue
+  ADD COLUMN IF NOT EXISTS progress INTEGER DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS blob_key TEXT;
+
 -- ── ANALYSIS_QUEUE RLS (drop duplicate policy first) ──────────────────────────
 
 DROP POLICY IF EXISTS "users_own_queue" ON analysis_queue;
