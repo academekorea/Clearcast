@@ -1,13 +1,10 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
-import { sbUpdate } from "./lib/supabase.js";
 
 /**
- * analysis-status — polling endpoint for analysis progress.
- * Frontend calls /api/analysis-status?job_id=X&plan=Y instead of /api/status/:jobId.
- *
- * Fast path: returns immediately from blob cache for complete/error jobs.
- * Slow path: proxies to /api/status/:jobId (timeout=26s) to trigger Claude processing.
+ * analysis-status — simple polling endpoint.
+ * Frontend polls GET /api/analysis-status?job_id=X&plan=Y
+ * Returns current status from blob. No internal HTTP calls.
  */
 export default async (req: Request) => {
   const url = new URL(req.url);
@@ -16,96 +13,80 @@ export default async (req: Request) => {
 
   if (!jobId) {
     return new Response(JSON.stringify({ error: "job_id required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
+      status: 400, headers: { "Content-Type": "application/json" },
     });
   }
 
   try {
-    // Fast path: check blob cache for completed/errored jobs
     const store = getStore("podlens-jobs");
-    let cached: any = null;
-    try {
-      cached = await store.get(jobId, { type: "json" });
-    } catch {
-      // Blob read failure is non-fatal — proceed to status proxy
-    }
+    const job = await store.get(jobId, { type: "json" }) as any;
 
-    // Return immediately from cache if in final state (avoids Claude call)
-    if (cached?.status === "complete" || cached?.status === "error") {
-      return new Response(JSON.stringify(cached), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
+    if (!job) {
+      return new Response(JSON.stringify({ error: "Job not found", status: "error" }), {
+        status: 200, headers: { "Content-Type": "application/json" },
       });
     }
 
-    // Still in progress — call /api/status/:jobId to run Claude if transcript is ready.
-    // Use request origin so this always targets the same deploy (preview or prod).
-    const origin = new URL(req.url).origin;
-    const statusRes = await fetch(
-      `${origin}/api/status/${encodeURIComponent(jobId)}?plan=${encodeURIComponent(userPlan)}`,
-      { signal: AbortSignal.timeout(24000) }
-    );
+    const p = (userPlan || "free").toLowerCase();
+    const isCreatorPlus = ["creator", "operator", "studio", "trial"].includes(p);
+    const isOperatorPlus = ["operator", "studio"].includes(p);
 
-    // Guard: detect HTML error pages before JSON.parse
-    const ct = statusRes.headers.get("content-type") || "";
-    if (!ct.includes("application/json")) {
-      const preview = await statusRes.text().then((t) => t.slice(0, 100));
-      console.error(`analysis-status: /api/status returned non-JSON (${statusRes.status}): ${preview}`);
-      // Return the cached blob state rather than propagating the error
-      if (cached) {
-        return new Response(JSON.stringify(cached), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        });
+    // Complete — return full gated result with analysis_id for redirect
+    if (job.status === "complete") {
+      let result = { ...job, analysis_id: jobId };
+      if (!isCreatorPlus) {
+        result = {
+          ...result,
+          audioLean: result.audioLean ? { leftPct: null, centerPct: null, rightPct: null, basis: null, citations: [], _locked: true } : null,
+          keyQuotes: [], flags: [], missingVoices: [], sponsorConflicts: [],
+          topicBreakdown: (result.topicBreakdown || []).slice(0, 3).map((t: any) => ({ topic: t.topic, percentage: null, lean: null })),
+        };
+      } else if (!isOperatorPlus) {
+        result = {
+          ...result,
+          flags: (result.flags || []).map((f: any) => ({ ...f, citations: [] })),
+          missingVoices: [], sponsorConflicts: [],
+        };
       }
-      return new Response(
-        JSON.stringify({ status: "error", error: "Status service unavailable. Please try again." }),
-        { status: 200, headers: { "Content-Type": "application/json" } }
-      );
+      const { _transcript: _t, ...clean } = result;
+      return new Response(JSON.stringify(clean), {
+        status: 200, headers: { "Content-Type": "application/json" },
+      });
     }
 
-    const data = await statusRes.json();
-
-    // Update Supabase analysis_queue progress (fire-and-forget)
-    if (data.url) {
-      if (data.status === "complete") {
-        sbUpdate(
-          "analysis_queue",
-          { episode_url: data.url },
-          { status: "complete", progress: 100, completed_at: new Date().toISOString() }
-        ).catch(() => {});
-      } else if (data.status === "partial") {
-        sbUpdate(
-          "analysis_queue",
-          { episode_url: data.url },
-          { status: "partial", progress: 50 }
-        ).catch(() => {});
-      } else if (data.status === "transcribing") {
-        sbUpdate(
-          "analysis_queue",
-          { episode_url: data.url },
-          { status: "processing", progress: 20 }
-        ).catch(() => {});
-      }
+    // Error
+    if (job.status === "error") {
+      return new Response(JSON.stringify({ status: "error", error: job.error || "Analysis failed" }), {
+        status: 200, headers: { "Content-Type": "application/json" },
+      });
     }
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+    // Partial (Phase 1 done, Phase 2 running)
+    if (job.status === "partial") {
+      let result: any = { ...job, analysis_id: jobId };
+      if (!isCreatorPlus) {
+        result = {
+          ...result,
+          audioLean: result.audioLean ? { leftPct: null, centerPct: null, rightPct: null, basis: null, citations: [], _locked: true } : null,
+          keyQuotes: [], flags: [], missingVoices: [], sponsorConflicts: [],
+          topicBreakdown: (result.topicBreakdown || []).slice(0, 3).map((t: any) => ({ topic: t.topic, percentage: null, lean: null })),
+        };
+      }
+      const { _transcript: _t, ...clean } = result;
+      return new Response(JSON.stringify(clean), {
+        status: 200, headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Still transcribing / transcribed — worker is running
+    return new Response(JSON.stringify({ status: job.status || "transcribing", jobId }), {
+      status: 200, headers: { "Content-Type": "application/json" },
     });
+
   } catch (e: any) {
-    const isTimeout = e?.name === "TimeoutError" || e?.name === "AbortError";
-    console.error("analysis-status error:", e?.name, e?.message);
-    return new Response(
-      JSON.stringify({
-        status: "error",
-        error: isTimeout
-          ? "Analysis is taking longer than expected. Please try again."
-          : e?.message || "Unknown error",
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ status: "error", error: e?.message || "Unknown error" }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
   }
 };
 

@@ -4912,7 +4912,7 @@ function pollStatus(jobId, audioUrl) {
   _poll=setInterval(async function(){
     try {
       var _statusPlan=(getPlUser()||{}).plan||'free';
-      var d=await safeFetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_statusPlan));
+      var d=await safeFetch('/api/analysis-status?job_id='+encodeURIComponent(jobId)+'&plan='+encodeURIComponent(_statusPlan));
       if (d.status==='partial'&&!shownPartial) {
         lafCompleteStep(si);
         si=Math.min(si+1,5);
