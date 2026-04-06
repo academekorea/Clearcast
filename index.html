@@ -159,6 +159,9 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .nav-signup-btn:hover{background:var(--text);color:var(--bg)}
 .lang-switch{font-size:.8rem;color:var(--text2);text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid var(--border2);transition:border-color .15s,color .15s;white-space:nowrap;cursor:pointer;background:none;font-family:var(--ff)}
 .lang-switch:hover{border-color:var(--navy);color:var(--text)}
+.btn-signin-nav{margin-left:4px;padding:7px 16px;background:var(--navy);color:#fff;text-decoration:none;border-radius:var(--r);font-size:13px;font-weight:600;font-family:var(--ff);transition:opacity .15s;white-space:nowrap;display:inline-block}
+.btn-signin-nav:hover{opacity:.85}
+.nav-link.active{background:var(--bg3);color:var(--text);font-weight:500}
 .nav-avatar-btn{background:none;border:none;cursor:pointer;padding:0;border-radius:50%;transition:transform .15s;flex-shrink:0}
 .nav-avatar-btn:hover{transform:scale(1.05)}
 .nav-avatar-img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);display:block}
@@ -1302,7 +1305,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 
 /* ── MOBILE NAV ── */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:4px 0;z-index:150}
-@media(max-width:640px){.mob-nav{display:flex}.nav-links{display:none}.nav-search-wrap{display:none}}
+@media(max-width:640px){.mob-nav{display:flex}.nav-links{display:none}.nav-search-wrap{display:none}#nav-how,#nav-pricing-link,#nl-discover,#nl-library{display:none!important}}
 .mob-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:10px;font-family:var(--ff);transition:color .1s}
 .mob-btn.on,.mob-btn:hover{color:var(--text)}
 .mob-icon{font-size:20px;line-height:1}
@@ -1814,28 +1817,41 @@ body.light-mode,[data-theme="light"]{
 
 <!-- NAV -->
 <nav class="nav">
-  <a href="/" class="pl-lockup" onclick="showHome();return false" aria-label="Podlens home">
+  <!-- LOGO — always visible, always links home -->
+  <a href="/" class="pl-lockup" onclick="if(typeof showHome==='function'){showHome();return false}" aria-label="Podlens home">
     <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="28" height="28">
     <span class="pl-lockup-divider"></span>
     <span class="pl-lockup-text">
       <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
     </span>
   </a>
-  <div class="nav-links">
-    <button class="nl on" id="nl-home" onclick="showHome()" data-i18n="navHome">Home</button>
-    <button class="nl" id="nl-discover" onclick="showView('discover')" data-i18n="navDiscover">Discover</button>
-    <button class="nl" onclick="showView('discover');showFeed('compare')" data-i18n="navCompare">Compare</button>
-    <button class="nl" onclick="showView('discover');showFeed('unheard')" data-i18n="navUnheard">Unheard</button>
-    <a href="/pricing.html" class="nl" data-i18n="navPricing">Pricing</a>
+
+  <!-- LOGGED OUT: marketing links -->
+  <div id="nav-logged-out" style="display:flex;align-items:center;gap:4px;margin-left:auto">
+    <a href="/how-it-works.html" class="nl nav-link" id="nav-how">
+      <span data-en>How it works</span><span data-ko style="display:none">작동 방식</span>
+    </a>
+    <a href="/pricing.html" class="nl nav-link" id="nav-pricing-link">
+      <span data-en>Pricing</span><span data-ko style="display:none">요금제</span>
+    </a>
+    <a href="#" class="btn-signin-nav" id="nav-signin" onclick="openModal('login');return false">
+      <span data-en>Sign in →</span><span data-ko style="display:none">로그인 →</span>
+    </a>
   </div>
-  <div class="nav-search-wrap" onclick="openSearchOverlay()" style="cursor:pointer">
-    <input type="text" id="nav-search-q" class="nav-search" placeholder="Search episodes or shows&hellip;" readonly style="cursor:pointer" onclick="openSearchOverlay()"/>
-    <button class="nav-search-btn" onclick="openSearchOverlay()">&#128269;</button>
-  </div>
-  <div class="nav-r">
+
+  <!-- LOGGED IN: app nav -->
+  <div id="nav-logged-in" style="display:none;align-items:center;gap:4px;margin-left:auto">
+    <button class="nl nav-link" id="nl-discover" onclick="showView('discover')" data-i18n="navDiscover">Discover</button>
+    <button class="nl nav-link" id="nl-library" onclick="showView('library')">
+      <span data-en>Library</span><span data-ko style="display:none">라이브러리</span>
+    </button>
+    <div class="nav-search-wrap" onclick="openSearchOverlay()" style="cursor:pointer;margin:0 4px">
+      <input type="text" id="nav-search-q" class="nav-search" placeholder="Search&hellip;" readonly style="cursor:pointer" onclick="openSearchOverlay()"/>
+      <button class="nav-search-btn" onclick="openSearchOverlay()">&#128269;</button>
+    </div>
     <button class="mode-toggle" id="mode-toggle-btn" onclick="toggleMode()" aria-label="Toggle dark/light mode">🌙</button>
     <span id="lang-switch-wrap"></span>
-    <div id="nav-auth-area" style="display:contents"><!-- rendered by renderNavAuth() --></div>
+    <div id="nav-auth-area" style="display:contents"><!-- rendered by initNav() --></div>
   </div>
 </nav>
 
@@ -2936,51 +2952,80 @@ window.initLangSwitch = function() {
 
 document.addEventListener('DOMContentLoaded', window.initLangSwitch);
 
-function renderNavAuth() {
+function initNav() {
   var u = plUser();
+  var loggedOut = document.getElementById('nav-logged-out');
+  var loggedIn  = document.getElementById('nav-logged-in');
+
+  if (u && u.id) {
+    // LOGGED IN — app nav
+    if (loggedOut) loggedOut.style.display = 'none';
+    if (loggedIn)  loggedIn.style.display  = 'flex';
+    _renderNavAvatar(u);
+    _highlightActiveNavLink();
+  } else {
+    // LOGGED OUT — marketing nav
+    if (loggedOut) loggedOut.style.display = 'flex';
+    if (loggedIn)  loggedIn.style.display  = 'none';
+  }
+
+  // Lang switcher (Korean users only)
+  if (typeof window.initLangSwitch === 'function') window.initLangSwitch();
+}
+
+// Backward compat — all existing calls to renderNavAuth() work unchanged
+function renderNavAuth() { initNav(); }
+
+function _renderNavAvatar(u) {
   var el = document.getElementById('nav-auth-area');
   if (!el) return;
-  if (u) {
-    var displayName = (u.name || u.email || 'U').trim();
-    var avatarUrl = u.avatar_custom_url || u.avatar_url || '';
-    var avatarBtnInner = avatarUrl
-      ? '<img src="' + _escHtml(avatarUrl) + '" alt="' + _escHtml(displayName) + '" class="nav-avatar-img" id="nav-avatar" onerror="this.outerHTML=getInitialsAvatar(\'' + _escHtml(displayName).replace(/'/g, "\\'") + '\')">'
-      : getInitialsAvatar(displayName);
-    var headerAvatarHtml = avatarUrl
-      ? '<img src="' + _escHtml(avatarUrl) + '" alt="' + _escHtml(displayName) + '" class="dropdown-avatar" onerror="this.outerHTML=getDropdownInitialsAvatar(\'' + _escHtml(displayName).replace(/'/g, "\\'") + '\')">'
-      : '<div class="dropdown-avatar-initials" style="background:' + _getAvatarColor(displayName) + '">' + _getInitials(displayName) + '</div>';
-    var tierLabel = u.plan || 'free';
-    var adminLink = u.isSuperAdmin
-      ? '<a href="#admin" onclick="showView(\'admin\');adminLoad(\'overview\');toggleUserMenu();return false;" style="color:#dc2626;font-weight:700">🔴 Admin</a><div class="dropdown-divider"></div>'
-      : '';
-    el.innerHTML = '<div class="notif-bell-wrap" id="notif-bell-wrap">'
-      + '<button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifDropdown()" title="Notifications">🔔</button>'
-      + '<span class="notif-badge" id="notif-badge"></span>'
-      + '<div class="notif-dropdown" id="notif-dropdown">'
-      + '<div class="notif-header"><span class="notif-header-title">Notifications</span><button class="notif-mark-read" onclick="markNotifsRead()">Mark all read</button></div>'
-      + '<div id="notif-list"><div class="notif-empty">Loading…</div></div>'
-      + '</div></div>'
-      + '<div class="user-menu-wrap">'
-      + '<button class="nav-avatar-btn" id="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">' + avatarBtnInner + '</button>'
-      + '<div class="profile-dropdown" id="user-dropdown">'
-      + '<div class="profile-dropdown-header">' + headerAvatarHtml
-      + '<div><div class="dropdown-name">' + _escHtml(displayName) + '</div>'
-      + '<div class="dropdown-email">' + _escHtml(u.email || '') + '</div>'
-      + '<div class="dropdown-tier">' + tierLabel + ' plan</div></div></div>'
-      + '<div class="dropdown-divider"></div>'
-      + adminLink
-      + '<a href="/account" class="dropdown-item">⚙️ Settings</a>'
-      + '<a href="/account?tab=billing" class="dropdown-item">💳 Billing</a>'
-      + '<a href="/library.html" class="dropdown-item">📚 My Library</a>'
-      + '<div class="dropdown-divider"></div>'
-      + '<button class="danger" onclick="doLogout()">Sign out</button>'
-      + '</div></div>';
-    loadNotifCount(u.id);
-  } else {
-    el.innerHTML = '<button onclick="showUpgrade()" class="nav-pro-btn">Get Pro</button>'
-      + '<button onclick="openModal(\'login\')" class="nav-login-btn">Log in</button>'
-      + '<button onclick="openModal(\'signup\')" class="nav-signup-btn">Sign up</button>';
-  }
+  var displayName = (u.name || u.email || 'U').trim();
+  var avatarUrl   = u.avatar_custom_url || u.avatar_url || '';
+  var avatarBtnInner = avatarUrl
+    ? '<img src="' + _escHtml(avatarUrl) + '" alt="' + _escHtml(displayName) + '" class="nav-avatar-img" id="nav-avatar" onerror="this.outerHTML=getInitialsAvatar(\'' + _escHtml(displayName).replace(/'/g, "\\'") + '\')">'
+    : getInitialsAvatar(displayName);
+  var headerAvatarHtml = avatarUrl
+    ? '<img src="' + _escHtml(avatarUrl) + '" alt="' + _escHtml(displayName) + '" class="dropdown-avatar" onerror="this.outerHTML=getDropdownInitialsAvatar(\'' + _escHtml(displayName).replace(/'/g, "\\'") + '\')">'
+    : '<div class="dropdown-avatar-initials" style="background:' + _getAvatarColor(displayName) + '">' + _getInitials(displayName) + '</div>';
+  var tierLabel = u.plan || 'free';
+  var adminLink = u.isSuperAdmin
+    ? '<a href="#admin" onclick="showView(\'admin\');adminLoad(\'overview\');toggleUserMenu();return false;" style="color:#dc2626;font-weight:700">🔴 Admin</a><div class="dropdown-divider"></div>'
+    : '';
+  el.innerHTML = '<div class="notif-bell-wrap" id="notif-bell-wrap">'
+    + '<button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifDropdown()" title="Notifications">🔔</button>'
+    + '<span class="notif-badge" id="notif-badge"></span>'
+    + '<div class="notif-dropdown" id="notif-dropdown">'
+    + '<div class="notif-header"><span class="notif-header-title">Notifications</span><button class="notif-mark-read" onclick="markNotifsRead()">Mark all read</button></div>'
+    + '<div id="notif-list"><div class="notif-empty">Loading\u2026</div></div>'
+    + '</div></div>'
+    + '<div class="user-menu-wrap">'
+    + '<button class="nav-avatar-btn" id="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">' + avatarBtnInner + '</button>'
+    + '<div class="profile-dropdown" id="user-dropdown">'
+    + '<div class="profile-dropdown-header">' + headerAvatarHtml
+    + '<div><div class="dropdown-name">' + _escHtml(displayName) + '</div>'
+    + '<div class="dropdown-email">' + _escHtml(u.email || '') + '</div>'
+    + '<div class="dropdown-tier">' + tierLabel + ' plan</div></div></div>'
+    + '<div class="dropdown-divider"></div>'
+    + adminLink
+    + '<a href="/account" class="dropdown-item">\u2699\uFE0F Settings</a>'
+    + '<a href="/account?tab=billing" class="dropdown-item">\uD83D\uDCB3 Billing &amp; Plans</a>'
+    + '<a href="/account?tab=security" class="dropdown-item">\uD83D\uDD12 Security</a>'
+    + '<div class="dropdown-divider"></div>'
+    + '<button class="danger" onclick="doLogout()">Sign out</button>'
+    + '</div></div>';
+  loadNotifCount(u.id);
+}
+
+function _highlightActiveNavLink() {
+  var path = window.location.pathname;
+  document.querySelectorAll('.nav-link').forEach(function(link) {
+    var href = link.getAttribute('href');
+    if (href && href !== '/' && path.startsWith(href)) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
 }
 
 function _getInitials(name) {
@@ -7468,8 +7513,7 @@ function renderProfileEmptyState(el) {
 // ── AUTO INIT ──
 enforcePlanRules();
 if (plUser()) document.body.classList.add('authenticated');
-renderNavAuth();
-if (typeof window.initLangSwitch === 'function') window.initLangSwitch();
+initNav();
 // Apply region, translations, Korean mode
 updateRegionUI();
 applyTranslations(_settings.lang);
