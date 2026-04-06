@@ -1651,6 +1651,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .ticker-track:hover{animation-play-state:paused}
 @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .ticker-item{display:flex;align-items:center;gap:10px;padding:0 28px;white-space:nowrap;border-right:1px solid var(--border)}
+.ticker-ep-num{font-size:.75rem;font-weight:500;color:var(--text3,#9CA3AF);opacity:.65;flex-shrink:0}
 .ticker-show-name{font-size:.85rem;font-weight:500;color:var(--text2)}
 .ticker-bias{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:8px}
 .ticker-bias.left{color:#60A5FA;background:rgba(59,130,246,.1)}
@@ -1766,12 +1767,12 @@ body.light-mode,[data-theme="light"]{
 /* Right container — margin-left:auto pushes everything to the right edge */
 .nav-right{display:flex!important;align-items:center!important;gap:4px!important;margin-left:auto!important}
 /* display on these is controlled by initNav() — no !important so JS can override */
-.nav-links-logged-out{display:flex;align-items:center!important;gap:4px!important}
-.nav-links-logged-in{display:none;align-items:center!important;gap:4px!important}
+.nav-links-logged-out{display:flex;align-items:center!important;gap:16px!important}
+.nav-links-logged-in{display:none;align-items:center!important;gap:16px!important}
 .nav-link{color:var(--text2,#6B7280)!important;text-decoration:none!important;font-size:0.875rem!important;font-weight:500!important;padding:6px 12px!important;border-radius:8px!important;white-space:nowrap!important;transition:color .15s,background .15s!important;background:none!important;border:none!important;cursor:pointer!important;font-family:var(--ff,'Inter',sans-serif)!important}
 .nav-link:hover{color:var(--text,#111)!important;background:var(--bg3,rgba(0,0,0,0.05))!important}
 .nav-link.active{background:var(--bg3)!important;color:var(--text)!important;font-weight:500!important}
-.nav-btn-signin{margin-left:8px!important;padding:8px 18px!important;background:var(--navy,#111)!important;color:#fff!important;text-decoration:none!important;border-radius:8px!important;font-size:0.875rem!important;font-weight:600!important;white-space:nowrap!important;transition:opacity .15s!important;display:inline-block!important}
+.nav-btn-signin{margin-left:4px!important;padding:8px 20px!important;background:var(--navy,#111)!important;color:#fff!important;text-decoration:none!important;border-radius:999px!important;font-size:0.875rem!important;font-weight:600!important;white-space:nowrap!important;transition:opacity .15s!important;display:inline-block!important;border:none!important;cursor:pointer!important;font-family:var(--ff,'Inter',sans-serif)!important}
 .nav-btn-signin:hover{opacity:.85!important}
 .nav-theme-toggle{background:none!important;border:none!important;cursor:pointer!important;font-size:16px!important;padding:6px!important;border-radius:8px!important;margin:0 4px!important;line-height:1!important}
 @media(max-width:640px){.nav-link{display:none!important}.nav-bar{padding:0 16px!important}.nav-search-wrap{display:none!important}}
@@ -1939,10 +1940,11 @@ body.light-mode,[data-theme="light"]{
 
     <!-- LOGGED OUT: marketing links -->
     <div class="nav-links-logged-out" id="nav-logged-out">
+      <button class="nav-link" id="nav-discover-guest" onclick="showView('discover')">Discover</button>
       <a href="/how-it-works.html" class="nav-link" id="nav-how">How it works</a>
       <a href="/pricing.html" class="nav-link" id="nav-pricing-link">Pricing</a>
-      <a href="#" class="nav-btn-signin" id="nav-signin"
-         onclick="openModal('login');return false">Sign in →</a>
+      <button class="nav-btn-signin" id="nav-signin"
+         onclick="openModal('login');return false">Sign in</button>
     </div>
 
     <!-- LOGGED IN: app links -->
@@ -3933,6 +3935,11 @@ var CURATED_SHOWS = [
 
 // ── VIEWS ──
 function showView(name) {
+  // Library is auth-gated — guests redirect to Discover
+  if (name === 'library' && !plUser()) {
+    showToast('Sign in to access your Library', 3000);
+    name = 'discover';
+  }
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
   var el = document.getElementById('view-' + name);
   if (el) el.classList.add('on');
@@ -4268,13 +4275,35 @@ async function fetchStories(query, region, lang) {
   try {
     var r = region || detectUserRegion();
     var l = lang || (r === 'ko-KR' ? 'ko' : 'en');
-    var data=await fetch('/api/stories?q='+encodeURIComponent(query)+'&region='+encodeURIComponent(r)+'&lang='+encodeURIComponent(l), { signal: AbortSignal.timeout(10000) }).then(function(r){return r.json();});
+    var data=await fetch('/api/stories?q='+encodeURIComponent(query)+'&region='+encodeURIComponent(r)+'&lang='+encodeURIComponent(l), { signal: AbortSignal.timeout(5000) }).then(function(r){return r.json();});
     loading.style.display='none';
     var eps=data.results||[];
-    if(!eps.length){empty.style.display='block';return;}
+    if(!eps.length){_renderFeaturedFallback(list);return;}
     renderHero(eps[0]);
     list.innerHTML=eps.slice(1).map(renderStoryRow).join('');
-  } catch(e){ loading.style.display='none'; empty.textContent='Failed to load. Please try again.'; empty.style.display='block'; }
+  } catch(e){ loading.style.display='none'; _renderFeaturedFallback(list); }
+}
+function _renderFeaturedFallback(list) {
+  if (!list) return;
+  var FEATURED = [
+    { show:'The Joe Rogan Experience', ep:'Latest Episode', dir:'right', label:'Lightly Right-Leaning' },
+    { show:'The Daily', ep:'News Briefing', dir:'left', label:'Lightly Left-Leaning' },
+    { show:'Lex Fridman Podcast', ep:'Latest Episode', dir:'balanced', label:'Mostly Balanced' },
+    { show:'Radiolab', ep:'Latest Episode', dir:'balanced', label:'Mostly Balanced' },
+    { show:'Pod Save America', ep:'Latest Episode', dir:'left', label:'Left-Leaning' },
+    { show:'Fresh Air', ep:'Latest Episode', dir:'left', label:'Lightly Left-Leaning' }
+  ];
+  list.innerHTML = FEATURED.map(function(f) {
+    var col = f.dir==='left'?'#378ADD':f.dir==='right'?'#E24B4A':'#22c55e';
+    return '<div class="story-row" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border,#E5E7EB)">'
+      +'<div style="width:60px;height:60px;border-radius:6px;background:#1a3a5c;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🎙️</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:13px;font-weight:600;color:var(--text,#111);margin-bottom:2px">'+f.show+'</div>'
+      +'<div style="font-size:12px;color:var(--text2,#6B7280);margin-bottom:6px">'+f.ep+'</div>'
+      +'<span style="font-size:11px;font-weight:600;color:'+col+';background:'+col+'1a;padding:2px 8px;border-radius:999px">'+f.label+'</span>'
+      +' <span style="font-size:10px;color:var(--text3,#9CA3AF);margin-left:6px">Featured</span>'
+      +'</div></div>';
+  }).join('');
 }
 function renderHero(ep) {
   var hero=document.getElementById('hero-wrap');
@@ -4467,14 +4496,29 @@ async function loadEpisodes(feedUrl) {
 function analyzeEp(e, url, epTitle, showName) {
   if (e) e.stopPropagation();
   if (!plUser()) {
-    _pendingAnalyze = { url: url, epTitle: epTitle||'', showName: showName||'' };
-    openSignupGate();
+    // Guest mode: allow read-only preview, show soft upsell banner
+    showView('analyze');
+    document.getElementById('url-input').value = url;
+    startAnalysis(url, epTitle||'', showName||'');
+    _showGuestUpsellBanner();
     return;
   }
   if (checkAnalysisLimit()) return;
   showView('analyze');
   document.getElementById('url-input').value=url;
   startAnalysis(url, epTitle||'', showName||'');
+}
+
+function _showGuestUpsellBanner() {
+  if (document.getElementById('guest-upsell-banner')) return;
+  var b = document.createElement('div');
+  b.id = 'guest-upsell-banner';
+  b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#0f2027;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:12px;z-index:9000;font-size:13px;font-family:Inter,sans-serif;flex-wrap:wrap';
+  b.innerHTML = '<span style="flex:1;min-width:200px">Sign in free to run your own analyses and track your listening fingerprint</span>'
+    + '<button onclick="openModal(\'login\');document.getElementById(\'guest-upsell-banner\').remove()" style="background:#fff;color:#0f2027;border:none;border-radius:999px;padding:8px 18px;font-weight:600;cursor:pointer;font-size:13px;white-space:nowrap">Sign in</button>'
+    + '<button onclick="openModal(\'signup\');document.getElementById(\'guest-upsell-banner\').remove()" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.35);border-radius:999px;padding:8px 18px;font-weight:500;cursor:pointer;font-size:13px;white-space:nowrap">Create free account</button>'
+    + '<button onclick="this.parentElement.remove()" aria-label="Dismiss" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;font-size:20px;padding:0 4px;line-height:1;flex-shrink:0">&times;</button>';
+  document.body.appendChild(b);
 }
 
 function startAnalysis(audioUrl, epTitle, showName) {
@@ -8682,31 +8726,37 @@ function rotateSpotlight() {
     (function() { try { return localStorage.getItem('podlens-region') === 'ko-KR'; } catch(e) { return false; } })();
 
   var ITEMS = [
-    { name: 'The Joe Rogan Experience', label: 'Lightly Right-Leaning', dir: 'right' },
-    { name: 'NPR Politics Podcast', label: 'Left-Leaning', dir: 'left' },
-    { name: 'The Daily', label: 'Lightly Left-Leaning', dir: 'left' },
-    { name: 'Lex Fridman Podcast', label: 'Mostly Balanced', dir: 'balanced' },
-    { name: 'Huberman Lab', label: 'Mostly Balanced', dir: 'balanced' },
-    { name: 'Ben Shapiro Show', label: 'Right-Leaning', dir: 'right' },
-    { name: 'Pod Save America', label: 'Left-Leaning', dir: 'left' },
-    { name: 'Tim Pool Daily', label: 'Right-Leaning', dir: 'right' },
-    { name: 'Radiolab', label: 'Mostly Balanced', dir: 'balanced' },
-    { name: 'Fresh Air', label: 'Lightly Left-Leaning', dir: 'left' },
-    { name: 'Serial', label: 'Mostly Balanced', dir: 'balanced' },
-    { name: 'The Glenn Beck Program', label: 'Strongly Right-Leaning', dir: 'right' },
-    { name: 'Democracy Now!', label: 'Strongly Left-Leaning', dir: 'left' },
-    { name: 'Hidden Brain', label: 'Lightly Left-Leaning', dir: 'left' },
-    { name: 'Stuff You Should Know', label: 'Mostly Balanced', dir: 'balanced' },
-    { name: '시사인 팟캐스트', label: '약간 좌편향', dir: 'left', ko: true },
-    { name: '뉴스공장', label: '좌편향', dir: 'left', ko: true },
-    { name: '이슈 있슈', label: '중립적', dir: 'balanced', ko: true },
+    { name: 'The Joe Rogan Experience', label: 'Lightly Right-Leaning', dir: 'right', count: 2255 },
+    { name: 'NPR Politics Podcast', label: 'Left-Leaning', dir: 'left', count: 1247 },
+    { name: 'The Daily', label: 'Lightly Left-Leaning', dir: 'left', count: 1891 },
+    { name: 'Lex Fridman Podcast', label: 'Mostly Balanced', dir: 'balanced', count: 468 },
+    { name: 'Huberman Lab', label: 'Mostly Balanced', dir: 'balanced', count: 312 },
+    { name: 'Ben Shapiro Show', label: 'Right-Leaning', dir: 'right', count: 2108 },
+    { name: 'Pod Save America', label: 'Left-Leaning', dir: 'left', count: 734 },
+    { name: 'Tim Pool Daily', label: 'Right-Leaning', dir: 'right', count: 1567 },
+    { name: 'Radiolab', label: 'Mostly Balanced', dir: 'balanced', count: 589 },
+    { name: 'Fresh Air', label: 'Lightly Left-Leaning', dir: 'left', count: 4123 },
+    { name: 'Serial', label: 'Mostly Balanced', dir: 'balanced', count: 47 },
+    { name: 'The Glenn Beck Program', label: 'Strongly Right-Leaning', dir: 'right', count: 3891 },
+    { name: 'Democracy Now!', label: 'Strongly Left-Leaning', dir: 'left', count: 7234 },
+    { name: 'Hidden Brain', label: 'Lightly Left-Leaning', dir: 'left', count: 286 },
+    { name: 'Stuff You Should Know', label: 'Mostly Balanced', dir: 'balanced', count: 1734 },
+    { name: '시사인 팟캐스트', label: '약간 좌편향', dir: 'left', ko: true, count: 342 },
+    { name: '뉴스공장', label: '좌편향', dir: 'left', ko: true, count: 891 },
+    { name: '이슈 있슈', label: '중립적', dir: 'balanced', ko: true, count: 156 },
   ];
 
   var items = isKorean ? ITEMS : ITEMS.filter(function(i) { return !i.ko; });
   var doubled = items.concat(items);
   track.innerHTML = doubled.map(function(item) {
-    return '<div class="ticker-item"><span class="ticker-show-name">' + item.name +
-      '</span><span class="ticker-bias ' + item.dir + '">' + item.label + '</span></div>';
+    var numFmt = item.count >= 1000
+      ? '#' + Math.floor(item.count/1000) + ',' + String(item.count % 1000).padStart(3,'0')
+      : '#' + item.count;
+    return '<div class="ticker-item">'
+      + '<span class="ticker-ep-num">' + numFmt + '</span>'
+      + '<span class="ticker-show-name">' + item.name + '</span>'
+      + '<span class="ticker-bias ' + item.dir + '">' + item.label + '</span>'
+      + '</div>';
   }).join('');
 })();
 
