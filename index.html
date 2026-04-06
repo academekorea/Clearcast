@@ -27,30 +27,19 @@
 <link rel="alternate" hreflang="x-default" href="https://podlens.app">
 <link rel="stylesheet" media="print" href="/print.css">
 <script>
-// Region detection — runs before any content loads
-;(function() {
-  var path = window.location.pathname;
-  var isKrPath = path.startsWith('/kr');
-  var savedRegion = localStorage.getItem('podlens-region');
-  if (isKrPath) {
-    localStorage.setItem('podlens-region', 'ko-KR');
-    document.documentElement.lang = 'ko';
-    document.documentElement.dataset.region = 'ko-KR';
-    return;
-  }
-  if (savedRegion) {
-    document.documentElement.dataset.region = savedRegion;
-    if (savedRegion === 'ko-KR') document.documentElement.lang = 'ko';
-    return;
-  }
-  // No preference: detect from browser language
-  var browserLang = navigator.language || '';
-  if (browserLang.startsWith('ko')) {
-    localStorage.setItem('podlens-region', 'ko-KR');
-    window.location.replace('/kr' + path + window.location.search);
-    return;
-  }
-  document.documentElement.dataset.region = 'international';
+/* Early region tag — sets html[data-region] for CSS hooks */
+(function() {
+  try {
+    var saved = localStorage.getItem('podlens-region') || '';
+    var isKr = window.location.pathname.startsWith('/kr');
+    if (isKr || saved === 'ko-KR') {
+      document.documentElement.lang = 'ko';
+      document.documentElement.dataset.region = 'ko-KR';
+    } else {
+      document.documentElement.dataset.region =
+        saved || 'international';
+    }
+  } catch(e) {}
 })();
 </script>
 <style>
@@ -1684,53 +1673,53 @@ body.light-mode,[data-theme="light"]{
 <body>
 
 <script>
-(function() {
+/* PODLENS GEO DETECTION v2
+   Safe client-side Korean redirect.
+   Cannot crash the site. */
+(function podlensGeo() {
   try {
     var path = window.location.pathname
+    var search = window.location.search
 
-    // Already on /kr — do nothing
+    /* Already on /kr — do nothing */
     if (path.startsWith('/kr')) return
 
-    // Check saved preference
+    /* Read saved preference */
     var saved = ''
-    try {
-      saved = localStorage.getItem('podlens-region') || ''
-    } catch(e) {}
+    try { saved = localStorage.getItem('podlens-region') || '' } catch(e) {}
 
-    // User chose international — never redirect
+    /* User explicitly chose international. NEVER redirect. */
     if (saved === 'international') return
 
-    // User chose Korean — redirect to /kr
+    /* User previously chose Korean. Redirect immediately. */
     if (saved === 'ko-KR') {
-      window.location.replace('/kr' + path + window.location.search)
+      window.location.replace('/kr' + path + search)
       return
     }
 
-    // Browser language is Korean — redirect
-    var lang = navigator.language || navigator.userLanguage || ''
-    if (lang.toLowerCase().startsWith('ko')) {
+    /* Korean browser language — treat as Korean user */
+    var lang = ''
+    try { lang = (navigator.language || navigator.userLanguage || '').toLowerCase() } catch(e) {}
+    if (lang.startsWith('ko')) {
       try { localStorage.setItem('podlens-region', 'ko-KR') } catch(e) {}
-      window.location.replace('/kr' + path + window.location.search)
+      window.location.replace('/kr' + path + search)
       return
     }
 
-    // IP-based detection — async, only for first-time Korean visitors
-    // with non-Korean browser language (rare edge case)
-    fetch('/api/geo-detect')
-      .then(function(r) { return r.json() })
+    /* Unknown preference — check IP geo async.
+       Page loads normally regardless. */
+    fetch('/api/geo-detect', { method: 'GET', cache: 'no-store' })
+      .then(function(r) { if (!r.ok) return null; return r.json() })
       .then(function(data) {
+        if (!data) return
         if (data.isKorean) {
           try { localStorage.setItem('podlens-region', 'ko-KR') } catch(e) {}
-          window.location.replace('/kr' + path + window.location.search)
+          window.location.replace('/kr' + path + search)
         }
       })
-      .catch(function() {
-        // Geo API failed — do nothing, site loads normally
-      })
+      .catch(function() { /* API failed — do nothing */ })
 
-  } catch(e) {
-    // Any error — do nothing, site loads normally
-  }
+  } catch(e) { /* Any error — do nothing, site loads normally */ }
 })()
 </script>
 
@@ -1751,7 +1740,7 @@ body.light-mode,[data-theme="light"]{
       document.querySelectorAll(
         'link[hreflang="ko"],link[hreflang="ko-KR"]'
       ).forEach(function(el) {
-        el.parentNode.removeChild(el)
+        el && el.parentNode && el.parentNode.removeChild(el)
       })
 
       // Hide Korean language switcher
@@ -2885,33 +2874,52 @@ function setPlUser(obj) {
   }
 }
 
-function shouldShowKoreanOption() {
-  var savedRegion = localStorage.getItem('podlens-region');
-  if (savedRegion === 'international') return false;
-  if (savedRegion === 'ko-KR') return true;
-  if (window.location.pathname.startsWith('/kr')) return true;
-  if (navigator.language && navigator.language.startsWith('ko')) return true;
-  return false;
+window.podlensSetInternational = function() {
+  try {
+    localStorage.setItem('podlens-region', 'international');
+    document.cookie = 'podlens-region=international; path=/; max-age=31536000; SameSite=Lax';
+  } catch(e) {}
+  var path = window.location.pathname.replace(/^\/kr/, '') || '/';
+  window.location.href = path + window.location.search;
+};
+
+window.podlensSetKorean = function(e) {
+  if (e) e.preventDefault();
+  try {
+    localStorage.setItem('podlens-region', 'ko-KR');
+    document.cookie = 'podlens-region=ko-KR; path=/; max-age=31536000; SameSite=Lax';
+  } catch(e2) {}
+  window.location.href = '/kr' + window.location.pathname + window.location.search;
+};
+
+// Keep backward compat alias
+function switchToInternational() { window.podlensSetInternational(); }
+
+function renderKrLangSwitch() {
+  var wrap = document.getElementById('lang-switch-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '<button class="lang-switch" onclick="podlensSetInternational()">🌐 English</button>';
 }
 
 function renderLangSwitch() {
   var wrap = document.getElementById('lang-switch-wrap');
   if (!wrap) return;
-  var isKrPath = window.location.pathname.startsWith('/kr');
-  var isKoreanUser = shouldShowKoreanOption();
-  if (isKrPath) {
-    wrap.innerHTML = '<button class="lang-switch" onclick="switchToInternational()">🌐 English</button>';
-  } else if (isKoreanUser) {
-    wrap.innerHTML = '<a class="lang-switch" href="/kr">🌐 한국어</a>';
+
+  if (window.location.pathname.startsWith('/kr')) {
+    renderKrLangSwitch();
+    return;
+  }
+
+  var saved = '';
+  try { saved = localStorage.getItem('podlens-region') || ''; } catch(e) {}
+  var lang = (navigator.language || '').toLowerCase();
+  var isKoreanUser = saved === 'ko-KR' || lang.startsWith('ko');
+
+  if (isKoreanUser && saved !== 'international') {
+    wrap.innerHTML = '<a href="/kr" class="lang-switch" onclick="podlensSetKorean(event)">🌐 한국어</a>';
   } else {
     wrap.innerHTML = '';
   }
-}
-
-function switchToInternational() {
-  localStorage.setItem('podlens-region', 'international');
-  document.cookie = 'podlens-region=international; path=/; max-age=2592000; SameSite=Lax';
-  window.location.href = '/';
 }
 
 function renderNavAuth() {
@@ -7416,7 +7424,7 @@ function renderProfileEmptyState(el) {
 enforcePlanRules();
 if (plUser()) document.body.classList.add('authenticated');
 renderNavAuth();
-renderLangSwitch();
+if (window.location.pathname.startsWith('/kr')) { renderKrLangSwitch(); } else { renderLangSwitch(); }
 // Apply region, translations, Korean mode
 updateRegionUI();
 applyTranslations(_settings.lang);
