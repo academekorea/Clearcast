@@ -159,11 +159,9 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
 <script src="/nav.js" defer></script>
 
 <!-- Founding banner (shown dynamically) -->
-<div class="founding-banner" id="pricing-founding-banner" style="display:none">
-  <strong>🎉 Early User Pricing</strong> — Lock in 33% off forever.
-  <span class="founding-spots" id="founding-spots-label"></span>
-  <div class="founding-progress-wrap"><div class="founding-progress-fill" id="founding-progress-fill"></div></div>
-  <span id="founding-ends-label"></span>
+<div class="founding-banner" id="pricing-founding-banner" style="display:none;position:relative">
+  <strong>🎉 Founding Member Pricing</strong> — Lock in 33% off forever.
+  <button onclick="document.getElementById('pricing-founding-banner').style.display='none';try{localStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:inherit;opacity:.6;padding:4px 6px" aria-label="Dismiss">&times;</button>
 </div>
 
 <div class="hero">
@@ -460,16 +458,12 @@ function renderPrices() {
 fetch('/api/get-plan?action=founding').then(function(r){return r.json();}).then(function(d){
   _foundingActive = !!(d && d.foundingActive);
   if (_foundingActive) {
-    var banner = document.getElementById('pricing-founding-banner');
-    if (banner) banner.style.display = '';
-    var spotsEl = document.getElementById('founding-spots-label');
-    var fillEl = document.getElementById('founding-progress-fill');
-    var endsEl = document.getElementById('founding-ends-label');
-    var spotsLeft = d.spotsLeft || 0;
-    var max = d.foundingMax || 500;
-    if (spotsEl) spotsEl.textContent = spotsLeft + ' of ' + max + ' spots remaining';
-    if (fillEl) fillEl.style.width = Math.round(((max - spotsLeft) / max) * 100) + '%';
-    if (endsEl && d.foundingEndsAt) endsEl.textContent = 'Ends ' + new Date(d.foundingEndsAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    var dismissed = false;
+    try { dismissed = localStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
+    if (!dismissed) {
+      var banner = document.getElementById('pricing-founding-banner');
+      if (banner) banner.style.display = '';
+    }
   }
   renderPrices();
 }).catch(function(){ renderPrices(); });

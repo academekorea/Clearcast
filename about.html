@@ -102,6 +102,7 @@ function toggleMode(){var isNowLight=document.body.classList.toggle('light-mode'
 document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.body.classList.add('light-mode');document.documentElement.setAttribute('data-theme','light');document.querySelectorAll('.mode-toggle').forEach(function(b){b.textContent='☀️';});}});
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
+<script src="/nav.js" defer></script>
 </head>
 <body>
 <nav>

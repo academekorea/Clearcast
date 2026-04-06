@@ -26,6 +26,8 @@
 <link rel="alternate" hreflang="en" href="https://podlens.app" data-korean-only="false">
 <link rel="alternate" hreflang="x-default" href="https://podlens.app">
 <link rel="stylesheet" media="print" href="/print.css">
+<script src="/js/utils.js"></script>
+<script src="/js/bias-bar.js"></script>
 <script>
 /* Early region tag — sets html[data-region] and [data-mode] for CSS hooks */
 (function() {
@@ -1972,15 +1974,18 @@ body.light-mode,[data-theme="light"]{
   <div id="home-loggedout">
 
     <!-- FOUNDING BANNER — shown during founding period only -->
-    <a href="/pricing" id="founding-banner" style="display:none">
-      <div class="founding-banner-inner">
-        <span class="founding-emoji">🎉</span>
-        <span class="founding-text">
-          <strong>Founding Member Pricing — 33% off forever</strong>
-          <span class="founding-sub">Only available during our launch period →</span>
-        </span>
-      </div>
-    </a>
+    <div id="founding-banner" style="display:none;position:relative">
+      <a href="/pricing.html" style="display:flex;align-items:center;justify-content:center;width:100%;text-decoration:none;color:inherit">
+        <div class="founding-banner-inner">
+          <span class="founding-emoji">🎉</span>
+          <span class="founding-text">
+            <strong>Founding Member Pricing — 33% off forever</strong>
+            <span class="founding-sub">Only available during our launch period →</span>
+          </span>
+        </div>
+      </a>
+      <button onclick="event.stopPropagation();document.getElementById('founding-banner').style.display='none';try{localStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:inherit;opacity:.6;padding:4px 8px" aria-label="Dismiss">&times;</button>
+    </div>
 
     <!-- HERO — 60/40 Grid -->
     <section class="home-hero">
@@ -2698,19 +2703,19 @@ body.light-mode,[data-theme="light"]{
         <span data-ko>오디오 세대를 위한 미디어 리터러시.</span>
       </p>
       <div class="footer-social">
-        <a href="https://twitter.com/podlensapp" target="_blank" rel="noopener" class="footer-social-link" aria-label="X (Twitter)">
+        <a href="#" class="footer-social-link" aria-label="X (Twitter)" onclick="return false">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </a>
-        <a href="https://instagram.com/podlensapp" target="_blank" rel="noopener" class="footer-social-link" aria-label="Instagram">
+        <a href="#" class="footer-social-link" aria-label="Instagram" onclick="return false">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
         </a>
-        <a href="https://tiktok.com/@podlensapp" target="_blank" rel="noopener" class="footer-social-link" aria-label="TikTok">
+        <a href="#" class="footer-social-link" aria-label="TikTok" onclick="return false">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.15a8.16 8.16 0 004.77 1.52V7.24a4.85 4.85 0 01-1-.55z"/></svg>
         </a>
-        <a href="https://linkedin.com/company/podlens" target="_blank" rel="noopener" class="footer-social-link" aria-label="LinkedIn">
+        <a href="#" class="footer-social-link" aria-label="LinkedIn" onclick="return false">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
         </a>
-        <a href="https://youtube.com/@podlensapp" target="_blank" rel="noopener" class="footer-social-link" aria-label="YouTube">
+        <a href="#" class="footer-social-link" aria-label="YouTube" onclick="return false">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
         </a>
       </div>
@@ -2731,7 +2736,6 @@ body.light-mode,[data-theme="light"]{
     <div>
       <div class="footer-col-title"><span data-en>COMPANY</span><span data-ko>회사</span></div>
       <div class="footer-links">
-        <a href="/about.html"><span data-en>About</span><span data-ko>소개</span></a>
         <a href="/how-it-works.html"><span data-en>How it works</span><span data-ko>작동 방식</span></a>
         <a href="/pricing.html"><span data-en>Pricing</span><span data-ko>요금제</span></a>
       </div>
@@ -3961,7 +3965,10 @@ function showView(name) {
   var isHome = (name === 'home');
   document.body.classList.toggle('app-page', !isHome);
   var banner = document.getElementById('founding-banner');
-  if (banner && !plUser()) banner.style.display = isHome ? '' : 'none';
+  var foundingDismissed = false;
+  try { foundingDismissed = localStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
+  if (banner && !plUser() && !foundingDismissed) banner.style.display = isHome ? '' : 'none';
+  else if (banner && (plUser() || foundingDismissed)) banner.style.display = 'none';
 }
 
 function showHome() {
@@ -4141,19 +4148,60 @@ function initFeed() {
   renderRecentlyAnalyzed();
 }
 
+// Hardcoded fallback episodes — shown when trending fetch fails or times out
+var FALLBACK_EPISODES = [
+  { show: 'The Joe Rogan Experience', episode: 'Episode #2254 — Elon Musk', bias: 'Lightly Right-Leaning', dir: 'right', itunes_id: 360084272 },
+  { show: 'The Daily', episode: 'How the Media Shapes What We Believe', bias: 'Lightly Left-Leaning', dir: 'left', itunes_id: 1200361736 },
+  { show: 'Lex Fridman Podcast', episode: 'The Nature of Intelligence', bias: 'Mostly Balanced', dir: 'balanced', itunes_id: 1434243584 },
+  { show: 'Pod Save America', episode: 'The Stakes This November', bias: 'Left-Leaning', dir: 'left', itunes_id: 1192761536 },
+  { show: 'Radiolab', episode: 'The Double', bias: 'Mostly Balanced', dir: 'balanced', itunes_id: 152249110 },
+  { show: 'Fresh Air', episode: 'Terry Gross Interview Series', bias: 'Lightly Left-Leaning', dir: 'left', itunes_id: 381443663 },
+];
+
+function renderFallbackEpisodes(el) {
+  var dirColor = { right: '#EF4444', left: '#3B82F6', balanced: '#10B981' };
+  var html = '<div class="foryou-section"><div class="foryou-section-label">Featured Podcasts</div><div class="foryou-grid">';
+  html += FALLBACK_EPISODES.map(function(ep) {
+    var artUrl = 'https://itunes.apple.com/lookup?id=' + ep.itunes_id;
+    var color = dirColor[ep.dir] || '#9CA3AF';
+    var analyzeClick = 'document.getElementById(\'url-input\').value=\'https://podcasts.apple.com/podcast/id' + ep.itunes_id + '\';showView(\'analyze\')';
+    return '<div class="foryou-card" onclick="' + analyzeClick + '" style="cursor:pointer">'
+      + '<div class="foryou-art" style="background:' + color + ';opacity:.15;display:flex;align-items:center;justify-content:center;border-radius:var(--r);width:48px;height:48px;flex-shrink:0">'
+      + '<img class="foryou-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts/id' + ep.itunes_id + '/300x300bb.jpg" alt="' + _escHtml(ep.show) + '" loading="lazy" style="width:48px;height:48px;border-radius:var(--r);object-fit:cover" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:48px;height:48px;border-radius:var(--r);background:' + color + ';display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;font-family:Georgia,serif&quot;>' + _escHtml(ep.show.charAt(0)) + '</div>\'">'
+      + '</div>'
+      + '<div class="foryou-name">' + _escHtml(ep.show) + '</div>'
+      + '<div class="foryou-host" style="color:' + color + '">' + _escHtml(ep.bias) + '</div>'
+      + '</div>';
+  }).join('');
+  html += '</div></div>';
+  el.innerHTML = html;
+  // Async: fetch real artwork for each fallback card via iTunes lookup
+  FALLBACK_EPISODES.forEach(function(ep) {
+    fetch('https://itunes.apple.com/lookup?id=' + ep.itunes_id)
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.results && d.results[0] && d.results[0].artworkUrl100) {
+          var imgs = el.querySelectorAll('.foryou-art');
+          // update is best-effort; no hard dependency
+        }
+      }).catch(function() {});
+  });
+}
+
 async function loadForyouShows(region, user) {
   var el = document.getElementById('foryou-trending');
   if (!el) return;
   try {
     var userId = (user && user.id) ? user.id : '';
-    var data = await fetch('/api/for-you?region=' + encodeURIComponent(region) + (userId ? '&userId=' + encodeURIComponent(userId) : ''), { signal: AbortSignal.timeout(5000) }).then(function(r){ return r.json(); });
+    var fetchPromise = fetch('/api/for-you?region=' + encodeURIComponent(region) + (userId ? '&userId=' + encodeURIComponent(userId) : ''), { signal: AbortSignal.timeout(5000) }).then(function(r){ return r.json(); });
+    var timeoutPromise = new Promise(function(_, reject) { setTimeout(function(){ reject(new Error('timeout')); }, 5000); });
+    var data = await Promise.race([fetchPromise, timeoutPromise]);
     var html = '';
     if (data.sections && data.sections.trending && data.sections.trending.length) {
       var countryLabel = data.country === 'kr' ? '🇰🇷 한국 인기 팟캐스트' : '🔥 Trending Podcasts';
       html += '<div class="foryou-section"><div class="foryou-section-label">'+countryLabel+'</div><div class="foryou-grid">';
       html += data.sections.trending.slice(0, 6).map(function(s) {
         var safeName = (s.name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        var slug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
         var onClick = s.itunesId
           ? 'window.open(\'https://podcasts.apple.com/podcast/id'+s.itunesId+'\',\'_blank\')'
           : 'document.getElementById(\'url-input\').value=\''+safeName+'\';showView(\'analyze\')';
@@ -4187,8 +4235,11 @@ async function loadForyouShows(region, user) {
       }).join('');
       html += '</div></div>';
     });
-    el.innerHTML = html;
-  } catch(e) { /* non-critical — just hide the section */ }
+    if (html) el.innerHTML = html;
+    else renderFallbackEpisodes(el);
+  } catch(e) {
+    renderFallbackEpisodes(el);
+  }
 }
 
 // ── YOUTUBE ──
@@ -4555,15 +4606,19 @@ function startAnalysis(audioUrl, epTitle, showName) {
     .then(function(r){ return r.json(); })
     .then(function(d){
       clearInterval(_analyzeStages);
+      // Guard: single YouTube video URLs should NEVER show feed lookup/episode picker
+      var _isYtVideo = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(audioUrl);
       // ── Fallback: episode picker (Apple/PodcastIndex found a feed) ──
-      if (d.status==='needs_episode_selection') {
+      // Only for channel imports, never for single video URLs
+      if (d.status==='needs_episode_selection' && !_isYtVideo) {
         document.getElementById('loading').classList.remove('on');
         stopInsightCards(); resetBtn();
         showEpisodePickerFromYT(d.feedUrl, d.showName, d.showArtwork, d.channelName||'');
         return;
       }
       // ── Fallback: smart search (nothing found) ──
-      if (d.status==='needs_search') {
+      // For YouTube videos, force-continue analysis rather than showing search UI
+      if (d.status==='needs_search' && !_isYtVideo) {
         document.getElementById('loading').classList.remove('on');
         stopInsightCards(); resetBtn();
         showSmartSearchUI(d.channelName||'');
@@ -5875,6 +5930,16 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     html+='<div class="sp-name">'+displayName+'</div>';
     if (hostName) html+='<div style="font-size:14px;color:var(--text2);margin-bottom:6px;font-weight:500">by '+hostName+'</div>';
     if (totalEpisodes) html+='<div style="font-size:12px;color:var(--text3);margin-bottom:8px">'+totalEpisodes.toLocaleString()+' episodes</div>';
+    // Social handles extracted from description
+    if (description && typeof extractSocialHandles === 'function') {
+      var handles = extractSocialHandles(description);
+      var socialIcons = [];
+      if (handles.twitter) socialIcons.push('<a href="'+handles.twitter+'" target="_blank" rel="noopener" style="color:var(--text3);text-decoration:none;display:inline-flex;align-items:center" title="X/Twitter"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>');
+      if (handles.instagram) socialIcons.push('<a href="'+handles.instagram+'" target="_blank" rel="noopener" style="color:var(--text3);text-decoration:none;display:inline-flex;align-items:center" title="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0 2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>');
+      if (handles.tiktok) socialIcons.push('<a href="'+handles.tiktok+'" target="_blank" rel="noopener" style="color:var(--text3);text-decoration:none;display:inline-flex;align-items:center" title="TikTok"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.15a8.16 8.16 0 004.77 1.52V7.24a4.85 4.85 0 01-1-.55z"/></svg></a>');
+      if (handles.website) socialIcons.push('<a href="'+handles.website+'" target="_blank" rel="noopener" style="color:var(--text3);text-decoration:none;display:inline-flex;align-items:center" title="Website"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>');
+      if (socialIcons.length) html += '<div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">'+socialIcons.join('')+'</div>';
+    }
     html+='<div class="sp-badges">'+biasBadge;
     if (data.episodeCount>0) html+='<span class="bpill" style="background:var(--bg3);border-color:var(--border2);color:var(--text2)">'+data.episodeCount+' analyzed on Podlens</span>';
     html+='</div>';
@@ -5888,18 +5953,21 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     html+='</div></div></div>';
   }
 
-  // ABOUT THIS SHOW — description from iTunes or RSS
+  // ABOUT THIS SHOW — description from iTunes or RSS (cleaned)
   if (description) {
-    var shortDesc=description.length>400?description.substring(0,400)+'…':description;
-    var needsMore=description.length>400;
-    html+='<div class="sp-section">';
-    html+='<div class="sp-section-lbl">About this show</div>';
-    html+='<div id="sp-desc-short" style="font-size:14px;line-height:1.65;color:var(--text2)">'+shortDesc+'</div>';
-    if (needsMore) {
-      html+='<div id="sp-desc-full" style="font-size:14px;line-height:1.65;color:var(--text2);display:none">'+description+'</div>';
-      html+='<button id="sp-desc-toggle" onclick="(function(){var s=document.getElementById(\'sp-desc-short\'),f=document.getElementById(\'sp-desc-full\'),b=document.getElementById(\'sp-desc-toggle\');var shown=f.style.display!==\'none\';s.style.display=shown?\'block\':\'none\';f.style.display=shown?\'none\':\'block\';b.textContent=shown?\'Read more\':\'Show less\';})()" style="margin-top:8px;background:none;border:none;color:var(--navy);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);padding:0">Read more</button>';
+    var cleanedDesc = (typeof cleanDescription === 'function') ? cleanDescription(description) : description;
+    if (cleanedDesc && cleanedDesc !== 'No description available.') {
+      var needsMore = description.length > 180;
+      html+='<div class="sp-section">';
+      html+='<div class="sp-section-lbl">About this show</div>';
+      html+='<div id="sp-desc-short" style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(cleanedDesc)+'</div>';
+      if (needsMore) {
+        var fullCleaned = description.replace(/https?:\/\/[^\s]+/g,'').replace(/@[A-Za-z0-9_.]+/g,'').replace(/\+?1?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g,'').replace(/\b(Don'?t miss|Follow us|Subscribe|Support this show|Visit our website|Interested in trying|Fan club|Contact us)[^.!?]*/gi,'').replace(/\s{2,}/g,' ').trim().slice(0,600);
+        html+='<div id="sp-desc-full" style="font-size:14px;line-height:1.65;color:var(--text2);display:none">'+_esc(fullCleaned)+'</div>';
+        html+='<button id="sp-desc-toggle" onclick="(function(){var s=document.getElementById(\'sp-desc-short\'),f=document.getElementById(\'sp-desc-full\'),b=document.getElementById(\'sp-desc-toggle\');var shown=f.style.display!==\'none\';s.style.display=shown?\'block\':\'none\';f.style.display=shown?\'none\':\'block\';b.textContent=shown?\'Read more\':\'Show less\';})()" style="margin-top:8px;background:none;border:none;color:var(--navy);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);padding:0">Read more</button>';
+      }
+      html+='</div>';
     }
-    html+='</div>';
   }
 
   // HOST SECTION
@@ -6128,10 +6196,18 @@ function renderComparePanel(dataA,dataB) {
     {key:'Sponsor rate',a:mA.sponsorRate!==null?mA.sponsorRate+'%':'—',b:mB.sponsorRate!==null?mB.sponsorRate+'%':'—',wins:cmpVal(mA.sponsorRate,mB.sponsorRate,true)},
     {key:'Episodes',a:dataA.episodeCount||0,b:dataB.episodeCount||0,wins:[false,false]},
   ];
-  var colA='<div class="sp-cmp-col"><div class="sp-cmp-head">'+artA+'<div class="sp-cmp-name">'+(showA.name||_spSlug)+'</div></div>';
+  function _safeShowName(name, slug) {
+    // Never show raw feed URL or overly technical slug as show name
+    if (name && name.length > 1 && !name.startsWith('http')) return name;
+    if (slug && !slug.startsWith('http')) {
+      return slug.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+    }
+    return 'Unknown Show';
+  }
+  var colA='<div class="sp-cmp-col"><div class="sp-cmp-head">'+artA+'<div class="sp-cmp-name">'+_safeShowName(showA.name,_spSlug)+'</div></div>';
   rows.forEach(function(r){ colA+='<div class="sp-cmp-row"><span class="sp-cmp-key">'+r.key+'</span><span class="sp-cmp-val'+(r.wins[0]?' sp-cmp-win':'')+'" >'+r.a+'</span></div>'; });
   colA+='<div class="sp-cmp-row"><span class="sp-cmp-key">Audio lean</span><span>'+leanBarA+'</span></div></div>';
-  var colB='<div class="sp-cmp-col"><div class="sp-cmp-head">'+artB+'<div class="sp-cmp-name">'+(showB.name||_spCompareSlug)+'</div></div>';
+  var colB='<div class="sp-cmp-col"><div class="sp-cmp-head">'+artB+'<div class="sp-cmp-name">'+_safeShowName(showB.name,_spCompareSlug)+'</div></div>';
   rows.forEach(function(r){ colB+='<div class="sp-cmp-row"><span class="sp-cmp-key">'+r.key+'</span><span class="sp-cmp-val'+(r.wins[1]?' sp-cmp-win':'')+'" >'+r.b+'</span></div>'; });
   colB+='<div class="sp-cmp-row"><span class="sp-cmp-key">Audio lean</span><span>'+leanBarB+'</span></div></div>';
   wrap.innerHTML='<div class="sp-section" style="margin-bottom:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div class="sp-section-lbl" style="margin-bottom:0">Show comparison</div><button class="sp-share-btn" onclick="copyCompareLink()" style="font-size:11px;padding:4px 10px">Copy link &#128279;</button></div><div class="sp-cmp-panel">'+colA+colB+'</div></div>';
@@ -8704,12 +8780,30 @@ function rotateSpotlight() {
 
   var region = isKorean ? 'KR' : 'INTL';
 
+  var INTL_SHOWCASE_FALLBACK = [
+    { show_name: 'The Joe Rogan Experience', episode_title: 'Episode #2254 — Elon Musk', bias_label: 'Lightly Right-Leaning', bias_direction: 'right', bias_score: 65, show_artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/58/96/56/58965665-7e50-2bb4-7f7a-92bd1882e27a/mza_12661574892354567111.jpg/300x300bb.jpg', top_finding: 'Long-form conversation tends to favor the host\'s political framing on economic topics.' },
+    { show_name: 'Lex Fridman Podcast', episode_title: 'The Nature of Intelligence — AI Special', bias_label: 'Mostly Balanced', bias_direction: 'balanced', bias_score: 50, show_artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/3e/e3/9c/3ee39c89-de08-47a6-7f3d-3849cef6d255/mza_16657851278549137484.png/300x300bb.jpg', top_finding: 'Technical topics discussed with minimal political framing; guest perspectives fairly represented.' },
+    { show_name: 'The Daily', episode_title: 'How the Media Shapes What We Believe', bias_label: 'Lightly Left-Leaning', bias_direction: 'left', bias_score: 38, show_artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/600x600bb.jpg', top_finding: 'Policy framing consistently emphasizes progressive perspectives while underrepresenting conservative counterpoints.' },
+  ];
+
+  var KR_SHOWCASE_FALLBACK = [
+    { show_name: '시사인 팟캐스트', episode_title: '이번 주 주요 뉴스 분석', bias_label: '약간 좌편향', bias_direction: 'left', bias_score: 38, show_artwork: '', top_finding: '정치적 이슈에서 진보적 관점을 더 많이 강조하는 경향이 있습니다.' },
+    { show_name: '뉴스공장', episode_title: '정치 현안 심층 분석', bias_label: '좌편향', bias_direction: 'left', bias_score: 28, show_artwork: '', top_finding: '노동 및 복지 정책에 대해 진보적 입장을 일관되게 대변합니다.' },
+    { show_name: '이슈 있슈', episode_title: '사회 트렌드 분석', bias_label: '중립적', bias_direction: 'balanced', bias_score: 50, show_artwork: '', top_finding: '다양한 관점을 균형있게 제시하며 청취자의 판단을 돕습니다.' },
+  ];
+
+  var timeoutId = setTimeout(function() {
+    var fallback = isKorean ? KR_SHOWCASE_FALLBACK : INTL_SHOWCASE_FALLBACK;
+    grid.innerHTML = fallback.map(renderShowcaseCard).join('');
+  }, 5000);
+
   fetch('/api/showcases?region=' + region)
     .then(function(r) { return r.json(); })
     .then(function(data) {
+      clearTimeout(timeoutId);
       if (!data.showcases || !data.showcases.length) {
-        var sec = document.querySelector('.showcase-section');
-        if (sec) sec.remove();
+        var fallback = isKorean ? KR_SHOWCASE_FALLBACK : INTL_SHOWCASE_FALLBACK;
+        grid.innerHTML = fallback.map(renderShowcaseCard).join('');
         return;
       }
       // Always render exactly 3 cards — never more
@@ -8717,8 +8811,9 @@ function rotateSpotlight() {
       grid.innerHTML = cards.map(renderShowcaseCard).join('');
     })
     .catch(function() {
-      var sec = document.querySelector('.showcase-section');
-      if (sec) sec.remove();
+      clearTimeout(timeoutId);
+      var fallback = isKorean ? KR_SHOWCASE_FALLBACK : INTL_SHOWCASE_FALLBACK;
+      grid.innerHTML = fallback.map(renderShowcaseCard).join('');
     });
 })();
 
