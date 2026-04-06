@@ -831,6 +831,26 @@ body.player-on .lap{bottom:72px}
 /* ── SEARCH PANEL ── */
 .search-wrap{padding:16px 0}
 .search-row{display:flex;gap:8px;margin-bottom:12px}
+/* Search tab results */
+#search-tab-results{margin-top:4px}
+.str-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:520px){.str-grid{grid-template-columns:1fr}}
+.str-card{display:flex;gap:10px;align-items:flex-start;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:border-color .12s}
+.str-card:hover{border-color:var(--border2)}
+.str-art{width:52px;height:52px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.str-art-ph{width:52px;height:52px;border-radius:6px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;font-family:var(--ffs);flex-shrink:0}
+.str-info{flex:1;min-width:0}
+.str-name{font-size:13px;font-weight:600;line-height:1.3;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.str-host{font-size:11px;color:var(--text3);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.str-badge{display:inline-block;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:1px 5px;border-radius:2px;background:var(--bg3);color:var(--text3)}
+.str-badge.apple{background:#eff6ff;color:#1e40af}
+.str-badge.youtube{background:#fee2e2;color:#991b1b}
+.str-badge.podlens{background:#f0e9ff;color:#5b21b6}
+.str-empty{padding:32px 0;text-align:center;color:var(--text3);font-size:13px}
+.str-skel{display:flex;gap:10px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r)}
+.str-skel-art{width:52px;height:52px;border-radius:6px;flex-shrink:0}
+.str-skel-lines{flex:1;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.str-skel-line{height:10px;border-radius:3px}
 .search-input{flex:1;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);font-size:13px;color:var(--text);font-family:var(--ff);outline:none}
 .search-input:focus{border-color:var(--text)}
 .search-btn{padding:8px 16px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text);cursor:pointer;font-size:13px;font-family:var(--ff);font-weight:500;transition:all .1s}
@@ -2564,9 +2584,13 @@ body.light-mode,[data-theme="light"]{
       <div class="fp" id="fp-search-tab">
         <div class="search-wrap">
           <div class="search-row">
-            <input type="text" class="search-input" id="story-q" placeholder="Search episodes or shows&hellip;" onkeydown="if(event.key==='Enter')doSearch()"/>
+            <input type="text" class="search-input" id="story-q"
+              placeholder="Search podcasts or shows&hellip;"
+              autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+              onkeydown="if(event.key==='Enter')doSearch()"/>
             <button class="search-btn" onclick="doSearch()">Search</button>
           </div>
+          <div id="search-tab-results"></div>
         </div>
       </div>
     </div>
@@ -4057,6 +4081,7 @@ function showFeed(name) {
   if (ft) ft.classList.add('on');
   if (name === 'browse' && !_browseInit) { _browseInit = true; loadBrowse('news', null); }
   if (name === 'unheard') loadUnheard();
+  if (name === 'search-tab') { setTimeout(function(){ var inp = document.getElementById('story-q'); if(inp) inp.focus(); }, 50); }
 }
 
 function activeSb(el) {
@@ -4321,7 +4346,121 @@ function covBar(ep, dark) {
 }
 
 // ── STORIES ──
-function doSearch() { var q=document.getElementById('story-q').value.trim(); if(!q)return; setChip(document.querySelector('.t-chip')); fetchStories(q); }
+// ── SEARCH TAB ──────────────────────────────────────────────────────────────
+var _searchTabTimer = null;
+function doSearch() {
+  var q = (document.getElementById('story-q') || {}).value || '';
+  q = q.trim();
+  if (!q) return;
+  _execSearchTab(q);
+}
+
+// Debounced input handler — wire up after DOM ready
+(function wireSearchInput() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireSearchInput);
+    return;
+  }
+  var inp = document.getElementById('story-q');
+  if (!inp) return;
+  inp.addEventListener('input', function () {
+    var q = inp.value.trim();
+    clearTimeout(_searchTabTimer);
+    var resultsEl = document.getElementById('search-tab-results');
+    if (!q || q.length < 2) {
+      if (resultsEl) resultsEl.innerHTML = '';
+      return;
+    }
+    _showSearchSkeletons(resultsEl);
+    _searchTabTimer = setTimeout(function () { _execSearchTab(q); }, 350);
+  });
+})();
+
+function _showSearchSkeletons(container) {
+  if (!container) return;
+  var skel = '';
+  for (var i = 0; i < 6; i++) {
+    skel += '<div class="str-skel"><div class="str-skel-art skel"></div><div class="str-skel-lines"><div class="str-skel-line skel" style="width:70%"></div><div class="str-skel-line skel" style="width:45%"></div></div></div>';
+  }
+  container.innerHTML = '<div class="str-grid">' + skel + '</div>';
+}
+
+async function _execSearchTab(q) {
+  var container = document.getElementById('search-tab-results');
+  if (!container) return;
+  _showSearchSkeletons(container);
+  try {
+    var res = await fetch('/api/search?q=' + encodeURIComponent(q), { signal: AbortSignal.timeout(6000) });
+    if (!res.ok) throw new Error('api-failed');
+    var data = await res.json();
+    var shows = Array.isArray(data) ? data : (data.results || []);
+    _renderSearchTabResults(container, shows, q);
+  } catch (e) {
+    // Fallback: query iTunes directly
+    try {
+      var itRes = await fetch(
+        'https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&media=podcast&limit=12&entity=podcast',
+        { signal: AbortSignal.timeout(6000) }
+      );
+      var itData = await itRes.json();
+      var shows = (itData.results || []).map(function (p) {
+        return {
+          id: 'itunes-' + p.collectionId,
+          name: p.collectionName || '',
+          host: p.artistName || '',
+          artwork: p.artworkUrl100 || '',
+          feedUrl: p.feedUrl || '',
+          genre: p.primaryGenreName || '',
+          episodeCount: p.trackCount || 0,
+          source: 'apple',
+          collectionId: p.collectionId,
+        };
+      });
+      _renderSearchTabResults(container, shows, q);
+    } catch (fallbackErr) {
+      container.innerHTML = '<div class="str-empty">Search unavailable right now. Try again.</div>';
+    }
+  }
+}
+
+function _renderSearchTabResults(container, shows, q) {
+  if (!shows || !shows.length) {
+    container.innerHTML = '<div class="str-empty">No podcasts found for &ldquo;' + _escHtml(q) + '&rdquo;<br><span style="font-size:12px;color:var(--text3)">Try different keywords</span></div>';
+    return;
+  }
+  container.innerHTML = '<div class="str-grid">' + shows.slice(0, 12).map(function (s) {
+    var name = s.name || s.collectionName || '';
+    var host = s.host || s.artistName || '';
+    var art = s.artwork || s.artworkUrl100 || '';
+    var genre = s.genre || s.category || s.primaryGenreName || '';
+    var src = s.source || 'apple';
+    var srcLabel = src === 'youtube' ? 'YouTube' : src === 'podlens' ? 'Analyzed' : 'Apple';
+    var srcCls = src === 'youtube' ? 'youtube' : src === 'podlens' ? 'podlens' : 'apple';
+    var colId = s.collectionId || (s.id && s.id.toString().replace('itunes-', '')) || '';
+    var feedUrl = s.feedUrl || '';
+    var artHtml = art
+      ? '<img class="str-art" src="' + _escHtml(art) + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        + '<div class="str-art-ph" style="display:none">' + _escHtml(name.charAt(0).toUpperCase()) + '</div>'
+      : '<div class="str-art-ph">' + _escHtml(name.charAt(0).toUpperCase()) + '</div>';
+    // Click: navigate to show profile or open analyze
+    var clickJs = feedUrl
+      ? 'showView(\'show\');loadShowProfile(\'' + _escHtml(name).replace(/'/g, "\\'") + '\',\'' + feedUrl.replace(/'/g, "\\'") + '\')'
+      : s.channelId
+        ? 'showView(\'show\');loadShowProfile(\'' + s.channelId + '\',\'https://www.youtube.com/channel/' + s.channelId + '\')'
+        : colId
+          ? 'showView(\'show\');loadShowProfile(\'' + colId + '\',\'https://podcasts.apple.com/podcast/id' + colId + '\')'
+          : 'document.getElementById(\'url-input\').value=\'' + _escHtml(name).replace(/'/g, "\\'") + '\';showView(\'analyze\')';
+    return '<div class="str-card" onclick="' + clickJs + '">'
+      + artHtml
+      + '<div class="str-info">'
+      + '<div class="str-name">' + _escHtml(name) + '</div>'
+      + (host ? '<div class="str-host">' + _escHtml(host) + '</div>' : '')
+      + '<span class="str-badge ' + srcCls + '">' + srcLabel + '</span>'
+      + (genre ? ' <span class="str-badge">' + _escHtml(genre) + '</span>' : '')
+      + '</div>'
+      + '</div>';
+  }).join('') + '</div>';
+}
 async function fetchStories(query, region, lang) {
   _currentTopic = query;
   var loading=document.getElementById('feed-loading'), list=document.getElementById('story-list'), empty=document.getElementById('feed-empty'), hero=document.getElementById('hero-wrap');
