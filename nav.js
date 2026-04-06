@@ -61,14 +61,16 @@
     var wrap = document.createElement('div');
     wrap.className = 'pl-nav-auth';
     // App links
-    ['Discover|/','How it works|/how-it-works.html','Pricing|/pricing.html'].forEach(function(pair) {
+    ['Discover|/discover','How it works|/how-it-works.html','Pricing|/pricing.html'].forEach(function(pair) {
       var parts = pair.split('|');
       var a = document.createElement('a');
       a.className = 'pl-nav-link';
       a.href = parts[1];
       a.textContent = parts[0];
-      // Mark current page
-      if (window.location.pathname === parts[1] || (parts[1] !== '/' && window.location.pathname.includes(parts[1].replace('.html','')))) {
+      // Mark current page active
+      var p = window.location.pathname;
+      var isDiscover = parts[1] === '/discover' && (p === '/' || p === '/discover' || p === '/index.html');
+      if (isDiscover || (parts[1] !== '/discover' && (p === parts[1] || p.includes(parts[1].replace('.html',''))))) {
         a.classList.add('active');
       }
       wrap.appendChild(a);
@@ -93,7 +95,7 @@
 
     // Nav links
     var appLinks = [
-      { label: 'Discover', href: '/' },
+      { label: 'Discover', href: '/discover' },
       { label: 'Library',  href: '/library.html' },
       { label: 'Dashboard', href: '/dashboard.html' },
     ];
@@ -102,7 +104,8 @@
       a.className = 'pl-nav-link';
       a.href = lk.href;
       a.textContent = lk.label;
-      if (currentPath === lk.href || (lk.href !== '/' && currentPath.includes(lk.href.replace('.html','')))) {
+      var isDiscover = lk.href === '/discover' && (currentPath === '/' || currentPath === '/discover' || currentPath === '/index.html');
+      if (isDiscover || (lk.href !== '/discover' && (currentPath === lk.href || currentPath.includes(lk.href.replace('.html',''))))) {
         a.classList.add('active');
       }
       wrap.appendChild(a);

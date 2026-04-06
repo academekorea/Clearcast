@@ -4223,6 +4223,8 @@ async function loadForyouShows(region, user) {
     var data = await Promise.race([fetchPromise, timeoutPromise]);
     var html = '';
     if (data.sections && data.sections.trending && data.sections.trending.length) {
+      // Cache for trending grid reuse
+      window._foryouTrendingCache = data.sections.trending;
       var countryLabel = data.country === 'kr' ? '🇰🇷 한국 인기 팟캐스트' : '🔥 Trending Podcasts';
       html += '<div class="foryou-section"><div class="foryou-section-label">'+countryLabel+'</div><div class="foryou-grid">';
       html += data.sections.trending.slice(0, 6).map(function(s) {
@@ -8042,38 +8044,36 @@ var _tgCategory = 'all';
 // Map frontend pill values to backend genre keys
 var _genreKeyMap = {all:'all',news:'news',tech:'technology',technology:'technology',business:'business',society:'society',crime:'crime',comedy:'comedy',health:'health',sports:'sports',history:'history',science:'science'};
 
-async function loadTrendingGrid(category) {
+function loadTrendingGrid(category) {
   _tgCategory = category || 'all';
   var el = document.getElementById('tg-grid');
   if (!el) return;
-  el.innerHTML = [1,2,3].map(function(){
-    return '<div class="tg-card skel"><div class="tg-skel-art"></div><div class="tg-skel-line" style="width:80%;margin-bottom:8px"></div><div class="tg-skel-line" style="width:55%"></div></div>';
-  }).join('');
+  // Reuse cached For You trending data if available, else show curated shows immediately
+  if (window._foryouTrendingCache && window._foryouTrendingCache.length) {
+    _renderTrendingFromForYou(el, window._foryouTrendingCache);
+  } else {
+    _renderTrendingFallback(el);
+  }
+}
 
-  try {
-    var genre = _genreKeyMap[_tgCategory] || 'all';
-    var _tgRegion = (typeof isKoreanMode === 'function' && isKoreanMode()) ? 'ko-KR' : 'international';
-    var apiUrl = '/api/marketplace?category=' + encodeURIComponent(genre) + '&region=' + _tgRegion;
-    var data = await fetch(apiUrl, { signal: AbortSignal.timeout(8000) }).then(function(r){ return r.json(); });
-    var results = (data.podcasts || []).slice(0, 6);
-    if (!results.length) { _renderTrendingFallback(el); return; }
-    el.innerHTML = results.map(function(p) {
-      var art = p.artwork || '';
-      var name = p.name || '';
-      var artist = p.artist || '';
-      var feedUrl = p.feedUrl || '';
-      var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      var safeUrl = feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-      return '<div class="tg-card" onclick="' + (feedUrl ? 'showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')' : 'showView(\'analyze\')') + '">'
-        + '<div class="tg-art-wrap">' + (art ? '<img class="tg-art" src="' + art + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'&#127897;\'">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'
-        + '<div class="tg-card-body">'
-        + '<div class="tg-card-name">' + name + '</div>'
-        + '<div class="tg-card-artist">' + artist + '</div>'
-        + '<button class="tg-analyze-btn">Analyze &rarr;</button>'
-        + '</div>'
-        + '</div>';
-    }).join('');
-  } catch(e) { _renderTrendingFallback(el); }
+function _renderTrendingFromForYou(el, shows) {
+  el.innerHTML = shows.slice(0, 6).map(function(s) {
+    var art = s.artwork || '';
+    var name = s.name || '';
+    var artist = s.host || s.category || '';
+    var itunesId = s.itunesId || s.itunes_id || '';
+    var feedUrl = s.feedUrl || (itunesId ? 'https://podcasts.apple.com/podcast/id' + itunesId : '');
+    var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    var safeUrl = feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    return '<div class="tg-card" onclick="' + (feedUrl ? 'showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')' : 'showView(\'analyze\')') + '">'
+      + '<div class="tg-art-wrap">' + (art ? '<img class="tg-art" src="' + art + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'&#127897;\'">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'
+      + '<div class="tg-card-body">'
+      + '<div class="tg-card-name">' + name + '</div>'
+      + '<div class="tg-card-artist">' + artist + '</div>'
+      + '<button class="tg-analyze-btn">Analyze &rarr;</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
 }
 
 function _renderTrendingFallback(el) {
