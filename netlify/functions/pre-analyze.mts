@@ -77,6 +77,82 @@ async function triggerAnalysis(opts: {
   }
 }
 
+// ── Process analysis_queue items (Smart Queue) ───────────────────────────────
+async function processQueueItem(sb: any, item: any): Promise<void> {
+  // Mark as processing
+  await sb.from('analysis_queue')
+    .update({ status: 'processing', started_at: new Date().toISOString() })
+    .eq('id', item.id);
+
+  try {
+    const res = await fetch('https://podlens.app/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: item.episode_url,
+        showName: item.show_name,
+        episodeTitle: item.episode_title,
+        userId: item.user_id,
+        userPlan: item.tier,
+        isPreAnalysis: true,
+        skipLimitCheck: !item.counts_toward_limit,
+      }),
+      signal: AbortSignal.timeout(60000),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+
+    const jobId = data.jobId || data.id || null;
+    const analysisUrl = jobId ? `https://podlens.app/analysis/${jobId}` : 'https://podlens.app';
+
+    await sb.from('analysis_queue')
+      .update({
+        status: 'complete',
+        completed_at: new Date().toISOString(),
+        analysis_id: jobId,
+      })
+      .eq('id', item.id);
+
+    // In-app notification
+    await sb.from('notifications').insert({
+      user_id: item.user_id,
+      type: 'smart_queue_ready',
+      title: `Analysis ready: ${item.show_name}`,
+      body: item.episode_title || 'New episode analyzed',
+      url: jobId ? `/analysis/${jobId}` : '/',
+      read: false,
+      created_at: new Date().toISOString(),
+    }).catch(() => {});
+
+    // Email notification
+    const { data: user } = await sb.from('users').select('email, name').eq('id', item.user_id).maybeSingle();
+    if (user?.email) {
+      sendEmail({
+        to: user.email,
+        subject: `✅ Analysis ready: ${item.episode_title || item.show_name}`,
+        html: preAnalysisReadyEmail({
+          episodeTitle: item.episode_title || 'New episode',
+          showName: item.show_name,
+          biasLabel: data.biasLabel || 'Analysis complete',
+          leftPct: data.audioLean?.leftPct ?? 0,
+          centerPct: data.audioLean?.centerPct ?? 0,
+          rightPct: data.audioLean?.rightPct ?? 0,
+          topFinding: '',
+          analysisUrl,
+        }),
+      }).catch(() => {});
+    }
+
+    console.log(`[pre-analyze] Queue item complete: ${item.episode_title}`);
+  } catch (err: any) {
+    console.error(`[pre-analyze] Queue item failed:`, err?.message);
+    await sb.from('analysis_queue')
+      .update({ status: 'failed', error: err?.message || 'Unknown error' })
+      .eq('id', item.id);
+  }
+}
+
 export default async (req: Request) => {
   const sb = getSupabaseAdmin();
   if (!sb) return new Response('Supabase not configured', { status: 500 });
@@ -192,7 +268,40 @@ export default async (req: Request) => {
     return new Response(JSON.stringify({ error: e?.message }), { status: 500 });
   }
 
-  return new Response(JSON.stringify({ processed, errors, ts: new Date().toISOString() }), {
+  // ── Process analysis_queue (Smart Queue — all tiers including Creator) ──────
+  let qProcessed = 0;
+  let qErrors = 0;
+  try {
+    const { data: queueItems } = await sb
+      .from('analysis_queue')
+      .select('*')
+      .eq('status', 'pending')
+      .order('priority', { ascending: true })
+      .order('queued_at', { ascending: true })
+      .limit(10);
+
+    if (queueItems?.length) {
+      console.log(`[pre-analyze] Processing ${queueItems.length} queue items`);
+      for (const item of queueItems) {
+        try {
+          await processQueueItem(sb, item);
+          qProcessed++;
+        } catch {
+          qErrors++;
+        }
+      }
+    }
+  } catch (e: any) {
+    console.error('[pre-analyze] Queue processing error:', e?.message);
+  }
+
+  return new Response(JSON.stringify({
+    processed,
+    errors,
+    qProcessed,
+    qErrors,
+    ts: new Date().toISOString(),
+  }), {
     status: 200, headers: { 'Content-Type': 'application/json' },
   });
 };

@@ -401,13 +401,13 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
     <!-- NOTIFICATIONS -->
     <div class="tab-panel" id="tab-notifications">
 
-      <!-- Pre-Analysis Card -->
-      <div class="settings-card" id="pre-analysis-card">
+      <!-- Smart Queue Card -->
+      <div class="settings-card" id="smart-queue-card">
         <div class="card-head">
-          <h3>⚡ Pre-Analysis <span id="pre-analysis-tier-badge" style="font-size:11px;background:#0f2027;color:#fff;border-radius:2px;padding:2px 6px;vertical-align:middle;font-weight:600;margin-left:4px">Operator+</span></h3>
-          <p>We analyze new episodes before you listen. Your analysis is ready when you press play.</p>
+          <h3>⚡ Smart Queue <span style="font-size:11px;background:#0f2027;color:#fff;border-radius:2px;padding:2px 6px;vertical-align:middle;font-weight:600;margin-left:4px">Creator+</span></h3>
+          <p>New episodes from your followed shows are analyzed automatically. Analysis is waiting when you arrive.</p>
         </div>
-        <div class="card-body" id="pre-analysis-body">
+        <div class="card-body" id="smart-queue-body">
           <!-- rendered by JS -->
         </div>
       </div>
@@ -818,129 +818,180 @@ function renderMembershipStatus(u, plan) {
 
 init();
 
-// ── PRE-ANALYSIS UI ──────────────────────────────────────────────────────────
-var PRE_ANALYSIS_MAX = parseInt('5', 10); // PRE_ANALYSIS_MAX_SHOWS
+// ── SMART QUEUE UI ───────────────────────────────────────────────────────────
+var _sqData = null; // cached from API
 
-function renderPreAnalysis() {
+function renderSmartQueue(data) {
   var u = plUser();
-  var body = document.getElementById('pre-analysis-body');
+  var body = document.getElementById('smart-queue-body');
   if (!body) return;
   var plan = (u && u.plan || 'free').toLowerCase();
-  var isEligible = plan === 'operator' || plan === 'studio';
+  var isEligible = plan === 'creator' || plan === 'operator' || plan === 'studio';
 
   if (!isEligible) {
     body.innerHTML = '<div style="padding:12px;background:#f8f8f6;border-radius:6px;border:1px solid var(--border2)">'
-      + '<div style="font-size:13px;color:var(--text2);margin-bottom:10px">Pre-analysis automatically queues up new episodes from your followed shows so your analysis is waiting when you press play. Zero wait time.</div>'
-      + '<a href="/pricing.html" style="display:inline-block;background:#0f2027;color:#fff;padding:9px 18px;border-radius:4px;font-size:13px;font-weight:600;text-decoration:none">Upgrade to Operator →</a>'
+      + '<div style="font-size:13px;color:var(--text2);margin-bottom:10px">Smart Queue automatically analyzes new episodes from your followed shows before you even open the app. Analysis is waiting when you arrive — zero wait time.</div>'
+      + '<a href="/pricing.html" style="display:inline-block;background:#0f2027;color:#fff;padding:9px 18px;border-radius:4px;font-size:13px;font-weight:600;text-decoration:none">Upgrade to Creator →</a>'
       + '</div>';
     return;
   }
 
-  // Load followed shows from localStorage
-  var plu = {};
-  try { plu = JSON.parse(localStorage.getItem('podlens_user') || '{}'); } catch(e) {}
-  var allShows = plu.followedShows || [];
-  var preShows = (plu.preAnalysisShows || []).map(function(s){ return s.slug || s.show_slug || s; });
-  var maxShows = plan === 'studio' ? 999 : PRE_ANALYSIS_MAX;
+  var maxShows = plan === 'studio' ? 9999 : plan === 'operator' ? 20 : 5;
+  var isEnabled = data ? data.enabled : false;
+  var shows = data ? (data.shows || []) : [];
+  var sqCount = shows.filter(function(s){ return s.smart_queue; }).length;
 
-  var isEnabled = !!(plu.preAnalysisEnabled);
+  var limitNote = plan === 'creator'
+    ? 'Counts toward your 25 monthly analyses. Up to 5 shows.'
+    : 'Does not count toward your monthly limit. Unlimited shows.';
 
   var html = '<div class="toggle-row" style="margin-bottom:16px">'
-    + '<div class="toggle-info"><h4>Enable pre-analysis</h4><p>New episodes checked every hour. You\'ll be notified when analysis is ready.</p></div>'
-    + '<label class="toggle-switch"><input type="checkbox" id="toggle-preanalysis"' + (isEnabled ? ' checked' : '') + ' onchange="togglePreAnalysis(this.checked)"><div class="toggle-track"></div></label>'
+    + '<div class="toggle-info"><h4>Enable Smart Queue</h4><p>' + limitNote + '</p></div>'
+    + '<label class="toggle-switch"><input type="checkbox" id="sq-global-toggle"' + (isEnabled ? ' checked' : '') + ' onchange="toggleSmartQueueGlobal(this.checked)"><div class="toggle-track"></div></label>'
     + '</div>';
 
   if (isEnabled) {
-    html += '<div style="border-top:1px solid var(--border);padding-top:16px">'
-      + '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:10px">'
-      + 'Monitored Shows <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--text3)">(max ' + maxShows + ')</span>'
+    html += '<div style="border-top:1px solid var(--border);padding-top:16px">';
+
+    var headerRight = plan === 'creator'
+      ? '<span style="font-size:11px;color:var(--text3)">' + sqCount + '/5 shows</span>'
+      : '';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+      + '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Followed shows in Smart Queue</div>'
+      + headerRight
       + '</div>';
 
-    if (preShows.length === 0) {
-      html += '<div style="font-size:13px;color:var(--text3);margin-bottom:12px">No shows added yet. Add up to ' + maxShows + ' shows below.</div>';
+    if (shows.length === 0) {
+      html += '<div style="font-size:13px;color:var(--text3);padding:12px 0">No followed shows yet. <a href="/" style="color:var(--navy)">Follow shows from the discover tab →</a></div>';
+    } else {
+      shows.forEach(function(show) {
+        var sqOn = !!show.smart_queue;
+        var checkedAt = show.last_checked_at
+          ? 'Last checked ' + _relTime(show.last_checked_at)
+          : 'Not yet checked';
+        var showIdAttr = show.id ? 'data-show-id="' + _esc(show.id) + '"' : 'data-show-slug="' + _esc(show.show_slug || '') + '"';
+        html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">'
+          + (show.show_artwork ? '<img src="' + _esc(show.show_artwork) + '" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display=\'none\'">' : '<div style="width:36px;height:36px;border-radius:6px;background:var(--bg4);flex-shrink:0"></div>')
+          + '<div style="flex:1;min-width:0">'
+          + '<div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + _esc(show.show_name || 'Unknown Show') + '</div>'
+          + '<div style="font-size:11px;color:var(--text3)">' + checkedAt + '</div>'
+          + '</div>'
+          + '<label class="toggle-switch" style="flex-shrink:0"><input type="checkbox"' + (sqOn ? ' checked' : '') + ' ' + showIdAttr + ' onchange="toggleShowSmartQueue(this)"><div class="toggle-track"></div></label>'
+          + '</div>';
+      });
     }
 
-    // List monitored shows
-    allShows.filter(function(s){ return preShows.indexOf(s.show_slug || s.slug) > -1; }).forEach(function(s, i) {
-      html += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">'
-        + (s.show_artwork ? '<img src="' + _esc(s.show_artwork) + '" style="width:32px;height:32px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'">' : '')
-        + '<span style="flex:1;font-size:13px;font-weight:500">' + _esc(s.show_name || s.name || 'Unknown Show') + '</span>'
-        + '<button onclick="removePreShow(\'' + _esc(s.show_slug || s.slug || '') + '\')" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--text3);padding:0 4px" title="Remove">×</button>'
-        + '</div>';
-    });
-
-    // Add show button (if under limit)
-    if (preShows.length < maxShows) {
-      var notAdded = allShows.filter(function(s){ return preShows.indexOf(s.show_slug || s.slug) === -1; });
-      if (notAdded.length > 0) {
-        html += '<div style="margin-top:12px"><select id="pre-show-select" style="padding:8px 12px;border:1px solid var(--border2);border-radius:4px;font-size:13px;background:var(--bg2);color:var(--text);width:200px">'
-          + '<option value="">— Select a show —</option>'
-          + notAdded.map(function(s){ return '<option value="' + _esc(s.show_slug || s.slug || '') + '">' + _esc(s.show_name || s.name || 'Show') + '</option>'; }).join('')
-          + '</select>'
-          + '<button onclick="addPreShow()" style="margin-left:8px;padding:8px 16px;background:#0f2027;color:#fff;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:500">+ Add show</button>';
-
-        if (allShows.length === 0) {
-          html += '<div style="margin-top:8px;font-size:12px;color:var(--text3)">No followed shows yet. <a href="/" style="color:var(--text2)">Follow shows from the discover tab</a>.</div>';
-        }
-        html += '</div>';
-      }
-    }
-
-    html += '<div style="margin-top:12px;font-size:11px;color:var(--text3)">New episodes checked every hour. Up to ' + maxShows + ' shows monitored.</div>';
+    html += '<div style="margin-top:12px;font-size:11px;color:var(--text3)">New episodes checked every 6 hours. Analysis starts automatically.</div>';
     html += '</div>';
   }
 
   body.innerHTML = html;
 }
 
-function togglePreAnalysis(enabled) {
-  var plu = {};
-  try { plu = JSON.parse(localStorage.getItem('podlens_user') || '{}'); } catch(e) {}
-  plu.preAnalysisEnabled = enabled;
-  localStorage.setItem('podlens_user', JSON.stringify(plu));
-  renderPreAnalysis();
-  showSettingsToast(enabled ? '⚡ Pre-analysis enabled' : 'Pre-analysis disabled');
-  // Track event
+function _relTime(isoString) {
   try {
-    var u = plUser();
-    fetch('/api/log-event', { method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ event_type: 'pre_analysis_enabled', user_id: u && u.id, properties: { enabled: enabled } }) }).catch(function(){});
-  } catch(e) {}
+    var diff = Date.now() - new Date(isoString).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 60) return mins + 'm ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    return Math.floor(hrs / 24) + 'd ago';
+  } catch { return ''; }
 }
 
-function addPreShow() {
-  var sel = document.getElementById('pre-show-select');
-  if (!sel || !sel.value) return;
-  var slug = sel.value;
-  var plu = {};
-  try { plu = JSON.parse(localStorage.getItem('podlens_user') || '{}'); } catch(e) {}
-  var preShows = plu.preAnalysisShows || [];
-  if (!preShows.find(function(s){ return (s.slug || s.show_slug || s) === slug; })) {
-    // Find full show data
-    var allShows = plu.followedShows || [];
-    var show = allShows.find(function(s){ return (s.show_slug || s.slug) === slug; });
-    if (show) preShows.push({ slug: slug, show_name: show.show_name, feed_url: show.feed_url });
-    else preShows.push({ slug: slug });
+function loadSmartQueue() {
+  var u = plUser();
+  if (!u || !u.id) { renderSmartQueue(null); return; }
+  fetch('/api/smart-queue?userId=' + encodeURIComponent(u.id) + '&action=status')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      _sqData = d;
+      renderSmartQueue(d);
+    })
+    .catch(function(){ renderSmartQueue(null); });
+}
+
+function toggleSmartQueueGlobal(enabled) {
+  var u = plUser();
+  if (!u || !u.id) return;
+  var toggle = document.getElementById('sq-global-toggle');
+  fetch('/api/smart-queue?userId=' + encodeURIComponent(u.id), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'toggle_user', enabled: enabled })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.ok) {
+      if (_sqData) _sqData.enabled = enabled;
+      renderSmartQueue(_sqData);
+      showSettingsToast(enabled ? '⚡ Smart Queue enabled' : 'Smart Queue disabled');
+    } else {
+      if (toggle) toggle.checked = !enabled;
+      showSettingsToast('Failed to update', 'error');
+    }
+  })
+  .catch(function(){
+    if (toggle) toggle.checked = !enabled;
+    showSettingsToast('Network error', 'error');
+  });
+}
+
+function toggleShowSmartQueue(checkbox) {
+  var u = plUser();
+  if (!u || !u.id) return;
+  var enabled = checkbox.checked;
+  var showId = checkbox.getAttribute('data-show-id') || null;
+  var showSlug = checkbox.getAttribute('data-show-slug') || null;
+
+  // Creator limit: count current checked boxes
+  if (enabled && u.plan === 'creator') {
+    var checkedCount = document.querySelectorAll('#smart-queue-body input[type=checkbox]:checked').length;
+    // -1 because the current one is already checked in the DOM
+    if (checkedCount > 5) {
+      checkbox.checked = false;
+      showSettingsToast('Creator allows up to 5 Smart Queue shows. Upgrade to Operator for unlimited.', 'warning');
+      return;
+    }
   }
-  plu.preAnalysisShows = preShows;
-  localStorage.setItem('podlens_user', JSON.stringify(plu));
-  renderPreAnalysis();
+
+  fetch('/api/smart-queue?userId=' + encodeURIComponent(u.id), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'toggle_show', enabled: enabled, showId: showId, showSlug: showSlug })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.limitReached) {
+      checkbox.checked = false;
+      showSettingsToast('Creator allows up to 5 Smart Queue shows. Upgrade to Operator for unlimited.', 'warning');
+    } else if (!d.ok) {
+      checkbox.checked = !enabled;
+      showSettingsToast('Failed to update', 'error');
+    } else {
+      showSettingsToast(enabled ? 'Added to Smart Queue' : 'Removed from Smart Queue');
+      // Update local cache
+      if (_sqData && _sqData.shows) {
+        _sqData.shows.forEach(function(s) {
+          if ((showId && s.id === showId) || (showSlug && s.show_slug === showSlug)) {
+            s.smart_queue = enabled;
+          }
+        });
+      }
+    }
+  })
+  .catch(function(){
+    checkbox.checked = !enabled;
+    showSettingsToast('Network error', 'error');
+  });
 }
 
-function removePreShow(slug) {
-  var plu = {};
-  try { plu = JSON.parse(localStorage.getItem('podlens_user') || '{}'); } catch(e) {}
-  plu.preAnalysisShows = (plu.preAnalysisShows || []).filter(function(s){ return (s.slug || s.show_slug || s) !== slug; });
-  localStorage.setItem('podlens_user', JSON.stringify(plu));
-  renderPreAnalysis();
-}
-
-// Render pre-analysis when notifications tab opens
+// Load Smart Queue data when notifications tab opens
 var _origShowTab = window.showTab_by_id;
 if (typeof _origShowTab === 'function') {
   window.showTab_by_id = function(id) {
     _origShowTab.call(this, id);
-    if (id === 'notifications') renderPreAnalysis();
+    if (id === 'notifications') loadSmartQueue();
   };
 }
 
