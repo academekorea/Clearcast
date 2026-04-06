@@ -99,7 +99,8 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
 <link rel="canonical" href="https://podlens.app/extension">
 <script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()</script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
-<script src="/nav.js" defer></script>
+<script src="/js/utils.js" defer></script>
+    <script src="/nav.js" defer></script>
 </head>
 <body>
 <nav>

@@ -6,10 +6,8 @@ import { sbUpdate } from "./lib/supabase.js";
  * analysis-status — polling endpoint for analysis progress.
  * Frontend calls /api/analysis-status?job_id=X&plan=Y instead of /api/status/:jobId.
  *
- * Reads blob cache first. If job is already complete/error, returns immediately
- * without hitting Claude. Otherwise proxies to /api/status/:jobId (which has
- * timeout = 26s configured in netlify.toml) to trigger the Claude processing,
- * then updates Supabase analysis_queue progress.
+ * Fast path: returns immediately from blob cache for complete/error jobs.
+ * Slow path: proxies to /api/status/:jobId (timeout=26s) to trigger Claude processing.
  */
 export default async (req: Request) => {
   const url = new URL(req.url);
@@ -26,29 +24,47 @@ export default async (req: Request) => {
   try {
     // Fast path: check blob cache for completed/errored jobs
     const store = getStore("podlens-jobs");
-    const cached = await store.get(jobId, { type: "json" }) as any;
-
-    if (!cached) {
-      return new Response(JSON.stringify({ error: "Job not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+    let cached: any = null;
+    try {
+      cached = await store.get(jobId, { type: "json" });
+    } catch {
+      // Blob read failure is non-fatal — proceed to status proxy
     }
 
-    // Return immediately from cache if final state (no Claude call needed)
-    if (cached.status === "complete" || cached.status === "error") {
+    // Return immediately from cache if in final state (avoids Claude call)
+    if (cached?.status === "complete" || cached?.status === "error") {
       return new Response(JSON.stringify(cached), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // Still in progress — proxy to /api/status/:jobId which runs Claude
-    const siteUrl = Netlify.env.get("URL") || "https://podlens.netlify.app";
+    // Still in progress — call /api/status/:jobId to run Claude if transcript is ready.
+    // Use request origin so this always targets the same deploy (preview or prod).
+    const origin = new URL(req.url).origin;
     const statusRes = await fetch(
-      `${siteUrl}/api/status/${encodeURIComponent(jobId)}?plan=${encodeURIComponent(userPlan)}`,
-      { signal: AbortSignal.timeout(25000) }
+      `${origin}/api/status/${encodeURIComponent(jobId)}?plan=${encodeURIComponent(userPlan)}`,
+      { signal: AbortSignal.timeout(24000) }
     );
+
+    // Guard: detect HTML error pages before JSON.parse
+    const ct = statusRes.headers.get("content-type") || "";
+    if (!ct.includes("application/json")) {
+      const preview = await statusRes.text().then((t) => t.slice(0, 100));
+      console.error(`analysis-status: /api/status returned non-JSON (${statusRes.status}): ${preview}`);
+      // Return the cached blob state rather than propagating the error
+      if (cached) {
+        return new Response(JSON.stringify(cached), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(
+        JSON.stringify({ status: "error", error: "Status service unavailable. Please try again." }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     const data = await statusRes.json();
 
     // Update Supabase analysis_queue progress (fire-and-forget)
@@ -79,9 +95,15 @@ export default async (req: Request) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (e: any) {
-    console.error("analysis-status error:", e);
+    const isTimeout = e?.name === "TimeoutError" || e?.name === "AbortError";
+    console.error("analysis-status error:", e?.name, e?.message);
     return new Response(
-      JSON.stringify({ status: "error", error: e?.message || "Unknown error" }),
+      JSON.stringify({
+        status: "error",
+        error: isTimeout
+          ? "Analysis is taking longer than expected. Please try again."
+          : e?.message || "Unknown error",
+      }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   }

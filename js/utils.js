@@ -85,6 +85,65 @@ function extractSocialHandles(text) {
   return links;
 }
 
+/**
+ * safeFetch — fetch wrapper that always returns JSON.
+ * Detects HTML error pages (Netlify 404/500 pages) and throws a clean error.
+ * Use instead of fetch(url).then(r => r.json()) everywhere.
+ *
+ * @param {string} url
+ * @param {RequestInit} [options]
+ * @returns {Promise<any>} parsed JSON
+ */
+async function safeFetch(url, options) {
+  var res;
+  try {
+    res = await fetch(url, options || {});
+  } catch (netErr) {
+    throw new Error('network_error:' + (netErr.message || 'Failed to fetch'));
+  }
+
+  var text;
+  try { text = await res.text(); } catch { text = ''; }
+
+  // HTML response = function crashed or path not found
+  if (text.trimStart().charAt(0) === '<') {
+    console.error('[safeFetch] Got HTML from:', url, '(' + res.status + ')', text.slice(0, 150));
+    throw new Error('server_html:' + res.status);
+  }
+
+  var data;
+  try { data = JSON.parse(text); } catch (parseErr) {
+    console.error('[safeFetch] JSON parse error from:', url, text.slice(0, 150));
+    throw new Error('json_parse:' + parseErr.message);
+  }
+
+  return data;
+}
+
+/**
+ * friendlyError — maps raw error messages to user-facing copy.
+ * Logs the real error to console so it's still visible for debugging.
+ *
+ * @param {Error|string} err
+ * @param {string} [context] — optional context label for the console log
+ * @returns {string} user-friendly message
+ */
+function friendlyError(err, context) {
+  var msg = (err && err.message) ? err.message : String(err || '');
+  if (context) console.error('[' + context + ']', msg);
+  if (/server_html|Unexpected token|JSON/.test(msg))
+    return 'Our analysis server had an issue. Please try again in a moment.';
+  if (/network_error|Failed to fetch|NetworkError/.test(msg))
+    return 'Connection error. Check your internet and try again.';
+  if (/404/.test(msg))
+    return 'This episode URL could not be found.';
+  if (/TimeoutError|AbortError|timeout|408/.test(msg))
+    return 'Analysis is taking longer than usual. Please try again.';
+  if (/limit_reached/.test(msg))
+    return msg; // already user-friendly from backend
+  return msg || 'Something went wrong. Please try a different URL.';
+}
+
 // Make available globally
 if (typeof window !== 'undefined') {
   window.safeVal = safeVal;
@@ -93,4 +152,6 @@ if (typeof window !== 'undefined') {
   window.escHtml = escHtml;
   window.avatarColor = avatarColor;
   window.extractSocialHandles = extractSocialHandles;
+  window.safeFetch = safeFetch;
+  window.friendlyError = friendlyError;
 }
