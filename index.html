@@ -1032,6 +1032,10 @@ body.player-on .lap{bottom:72px}
 .sp-empty{text-align:center;padding:40px 16px;color:var(--text2)}
 .sp-empty h3{font-family:var(--ffs);font-size:20px;font-weight:600;margin-bottom:8px}
 .sp-empty p{font-size:13px;color:var(--text3);line-height:1.5;margin-bottom:16px}
+.sp-host-card{display:flex;gap:14px;align-items:flex-start}
+.sp-host-avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.sp-host-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px}
+.sp-host-bio{font-size:13px;color:var(--text2);line-height:1.6}
 .sp-compare-trigger{width:100%;padding:14px;border:1px dashed var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:13px;font-family:var(--ff);transition:all .1s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px}
 .sp-compare-trigger:hover{border-color:var(--text);color:var(--text);background:var(--bg3)}
 .sp-compare-search{border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;padding:14px;background:var(--bg2);margin-top:12px}
@@ -4040,7 +4044,7 @@ async function loadBrowse(genre, el) {
   grid.style.display='none'; loading.style.display='flex'; grid.innerHTML='';
   try {
     var _region = (typeof isKoreanMode === 'function' && isKoreanMode()) ? 'ko-KR' : 'international';
-    var data=await fetch('/api/marketplace?genre='+genre+'&region='+_region).then(function(r){return r.json();});
+    var data=await fetch('/api/marketplace?category='+encodeURIComponent(genre)+'&region='+_region).then(function(r){return r.json();});
     var shows=data.podcasts||[];
     if (!shows.length) { loading.innerHTML='<p style="color:var(--text3)">Could not load. Try another category.</p>'; return; }
     grid.innerHTML=shows.map(function(p){
@@ -5549,6 +5553,21 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       html+='<button id="sp-desc-toggle" onclick="(function(){var s=document.getElementById(\'sp-desc-short\'),f=document.getElementById(\'sp-desc-full\'),b=document.getElementById(\'sp-desc-toggle\');var shown=f.style.display!==\'none\';s.style.display=shown?\'block\':\'none\';f.style.display=shown?\'none\':\'block\';b.textContent=shown?\'Read more\':\'Show less\';})()" style="margin-top:8px;background:none;border:none;color:var(--navy);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);padding:0">Read more</button>';
     }
     html+='</div>';
+  }
+
+  // HOST SECTION
+  if (hostName) {
+    var hostInitial = (hostName.charAt(0) || '?').toUpperCase();
+    var hostBio = data.episodeCount > 0
+      ? 'Host of ' + displayName + '. Based on ' + data.episodeCount + ' analyzed episode' + (data.episodeCount !== 1 ? 's' : '') + ' on Podlens.'
+      : 'Host of ' + displayName + '. Analyze episodes to build an intelligence profile of ' + hostName + '\u2019s hosting style, bias patterns, and trust score.';
+    html += '<div class="sp-section">';
+    html += '<div class="sp-section-lbl">Host</div>';
+    html += '<div class="sp-host-card">';
+    html += '<div class="sp-host-avatar">' + hostInitial + '</div>';
+    html += '<div><div class="sp-host-name">' + _escHtml(hostName) + '</div>';
+    html += '<div class="sp-host-bio">' + _escHtml(hostBio) + '</div></div>';
+    html += '</div></div>';
   }
 
   if (data.episodeCount===0 && !yt) {
@@ -7384,7 +7403,7 @@ function filterTrendingGrid(category, btn) {
 
 var _tgCategory = 'all';
 // Map frontend pill values to backend genre keys
-var _genreKeyMap = {all:'all',news:'news',tech:'technology',business:'business',society:'society',crime:'true-crime',comedy:'comedy',health:'health',sports:'sports'};
+var _genreKeyMap = {all:'all',news:'news',tech:'technology',technology:'technology',business:'business',society:'society',crime:'crime',comedy:'comedy',health:'health',sports:'sports',history:'history',science:'science'};
 
 async function loadTrendingGrid(category) {
   _tgCategory = category || 'all';
@@ -7396,7 +7415,8 @@ async function loadTrendingGrid(category) {
 
   try {
     var genre = _genreKeyMap[_tgCategory] || 'all';
-    var apiUrl = '/api/marketplace?genre=' + encodeURIComponent(genre);
+    var _tgRegion = (typeof isKoreanMode === 'function' && isKoreanMode()) ? 'ko-KR' : 'international';
+    var apiUrl = '/api/marketplace?category=' + encodeURIComponent(genre) + '&region=' + _tgRegion;
     var data = await fetch(apiUrl, { signal: AbortSignal.timeout(8000) }).then(function(r){ return r.json(); });
     var results = (data.podcasts || []).slice(0, 6);
     if (!results.length) { _renderTrendingFallback(el); return; }
