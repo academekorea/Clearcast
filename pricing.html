@@ -252,28 +252,77 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
 
 <div class="compare">
   <h2>Feature comparison</h2>
+
+  <!-- Critical features — always visible -->
   <table class="compare-table">
     <thead>
       <tr><th>Feature</th><th>Listener</th><th>Creator</th><th>Operator</th><th>Studio</th></tr>
     </thead>
     <tbody>
-      <tr><td>Analyses per month</td><td>4</td><td>Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
-      <tr><td>Bias label (always visible)</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Monthly analyses</td><td>4</td><td>25</td><td>100</td><td>&infin;</td></tr>
       <tr><td>Full bias scores</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Audio briefing player</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Bias fingerprint</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Weekly Bias Digest email</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Unheard (stories you're missing)</td><td class="check-n">&mdash;</td><td>1 of 5</td><td class="check-y">All 5</td><td class="check-y">All 5</td></tr>
-      <tr><td>Source citations</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Deep analysis (full transcript)</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Show comparison</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Chrome extension</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>CSV export</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Team seats (5)</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Bulk scanner (20 URLs)</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>API access</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Audio briefings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Live subtitles</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Voice assistant</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Team seats</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>5</td></tr>
     </tbody>
   </table>
+
+  <!-- Expandable full breakdown -->
+  <div style="text-align:center;margin-top:20px">
+    <button id="features-toggle" onclick="toggleAllFeatures()" style="background:none;border:1px solid var(--border2);border-radius:4px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff);transition:background .15s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
+      See all features &#8595;
+    </button>
+  </div>
+
+  <div id="features-full" style="display:none;margin-top:24px">
+    <table class="compare-table">
+      <thead>
+        <tr><th></th><th>Listener</th><th>Creator</th><th>Operator</th><th>Studio</th></tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Analysis</td></tr>
+        <tr><td>Monthly analyses</td><td>4</td><td>25</td><td>100</td><td>&infin;</td></tr>
+        <tr><td>Full bias scores</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Host trust score</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Source citations</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Bulk scanner (20 URLs)</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Audio</td></tr>
+        <tr><td>Audio briefings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Live subtitles</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Translation</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Voice assistant</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Korean dubbing</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Premium voices</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Content</td></tr>
+        <tr><td>Unheard stories</td><td class="check-n">&mdash;</td><td>1 / week</td><td>All 5</td><td>All 5</td></tr>
+        <tr><td>Full transcript</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Bias fingerprint</td><td>Limited</td><td>Full</td><td>Full</td><td>Full</td></tr>
+        <tr><td>Weekly digest</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Library</td></tr>
+        <tr><td>Connected platforms</td><td>1</td><td>All</td><td>All</td><td>All</td></tr>
+        <tr><td>Pre-analysis</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>5 shows</td><td>&infin;</td></tr>
+        <tr><td>Show alerts</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Exports</td></tr>
+        <tr><td>Basic PDF</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Full PDF</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>CSV export</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Team</td></tr>
+        <tr><td>Team seats</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>5</td></tr>
+        <tr><td>Usage dashboard</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+      </tbody>
+    </table>
+    <div style="text-align:center;margin-top:16px">
+      <button onclick="toggleAllFeatures()" style="background:none;border:1px solid var(--border2);border-radius:4px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
+        Hide details &#8593;
+      </button>
+    </div>
+  </div>
 </div>
 
 <footer>
@@ -380,6 +429,15 @@ function startCheckout(planName) {
   .then(function(r){ return r.json(); })
   .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })
   .catch(function(){ alert('Could not start checkout. Please try again.'); });
+}
+
+function toggleAllFeatures() {
+  var el = document.getElementById('features-full');
+  var btn = document.getElementById('features-toggle');
+  if (!el || !btn) return;
+  var open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  btn.innerHTML = open ? 'See all features &#8595;' : 'Hide details &#8593;';
 }
 
 function toggleMode(){var isNowLight=document.body.classList.toggle('light-mode');document.documentElement.setAttribute('data-theme',isNowLight?'light':'dark');document.querySelectorAll('.mode-toggle').forEach(function(btn){btn.textContent=isNowLight?'☀️':'🌙';});localStorage.setItem('podlens-mode',isNowLight?'light':'dark');localStorage.setItem('pl-theme',isNowLight?'light':'dark');}
