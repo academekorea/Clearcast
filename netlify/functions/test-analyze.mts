@@ -65,7 +65,7 @@ export default async (req: Request) => {
   try {
     const key = Netlify.env.get("ASSEMBLYAI_API_KEY");
     if (key && realAudioUrl) {
-      const requestBody = { audio_url: realAudioUrl, speech_models: { best: {} } };
+      const requestBody = { audio_url: realAudioUrl };
       diagnostics.assemblyai_request_body = requestBody;
       const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
         method: "POST",
