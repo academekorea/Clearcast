@@ -21,9 +21,10 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="alternate" hreflang="en" href="https://podlens.app/">
-<link rel="alternate" hreflang="ko" href="https://podlens.app/kr">
-<link rel="alternate" hreflang="x-default" href="https://podlens.app/">
+<!-- KOREAN HREFLANG — stripped by edge function for non-Korean users -->
+<link rel="alternate" hreflang="ko" href="https://podlens.app/kr" data-korean-only="true">
+<link rel="alternate" hreflang="en" href="https://podlens.app" data-korean-only="false">
+<link rel="alternate" hreflang="x-default" href="https://podlens.app">
 <link rel="stylesheet" media="print" href="/print.css">
 <script>
 // Region detection — runs before any content loads
@@ -2805,15 +2806,26 @@ function setPlUser(obj) {
   }
 }
 
+function shouldShowKoreanOption() {
+  var savedRegion = localStorage.getItem('podlens-region');
+  if (savedRegion === 'international') return false;
+  if (savedRegion === 'ko-KR') return true;
+  if (window.location.pathname.startsWith('/kr')) return true;
+  if (navigator.language && navigator.language.startsWith('ko')) return true;
+  return false;
+}
+
 function renderLangSwitch() {
   var wrap = document.getElementById('lang-switch-wrap');
   if (!wrap) return;
-  var region = localStorage.getItem('podlens-region') || 'international';
-  var isKr = region === 'ko-KR' || window.location.pathname.startsWith('/kr');
-  if (isKr) {
+  var isKrPath = window.location.pathname.startsWith('/kr');
+  var isKoreanUser = shouldShowKoreanOption();
+  if (isKrPath) {
     wrap.innerHTML = '<button class="lang-switch" onclick="switchToInternational()">🌐 English</button>';
-  } else {
+  } else if (isKoreanUser) {
     wrap.innerHTML = '<a class="lang-switch" href="/kr">🌐 한국어</a>';
+  } else {
+    wrap.innerHTML = '';
   }
 }
 

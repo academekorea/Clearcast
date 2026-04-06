@@ -9,144 +9,150 @@ export default async (
     const url = new URL(req.url)
     const path = url.pathname
 
-    // --- STEP 1: SKIP NON-PAGE REQUESTS ---
-    // Never run geo logic on assets or API calls
+    // Skip non-HTML requests immediately
     if (
       path.startsWith('/api/') ||
       path.startsWith('/.netlify/') ||
       path.startsWith('/kr') ||
-      path.startsWith('/images/') ||
-      path.startsWith('/icons/') ||
-      path.startsWith('/fonts/') ||
-      path === '/robots.txt' ||
-      path === '/sitemap.xml' ||
-      path === '/manifest.json' ||
-      path === '/sw.js' ||
-      path === '/favicon.ico' ||
-      /\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|
-         woff|woff2|ttf|otf|eot|map|json|xml|txt|
-         mp3|mp4|pdf|zip)$/i.test(path)
+      /\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|woff|woff2|ttf|map|json|xml|txt|mp3|mp4|pdf|zip|html)$/i.test(path)
     ) {
       return context.next()
     }
 
-    // --- STEP 2: READ SAVED REGION PREFERENCE ---
-    // If user has explicitly chosen a region
-    // respect it and never override
+    // Read saved region preference from cookie
     let savedRegion = ''
     try {
-      const cookieHeader =
+      const cookies =
         req.headers.get('cookie') ?? ''
-      for (const part of cookieHeader.split(';')) {
-        const trimmed = part.trim()
-        if (trimmed.startsWith('podlens-region=')) {
-          savedRegion = trimmed.slice(15).trim()
+      for (const part of cookies.split(';')) {
+        const t = part.trim()
+        if (t.startsWith('podlens-region=')) {
+          savedRegion = t.slice(15).trim()
           break
         }
       }
-    } catch {
-      // Cookie unavailable — continue
-    }
+    } catch { /* ignore */ }
 
     // User explicitly chose international
-    // Never redirect them
+    // Serve page without Korean signals
     if (savedRegion === 'international') {
-      return context.next()
+      const res = await context.next()
+      return removeKoreanSignals(res)
     }
 
     // User explicitly chose Korean
-    // Always redirect to /kr
+    // Redirect to /kr
     if (savedRegion === 'ko-KR') {
-      const dest = `${url.origin}/kr${path}${
-        url.search
-      }`
       return new Response(null, {
         status: 302,
-        headers: { Location: dest }
+        headers: {
+          Location: `${url.origin}/kr${path}${url.search}`
+        }
       })
     }
 
-    // --- STEP 3: GEO DETECTION ---
-    // Netlify provides country code via context.geo
-    // This is populated at the CDN edge
-    let countryCode = ''
+    // Detect country from Netlify geo
+    let country = ''
     try {
-      // context.geo is Netlify's built-in
-      // geo-IP detection — very reliable
-      // but must be accessed safely
       const geo = context.geo
       if (geo && typeof geo === 'object') {
-        const country = (geo as Record<string, unknown>).country
-        if (country && typeof country === 'object') {
-          const code = (country as Record<string, unknown>).code
+        const c = (
+          geo as Record<string, unknown>
+        ).country
+        if (c && typeof c === 'object') {
+          const code = (
+            c as Record<string, unknown>
+          ).code
           if (typeof code === 'string') {
-            countryCode = code.toLowerCase()
+            country = code.toLowerCase()
           }
         }
       }
-    } catch {
-      // Geo unavailable on this request
-      // (happens in local dev, some edge cases)
-      // Continue without redirecting
-    }
+    } catch { /* geo unavailable */ }
 
-    // --- STEP 4: REDIRECT KOREAN USERS ---
-    if (countryCode === 'kr') {
-      const dest = `${url.origin}/kr${path}${
-        url.search
-      }`
-
-      // Set cookie so we remember this preference
-      // and don't redirect again on every page
+    // Korean user → redirect to /kr
+    if (country === 'kr') {
       const headers = new Headers()
-      headers.set('Location', dest)
-      headers.set(
-        'Set-Cookie',
+      headers.set('Location',
+        `${url.origin}/kr${path}${url.search}`)
+      headers.set('Set-Cookie',
         'podlens-region=ko-KR; Path=/; ' +
-        'Max-Age=2592000; SameSite=Lax; Secure'
-      )
-
-      return new Response(null, {
-        status: 302,
-        headers
-      })
+        'Max-Age=2592000; SameSite=Lax; Secure')
+      return new Response(null,
+        { status: 302, headers })
     }
 
-    // --- STEP 5: ALL OTHER USERS ---
-    // Serve normally — no redirect
-    return context.next()
+    // Non-Korean user → serve page
+    // but strip Korean SEO signals from HTML
+    const res = await context.next()
+    return removeKoreanSignals(res)
 
   } catch (err) {
-    // ABSOLUTE SAFETY NET
-    // If anything above throws for any reason
-    // log it and serve the page normally
-    // Users must NEVER see a crash page
-    console.error(
-      '[geo-redirect] Unhandled error:',
-      err instanceof Error ? err.message : err
-    )
+    console.error('[geo-redirect]', err)
     return context.next()
   }
 }
 
+// Remove Korean hreflang + nav switcher
+// from HTML responses served to non-Korean users
+async function removeKoreanSignals(
+  res: Response
+): Promise<Response> {
+  try {
+    // Only process HTML responses
+    const ct = res.headers.get('content-type') ?? ''
+    if (!ct.includes('text/html')) {
+      return res
+    }
+
+    let html = await res.text()
+
+    // Remove Korean hreflang tags
+    html = html.replace(
+      /<link[^>]*hreflang="ko"[^>]*>/gi,
+      ''
+    )
+    html = html.replace(
+      /<link[^>]*hreflang="ko-KR"[^>]*>/gi,
+      ''
+    )
+
+    // Remove the /kr alternate link tag
+    html = html.replace(
+      /<link[^>]*href="https:\/\/podlens\.app\/kr[^"]*"[^>]*>/gi,
+      ''
+    )
+
+    // Hide the Korean language switcher in nav
+    html = html.replace(
+      /<[^>]*id="lang-switch-wrap"[^>]*>[\s\S]*?<\/[^>]+>/gi,
+      '<div id="lang-switch-wrap"></div>'
+    )
+
+    // Inline style fallback
+    html = html.replace(
+      /(<[^>]*(?:id="lang-switch-wrap"|class="[^"]*lang-switch[^"]*")[^>]*)(>)/gi,
+      '$1 style="display:none!important"$2'
+    )
+
+    return new Response(html, {
+      status: res.status,
+      statusText: res.statusText,
+      headers: res.headers
+    })
+
+  } catch {
+    // If HTML processing fails just return original
+    return res
+  }
+}
+
 export const config: Config = {
-  // Run on all page routes
   path: '/*',
-  // Never run on these paths
   excludedPath: [
     '/api/*',
     '/.netlify/*',
-    '/kr/*',
-    '/robots.txt',
-    '/sitemap.xml',
-    '/sitemap-kr.xml',
-    '/manifest.json',
-    '/sw.js',
-    '/favicon.ico',
-    '/og-image.png',
-    '/og-kr.png'
+    '/kr/*'
   ],
-  // CRITICAL: if function errors for any reason
-  // continue serving the page — never show crash
   onError: 'continue'
 }
