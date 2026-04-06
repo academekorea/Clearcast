@@ -234,6 +234,28 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .hrp-topic-lean{font-size:11px;color:rgba(255,255,255,.45);margin-left:auto;flex-shrink:0}
 .hrp-social{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:6px 14px;font-size:12px;color:rgba(255,255,255,.7)}
 .hrp-social strong{color:#fff;font-weight:600}
+/* Hero preview card */
+.hero-preview-card{display:flex;flex-direction:column;gap:0}
+.hpc-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
+.hpc-art{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;background:rgba(255,255,255,.1)}
+.hpc-meta{flex:1;min-width:0}
+.hpc-show{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px}
+.hpc-ep{font-size:14px;font-weight:600;color:#fff;line-height:1.3;margin-bottom:6px}
+.hpc-live-badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:2px 8px;border-radius:10px}
+.hpc-section-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
+.preview-bias-gradient{height:10px;border-radius:5px;background:linear-gradient(to right,#E24B4A 0%,#E24B4A 40%,#D1CFC9 40%,#D1CFC9 70%,#378ADD 70%,#378ADD 100%);position:relative;margin-bottom:8px}
+.preview-marker{position:absolute;top:-4px;width:3px;height:18px;background:#fff;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 6px rgba(0,0,0,.5)}
+.hpc-bias-labels{display:flex;gap:12px;font-size:11px;color:rgba(255,255,255,.65);margin-bottom:10px;flex-wrap:wrap}
+.hpc-lean-pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;background:rgba(226,75,74,.25);color:#f28b8b;margin-bottom:16px}
+.hpc-findings{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.hpc-finding{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:rgba(255,255,255,.75);line-height:1.4;position:relative}
+.hpc-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.hpc-finding-locked{opacity:.65}
+.hpc-blurred{filter:blur(4px);user-select:none;pointer-events:none;flex:1}
+.hpc-lock-icon{font-size:11px;flex-shrink:0;margin-left:auto}
+.hpc-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:rgba(255,255,255,.4)}
+.hpc-unlock-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:4px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:background .15s}
+.hpc-unlock-btn:hover{background:rgba(255,255,255,.2)}
 /* Bias snapshot widget */
 .bias-snap-loading{padding:8px 0}
 .bias-snap-section{margin-bottom:12px}
@@ -1883,15 +1905,6 @@ body.light-mode,[data-theme="light"]{
       <div class="hero-inner">
         <!-- Left 60%: heading + analyze bar -->
         <div class="hero-left">
-          <!-- Hero logo lockup — larger scale above headline -->
-          <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:28px">
-            <img src="/favicon.svg" alt="" width="44" height="44" style="border-radius:9px;flex-shrink:0">
-            <span style="width:1px;height:44px;background:var(--border2);flex-shrink:0"></span>
-            <span style="display:flex;flex-direction:column;gap:4px">
-              <span style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:400;letter-spacing:0;line-height:1;color:var(--navy)"><span style="font-weight:400">POD</span><span style="font-weight:700">LENS</span></span>
-              <span style="font-size:10px;color:var(--text3);letter-spacing:.02em;line-height:1.3" id="hero-lockup-tagline">Know what you&rsquo;re actually listening to</span>
-            </span>
-          </div>
           <div class="hero-kicker">Podcast Intelligence</div>
           <h1 class="hero-h" data-i18n="tagline">Know what you&rsquo;re<br><em>actually listening to.</em></h1>
           <p class="hero-sub" data-i18n="subTagline">See the bias and missing voices in every podcast you love.</p>
@@ -1925,14 +1938,49 @@ body.light-mode,[data-theme="light"]{
         </div>
         <!-- Right 40%: Bias Snapshot Today -->
         <div class="hero-right-panel" id="hero-stats-panel">
-          <div class="hrp-eyebrow" id="bias-snap-eyebrow">📊 BIAS SNAPSHOT</div>
-          <div id="bias-snapshot-widget">
-            <div class="bias-snap-loading">
-              <div class="skel" style="height:11px;width:60%;margin-bottom:8px"></div>
-              <div class="skel" style="height:13px;width:80%;margin-bottom:6px"></div>
-              <div class="skel" style="height:13px;width:70%;margin-bottom:16px"></div>
-              <div class="skel" style="height:11px;width:50%;margin-bottom:6px"></div>
-              <div class="skel" style="height:13px;width:75%;margin-bottom:6px"></div>
+          <div class="hero-preview-card">
+            <div class="hpc-header">
+              <img class="hpc-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/300x300bb.jpg" alt="" onerror="this.style.display='none'">
+              <div class="hpc-meta">
+                <div class="hpc-show">The Daily &middot; NYT</div>
+                <div class="hpc-ep">How the Media Shapes What We Believe</div>
+                <div class="hpc-live-badge">Live example</div>
+              </div>
+            </div>
+            <div class="hpc-section-label">Political Lean &mdash; how this episode frames issues</div>
+            <div class="preview-bias-gradient">
+              <div class="preview-marker" style="left:28%"></div>
+            </div>
+            <div class="hpc-bias-labels">
+              <span>🔴 62% left</span>
+              <span>⬜ 24% center</span>
+              <span>🔵 14% right</span>
+            </div>
+            <div class="hpc-lean-pill">Moderately biased</div>
+            <div class="hpc-section-label" style="margin-top:16px">Findings</div>
+            <div class="hpc-findings">
+              <div class="hpc-finding">
+                <span class="hpc-dot" style="background:#E24B4A"></span>
+                <span>Left-leaning framing in 4 of 5 key claims</span>
+              </div>
+              <div class="hpc-finding">
+                <span class="hpc-dot" style="background:#378ADD"></span>
+                <span>Conservative perspective absent from 3 segments</span>
+              </div>
+              <div class="hpc-finding hpc-finding-locked">
+                <span class="hpc-dot" style="background:rgba(255,255,255,.2)"></span>
+                <span class="hpc-blurred">Sponsor conflict in funding sources detected</span>
+                <span class="hpc-lock-icon">🔒</span>
+              </div>
+              <div class="hpc-finding hpc-finding-locked">
+                <span class="hpc-dot" style="background:rgba(255,255,255,.2)"></span>
+                <span class="hpc-blurred">4 expert voices missing from this coverage</span>
+                <span class="hpc-lock-icon">🔒</span>
+              </div>
+            </div>
+            <div class="hpc-footer">
+              <span>2 findings visible free</span>
+              <button onclick="openModal('signup');return false" class="hpc-unlock-btn">See all findings &rarr;</button>
             </div>
           </div>
         </div>
@@ -6705,9 +6753,9 @@ function applyTranslations(lang) {
   if (sh && t.signupHeading) sh.textContent = t.signupHeading;
   var ss = document.getElementById('signup-subtext');
   if (ss && t.signupSub) ss.textContent = t.signupSub;
-  // Update logo lockup taglines
+  // Update logo lockup taglines (auth modal only)
   var logoTagline = t.logoTagline || i18n.en.logoTagline;
-  document.querySelectorAll('#nav-tagline,#hero-lockup-tagline').forEach(function(el) {
+  document.querySelectorAll('.pl-lockup-tagline').forEach(function(el) {
     el.textContent = logoTagline;
   });
   // Hero connect buttons
