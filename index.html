@@ -21,7 +21,37 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
+<link rel="alternate" hreflang="en" href="https://podlens.app/">
+<link rel="alternate" hreflang="ko" href="https://podlens.app/kr">
+<link rel="alternate" hreflang="x-default" href="https://podlens.app/">
 <link rel="stylesheet" media="print" href="/print.css">
+<script>
+// Region detection — runs before any content loads
+;(function() {
+  var path = window.location.pathname;
+  var isKrPath = path.startsWith('/kr');
+  var savedRegion = localStorage.getItem('podlens-region');
+  if (isKrPath) {
+    localStorage.setItem('podlens-region', 'ko-KR');
+    document.documentElement.lang = 'ko';
+    document.documentElement.dataset.region = 'ko-KR';
+    return;
+  }
+  if (savedRegion) {
+    document.documentElement.dataset.region = savedRegion;
+    if (savedRegion === 'ko-KR') document.documentElement.lang = 'ko';
+    return;
+  }
+  // No preference: detect from browser language
+  var browserLang = navigator.language || '';
+  if (browserLang.startsWith('ko')) {
+    localStorage.setItem('podlens-region', 'ko-KR');
+    window.location.replace('/kr' + path + window.location.search);
+    return;
+  }
+  document.documentElement.dataset.region = 'international';
+})();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -137,6 +167,8 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .nav-login-btn:hover{background:var(--bg3)}
 .nav-signup-btn{padding:7px 14px;font-size:13px;border:1px solid var(--text);border-radius:var(--r);background:transparent;color:var(--text);cursor:pointer;font-family:var(--ff);font-weight:500;transition:all .1s}
 .nav-signup-btn:hover{background:var(--text);color:var(--bg)}
+.lang-switch{font-size:.8rem;color:var(--text2);text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid var(--border2);transition:border-color .15s,color .15s;white-space:nowrap;cursor:pointer;background:none;font-family:var(--ff)}
+.lang-switch:hover{border-color:var(--navy);color:var(--text)}
 .nav-avatar-btn{background:none;border:none;cursor:pointer;padding:0;border-radius:50%;transition:transform .15s;flex-shrink:0}
 .nav-avatar-btn:hover{transform:scale(1.05)}
 .nav-avatar-img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);display:block}
@@ -1714,6 +1746,7 @@ body.light-mode,[data-theme="light"]{
   </div>
   <div class="nav-r">
     <button class="mode-toggle" id="mode-toggle-btn" onclick="toggleMode()" aria-label="Toggle dark/light mode">🌙</button>
+    <span id="lang-switch-wrap"></span>
     <div id="nav-auth-area" style="display:contents"><!-- rendered by renderNavAuth() --></div>
   </div>
 </nav>
@@ -2770,6 +2803,24 @@ function setPlUser(obj) {
     try { if (window.posthog) posthog.reset(); } catch(e) {}
     try { if (window.Sentry) Sentry.setUser(null); } catch(e) {}
   }
+}
+
+function renderLangSwitch() {
+  var wrap = document.getElementById('lang-switch-wrap');
+  if (!wrap) return;
+  var region = localStorage.getItem('podlens-region') || 'international';
+  var isKr = region === 'ko-KR' || window.location.pathname.startsWith('/kr');
+  if (isKr) {
+    wrap.innerHTML = '<button class="lang-switch" onclick="switchToInternational()">🌐 English</button>';
+  } else {
+    wrap.innerHTML = '<a class="lang-switch" href="/kr">🌐 한국어</a>';
+  }
+}
+
+function switchToInternational() {
+  localStorage.setItem('podlens-region', 'international');
+  document.cookie = 'podlens-region=international; path=/; max-age=2592000; SameSite=Lax';
+  window.location.href = '/';
 }
 
 function renderNavAuth() {
@@ -7197,6 +7248,7 @@ function renderProfileEmptyState(el) {
 enforcePlanRules();
 if (plUser()) document.body.classList.add('authenticated');
 renderNavAuth();
+renderLangSwitch();
 // Apply region, translations, Korean mode
 updateRegionUI();
 applyTranslations(_settings.lang);
