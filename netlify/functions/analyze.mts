@@ -1,6 +1,11 @@
 import type { Config } from "@netlify/functions";
 import { createClient } from "@supabase/supabase-js";
 
+function isValidUUID(str: any): boolean {
+  if (!str) return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
 export default async (req: Request) => {
   const headers = {
     "Content-Type": "application/json",
@@ -73,7 +78,7 @@ export default async (req: Request) => {
 
     const { error: insertError } = await supabase.from("analysis_queue").insert({
       id: jobId,
-      user_id: userId || null,
+      user_id: isValidUUID(userId) ? userId : null,
       episode_url: audioUrl,
       show_name: showTitle,
       episode_title: epTitle,
