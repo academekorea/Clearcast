@@ -4676,20 +4676,93 @@ function isRss(u) {
   return u.match(/\.(xml|rss)(\?|$)/i)||u.match(/\/feed/i)||u.match(/feeds\./i)||u.match(/\/podcast\.xml/i)||u.match(/buzzsprout\.com\/\d+\.rss/i)||u.match(/simplecast\.com\/rss/i);
 }
 
+// Returns { type, hostname, itunesId? } or null if URL is invalid
+function detectUrlType(u) {
+  var parsed;
+  try { parsed = new URL(u); } catch(e) { return null; }
+  if (!parsed.hostname) return null;
+  var hostname = parsed.hostname.replace(/^www\./, '');
+
+  // YouTube — single video vs channel/playlist
+  if (/(?:youtube\.com|youtu\.be|music\.youtube\.com|podcasts\.youtube\.com)/.test(hostname)) {
+    var isVideo = /(?:\/watch\?|youtu\.be\/[a-zA-Z0-9_-]{11})/.test(u);
+    return { type: isVideo ? 'youtube_video' : 'youtube_channel', hostname: 'YouTube' };
+  }
+
+  // Apple Podcasts — extract iTunes ID for direct feed lookup
+  if (/podcasts\.apple\.com/.test(hostname)) {
+    var idMatch = u.match(/\/id(\d+)/);
+    return { type: 'apple_podcasts', hostname: 'Apple Podcasts', itunesId: idMatch ? idMatch[1] : null };
+  }
+
+  // Direct audio file
+  if (/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(u)) {
+    return { type: 'audio_file', hostname: hostname };
+  }
+
+  // RSS / feed URL
+  if (/\.(xml|rss)(\?|$)/i.test(u) || /\/feed/i.test(u) || /\/rss/i.test(u) || /feeds\./.test(hostname)) {
+    return { type: 'rss_feed', hostname: hostname };
+  }
+
+  // Spotify episode
+  if (/open\.spotify\.com/.test(hostname) && /\/episode\//.test(u)) {
+    return { type: 'spotify_episode', hostname: 'Spotify' };
+  }
+
+  // Everything else — direct podcast site, attempt feed discovery in backend
+  return { type: 'direct', hostname: hostname };
+}
+
+async function _routeApplePodcasts(appleUrl, itunesId) {
+  var btn = document.getElementById('go-btn');
+  btn.disabled = true; btn.textContent = 'Loading\u2026';
+  try {
+    var d = await fetch('https://itunes.apple.com/lookup?id=' + encodeURIComponent(itunesId) + '&entity=podcast', { signal: AbortSignal.timeout(5000) }).then(function(r){ return r.json(); });
+    var result = (d.results || [])[0];
+    if (result && result.feedUrl) {
+      btn.disabled = false; btn.textContent = 'Analyze';
+      await loadEpisodes(result.feedUrl);
+      return;
+    }
+  } catch(e) {}
+  btn.disabled = false; btn.textContent = 'Analyze';
+  startAnalysis(appleUrl);
+}
+
 async function handleAnalyze() {
-  var u=document.getElementById('url-input').value.trim();
-  if (!u) { document.getElementById('url-input').focus(); return; }
-  if (!u.startsWith('http')) u='https://'+u;
-  document.getElementById('url-input').value=u;
+  var raw = document.getElementById('url-input').value.trim();
+  if (!raw) { document.getElementById('url-input').focus(); return; }
+
+  // Normalize — prepend https:// if no protocol
+  if (!raw.startsWith('http://') && !raw.startsWith('https://')) raw = 'https://' + raw;
+  document.getElementById('url-input').value = raw;
+
+  // Validate — must be a parseable URL with a real hostname
+  var urlInfo = detectUrlType(raw);
+  if (!urlInfo) {
+    showView('analyze');
+    showAnalyzeErr('Please enter a valid URL — paste a YouTube link, RSS feed, Apple Podcasts URL, or direct audio link.');
+    return;
+  }
+
   if (!plUser()) {
-    _pendingAnalyze = { url: u, epTitle: '', showName: '' };
+    _pendingAnalyze = { url: raw, epTitle: '', showName: '' };
     openSignupGate();
     return;
   }
   if (checkAnalysisLimit()) return;
-  if (isEpisodeUrl(u)) startAnalysis(u);
-  else if (isRss(u)) await loadEpisodes(u);
-  else startAnalysis(u);
+
+  // Route based on URL type
+  if (urlInfo.type === 'apple_podcasts' && urlInfo.itunesId) {
+    showView('analyze');
+    await _routeApplePodcasts(raw, urlInfo.itunesId);
+  } else if (urlInfo.type === 'rss_feed') {
+    await loadEpisodes(raw);
+  } else {
+    // youtube_video, youtube_channel, audio_file, spotify_episode, direct
+    startAnalysis(raw);
+  }
 }
 
 async function loadEpisodes(feedUrl) {
