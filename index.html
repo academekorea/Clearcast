@@ -4911,7 +4911,7 @@ function pollStatus(jobId, audioUrl) {
   lafAddStep(si, false);
   _poll=setInterval(async function(){
     try {
-      var _statusPlan=(getPlUser()||{}).plan||'free';
+      var _statusPlan=(plUser()||{}).plan||'free';
       var d=await safeFetch('/api/analysis-status?job_id='+encodeURIComponent(jobId)+'&plan='+encodeURIComponent(_statusPlan));
       if (d.status==='partial'&&!shownPartial) {
         lafCompleteStep(si);
@@ -6385,7 +6385,7 @@ function viewAnalysis(jobId) {
   document.getElementById('loading').classList.add('on');
   document.getElementById('atabs').classList.remove('on');
   document.querySelectorAll('.apanel').forEach(function(p){p.classList.remove('on');});
-  var _rePlan=(getPlUser()||{}).plan||'free';
+  var _rePlan=(plUser()||{}).plan||'free';
   fetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_rePlan)).then(function(r){return r.json();}).then(function(d){
     document.getElementById('loading').classList.remove('on');
     if (d.status==='complete') { document.getElementById('atabs').classList.add('on'); document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on'); document.getElementById('apanel-results').classList.add('on'); renderResults(d); }
@@ -8945,7 +8945,7 @@ function rotateSpotlight() {
 
   function _lapPoll() {
     if (!_lap.jobId) return;
-    var _lapPlan=(getPlUser()||{}).plan||'free';
+    var _lapPlan=(plUser()||{}).plan||'free';
     fetch('/api/status/' + _lap.jobId + '?plan=' + encodeURIComponent(_lapPlan))
       .then(function(r) { return r.json(); })
       .then(function(data) {

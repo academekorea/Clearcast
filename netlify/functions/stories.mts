@@ -28,7 +28,7 @@ export default async (req: Request) => {
   if (!apiKey) {
     return new Response(
       JSON.stringify({ error: "YouTube API not configured", results: [] }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -122,9 +122,10 @@ export default async (req: Request) => {
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
+    console.error("[stories] error:", msg);
     return new Response(
       JSON.stringify({ error: msg, results: [] }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } }
     );
   }
 };
