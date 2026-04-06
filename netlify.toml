@@ -157,3 +157,8 @@
   from = "/api/restore-blob-cache"
   to = "/.netlify/functions/restore-blob-cache"
   status = 200
+
+[[redirects]]
+  from = "/api/search"
+  to = "/.netlify/functions/search"
+  status = 200

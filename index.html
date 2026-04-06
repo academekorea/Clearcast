@@ -396,6 +396,7 @@ body.player-on .lap{bottom:72px}
 .sr-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sr-meta{font-size:12px;color:var(--text3);margin-top:2px}
 .sr-action{padding:5px 12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap;flex-shrink:0}
+.sr-analyzed{border-left:3px solid #6366F1;padding-left:9px;background:rgba(99,102,241,.04)}
 /* Trending card extended styles */
 .tg-art-wrap{width:64px;height:64px;flex-shrink:0}
 .tg-card-body{flex:1;min-width:0}
@@ -6795,7 +6796,7 @@ function closeSearchOverlay() {
 }
 
 var _searchFilter = 'all';
-var _searchResults = [];
+var _searchResults = { results: [], _query: '' };
 var _searchTimer = null;
 
 function setSearchFilter(filter, btn) {
@@ -6809,11 +6810,11 @@ function doOverlaySearch(query, immediate) {
   if (_searchTimer) clearTimeout(_searchTimer);
   var q = (query || '').trim();
   if (!q) {
-    document.getElementById('search-overlay-results').innerHTML = '';
-    _searchResults = [];
+    document.getElementById('search-overlay-results').innerHTML = '<div class="search-empty" style="padding-top:60px"><strong>Start typing to search</strong>Podcasts, episodes, and topics in the Podlens database</div>';
+    _searchResults = { results: [], _query: '' };
     return;
   }
-  var delay = immediate ? 0 : 340;
+  var delay = immediate ? 0 : 300;
   _searchTimer = setTimeout(function() { _execOverlaySearch(q); }, delay);
 }
 
@@ -6822,76 +6823,103 @@ async function _execOverlaySearch(q) {
   if (!el) return;
   el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px"><div class="feed-spin" style="margin:0 auto 10px"></div>Searching&hellip;</div>';
   try {
-    var store = (_settings && _settings.store) || 'us';
-    var url = 'https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&media=podcast&entity=podcastAndEpisode&limit=12&country=' + store;
-    var data = await fetch(url, { signal: AbortSignal.timeout(7000) }).then(function(r){ return r.json(); });
-    var results = (data.results || []);
-    // Separate shows from episodes — iTunes: shows have kind='podcast', episodes have kind='podcast-episode'
-    var shows = results.filter(function(r){ return r.kind === 'podcast' || r.wrapperType === 'track' && r.kind !== 'podcast-episode'; });
-    var episodes = results.filter(function(r){ return r.kind === 'podcast-episode'; });
-    _searchResults = { shows: shows, episodes: episodes, all: results, _query: q };
+    var user = plUser();
+    var region = (_settings && _settings.region) || (_settings && _settings.store) || 'us';
+    var apiUrl = '/api/search?q=' + encodeURIComponent(q) + '&region=' + encodeURIComponent(region) + (user ? '&userId=' + encodeURIComponent(user.id || '') : '');
+    var data = await fetch(apiUrl, { signal: AbortSignal.timeout(9000) }).then(function(r){ return r.json(); });
+    _searchResults = { results: data.results || [], _query: q };
     renderSearchResults();
   } catch(e) {
-    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Search failed. Try again.</div>';
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Search unavailable. Try again.</div>';
   }
+}
+
+function _srBiasFilter(r) {
+  var s = r.biasScore;
+  if (s == null) return false;
+  if (_searchFilter === 'balanced') return s >= 40 && s <= 60;
+  if (_searchFilter === 'lightly') return (s > 30 && s < 40) || (s > 60 && s < 70);
+  if (_searchFilter === 'heavily') return s <= 30 || s >= 70;
+  return true;
 }
 
 function renderSearchResults() {
   var el = document.getElementById('search-overlay-results');
-  if (!el || !_searchResults.shows) return;
-  var shows = _searchResults.shows || [];
-  var episodes = _searchResults.episodes || [];
-  var html = '';
+  if (!el || !_searchResults.results) return;
+  var results = _searchResults.results || [];
+  var q = _searchResults._query || '';
 
-  if (!shows.length && !episodes.length) {
-    var q2 = (_searchResults._query || '').replace(/'/g, "\\'");
-    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">'
-      + 'No results found.'
-      + '<div style="margin-top:12px;font-size:12px">Can\'t find it? <button class="recovery-btn" style="font-size:12px;margin-left:4px" onclick="closeSearchOverlay();document.getElementById(\'url-input\').value=\''+q2+'\';showView(\'analyze\')">Paste a URL instead →</button></div>'
-      + '</div>';
-    return;
-  }
-
-  if (_searchFilter === 'all' || _searchFilter === 'shows') {
-    if (shows.length) {
-      html += '<div class="sr-section-label">Shows</div>';
-      html += shows.slice(0, 6).map(function(r) {
-        var art = r.artworkUrl100 || r.artworkUrl60 || '';
-        var name = r.collectionName || r.trackName || '';
-        var artist = r.artistName || '';
-        var feedUrl = r.feedUrl || '';
-        var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        var safeUrl = feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        var safeName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        var safeArt = art.replace(/'/g, "\\'");
-        return '<div class="sr-row" onclick="closeSearchOverlay();'
-          + (feedUrl ? 'showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')' : 'document.getElementById(\'url-input\').value=\'' + safeName + '\';showView(\'analyze\')')
-          + '">'
-          + (art ? '<img class="sr-art" src="' + art + '" alt="" onerror="this.style.display=\'none\'">' : '<div class="sr-art" style="display:flex;align-items:center;justify-content:center;font-size:18px">&#127897;</div>')
-          + '<div class="sr-info"><div class="sr-name">' + name + '</div><div class="sr-meta">' + (artist || '') + '</div></div>'
-          + '<button class="sr-action">Analyze &rarr;</button>'
-          + '</div>';
-      }).join('');
+  // Apply bias filter
+  var filtered = results;
+  var filterNote = '';
+  if (_searchFilter !== 'all') {
+    var biasMatches = results.filter(_srBiasFilter);
+    if (biasMatches.length) {
+      filtered = biasMatches;
+    } else {
+      filtered = results;
+      filterNote = '<div style="font-size:12px;color:var(--text3);margin-bottom:12px;padding:8px 12px;background:var(--bg2);border-radius:var(--r)">Showing all results — these haven\'t been analyzed yet. Analyze an episode to see bias scores.</div>';
     }
   }
 
-  if ((_searchFilter === 'all' || _searchFilter === 'episodes') && episodes.length) {
-    html += '<div class="sr-section-label" style="margin-top:16px">Episodes</div>';
-    html += episodes.slice(0, 4).map(function(r) {
-      var art = r.artworkUrl160 || r.artworkUrl100 || '';
-      var title = r.trackName || '';
-      var show = r.collectionName || '';
-      var epUrl = r.episodeUrl || r.trackViewUrl || '';
-      var safeEp = epUrl.replace(/"/g, '&quot;');
-      return '<div class="sr-row" onclick="closeSearchOverlay();document.getElementById(\'url-input\').value=\'' + safeEp.replace(/'/g, "\\'") + '\';showView(\'analyze\')">'
-        + (art ? '<img class="sr-art" src="' + art + '" alt="" onerror="this.style.display=\'none\'">' : '<div class="sr-art" style="display:flex;align-items:center;justify-content:center;font-size:14px">&#9654;</div>')
-        + '<div class="sr-info"><div class="sr-name">' + title + '</div><div class="sr-meta">' + show + '</div></div>'
-        + '<button class="sr-action">Analyze &rarr;</button>'
-        + '</div>';
-    }).join('');
+  if (!filtered.length) {
+    el.innerHTML = '<div class="search-empty">'
+      + '<strong>No results for &ldquo;' + _escHtml(q) + '&rdquo;</strong>'
+      + '<div style="margin-top:8px;font-size:13px">Try searching on YouTube or Apple Podcasts</div>'
+      + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">'
+      + '<a class="search-empty-btn" href="https://www.youtube.com/results?search_query=' + encodeURIComponent(q + ' podcast') + '" target="_blank" rel="noopener">Search YouTube →</a>'
+      + '<a class="search-empty-btn" style="background:var(--bg3);color:var(--text);border:1px solid var(--border2)" href="https://podcasts.apple.com/search?term=' + encodeURIComponent(q) + '" target="_blank" rel="noopener">Search Apple →</a>'
+      + '</div>'
+      + '<div style="margin-top:20px;font-size:12px;color:var(--text3)">Or paste a URL directly:</div>'
+      + '<div style="margin-top:8px;display:flex;gap:8px">'
+      + '<input id="sr-url-fallback" style="flex:1;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);color:var(--text);font-size:13px;font-family:var(--ff)" placeholder="Paste YouTube, RSS, or podcast URL\u2026">'
+      + '<button class="sr-action" onclick="var v=document.getElementById(\'sr-url-fallback\').value.trim();if(v){closeSearchOverlay();document.getElementById(\'url-input\').value=v;showView(\'analyze\')}">Analyze →</button>'
+      + '</div></div>';
+    return;
   }
 
-  el.innerHTML = html || '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">No results found.</div>';
+  var html = filterNote;
+  html += filtered.slice(0, 12).map(function(r) {
+    var name = r.name || '';
+    var host = r.host || '';
+    var art = r.artwork || '';
+    var isLib = r.source === 'library';
+    var isPL = r.source === 'podlens';
+    var isYT = r.source === 'youtube';
+
+    // Source badge
+    var badge = isLib
+      ? '<span style="font-size:10px;background:#10B981;color:#fff;border-radius:3px;padding:2px 6px;white-space:nowrap;flex-shrink:0">Your library</span>'
+      : isPL
+        ? '<span style="font-size:10px;background:#6366F1;color:#fff;border-radius:3px;padding:2px 6px;white-space:nowrap;flex-shrink:0">Analyzed</span>'
+        : isYT
+          ? '<span style="font-size:10px;background:#FF0000;color:#fff;border-radius:3px;padding:2px 6px;white-space:nowrap;flex-shrink:0">YouTube</span>'
+          : '<span style="font-size:10px;background:var(--bg3);color:var(--text3);border-radius:3px;padding:2px 6px;white-space:nowrap;flex-shrink:0">Apple</span>';
+
+    var biasPill = r.biasLabel ? '<span style="font-size:10px;color:var(--text3);margin-left:4px">' + _escHtml(r.biasLabel) + '</span>' : '';
+
+    // Click action
+    var clickAction;
+    if (r.feedUrl) {
+      var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      clickAction = 'closeSearchOverlay();showView(\'show\');loadShowProfile(\'' + slug.replace(/'/g,"\\'") + '\',\'' + r.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;') + '\')';
+    } else if (r.channelId) {
+      clickAction = 'closeSearchOverlay();showView(\'show\');loadShowProfile(\'' + r.channelId.replace(/'/g,"\\'") + '\',\'https://www.youtube.com/channel/' + r.channelId.replace(/'/g,"\\'") + '\')';
+    } else {
+      clickAction = 'closeSearchOverlay();document.getElementById(\'url-input\').value=\'' + name.replace(/'/g,"\\'") + '\';showView(\'analyze\')';
+    }
+
+    var rowCls = 'sr-row' + (isPL ? ' sr-analyzed' : '');
+    return '<div class="' + rowCls + '" onclick="' + clickAction + '">'
+      + (art ? '<img class="sr-art" src="' + _escHtml(art) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="sr-art" style="display:flex;align-items:center;justify-content:center;font-size:18px">🎙️</div>')
+      + '<div class="sr-info" style="flex:1;min-width:0"><div class="sr-name">' + _escHtml(name) + '</div>'
+      + '<div class="sr-meta">' + _escHtml(host) + biasPill + '</div></div>'
+      + badge
+      + '<button class="sr-action" onclick="event.stopPropagation();' + clickAction + '">Analyze →</button>'
+      + '</div>';
+  }).join('');
+
+  el.innerHTML = html;
 }
 
 // Close overlay on backdrop click
