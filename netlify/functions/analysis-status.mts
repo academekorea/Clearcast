@@ -1,92 +1,51 @@
 import type { Config } from "@netlify/functions";
-import { getStore } from "@netlify/blobs";
+import { createClient } from "@supabase/supabase-js";
 
-/**
- * analysis-status — simple polling endpoint.
- * Frontend polls GET /api/analysis-status?job_id=X&plan=Y
- * Returns current status from blob. No internal HTTP calls.
- */
 export default async (req: Request) => {
-  const url = new URL(req.url);
-  const jobId = url.searchParams.get("job_id");
-  const userPlan = url.searchParams.get("plan") || "free";
-
-  if (!jobId) {
-    return new Response(JSON.stringify({ error: "job_id required" }), {
-      status: 400, headers: { "Content-Type": "application/json" },
-    });
-  }
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
 
   try {
-    const store = getStore("podlens-jobs");
-    const job = await store.get(jobId, { type: "json" }) as any;
+    const url = new URL(req.url);
+    const jobId = url.searchParams.get("job_id");
 
-    if (!job) {
-      return new Response(JSON.stringify({ error: "Job not found", status: "error" }), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
+    if (!jobId) {
+      return new Response(JSON.stringify({ error: "No job_id" }), { status: 400, headers });
     }
 
-    const p = (userPlan || "free").toLowerCase();
-    const isCreatorPlus = ["creator", "operator", "studio", "trial"].includes(p);
-    const isOperatorPlus = ["operator", "studio"].includes(p);
-
-    // Complete — return full gated result with analysis_id for redirect
-    if (job.status === "complete") {
-      let result = { ...job, analysis_id: jobId };
-      if (!isCreatorPlus) {
-        result = {
-          ...result,
-          audioLean: result.audioLean ? { leftPct: null, centerPct: null, rightPct: null, basis: null, citations: [], _locked: true } : null,
-          keyQuotes: [], flags: [], missingVoices: [], sponsorConflicts: [],
-          topicBreakdown: (result.topicBreakdown || []).slice(0, 3).map((t: any) => ({ topic: t.topic, percentage: null, lean: null })),
-        };
-      } else if (!isOperatorPlus) {
-        result = {
-          ...result,
-          flags: (result.flags || []).map((f: any) => ({ ...f, citations: [] })),
-          missingVoices: [], sponsorConflicts: [],
-        };
-      }
-      const { _transcript: _t, ...clean } = result;
-      return new Response(JSON.stringify(clean), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
+    const supabaseUrl = Netlify.env.get("SUPABASE_URL");
+    const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Supabase not configured");
     }
 
-    // Error
-    if (job.status === "error") {
-      return new Response(JSON.stringify({ status: "error", error: job.error || "Analysis failed" }), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data, error } = await supabase
+      .from("analysis_queue")
+      .select("id, status, analysis_id, error, show_name, episode_title")
+      .eq("id", jobId)
+      .single();
+
+    console.log("[status] Job:", jobId, "Status:", data?.status, "Error:", error?.message);
+
+    if (error || !data) {
+      return new Response(
+        JSON.stringify({ error: "Job not found", jobId }),
+        { status: 200, headers }
+      );
     }
 
-    // Partial (Phase 1 done, Phase 2 running)
-    if (job.status === "partial") {
-      let result: any = { ...job, analysis_id: jobId };
-      if (!isCreatorPlus) {
-        result = {
-          ...result,
-          audioLean: result.audioLean ? { leftPct: null, centerPct: null, rightPct: null, basis: null, citations: [], _locked: true } : null,
-          keyQuotes: [], flags: [], missingVoices: [], sponsorConflicts: [],
-          topicBreakdown: (result.topicBreakdown || []).slice(0, 3).map((t: any) => ({ topic: t.topic, percentage: null, lean: null })),
-        };
-      }
-      const { _transcript: _t, ...clean } = result;
-      return new Response(JSON.stringify(clean), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
-    }
+    return new Response(JSON.stringify(data), { status: 200, headers });
 
-    // Still transcribing / transcribed — worker is running
-    return new Response(JSON.stringify({ status: job.status || "transcribing", jobId }), {
-      status: 200, headers: { "Content-Type": "application/json" },
-    });
-
-  } catch (e: any) {
-    return new Response(JSON.stringify({ status: "error", error: e?.message || "Unknown error" }), {
-      status: 200, headers: { "Content-Type": "application/json" },
-    });
+  } catch (err: any) {
+    console.error("[status] Error:", err?.message);
+    return new Response(
+      JSON.stringify({ error: err?.message || "Unknown error" }),
+      { status: 200, headers }
+    );
   }
 };
 

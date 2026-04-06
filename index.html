@@ -4906,51 +4906,53 @@ function lafCompleteStep(idx) {
 
 function pollStatus(jobId, audioUrl) {
   _currentJobId = jobId;
-  var si=0; var shownPartial=false;
+  console.log('[poll] Starting poll for job:', jobId);
   if (_poll) clearInterval(_poll);
-  lafAddStep(si, false);
-  _poll=setInterval(async function(){
+
+  var statusLabels = {
+    transcribing: 'Extracting audio transcript\u2026',
+    analyzing:    'Analyzing bias and framing\u2026',
+    complete:     'Analysis complete!',
+    error:        'Analysis failed.'
+  };
+
+  var safetyTimer = setTimeout(function() {
+    clearInterval(_poll);
+    console.error('[poll] Safety timeout reached after 10 minutes');
+    showAnalyzeErr('Analysis timed out. Please try again.'); resetBtn();
+  }, 600000);
+
+  _poll = setInterval(async function() {
     try {
-      var _statusPlan=(plUser()||{}).plan||'free';
-      var d=await safeFetch('/api/analysis-status?job_id='+encodeURIComponent(jobId)+'&plan='+encodeURIComponent(_statusPlan));
-      if (d.status==='partial'&&!shownPartial) {
-        lafCompleteStep(si);
-        si=Math.min(si+1,5);
-        lafAddStep(si, false);
-        shownPartial=true;
-        stopInsightCards();
-        document.getElementById('loading').classList.remove('on');
-        document.getElementById('atabs').classList.add('on');
-        document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
-        document.getElementById('apanel-results').classList.add('on');
-        d.url=audioUrl; renderResults(d);
-      } else if (d.status==='complete') {
-        clearInterval(_poll);
-        if (!shownPartial) {
-          for (var k=0;k<=5;k++) { if (document.getElementById('laf-step-'+k)) lafCompleteStep(k); else lafAddStep(k,true); }
-        }
-        lafAddStep(6, true);
-        var progEl=document.getElementById('laf-progress'); if (progEl) progEl.style.width='100%';
-        document.getElementById('loading').classList.remove('on');
-        document.getElementById('atabs').classList.add('on');
-        document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
-        document.getElementById('apanel-results').classList.add('on');
-        resetBtn(); d.url=audioUrl;
-        stopInsightCards();
-        if (!shownPartial) trackAnalysis(d);
-        renderResults(d);
-        renderTranscriptHighlights(d);
+      var res = await fetch('/api/analysis-status?job_id=' + encodeURIComponent(jobId));
+      var job = await res.json();
+      console.log('[poll] Status:', job.status, 'Analysis ID:', job.analysis_id);
+
+      // Update loading screen label
+      var ldTitle = document.getElementById('ld-title');
+      if (ldTitle && statusLabels[job.status]) ldTitle.textContent = statusLabels[job.status];
+
+      if (job.status === 'complete' && job.analysis_id) {
+        clearInterval(_poll); clearTimeout(safetyTimer);
         plToast('\u2705 Analysis complete');
-      } else if (d.status==='error') {
-        clearInterval(_poll); showAnalyzeErr(friendlyError(d.error||'Analysis failed.','pollStatus')); resetBtn();
-      } else {
-        // still pending — advance step
-        lafCompleteStep(si);
-        si=Math.min(si+1,4);
-        if (!document.getElementById('laf-step-'+si)) lafAddStep(si, false);
+        resetBtn();
+        window.location.href = '/?analysis=' + encodeURIComponent(job.analysis_id);
+        return;
       }
-    } catch(e){ console.error('[pollStatus]', e && e.message); /* keep polling on transient errors */ }
-  },4000);
+
+      if (job.status === 'error') {
+        clearInterval(_poll); clearTimeout(safetyTimer);
+        showAnalyzeErr(friendlyError(job.error || 'Analysis failed.', 'pollStatus')); resetBtn();
+        return;
+      }
+
+      // Still running — advance live feed step
+      if (typeof lafCompleteStep === 'function') lafCompleteStep(0);
+
+    } catch(e) {
+      console.error('[pollStatus]', e && e.message); // keep polling on transient errors
+    }
+  }, 5000);
 }
 
 async function startTranscriptionFallback(youtubeUrl, epTitle, showName) {
