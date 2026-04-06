@@ -6,18 +6,10 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
   included_files = ["netlify/functions/lib/**"]
-
-[functions."analyze"]
   timeout = 26
 
-[functions."start-analysis"]
-  timeout = 30
-
-[functions."status"]
-  timeout = 26
-
-[functions."analysis-status"]
-  timeout = 30
+[functions."analyze-worker-background"]
+  timeout = 900
 
 [[headers]]
   for = "/*"
@@ -228,6 +220,11 @@
 [[redirects]]
   from = "/api/geo-detect"
   to = "/.netlify/functions/geo-detect"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
   status = 200
 
 [[redirects]]

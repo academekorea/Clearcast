@@ -349,9 +349,10 @@ async function retryFromYouTubeChannelRss(
 async function submitToAssemblyAI(
   audioUrl: string,
   sourceUrl: string,
-  meta: { episodeTitle?: string | null; showName?: string | null; showSlug?: string | null; showArtwork?: string | null; showFeedUrl?: string | null },
+  meta: { episodeTitle?: string | null; showName?: string | null; showSlug?: string | null; showArtwork?: string | null; showFeedUrl?: string | null; userId?: string | null; userPlan?: string | null },
   store: ReturnType<typeof getStore>,
-  assemblyKey: string
+  assemblyKey: string,
+  origin: string
 ): Promise<Response> {
   const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
@@ -381,7 +382,16 @@ async function submitToAssemblyAI(
     episodeTitle: meta.episodeTitle || null, showName: meta.showName || null,
     showSlug: meta.showSlug || null, showArtwork: meta.showArtwork || null,
     showFeedUrl: meta.showFeedUrl || null,
+    userId: meta.userId || null, userPlan: meta.userPlan || "free",
   });
+
+  // Trigger background worker — returns 202 immediately, runs up to 15 min
+  fetch(`${origin}/.netlify/functions/analyze-worker-background`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ jobId: transcriptId }),
+    signal: AbortSignal.timeout(5000),
+  }).catch(e => console.error("[analyze] worker trigger failed:", e?.message));
 
   return new Response(JSON.stringify({ jobId: transcriptId, status: "transcribing" }), {
     status: 200, headers: { "Content-Type": "application/json" },
@@ -689,7 +699,15 @@ export default async (req: Request) => {
             episodeTitle: episodeTitle || null, showName: showName || null,
             showSlug: showSlug || null, showArtwork: showArtwork || null,
             showFeedUrl: showFeedUrl || null,
+            userId: userId || null, userPlan: userPlan || "free",
           });
+          // Trigger background worker
+          fetch(`${new URL(req.url).origin}/.netlify/functions/analyze-worker-background`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ jobId }),
+            signal: AbortSignal.timeout(5000),
+          }).catch(e => console.error("[analyze] worker trigger failed:", e?.message));
           return new Response(JSON.stringify({ jobId, status: "transcribed", cached: true }), {
             status: 200, headers: { "Content-Type": "application/json" },
           });
@@ -730,10 +748,18 @@ export default async (req: Request) => {
           episodeTitle: episodeTitle || pageData.videoTitle || null,
           showName: showName || pageData.channelTitle || null,
           showSlug: showSlug || null, showArtwork: showArtwork || null, showFeedUrl: showFeedUrl || null,
+          userId: userId || null, userPlan: userPlan || "free",
         });
         await ytCache.setJSON(videoId, {
           transcript: cap.text, duration: cap.duration, source, createdAt: Date.now(),
         });
+        // Trigger background worker
+        fetch(`${new URL(req.url).origin}/.netlify/functions/analyze-worker-background`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ jobId }),
+          signal: AbortSignal.timeout(5000),
+        }).catch(e => console.error("[analyze] worker trigger failed:", e?.message));
         return new Response(JSON.stringify({ jobId, status: "transcribed" }), {
           status: 200, headers: { "Content-Type": "application/json" },
         });
@@ -818,7 +844,9 @@ export default async (req: Request) => {
             showSlug:     showSlug     || null,
             showArtwork:  showArtwork  || null,
             showFeedUrl:  url,
-          }, blobStore, assemblyKey);
+            userId:       userId       || null,
+            userPlan:     userPlan     || "free",
+          }, blobStore, assemblyKey, new URL(req.url).origin);
         }
         // Fall through to generic extractAudioUrl if parser returns null
         console.log(`[analyze] RSS parse failed, falling back to extractAudioUrl`);
@@ -844,7 +872,8 @@ export default async (req: Request) => {
     return submitToAssemblyAI(audioUrl, url, {
       episodeTitle: episodeTitle || null, showName: showName || null,
       showSlug: showSlug || null, showArtwork: showArtwork || null, showFeedUrl: showFeedUrl || null,
-    }, blobStore, assemblyKey);
+      userId: userId || null, userPlan: userPlan || "free",
+    }, blobStore, assemblyKey, new URL(req.url).origin);
 
   } catch (e: any) {
     console.error("Analyze error:", e);
