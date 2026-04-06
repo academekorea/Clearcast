@@ -6,7 +6,6 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
   included_files = ["netlify/functions/lib/**"]
-  timeout = 26
 
 [functions."analyze-worker-background"]
   timeout = 900
