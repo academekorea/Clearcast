@@ -177,11 +177,9 @@ function toggleMode(){var isNowLight=document.body.classList.toggle('light-mode'
     <img src="/favicon-32x32.png" alt="Podlens" width="28" height="28">
     <span><span style="font-weight:400">POD</span>LENS</span>
   </a>
-  <div class="nav-r">
-    <a href="/" class="nl">Dashboard</a>
-    <button class="mode-toggle" onclick="toggleMode()" aria-label="Toggle theme">🌙</button>
-  </div>
+  <div class="nav-links" id="nav-links"></div>
 </nav>
+<script src="/nav.js" defer></script>
 
 <div class="account-wrap">
   <div id="account-root">
