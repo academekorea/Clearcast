@@ -1759,6 +1759,20 @@ body.light-mode,[data-theme="light"]{
 [data-mode="korean"] [data-ko-inline]{display:inline!important}
 [data-ko]{display:none}
 [data-ko-inline]{display:none}
+/* ── NAV BAR ── */
+.nav-bar{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;padding:0 24px!important;height:60px!important;background:var(--bg,#FAFAF8)!important;border-bottom:1px solid var(--border,#E5E7EB)!important;position:sticky!important;top:36px!important;z-index:200!important;width:100%!important;box-sizing:border-box!important}
+.nav-logo{display:flex!important;align-items:center!important;gap:8px!important;text-decoration:none!important;color:var(--navy,#0f2027)!important;font-family:var(--ffs,'Playfair Display',Georgia,serif)!important;font-weight:700!important;font-size:1rem!important;letter-spacing:0.08em!important;flex-shrink:0!important}
+[data-theme="dark"] .nav-logo{color:var(--text,#FAF9F6)!important}
+.nav-logo p,.nav-logo span:not(.nav-logo-text),.nav-bar>p,.nav-bar>span:not(.nav-logo *){display:none!important}
+.nav-right{display:flex!important;align-items:center!important;gap:4px!important}
+.nav-links-logged-out,.nav-links-logged-in{display:flex!important;align-items:center!important;gap:4px!important}
+.nav-link{color:var(--text2,#6B7280)!important;text-decoration:none!important;font-size:0.875rem!important;font-weight:500!important;padding:6px 12px!important;border-radius:8px!important;white-space:nowrap!important;transition:color .15s,background .15s!important;background:none!important;border:none!important;cursor:pointer!important;font-family:var(--ff,'Inter',sans-serif)!important}
+.nav-link:hover{color:var(--text,#111)!important;background:var(--bg3,rgba(0,0,0,0.05))!important}
+.nav-link.active{background:var(--bg3)!important;color:var(--text)!important;font-weight:500!important}
+.nav-btn-signin{margin-left:8px!important;padding:8px 18px!important;background:var(--navy,#111)!important;color:#fff!important;text-decoration:none!important;border-radius:8px!important;font-size:0.875rem!important;font-weight:600!important;white-space:nowrap!important;transition:opacity .15s!important;display:inline-block!important}
+.nav-btn-signin:hover{opacity:.85!important}
+.nav-theme-toggle{background:none!important;border:none!important;cursor:pointer!important;font-size:16px!important;padding:6px!important;border-radius:8px!important;margin:0 4px!important;line-height:1!important}
+@media(max-width:640px){.nav-link{display:none!important}.nav-bar{padding:0 16px!important}.nav-search-wrap{display:none!important}}
 </style>
 <!-- Hotjar / ContentSquare -->
 <script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
@@ -1905,42 +1919,40 @@ body.light-mode,[data-theme="light"]{
 </div>
 
 <!-- NAV -->
-<nav class="nav">
-  <!-- LOGO — always visible, always links home -->
-  <a href="/" class="pl-lockup" onclick="if(typeof showHome==='function'){showHome();return false}" aria-label="Podlens home">
-    <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="28" height="28">
-    <span class="pl-lockup-divider"></span>
-    <span class="pl-lockup-text">
-      <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
-    </span>
+<nav class="nav-bar" id="main-nav">
+  <!-- LEFT: Logo only -->
+  <a href="/" class="nav-logo" onclick="if(typeof showHome==='function'){showHome();return false}" aria-label="Go to homepage">
+    <img src="/favicon-32x32.png" alt="Podlens" width="28" height="28" class="nav-logo-img">
+    <span class="nav-logo-text"><span style="font-weight:400">POD</span>LENS</span>
   </a>
 
-  <!-- LOGGED OUT: marketing links -->
-  <div id="nav-logged-out" style="display:flex;align-items:center;gap:4px;margin-left:auto">
-    <a href="/how-it-works.html" class="nl nav-link" id="nav-how">
-      <span data-en>How it works</span><span data-ko style="display:none">작동 방식</span>
-    </a>
-    <a href="/pricing.html" class="nl nav-link" id="nav-pricing-link">
-      <span data-en>Pricing</span><span data-ko style="display:none">요금제</span>
-    </a>
-    <a href="#" class="btn-signin-nav" id="nav-signin" onclick="openModal('login');return false">
-      <span data-en>Sign in →</span><span data-ko style="display:none">로그인 →</span>
-    </a>
-  </div>
+  <!-- RIGHT: Everything else -->
+  <div class="nav-right" id="nav-right">
 
-  <!-- LOGGED IN: app nav -->
-  <div id="nav-logged-in" style="display:none;align-items:center;gap:4px;margin-left:auto">
-    <button class="nl nav-link" id="nl-discover" onclick="showView('discover')" data-i18n="navDiscover">Discover</button>
-    <button class="nl nav-link" id="nl-library" onclick="showView('library')">
-      <span data-en>Library</span><span data-ko style="display:none">라이브러리</span>
-    </button>
-    <div class="nav-search-wrap" onclick="openSearchOverlay()" style="cursor:pointer;margin:0 4px">
-      <input type="text" id="nav-search-q" class="nav-search" placeholder="Search&hellip;" readonly style="cursor:pointer" onclick="openSearchOverlay()"/>
-      <button class="nav-search-btn" onclick="openSearchOverlay()">&#128269;</button>
+    <!-- LOGGED OUT: marketing links -->
+    <div class="nav-links-logged-out" id="nav-logged-out">
+      <a href="/how-it-works.html" class="nav-link" id="nav-how">
+        <span data-en>How it works</span><span data-ko style="display:none">작동 방식</span>
+      </a>
+      <a href="/pricing.html" class="nav-link" id="nav-pricing-link">
+        <span data-en>Pricing</span><span data-ko style="display:none">요금제</span>
+      </a>
+      <a href="#" class="nav-btn-signin" id="nav-signin" onclick="openModal('login');return false">
+        <span data-en>Sign in →</span><span data-ko style="display:none">로그인 →</span>
+      </a>
     </div>
-    <button class="mode-toggle" id="mode-toggle-btn" onclick="toggleMode()" aria-label="Toggle dark/light mode">🌙</button>
-    <span id="lang-switch-wrap"></span>
-    <div id="nav-auth-area" style="display:contents"><!-- rendered by initNav() --></div>
+
+    <!-- LOGGED IN: app links -->
+    <div class="nav-links-logged-in" id="nav-logged-in" style="display:none">
+      <button class="nav-link" id="nl-discover" onclick="showView('discover')" data-i18n="navDiscover">Discover</button>
+      <button class="nav-link" id="nl-library" onclick="showView('library')">
+        <span data-en>Library</span><span data-ko style="display:none">라이브러리</span>
+      </button>
+      <button class="nav-theme-toggle" onclick="toggleMode()" id="mode-toggle-btn" aria-label="Toggle dark/light mode">🌙</button>
+      <span id="lang-switch-wrap"></span>
+      <div id="nav-auth-area" style="display:contents"><!-- rendered by initNav() --></div>
+    </div>
+
   </div>
 </nav>
 
@@ -3186,6 +3198,12 @@ function initNav() {
     if (loggedOut) loggedOut.style.display = 'flex';
     if (loggedIn)  loggedIn.style.display  = 'none';
   }
+
+  // Sync theme toggle icon
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme:dark)').matches);
+  var themeBtn = document.getElementById('mode-toggle-btn');
+  if (themeBtn) themeBtn.textContent = isDark ? '🌙' : '☀️';
 
   // Lang switcher (Korean users only)
   if (typeof window.initLangSwitch === 'function') window.initLangSwitch();
