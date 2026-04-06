@@ -1766,6 +1766,8 @@ body.light-mode,[data-theme="light"]{
 [data-theme="dark"] .nav-logo{color:var(--text,#FAF9F6)!important}
 /* Right container — margin-left:auto pushes everything to the right edge */
 .nav-right{display:flex!important;align-items:center!important;gap:4px!important;margin-left:auto!important}
+/* Generic nav-links utility (used by nav.js on marketing pages) */
+.nav-links{margin-left:auto!important;display:flex!important;align-items:center!important;gap:24px!important}
 /* display on these is controlled by initNav() — no !important so JS can override */
 .nav-links-logged-out{display:flex;align-items:center!important;gap:16px!important}
 .nav-links-logged-in{display:none;align-items:center!important;gap:16px!important}
@@ -4142,7 +4144,7 @@ async function loadForyouShows(region, user) {
   if (!el) return;
   try {
     var userId = (user && user.id) ? user.id : '';
-    var data = await fetch('/api/for-you?region=' + encodeURIComponent(region) + (userId ? '&userId=' + encodeURIComponent(userId) : ''), { signal: AbortSignal.timeout(8000) }).then(function(r){ return r.json(); });
+    var data = await fetch('/api/for-you?region=' + encodeURIComponent(region) + (userId ? '&userId=' + encodeURIComponent(userId) : ''), { signal: AbortSignal.timeout(5000) }).then(function(r){ return r.json(); });
     var html = '';
     if (data.sections && data.sections.trending && data.sections.trending.length) {
       var countryLabel = data.country === 'kr' ? '🇰🇷 한국 인기 팟캐스트' : '🔥 Trending Podcasts';
@@ -4362,7 +4364,7 @@ async function loadBrowse(genre, el) {
   grid.style.display='none'; loading.style.display='flex'; grid.innerHTML='';
   try {
     var _region = (typeof isKoreanMode === 'function' && isKoreanMode()) ? 'ko-KR' : 'international';
-    var data=await fetch('/api/marketplace?category='+encodeURIComponent(genre)+'&region='+_region).then(function(r){return r.json();});
+    var data=await fetch('/api/marketplace?category='+encodeURIComponent(genre)+'&region='+_region, { signal: AbortSignal.timeout(5000) }).then(function(r){return r.json();});
     var shows=data.podcasts||[];
     if (!shows.length) { loading.innerHTML='<p style="color:var(--text3)">Could not load. Try another category.</p>'; return; }
     grid.innerHTML=shows.map(function(p){
