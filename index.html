@@ -8124,6 +8124,19 @@ function _renderAdminTab(tab, d) {
       + '<button onclick="_admConfirmSetPlan()" class="btn-primary" style="font-size:12px;padding:8px 14px">Set Plan</button>'
       + '</div>';
 
+    // Backup controls
+    html += '<div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">'
+      + '<div style="font-size:13px;font-weight:700;margin-bottom:4px">Data Backup</div>'
+      + '<p style="font-size:12px;color:var(--text3);margin-bottom:12px">Weekly backups run every Sunday 2am UTC. Stored in Netlify Blobs, last 4 kept. Full JSON or per-table CSV download.</p>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">'
+      + '<button onclick="_admRunBackup()" class="btn-primary" style="font-size:12px;padding:8px 14px">▶ Run backup now</button>'
+      + '<button onclick="_admListBackups()" style="font-size:12px;padding:8px 14px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none">📋 List backups</button>'
+      + '<button onclick="_admRestoreCache()" style="font-size:12px;padding:8px 14px;border:1px solid #fecaca;border-radius:4px;cursor:pointer;background:none;color:#dc2626">♻ Restore Blob cache</button>'
+      + '</div>'
+      + '<div id="adm-backup-status" style="font-size:12px;color:var(--text3)"></div>'
+      + '<div id="adm-backup-list" style="margin-top:12px"></div>'
+      + '</div>';
+
     // Showcase management
     html += '<div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">'
       + '<div style="font-size:13px;font-weight:700;margin-bottom:16px">Showcase Management</div>'
@@ -8237,6 +8250,62 @@ function _admRefreshAllShowcases() {
   }).then(function(r) { return r.json(); })
     .then(function(d) {
       if (statusEl) statusEl.textContent = d.ok ? '✓ Refresh triggered for all showcases (takes 10-15 min)' : '✗ Error: ' + (d.error || 'unknown');
+    }).catch(function() { if (statusEl) statusEl.textContent = '✗ Network error'; });
+}
+
+function _admRunBackup() {
+  var u = plUser(); if (!u) return;
+  var statusEl = document.getElementById('adm-backup-status');
+  if (!confirm('Run a manual backup now? This exports all tables to Netlify Blobs.')) return;
+  if (statusEl) statusEl.textContent = '⏳ Backup running… (may take 30-60 seconds)';
+  fetch('/api/weekly-backup', { method: 'POST', headers: _admAdminHeaders(u) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (statusEl) statusEl.textContent = d.ok ? '✓ Backup complete: ' + JSON.stringify(d.summary || {}) : '✗ Error: ' + (d.error || 'unknown');
+    }).catch(function() { if (statusEl) statusEl.textContent = '✗ Network error'; });
+}
+
+function _admListBackups() {
+  var u = plUser(); if (!u) return;
+  var statusEl = document.getElementById('adm-backup-status');
+  var listEl = document.getElementById('adm-backup-list');
+  if (statusEl) statusEl.textContent = 'Loading backups…';
+  fetch('/api/download-backup?email=' + encodeURIComponent(u.email) + '&userId=' + encodeURIComponent(u.id||''), {
+    headers: _admAdminHeaders(u)
+  }).then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (statusEl) statusEl.textContent = '';
+      if (!listEl) return;
+      if (!d.backups || d.backups.length === 0) { listEl.innerHTML = '<div style="font-size:12px;color:var(--text3)">No backups found.</div>'; return; }
+      var tables = ['users','analyses','subscriptions','events','followed_shows','connected_accounts'];
+      var html = '<table class="adm-table"><thead><tr><th>Date</th><th>Download JSON</th><th>Download CSV by table</th></tr></thead><tbody>';
+      d.backups.forEach(function(date) {
+        var baseUrl = '/api/download-backup?email=' + encodeURIComponent(u.email) + '&userId=' + encodeURIComponent(u.id||'') + '&date=' + date;
+        var hdrsStr = JSON.stringify(_admAdminHeaders(u));
+        html += '<tr>'
+          + '<td style="font-weight:600">' + date + '</td>'
+          + '<td><a href="' + baseUrl + '" style="font-size:11px;color:var(--color-navy)" download="podlens-backup-' + date + '.json">⬇ Full JSON</a></td>'
+          + '<td style="font-size:11px">' + tables.map(function(t) {
+              return '<a href="' + baseUrl + '&table=' + t + '" style="margin-right:6px;color:var(--color-navy)" download="podlens-' + t + '-' + date + '.csv">' + t + '</a>';
+            }).join('') + '</td>'
+          + '</tr>';
+      });
+      html += '</tbody></table>';
+      listEl.innerHTML = html;
+    }).catch(function() { if (statusEl) statusEl.textContent = '✗ Network error'; });
+}
+
+function _admRestoreCache() {
+  var u = plUser(); if (!u) return;
+  var statusEl = document.getElementById('adm-backup-status');
+  if (!confirm('Restore Blob cache from Supabase? This re-populates Netlify Blobs with all analyses that have result_json saved. Safe to run — will not overwrite existing good data.')) return;
+  if (statusEl) statusEl.textContent = '⏳ Restoring cache… (may take 1-2 minutes)';
+  fetch('/api/restore-blob-cache?email=' + encodeURIComponent(u.email) + '&userId=' + encodeURIComponent(u.id||''), {
+    method: 'POST',
+    headers: _admAdminHeaders(u)
+  }).then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (statusEl) statusEl.textContent = d.ok ? '✓ ' + d.message + ' (skipped: ' + d.skipped + ', failed: ' + d.failed + ')' : '✗ Error: ' + (d.error || 'unknown');
     }).catch(function() { if (statusEl) statusEl.textContent = '✗ Network error'; });
 }
 

@@ -137,3 +137,13 @@
   from = "/api/proxy-image"
   to = "/.netlify/functions/proxy-image"
   status = 200
+
+[[redirects]]
+  from = "/api/download-backup"
+  to = "/.netlify/functions/download-backup"
+  status = 200
+
+[[redirects]]
+  from = "/api/restore-blob-cache"
+  to = "/.netlify/functions/restore-blob-cache"
+  status = 200

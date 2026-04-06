@@ -183,6 +183,10 @@ export default async (req: Request) => {
       // ── Supabase: write completed analysis (fire-and-forget) ──
       const al = result.audioLean || {};
       const shareId = result.shareId || jobId.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 32);
+      // Strip internal fields before storing full result as backup
+      const resultForBackup = { ...result };
+      delete resultForBackup._transcript;
+
       sbInsert('analyses', {
         id: jobId,
         user_id: result.userId || null,
@@ -201,6 +205,9 @@ export default async (req: Request) => {
         share_count: 0,
         duration: result.duration || null,
         word_count: result.wordCount || null,
+        result_json: resultForBackup,   // full result for cache restore
+        cache_key: jobId,
+        cached_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
       }).catch(() => {});
       // Update shows table total_analyses count
