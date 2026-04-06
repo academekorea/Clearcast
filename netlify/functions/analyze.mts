@@ -356,7 +356,7 @@ async function submitToAssemblyAI(
 ): Promise<Response> {
   // ── Submit to AssemblyAI with webhook ──────────────────────────────────
   // Webhook fires when transcription completes — no polling, no timeout issues.
-  const webhookUrl = `${origin}/api/transcript-webhook`;
+  // Hardcoded URL: origin from req.url may resolve to CDN domain, not podlens.app.
   const webhookSecret = Netlify.env.get("WEBHOOK_SECRET") || "podlens2026";
 
   const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
@@ -365,9 +365,14 @@ async function submitToAssemblyAI(
     body: JSON.stringify({
       audio_url: audioUrl,
       speech_models: ["universal-2"],
-      webhook_url: webhookUrl,
+      webhook_url: "https://podlens.app/api/transcript-webhook",
       webhook_auth_header_name: "x-webhook-secret",
       webhook_auth_header_value: webhookSecret,
+      webhook_extra_data: JSON.stringify({
+        showName: meta.showName || null,
+        episodeTitle: meta.episodeTitle || null,
+        userId: meta.userId || null,
+      }),
     }),
   });
 
@@ -398,7 +403,7 @@ async function submitToAssemblyAI(
     status: "transcribing",
   });
 
-  console.log(`[analyze] AAI job submitted with webhook, transcriptId=${transcriptId}`);
+  console.log(`[analyze] AAI job submitted, transcriptId=${transcriptId}, webhookUrl=https://podlens.app/api/transcript-webhook`);
 
   return new Response(JSON.stringify({ jobId: transcriptId, status: "transcribing" }), {
     status: 200, headers: { "Content-Type": "application/json" },

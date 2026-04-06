@@ -93,8 +93,8 @@ export default async (req: Request) => {
     return new Response("Bad request", { status: 400 });
   }
 
-  const { transcript_id, status } = payload;
-  console.log(`[webhook] received transcript_id=${transcript_id} status=${status}`);
+  const { transcript_id, status, webhook_extra_data } = payload;
+  console.log(`[webhook] received transcript_id=${transcript_id} status=${status} extra=${webhook_extra_data?.substring?.(0, 80)}`);
 
   const store = getStore("podlens-jobs");
 
