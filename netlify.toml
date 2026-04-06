@@ -6,8 +6,6 @@
   node_bundler = "esbuild"
   included_files = ["netlify/functions/lib/**"]
 
-[functions."analyze-worker-background"]
-  timeout = 900
 
 [[headers]]
   for = "/*"
