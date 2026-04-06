@@ -152,6 +152,32 @@ footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2
 .mode-toggle:hover{transform:scale(1.25);background:rgba(128,128,128,0.1)}
 :root{--bg-primary:#0A0F1E;--bg-secondary:#111827;--bg-card:#111827;--bg-hover:#1a2233;--text-primary:#F9FAFB;--text-secondary:#9CA3AF;--text-muted:#6B7280;--accent:#818CF8;--accent-hover:#A5B4FC;--border-new:#1F2937;--border-subtle:#374151}
 body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6;--bg-card:#FFFFFF;--bg-hover:#F0F0F0;--text-primary:#0A0A0A;--text-secondary:#374151;--text-muted:#9CA3AF;--accent:#6366F1;--accent-hover:#4F46E5;--border-new:#E5E7EB;--border-subtle:#F3F4F6}
+/* ── Deletion modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:10000;padding:16px;backdrop-filter:blur(4px)}
+.modal-box{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:440px;width:100%;box-shadow:0 24px 48px rgba(0,0,0,.4)}
+.modal-icon{font-size:36px;margin-bottom:16px;text-align:center}
+.modal-title{font-size:1.3rem;font-weight:700;color:var(--text-primary,var(--text));margin-bottom:12px;text-align:center}
+.modal-desc{color:var(--text-secondary,var(--text2));font-size:.9rem;line-height:1.6;margin-bottom:16px;text-align:center}
+.modal-warning{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:12px 16px;font-size:.85rem;color:#FBBF24;margin-bottom:20px;text-align:center;line-height:1.5}
+.modal-input-group{margin-bottom:24px}
+.modal-input-group label{display:block;font-size:.8rem;color:var(--text-secondary,var(--text2));margin-bottom:8px}
+.modal-input-group input{width:100%;padding:12px 16px;background:var(--bg-secondary,var(--bg2));border:1px solid var(--border);border-radius:10px;color:var(--text-primary,var(--text));font-size:.95rem;outline:none;transition:border-color .2s;box-sizing:border-box;letter-spacing:.05em;font-family:inherit}
+.modal-input-group input:focus{border-color:var(--accent)}
+.modal-actions{display:flex;gap:12px}
+.btn-cancel{flex:1;padding:12px;background:none;border:1px solid var(--border);border-radius:10px;color:var(--text-secondary,var(--text2));font-size:.9rem;cursor:pointer;transition:border-color .2s;font-family:inherit}
+.btn-cancel:hover{border-color:var(--accent);color:var(--text-primary,var(--text))}
+.btn-delete-confirm{flex:1;padding:12px;background:#EF4444;border:none;border-radius:10px;color:#fff;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s,opacity .2s;font-family:inherit}
+.btn-delete-confirm:disabled{background:var(--border);color:var(--text-muted,var(--text3));cursor:not-allowed;opacity:.6}
+.btn-delete-confirm:not(:disabled):hover{background:#DC2626}
+.deletion-scheduled{text-align:center;padding:48px 24px}
+.deletion-icon{font-size:48px;margin-bottom:16px}
+.deletion-scheduled h2{font-size:1.3rem;margin-bottom:12px;color:var(--text-primary,var(--text))}
+.deletion-scheduled p{color:var(--text-secondary,var(--text2));line-height:1.6;margin-bottom:8px}
+.btn-recover{margin-top:24px;padding:12px 28px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s;font-family:inherit}
+.btn-recover:hover{background:var(--accent-hover)}
+.deletion-note{font-size:.8rem;color:var(--text-muted,var(--text3));margin-top:16px}
+.pending-deletion-banner{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#EF4444;line-height:1.5}
+.pending-deletion-banner a{color:#EF4444;font-weight:600;text-decoration:underline;cursor:pointer}
 </style>
 <!-- Hotjar / ContentSquare -->
 <script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
@@ -240,9 +266,10 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
       <div class="settings-card" style="border-color:var(--left)">
         <div class="card-head"><h3 style="color:var(--left)">Delete account</h3><p>Permanently remove your account and all data</p></div>
         <div class="card-body">
-          <p style="font-size:13px;color:var(--text2);margin-bottom:16px">This permanently deletes your analysis history, followed shows, fingerprint, and cancels any active subscription. This cannot be undone.</p>
-          <div id="delete-account-flow">
-            <select id="delete-reason" style="padding:8px 12px;border:1px solid var(--border2);border-radius:4px;font-size:13px;background:var(--bg2);color:var(--text);margin-bottom:12px;display:block;width:100%;max-width:320px">
+          <div id="pending-deletion-banner" class="pending-deletion-banner" style="display:none"></div>
+          <div id="delete-account-section">
+            <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Deletes your analysis history, followed shows, and fingerprint, and cancels any active subscription. You have <strong>7 days</strong> to recover your account after requesting deletion.</p>
+            <select id="delete-reason" style="padding:8px 12px;border:1px solid var(--border2);border-radius:4px;font-size:13px;background:var(--bg2);color:var(--text);margin-bottom:12px;display:block;width:100%;max-width:320px;font-family:var(--ff)">
               <option value="">Why are you leaving? (optional)</option>
               <option value="not_useful">Not useful enough</option>
               <option value="too_expensive">Too expensive</option>
@@ -250,17 +277,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
               <option value="switching">Switching to another tool</option>
               <option value="other">Other</option>
             </select>
-            <button class="danger-btn" onclick="startAccountDelete()">Delete my account</button>
-          </div>
-          <div id="delete-otp-step" style="display:none">
-            <p style="font-size:13px;color:var(--text2);margin-bottom:12px">We sent a 6-digit code to your email. Enter it below to confirm deletion:</p>
-            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <input id="delete-otp-input" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="000000"
-                style="padding:10px 14px;border:2px solid var(--left);border-radius:4px;font-size:18px;font-weight:700;letter-spacing:4px;width:120px;text-align:center">
-              <button class="danger-btn" onclick="confirmAccountDelete()">Confirm delete</button>
-              <button onclick="cancelAccountDelete()" style="background:none;border:none;font-size:13px;cursor:pointer;color:var(--text3)">Cancel</button>
-            </div>
-            <div id="delete-otp-error" style="margin-top:8px;font-size:13px;color:var(--left)"></div>
+            <button class="danger-btn" onclick="openDeleteModal()">Delete my account</button>
           </div>
         </div>
       </div>
@@ -944,78 +961,171 @@ function testOtp() {
     });
 }
 
-function startAccountDelete() {
+// ── Account deletion modal ────────────────────────────────────────────────────
+
+function openDeleteModal() {
   var u = plUser ? plUser() : null;
   if (!u || !u.email) { alert('Please log in first.'); return; }
-  if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
-
-  document.getElementById('delete-account-flow').style.display = 'none';
-  document.getElementById('delete-otp-step').style.display = 'block';
-  document.getElementById('delete-otp-error').textContent = 'Sending verification code to ' + u.email + '…';
-
-  fetch('/api/send-otp', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: u.email, purpose: 'delete_account' })
-  }).then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.ok) {
-        document.getElementById('delete-otp-error').textContent = '✓ Code sent — check your email';
-        document.getElementById('delete-otp-input').focus();
-      } else {
-        document.getElementById('delete-otp-error').textContent = '✗ ' + (d.error || 'Could not send code');
-      }
-    }).catch(function(){
-      document.getElementById('delete-otp-error').textContent = '✗ Network error — try again';
-    });
+  document.getElementById('delete-modal').style.display = 'flex';
+  setTimeout(function() { document.getElementById('delete-confirm-input').focus(); }, 100);
 }
 
-function cancelAccountDelete() {
-  document.getElementById('delete-account-flow').style.display = '';
-  document.getElementById('delete-otp-step').style.display = 'none';
-  document.getElementById('delete-otp-input').value = '';
-  document.getElementById('delete-otp-error').textContent = '';
+function closeDeleteModal() {
+  document.getElementById('delete-modal').style.display = 'none';
+  document.getElementById('delete-confirm-input').value = '';
+  document.getElementById('btn-delete-confirm').disabled = true;
+  document.getElementById('btn-delete-confirm').textContent = 'Delete my account';
 }
 
-function confirmAccountDelete() {
+document.getElementById('delete-confirm-input').addEventListener('input', function(e) {
+  document.getElementById('btn-delete-confirm').disabled = e.target.value !== 'CONFIRM';
+});
+
+document.getElementById('delete-modal').addEventListener('click', function(e) {
+  if (e.target.id === 'delete-modal') closeDeleteModal();
+});
+
+function confirmDelete() {
+  var input = document.getElementById('delete-confirm-input');
+  if (input.value !== 'CONFIRM') return;
   var u = plUser ? plUser() : null;
   if (!u) return;
-  var code = (document.getElementById('delete-otp-input').value || '').trim();
-  if (code.length !== 6) { document.getElementById('delete-otp-error').textContent = 'Enter the 6-digit code from your email'; return; }
   var reason = (document.getElementById('delete-reason') || {}).value || '';
+  var btn = document.getElementById('btn-delete-confirm');
+  btn.disabled = true;
+  btn.textContent = 'Scheduling deletion…';
 
-  document.getElementById('delete-otp-error').textContent = 'Verifying…';
-
-  fetch('/api/verify-otp', {
+  fetch('/api/account-delete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: u.email, code: code, purpose: 'delete_account' })
+    body: JSON.stringify({ userId: u.id, email: u.email, reason: reason, confirmed: true })
   }).then(function(r){ return r.json(); })
     .then(function(d){
-      if (!d.ok) {
-        document.getElementById('delete-otp-error').textContent = '✗ ' + (d.error || 'Invalid code');
-        return;
+      if (d.ok || d.success) {
+        closeDeleteModal();
+        showDeletionScheduled(d.deletion_date);
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Delete my account';
+        alert('Error: ' + (d.error || 'Something went wrong. Please try again.'));
       }
-      // Verified — proceed with deletion
-      document.getElementById('delete-otp-error').textContent = 'Deleting your account…';
-      return fetch('/api/account-delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: u.id, email: u.email, reason: reason })
-      }).then(function(r){ return r.json(); })
-        .then(function(del){
-          localStorage.clear();
-          sessionStorage.clear();
-          alert('Your account has been deleted. Sorry to see you go.');
-          window.location.href = '/';
-        });
     }).catch(function(){
-      document.getElementById('delete-otp-error').textContent = '✗ Network error — try again';
+      btn.disabled = false;
+      btn.textContent = 'Delete my account';
+      alert('Network error — please try again.');
     });
 }
+
+function showDeletionScheduled(deletionDate) {
+  var deadline = deletionDate
+    ? new Date(deletionDate).toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+    : getRecoveryDeadline();
+  var section = document.getElementById('delete-account-section');
+  if (section) section.innerHTML = '<div class="deletion-scheduled">'
+    + '<div class="deletion-icon">&#128197;</div>'
+    + '<h2>Account deletion scheduled</h2>'
+    + '<p>Your account will be permanently deleted on <strong>' + deadline + '</strong>.</p>'
+    + '<p>You can recover your account any time before that date.</p>'
+    + '<button class="btn-recover" onclick="recoverAccount()">Recover my account</button>'
+    + '<p class="deletion-note">A confirmation email has been sent to your address.</p>'
+    + '</div>';
+}
+
+function getRecoveryDeadline() {
+  var d = new Date();
+  d.setDate(d.getDate() + 7);
+  return d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+
+function recoverAccount() {
+  var u = plUser ? plUser() : null;
+  if (!u) return;
+  fetch('/api/recover-account', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: u.id, email: u.email })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok || d.success) {
+        var section = document.getElementById('delete-account-section');
+        if (section) section.innerHTML = '<div style="text-align:center;padding:32px 16px">'
+          + '<div style="font-size:36px;margin-bottom:12px">&#10003;</div>'
+          + '<h2 style="font-size:18px;margin-bottom:8px;color:var(--text)">Your account is back</h2>'
+          + '<p style="font-size:13px;color:var(--text2)">All your analyses and history are intact.</p>'
+          + '</div>';
+        var banner = document.getElementById('pending-deletion-banner');
+        if (banner) banner.style.display = 'none';
+      } else {
+        alert('Error: ' + (d.error || 'Could not recover account.'));
+      }
+    }).catch(function(){ alert('Network error — please try again.'); });
+}
+
+// Handle recovery token from email link (?recover_token=...&userId=...)
+(function handleRecoveryToken() {
+  var params = new URLSearchParams(window.location.search);
+  var token = params.get('recover_token');
+  var tokenUserId = params.get('userId');
+  if (!token || !tokenUserId) return;
+  // Strip token from URL
+  window.history.replaceState({}, '', window.location.pathname);
+  fetch('/api/recover-account', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: tokenUserId, recover_token: token })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      var section = document.getElementById('delete-account-section');
+      if (d.ok || d.success) {
+        if (section) section.innerHTML = '<div style="text-align:center;padding:32px 16px">'
+          + '<div style="font-size:36px;margin-bottom:12px">&#10003;</div>'
+          + '<h2 style="font-size:18px;margin-bottom:8px;color:var(--text)">Your account is back</h2>'
+          + '<p style="font-size:13px;color:var(--text2)">All your analyses and history are intact.</p>'
+          + '</div>';
+        var banner = document.getElementById('pending-deletion-banner');
+        if (banner) banner.style.display = 'none';
+      } else {
+        alert('Recovery failed: ' + (d.error || 'Unknown error'));
+      }
+    }).catch(function(){ alert('Network error during recovery. Please try again.'); });
+})();
+
+// Check if account is pending deletion on load
+(function checkPendingDeletion() {
+  var u = plUser ? plUser() : null;
+  if (!u || !u.account_status) return;
+  if (u.account_status !== 'pending_deletion') return;
+  var daysLeft = u.deletion_date
+    ? Math.max(1, Math.ceil((new Date(u.deletion_date) - new Date()) / 86400000))
+    : 7;
+  var banner = document.getElementById('pending-deletion-banner');
+  if (banner) {
+    banner.style.display = '';
+    banner.innerHTML = '&#9888;&#65039; Your account is scheduled for deletion in <strong>' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '') + '</strong>. '
+      + '<a onclick="recoverAccount()">Recover my account &rarr;</a>';
+  }
+})();
 
 function toggleMode(){var isNowLight=document.body.classList.toggle('light-mode');document.documentElement.setAttribute('data-theme',isNowLight?'light':'dark');document.querySelectorAll('.mode-toggle').forEach(function(btn){btn.textContent=isNowLight?'☀️':'🌙';});localStorage.setItem('podlens-mode',isNowLight?'light':'dark');localStorage.setItem('pl-theme',isNowLight?'light':'dark');}
 document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.body.classList.add('light-mode');document.documentElement.setAttribute('data-theme','light');document.querySelectorAll('.mode-toggle').forEach(function(b){b.textContent='☀️';});}});
 </script>
+
+<!-- Account deletion modal -->
+<div id="delete-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-icon">&#9888;&#65039;</div>
+    <h2 class="modal-title">Delete your account?</h2>
+    <p class="modal-desc">This will delete all your analyses, history, and preferences. Your subscription will be cancelled immediately.</p>
+    <div class="modal-warning"><strong>You have 7 days to recover your account</strong> after deletion. After that, all data is permanently removed.</div>
+    <div class="modal-input-group">
+      <label>Type <strong>CONFIRM</strong> to continue</label>
+      <input type="text" id="delete-confirm-input" placeholder="Type CONFIRM" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-delete-confirm" id="btn-delete-confirm" onclick="confirmDelete()" disabled>Delete my account</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

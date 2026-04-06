@@ -124,6 +124,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/recover-account"
+  to = "/.netlify/functions/recover-account"
+  status = 200
+
+[[redirects]]
   from = "/launch"
   to = "/launch.html"
   status = 200
