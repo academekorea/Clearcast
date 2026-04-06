@@ -354,11 +354,21 @@ async function submitToAssemblyAI(
   assemblyKey: string,
   origin: string
 ): Promise<Response> {
-  // ── Submit to AssemblyAI ────────────────────────────────────────────────
+  // ── Submit to AssemblyAI with webhook ──────────────────────────────────
+  // Webhook fires when transcription completes — no polling, no timeout issues.
+  const webhookUrl = `${origin}/api/transcript-webhook`;
+  const webhookSecret = Netlify.env.get("WEBHOOK_SECRET") || "podlens2026";
+
   const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
     headers: { "authorization": assemblyKey, "content-type": "application/json" },
-    body: JSON.stringify({ audio_url: audioUrl, speech_models: ["universal-2"] }),
+    body: JSON.stringify({
+      audio_url: audioUrl,
+      speech_models: ["universal-2"],
+      webhook_url: webhookUrl,
+      webhook_auth_header_name: "x-webhook-secret",
+      webhook_auth_header_value: webhookSecret,
+    }),
   });
 
   if (!aaiRes.ok) {
@@ -378,102 +388,19 @@ async function submitToAssemblyAI(
     });
   }
 
-  const blobBase = {
+  // ── Store job in blob — webhook uses transcript_id as key to update it ──
+  await store.setJSON(transcriptId, {
     transcriptId, url: sourceUrl, audioUrl, createdAt: Date.now(),
     episodeTitle: meta.episodeTitle || null, showName: meta.showName || null,
     showSlug: meta.showSlug || null, showArtwork: meta.showArtwork || null,
     showFeedUrl: meta.showFeedUrl || null,
     userId: meta.userId || null, userPlan: meta.userPlan || "free",
-  };
+    status: "transcribing",
+  });
 
-  await store.setJSON(transcriptId, { ...blobBase, status: "transcribing" });
+  console.log(`[analyze] AAI job submitted with webhook, transcriptId=${transcriptId}`);
 
-  // ── Quick inline poll — up to ~18s (6 × 3s) for short audio files ───────
-  // Podcast episodes are usually 30-120 min so this will rarely succeed,
-  // but short clips / direct MP3 links often transcribe in under 15s.
-  let quickTranscript: string | null = null;
-  let quickDuration = "";
-  const deadline = Date.now() + 18000;
-  while (Date.now() < deadline) {
-    await new Promise(r => setTimeout(r, 3000));
-    try {
-      const pollRes = await fetch(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, {
-        headers: { authorization: assemblyKey },
-        signal: AbortSignal.timeout(4000),
-      });
-      const pollData = await pollRes.json();
-      console.log(`[analyze] quick poll status=${pollData.status} elapsed=${Date.now() - (deadline - 18000)}ms`);
-      if (pollData.status === "completed") {
-        quickTranscript = pollData.text || "";
-        quickDuration = pollData.audio_duration ? `${Math.round(pollData.audio_duration / 60)} min` : "";
-        break;
-      }
-      if (pollData.status === "error") {
-        console.error("[analyze] AssemblyAI transcription error:", pollData.error);
-        await store.setJSON(transcriptId, { ...blobBase, status: "error", error: pollData.error || "Transcription failed" });
-        break;
-      }
-    } catch { /* transient poll error — keep trying */ }
-  }
-
-  // ── If transcript is already ready, run Phase 1 Claude inline ─────────
-  if (quickTranscript) {
-    try {
-      const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
-      const text = quickTranscript.split(" ").slice(0, 10000).join(" ");
-      const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "x-api-key": anthropicKey!, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 800,
-          messages: [{ role: "user", content: `You are a media literacy expert analyzing a podcast transcript. Return ONLY valid JSON:\n{"biasScore":<-100 to 100>,"biasLabel":"<Far left|Lean left|Center|Lean right|Far right>","factualityLabel":"<Mostly factual|Mixed factuality|Unreliable>","omissionRisk":"<Low|Med|High>","summary":"<2-3 sentences>","audioLean":{"leftPct":<0-100>,"centerPct":<0-100>,"rightPct":<0-100>,"basis":"<1 sentence>","citations":[]},"hostTrustScore":<0-100>,"hostTrustLabel":"<Low influence|Moderate influence|High influence>","audioScript":"<200-220 word spoken briefing>"}\nRules: audioLean percentages MUST sum to 100.\n\nTranscript:\n${text}` }],
-        }),
-        signal: AbortSignal.timeout(20000),
-      });
-      if (claudeRes.ok) {
-        const cd = await claudeRes.json();
-        let analysis: any = {};
-        try { analysis = JSON.parse((cd.content?.[0]?.text || "{}").replace(/```json|```/g, "").trim()); } catch { /**/ }
-        const al = analysis.audioLean;
-        if (al && al.leftPct + al.centerPct + al.rightPct !== 100) al.centerPct = 100 - al.leftPct - al.rightPct;
-        await store.setJSON(transcriptId, {
-          ...blobBase,
-          status: "partial",
-          _transcript: text,
-          episodeTitle: meta.episodeTitle || "Episode",
-          duration: quickDuration,
-          wordCount: quickTranscript.split(" ").length,
-          ...analysis,
-        });
-        console.log(`[analyze] quick inline Phase 1 complete for ${transcriptId}`);
-      }
-    } catch (e: any) {
-      console.error("[analyze] quick inline Claude failed:", e?.message);
-      // blob already has transcribing state; worker will handle it
-    }
-  }
-
-  // ── Trigger background worker — AWAITED so it actually fires ────────────
-  // Background function returns 202 immediately. Awaiting ensures the HTTP
-  // request completes before this function returns (fire-and-forget was the bug).
-  try {
-    await fetch(`${origin}/.netlify/functions/analyze-worker-background`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ jobId: transcriptId }),
-      signal: AbortSignal.timeout(5000),
-    });
-    console.log(`[analyze] worker triggered for ${transcriptId}`);
-  } catch (e: any) {
-    console.error("[analyze] worker trigger failed:", e?.message);
-    // Non-fatal — blob state is set; worker will pick it up on retry
-  }
-
-  const currentBlob = await store.get(transcriptId, { type: "json" }) as any;
-  const returnStatus = currentBlob?.status || "transcribing";
-
-  return new Response(JSON.stringify({ jobId: transcriptId, status: returnStatus }), {
+  return new Response(JSON.stringify({ jobId: transcriptId, status: "transcribing" }), {
     status: 200, headers: { "Content-Type": "application/json" },
   });
 }
@@ -786,13 +713,15 @@ export default async (req: Request) => {
             showFeedUrl: showFeedUrl || null,
             userId: userId || null, userPlan: userPlan || "free",
           });
-          // Trigger background worker
-          fetch(`${new URL(req.url).origin}/.netlify/functions/analyze-worker-background`, {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ jobId }),
-            signal: AbortSignal.timeout(5000),
-          }).catch(e => console.error("[analyze] worker trigger failed:", e?.message));
+          // Trigger background worker (awaited so it actually fires before function returns)
+          try {
+            await fetch(`${new URL(req.url).origin}/.netlify/functions/analyze-worker-background`, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ jobId }),
+              signal: AbortSignal.timeout(5000),
+            });
+          } catch (e: any) { console.error("[analyze] worker trigger failed:", e?.message); }
           return new Response(JSON.stringify({ jobId, status: "transcribed", cached: true }), {
             status: 200, headers: { "Content-Type": "application/json" },
           });
@@ -838,13 +767,15 @@ export default async (req: Request) => {
         await ytCache.setJSON(videoId, {
           transcript: cap.text, duration: cap.duration, source, createdAt: Date.now(),
         });
-        // Trigger background worker
-        fetch(`${new URL(req.url).origin}/.netlify/functions/analyze-worker-background`, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ jobId }),
-          signal: AbortSignal.timeout(5000),
-        }).catch(e => console.error("[analyze] worker trigger failed:", e?.message));
+        // Trigger background worker (awaited so it actually fires before function returns)
+        try {
+          await fetch(`${new URL(req.url).origin}/.netlify/functions/analyze-worker-background`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ jobId }),
+            signal: AbortSignal.timeout(5000),
+          });
+        } catch (e: any) { console.error("[analyze] worker trigger failed:", e?.message); }
         return new Response(JSON.stringify({ jobId, status: "transcribed" }), {
           status: 200, headers: { "Content-Type": "application/json" },
         });
