@@ -1605,6 +1605,7 @@ body.light-mode,[data-theme="light"]{
 <!-- Sentry -->
 <script src="https://browser.sentry-cdn.com/7.x.x/bundle.min.js" crossorigin="anonymous"></script>
 <script>if(window.Sentry)Sentry.init({dsn:"https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128",environment:"production",tracesSampleRate:0.2});</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 </head>
 <body>
 
@@ -8448,5 +8449,62 @@ function addAppleShows() {
 .apple-result-row:last-child{border-bottom:none}
 </style>
 
+<!-- PWA Install Banner + iOS Prompt -->
+<script>
+(function() {
+  var deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    var hasAnalyses = localStorage.getItem('has-analyzed');
+    if (hasAnalyses) showPWABanner();
+  });
+
+  function showPWABanner() {
+    if (document.getElementById('pwa-banner')) return;
+    var banner = document.createElement('div');
+    banner.id = 'pwa-banner';
+    banner.innerHTML = '<div style="position:fixed;bottom:80px;left:16px;right:16px;background:#111827;border:1px solid #818CF8;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;z-index:9999;box-shadow:0 4px 24px rgba(0,0,0,.4)">'
+      + '<img src="/android-chrome-192x192.png" style="width:44px;height:44px;border-radius:10px;flex-shrink:0" onerror="this.style.display=\'none\'">'
+      + '<div style="flex:1"><div style="font-weight:700;color:#F9FAFB;font-size:14px">Add Podlens to home screen</div><div style="color:#9CA3AF;font-size:12px">Works like a native app</div></div>'
+      + '<button id="pwa-install-btn" style="background:#818CF8;color:white;border:none;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;flex-shrink:0">Add</button>'
+      + '<button id="pwa-dismiss-btn" style="background:none;border:none;color:#6B7280;cursor:pointer;font-size:18px;padding:4px;flex-shrink:0;line-height:1">&times;</button>'
+      + '</div>';
+    document.body.appendChild(banner);
+    document.getElementById('pwa-install-btn').addEventListener('click', function() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function(result) {
+          if (result.outcome === 'accepted') banner.remove();
+          deferredPrompt = null;
+        });
+      }
+    });
+    document.getElementById('pwa-dismiss-btn').addEventListener('click', function() {
+      banner.remove();
+      localStorage.setItem('pwa-dismissed', '1');
+    });
+  }
+
+  // iOS Safari: show manual instructions
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  var isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  if (isIOS && isSafari && !isStandalone && !localStorage.getItem('ios-pwa-shown')) {
+    window.addEventListener('analysisComplete', function() {
+      localStorage.setItem('ios-pwa-shown', '1');
+      var toast = document.createElement('div');
+      toast.innerHTML = '<div style="position:fixed;bottom:80px;left:16px;right:16px;background:#111827;border:1px solid #1F2937;border-radius:14px;padding:16px;z-index:9999;text-align:center">'
+        + '<p style="color:#F9FAFB;font-size:14px;margin-bottom:8px;font-weight:600">Add Podlens to your home screen</p>'
+        + '<p style="color:#9CA3AF;font-size:13px">Tap <strong style="color:#F9FAFB">Share</strong> &rarr; <strong style="color:#F9FAFB">Add to Home Screen</strong></p>'
+        + '<button onclick="this.closest(\'div\').parentElement.remove()" style="margin-top:12px;background:none;border:1px solid #374151;color:#9CA3AF;border-radius:8px;padding:6px 16px;cursor:pointer;font-family:inherit">Got it</button>'
+        + '</div>';
+      document.body.appendChild(toast);
+      setTimeout(function() { toast.remove(); }, 8000);
+    }, { once: true });
+  }
+})();
+</script>
 </body>
 </html>

@@ -98,6 +98,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
 <script>if(window.Sentry)Sentry.init({dsn:"https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128",environment:"production",tracesSampleRate:0.2});</script>
 <link rel="canonical" href="https://podlens.app/extension">
 <script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 </head>
 <body>
 <nav>
@@ -114,16 +115,11 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
 </nav>
 
 <div class="hero">
-  <div class="hero-badge">Coming soon</div>
-  <h1>Bias intelligence,<br><em>right in your browser</em></h1>
-  <p>The Podlens extension adds a live bias bar to every YouTube video — before you even press play.</p>
-
-  <form class="waitlist-form" name="extension-waitlist" method="POST" data-netlify="true" onsubmit="handleWaitlist(event)">
-    <input type="hidden" name="form-name" value="extension-waitlist">
-    <input class="waitlist-input" type="email" name="email" placeholder="your@email.com" required>
-    <button class="waitlist-btn" type="submit">Join waitlist</button>
-  </form>
-  <div class="success-msg" id="waitlist-success">You're on the list. We'll email you when the extension launches.</div>
+  <div class="hero-badge">Available now &mdash; manual install</div>
+  <h1>Get the Chrome<br><em>Extension</em></h1>
+  <p>Analyze any podcast directly from YouTube or Spotify &mdash; without leaving the page.</p>
+  <a href="/podlens-extension-v1.1.0.zip" download class="waitlist-btn" style="display:inline-block;text-decoration:none;margin-top:8px">&#8595; Download Extension Files</a>
+  <div style="font-size:13px;opacity:.6;margin-top:12px">Chrome only &middot; ~65KB &middot; No data collected without sign-in</div>
 </div>
 
 <!-- Korean waitlist (shown only for Korean region) -->
@@ -161,14 +157,50 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
   </div>
 </div>
 
-<div class="coming-soon">
-  <h2>Targeting launch for Chrome, Firefox, and Safari</h2>
-  <p>The extension is currently in development. Join the waitlist above to be notified when it's available.</p>
-  <div class="browser-badges">
-    <div class="browser-badge">&#128504; Chrome</div>
-    <div class="browser-badge">&#128504; Firefox</div>
-    <div class="browser-badge">&#128504; Safari</div>
-    <div class="browser-badge">&#128504; Edge</div>
+<div class="coming-soon" style="max-width:680px">
+  <h2>Install in under 2 minutes</h2>
+  <p>No Chrome Web Store required. Load directly as a developer extension.</p>
+</div>
+
+<div style="max-width:680px;margin:0 auto 80px;padding:0 24px">
+  <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+    <div style="display:flex;gap:20px;padding:24px;border-bottom:1px solid var(--border);background:var(--bg2)">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;line-height:1">1</div>
+      <div><div style="font-weight:600;font-size:15px;margin-bottom:4px">Download the extension files</div><div style="color:var(--text2);font-size:13px;line-height:1.6">Click the download button above. A ZIP file (<code style="background:var(--bg3);padding:2px 5px;border-radius:3px">podlens-extension-v1.1.0.zip</code>) will save to your Downloads folder.</div></div>
+    </div>
+    <div style="display:flex;gap:20px;padding:24px;border-bottom:1px solid var(--border);background:var(--bg2)">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;line-height:1">2</div>
+      <div><div style="font-weight:600;font-size:15px;margin-bottom:4px">Unzip the file</div><div style="color:var(--text2);font-size:13px;line-height:1.6">Double-click the ZIP to extract it. You&rsquo;ll get a folder called <code style="background:var(--bg3);padding:2px 5px;border-radius:3px">podlens-extension</code>.</div></div>
+    </div>
+    <div style="display:flex;gap:20px;padding:24px;border-bottom:1px solid var(--border);background:var(--bg2)">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;line-height:1">3</div>
+      <div><div style="font-weight:600;font-size:15px;margin-bottom:4px">Open Chrome Extensions</div><div style="color:var(--text2);font-size:13px;line-height:1.6">In Chrome, go to <code style="background:var(--bg3);padding:2px 5px;border-radius:3px">chrome://extensions</code> &mdash; or Menu &rarr; Extensions &rarr; Manage Extensions.</div></div>
+    </div>
+    <div style="display:flex;gap:20px;padding:24px;border-bottom:1px solid var(--border);background:var(--bg2)">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;line-height:1">4</div>
+      <div><div style="font-weight:600;font-size:15px;margin-bottom:4px">Enable Developer Mode</div><div style="color:var(--text2);font-size:13px;line-height:1.6">Toggle the <strong>Developer mode</strong> switch in the top-right corner of the Extensions page.</div></div>
+    </div>
+    <div style="display:flex;gap:20px;padding:24px;background:var(--bg2)">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;line-height:1">5</div>
+      <div><div style="font-weight:600;font-size:15px;margin-bottom:4px">Load the extension</div><div style="color:var(--text2);font-size:13px;line-height:1.6">Click <strong>Load unpacked</strong> and select the <code style="background:var(--bg3);padding:2px 5px;border-radius:3px">podlens-extension</code> folder you unzipped. The Podlens icon will appear in your toolbar immediately.</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;background:var(--bg3);border-radius:8px;padding:18px 20px;border-left:3px solid var(--navy)">
+    <div style="font-weight:600;font-size:14px;margin-bottom:4px">Submitting to the Chrome Web Store</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.6">We&rsquo;re submitting to the Chrome Web Store. Until approval, install manually using the steps above &mdash; it takes under 2 minutes and works identically.</div>
+  </div>
+</div>
+
+<div class="coming-soon" style="max-width:680px">
+  <h2>While you&rsquo;re using it</h2>
+  <p>Visit any YouTube podcast or Spotify episode and the Podlens icon will glow in your toolbar. Click it to see instant bias analysis &mdash; bias label, political lean bar, and key findings appear in seconds.</p>
+  <div class="browser-badges" style="margin-top:20px">
+    <div class="browser-badge" style="border-color:var(--navy);color:var(--text)">&#10003; YouTube</div>
+    <div class="browser-badge" style="border-color:var(--navy);color:var(--text)">&#10003; Spotify</div>
+    <div class="browser-badge" style="border-color:var(--navy);color:var(--text)">&#10003; Apple Podcasts</div>
+    <div class="browser-badge">Podbean</div>
+    <div class="browser-badge">SoundCloud</div>
   </div>
 </div>
 
