@@ -24,6 +24,21 @@
     Content-Security-Policy = "default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data: blob:; media-src 'self' https: blob:; frame-src https:; connect-src 'self' https: wss: ws:; font-src 'self' https: data:; worker-src 'self' blob:;"
 
 [[redirects]]
+  from = "/account/profile"
+  to = "/account.html?tab=profile"
+  status = 200
+
+[[redirects]]
+  from = "/account/settings"
+  to = "/account.html?tab=settings"
+  status = 200
+
+[[redirects]]
+  from = "/account/billing"
+  to = "/account.html?tab=billing"
+  status = 200
+
+[[redirects]]
   from = "/kr"
   to = "/index.html"
   status = 200

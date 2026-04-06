@@ -3224,9 +3224,11 @@ function _renderNavAvatar(u) {
     ? '<img src="' + _escHtml(avatarUrl) + '" alt="' + _escHtml(displayName) + '" class="dropdown-avatar" onerror="this.outerHTML=getDropdownInitialsAvatar(\'' + _escHtml(displayName).replace(/'/g, "\\'") + '\')">'
     : '<div class="dropdown-avatar-initials" style="background:' + _getAvatarColor(displayName) + '">' + _getInitials(displayName) + '</div>';
   var tierLabel = u.plan || 'free';
-  var adminLink = u.isSuperAdmin
-    ? '<a href="#admin" onclick="showView(\'admin\');adminLoad(\'overview\');toggleUserMenu();return false;" style="color:#dc2626;font-weight:700">🔴 Admin</a><div class="dropdown-divider"></div>'
+  var isSuperAdmin = u.email === 'academekorea@gmail.com' || u.isSuperAdmin;
+  var adminRows = isSuperAdmin
+    ? '<a href="/account?tab=admin" class="dropdown-item" style="color:#dc2626;font-weight:600">\uD83D\uDD34 Admin Panel</a><div class="dropdown-divider"></div>'
     : '';
+  var adminBadge = isSuperAdmin ? ' <span style="background:#dc2626;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;letter-spacing:.04em;vertical-align:middle">ADMIN</span>' : '';
   el.innerHTML = '<div class="notif-bell-wrap" id="notif-bell-wrap">'
     + '<button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifDropdown()" title="Notifications">🔔</button>'
     + '<span class="notif-badge" id="notif-badge"></span>'
@@ -3238,14 +3240,14 @@ function _renderNavAvatar(u) {
     + '<button class="nav-avatar-btn" id="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">' + avatarBtnInner + '</button>'
     + '<div class="profile-dropdown" id="user-dropdown">'
     + '<div class="profile-dropdown-header">' + headerAvatarHtml
-    + '<div><div class="dropdown-name">' + _escHtml(displayName) + '</div>'
+    + '<div><div class="dropdown-name">' + _escHtml(displayName) + adminBadge + '</div>'
     + '<div class="dropdown-email">' + _escHtml(u.email || '') + '</div>'
     + '<div class="dropdown-tier">' + tierLabel + ' plan</div></div></div>'
     + '<div class="dropdown-divider"></div>'
-    + adminLink
-    + '<a href="/account" class="dropdown-item">\u2699\uFE0F Settings</a>'
+    + adminRows
+    + '<a href="/account?tab=profile" class="dropdown-item">\uD83D\uDC64 View &amp; Edit Profile</a>'
+    + '<a href="/account?tab=settings" class="dropdown-item">\u2699\uFE0F Settings</a>'
     + '<a href="/account?tab=billing" class="dropdown-item">\uD83D\uDCB3 Billing &amp; Plans</a>'
-    + '<a href="/account?tab=security" class="dropdown-item">\uD83D\uDD12 Security</a>'
     + '<div class="dropdown-divider"></div>'
     + '<button class="danger" onclick="doLogout()">Sign out</button>'
     + '</div></div>';
