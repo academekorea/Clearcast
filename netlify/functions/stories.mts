@@ -16,6 +16,13 @@ function parseIsoDuration(iso: string): string {
 export default async (req: Request) => {
   const url = new URL(req.url);
   const query = url.searchParams.get("q") || "news";
+  const region = url.searchParams.get("region") || "us";
+  const lang = url.searchParams.get("lang") || "";
+
+  // Derive country code and language from region param
+  const isKorean = region === "ko-KR" || region === "kr";
+  const regionCode = isKorean ? "KR" : (region !== "international" && region.length === 2 ? region.toUpperCase() : "US");
+  const langCode = lang || (isKorean ? "ko" : "en");
 
   const apiKey = Netlify.env.get("YOUTUBE_API_KEY");
   if (!apiKey) {
@@ -34,6 +41,8 @@ export default async (req: Request) => {
     searchUrl.searchParams.set("maxResults", "20");
     searchUrl.searchParams.set("order", "date");
     searchUrl.searchParams.set("videoDuration", "long");
+    searchUrl.searchParams.set("regionCode", regionCode);
+    searchUrl.searchParams.set("relevanceLanguage", langCode);
     searchUrl.searchParams.set("key", apiKey);
 
     const searchRes = await fetch(searchUrl.toString());

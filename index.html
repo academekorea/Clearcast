@@ -684,11 +684,22 @@ body.player-on .lap{bottom:72px}
 .hb-plts{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
 
 /* ── STORY ROWS ── */
-.story-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .1s;align-items:flex-start}
-.story-row:hover{opacity:.75}
-.story-img-wrap{flex-shrink:0}
-.story-img{width:72px;height:72px;border-radius:var(--r);object-fit:cover}
+.story-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.story-img-wrap{flex-shrink:0;position:relative;cursor:pointer}
+.story-img-wrap:hover .story-play-btn{opacity:1}
+.story-img{width:72px;height:72px;border-radius:var(--r);object-fit:cover;display:block}
 .story-img-ph{width:72px;height:72px;border-radius:var(--r);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:26px}
+.story-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);border-radius:var(--r);border:none;cursor:pointer;font-size:20px;color:#fff;opacity:0;transition:opacity .15s}
+.story-play-btn:hover{opacity:1!important}
+.foryou-section{margin-bottom:24px}
+.foryou-section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px}
+.foryou-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.foryou-card{cursor:pointer;transition:opacity .1s;border-radius:var(--r);overflow:hidden}
+.foryou-card:hover{opacity:.8}
+.foryou-art{width:100%;aspect-ratio:1;object-fit:cover;display:block;border-radius:var(--r);background:var(--bg3)}
+.foryou-name{font-size:12px;font-weight:500;margin-top:4px;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.foryou-host{font-size:10px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.foryou-context{font-size:12px;color:var(--text3);margin-bottom:16px;padding:8px 12px;background:var(--bg2);border-radius:var(--r);border-left:3px solid var(--border2)}
 .story-body{flex:1;min-width:0}
 .story-show{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:2px}
 .story-title{font-size:14px;font-weight:500;margin-bottom:4px;line-height:1.35}
@@ -2169,6 +2180,8 @@ body.light-mode,[data-theme="light"]{
             </div>
             <div class="spotlight-grid" id="spotlight-grid"></div>
           </div>
+          <div id="foryou-context" class="foryou-context" style="display:none"></div>
+          <div id="foryou-trending"></div>
           <div id="hero-wrap"></div>
           <div class="feed-loading" id="feed-loading"><div class="feed-spin"></div></div>
           <div id="story-list"></div>
@@ -3571,12 +3584,86 @@ function updateFollowingSidebar() {
 function fetchTopic(t) { showFeed('foryou'); fetchStories(t); var chip=document.querySelector('.t-chip[data-topic="'+t+'"]'); if(chip) setChip(chip); }
 
 // ── INIT ──
+function detectUserRegion() {
+  var saved = localStorage.getItem('podlens-region');
+  if (saved) return saved;
+  var lang = navigator.language || '';
+  if (lang.startsWith('ko')) {
+    localStorage.setItem('podlens-region', 'ko-KR');
+    return 'ko-KR';
+  }
+  return 'international';
+}
+
 function initFeed() {
   _feedInit = true;
   buildTopicStrip();
-  fetchStories('news');
+  var region = detectUserRegion();
+  var user = plUser();
+  // Show personalization context
+  var ctxEl = document.getElementById('foryou-context');
+  if (ctxEl) {
+    var countryName = region === 'ko-KR' ? '🇰🇷 Korea' : '🌍 International';
+    ctxEl.textContent = 'Trending in ' + countryName + (user && user.name ? ' · Personalized for ' + user.name : '');
+    ctxEl.style.display = 'block';
+  }
+  // Load For You shows (iTunes charts for their country)
+  loadForyouShows(region, user);
+  // Load stories with region filtering (no wrong-language content)
+  var lang = region === 'ko-KR' ? 'ko' : 'en';
+  fetchStories('news', region, lang);
   renderTopShows();
   renderRecentlyAnalyzed();
+}
+
+async function loadForyouShows(region, user) {
+  var el = document.getElementById('foryou-trending');
+  if (!el) return;
+  try {
+    var userId = (user && user.id) ? user.id : '';
+    var data = await fetch('/api/for-you?region=' + encodeURIComponent(region) + (userId ? '&userId=' + encodeURIComponent(userId) : ''), { signal: AbortSignal.timeout(8000) }).then(function(r){ return r.json(); });
+    var html = '';
+    if (data.sections && data.sections.trending && data.sections.trending.length) {
+      var countryLabel = data.country === 'kr' ? '🇰🇷 한국 인기 팟캐스트' : '🔥 Trending Podcasts';
+      html += '<div class="foryou-section"><div class="foryou-section-label">'+countryLabel+'</div><div class="foryou-grid">';
+      html += data.sections.trending.slice(0, 6).map(function(s) {
+        var safeName = (s.name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+        var slug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        var onClick = s.itunesId
+          ? 'window.open(\'https://podcasts.apple.com/podcast/id'+s.itunesId+'\',\'_blank\')'
+          : 'document.getElementById(\'url-input\').value=\''+safeName+'\';showView(\'analyze\')';
+        return '<div class="foryou-card" onclick="'+onClick+'">'
+          +'<img class="foryou-art" src="'+_escHtml(s.artwork||'')+'" alt="'+_escHtml(s.name||'')+'" loading="lazy" onerror="this.style.display=\'none\'">'
+          +'<div class="foryou-name">'+_escHtml(s.name||'')+'</div>'
+          +'<div class="foryou-host">'+_escHtml(s.host||s.category||'')+'</div>'
+          +'</div>';
+      }).join('');
+      html += '</div></div>';
+    }
+    // Category-based interest sections
+    var interests = data.interests || [];
+    var sectionKeys = Object.keys(data.sections||{}).filter(function(k){ return k !== 'trending'; });
+    sectionKeys.forEach(function(key, i) {
+      var shows = data.sections[key];
+      if (!shows || !shows.length) return;
+      var catLabel = key.charAt(0).toUpperCase() + key.slice(1);
+      if (interests[i]) catLabel = 'Based on: ' + interests[i];
+      html += '<div class="foryou-section"><div class="foryou-section-label">'+_escHtml(catLabel)+'</div><div class="foryou-grid">';
+      html += shows.slice(0,6).map(function(s) {
+        var safeName = (s.name||'').replace(/'/g,"\\'");
+        var onClick = s.itunesId
+          ? 'window.open(\'https://podcasts.apple.com/podcast/id'+s.itunesId+'\',\'_blank\')'
+          : 'document.getElementById(\'url-input\').value=\''+safeName+'\';showView(\'analyze\')';
+        return '<div class="foryou-card" onclick="'+onClick+'">'
+          +'<img class="foryou-art" src="'+_escHtml(s.artwork||'')+'" alt="'+_escHtml(s.name||'')+'" loading="lazy" onerror="this.style.display=\'none\'">'
+          +'<div class="foryou-name">'+_escHtml(s.name||'')+'</div>'
+          +'<div class="foryou-host">'+_escHtml(s.host||s.category||'')+'</div>'
+          +'</div>';
+      }).join('');
+      html += '</div></div>';
+    });
+    el.innerHTML = html;
+  } catch(e) { /* non-critical — just hide the section */ }
 }
 
 // ── YOUTUBE ──
@@ -3620,13 +3707,15 @@ function covBar(ep, dark) {
 
 // ── STORIES ──
 function doSearch() { var q=document.getElementById('story-q').value.trim(); if(!q)return; setChip(document.querySelector('.t-chip')); fetchStories(q); }
-async function fetchStories(query) {
+async function fetchStories(query, region, lang) {
   _currentTopic = query;
   var loading=document.getElementById('feed-loading'), list=document.getElementById('story-list'), empty=document.getElementById('feed-empty'), hero=document.getElementById('hero-wrap');
   if(!loading||!list)return;
   loading.style.display='flex'; list.innerHTML=''; empty.style.display='none'; if(hero)hero.innerHTML='';
   try {
-    var data=await fetch('/api/stories?q='+encodeURIComponent(query)).then(function(r){return r.json();});
+    var r = region || detectUserRegion();
+    var l = lang || (r === 'ko-KR' ? 'ko' : 'en');
+    var data=await fetch('/api/stories?q='+encodeURIComponent(query)+'&region='+encodeURIComponent(r)+'&lang='+encodeURIComponent(l), { signal: AbortSignal.timeout(10000) }).then(function(r){return r.json();});
     loading.style.display='none';
     var eps=data.results||[];
     if(!eps.length){empty.style.display='block';return;}
@@ -3658,21 +3747,30 @@ function renderStoryRow(ep) {
   var safeUrl=analyzeTarget.replace(/"/g,'&quot;');
   var safeTitle=(ep.epTitle||'').replace(/"/g,'').replace(/'/g,'');
   var safeShow=(ep.showName||'').replace(/"/g,'').replace(/'/g,'');
-  var safeEp=JSON.stringify({t:ep.epTitle,s:ep.showName,yt:ep.youtubeUrl||'',sp:ep.spotifyUrl||'',ap:ep.appleUrl||'',feed:ep.feedUrl||''}).replace(/"/g,'&quot;');
+  var safeVid=(vid||'').replace(/"/g,'');
   var art=ep.artwork?'<img class="story-img" src="'+ep.artwork+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=story-img-ph>&#127897;</div>\'">':'<div class="story-img-ph">&#127897;</div>';
   var meta=[ep.duration,ep.releaseDate].filter(Boolean).join(' · ');
-  return '<div class="story-row" onclick="expandStory(this)" data-vid="'+(vid||'')+'" data-ep="'+safeEp+'">'
-    +'<div class="story-img-wrap">'+art+'</div>'
-    +'<div class="story-body"><div class="story-show">'+ep.showName+'</div><div class="story-title">'+ep.epTitle+'</div>'+(meta?'<div class="story-meta">'+meta+'</div>':'')+covBar(ep,false)
-    +'<div class="story-plts">'+(ep.youtubeUrl?'<a class="plt yt" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">YT</a>':'')+(ep.spotifyUrl?'<a class="plt sp" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>':'')+(ep.appleUrl?'<a class="plt ap" href="'+ep.appleUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>':'')+(analyzeTarget?'<button class="plt az" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeUrl+'&quot;,&quot;'+safeTitle+'&quot;,&quot;'+safeShow+'&quot;)">Analyze &#8599;</button>':'')+'</div></div></div>';
+  // Thumbnail area: static image + play button overlay (does NOT replace action buttons)
+  var thumbHtml='<div class="story-img-wrap" id="svw-'+safeVid+'">'+art
+    +(vid?'<button class="story-play-btn" onclick="event.stopPropagation();loadStoryPlayer(\''+safeVid+'\')" aria-label="Play video">▶</button>':'')
+    +'</div>';
+  // Action buttons in their own row — always visible, never replaced
+  var actionsHtml='<div class="story-plts">'
+    +(ep.youtubeUrl?'<a class="plt yt" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">YT</a>':'')
+    +(ep.spotifyUrl?'<a class="plt sp" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>':'')
+    +(ep.appleUrl?'<a class="plt ap" href="'+ep.appleUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>':'')
+    +(analyzeTarget?'<button class="plt az" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeUrl+'&quot;,&quot;'+safeTitle+'&quot;,&quot;'+safeShow+'&quot;)">Analyze &#8599;</button>':'')
+    +'</div>';
+  return '<div class="story-row">'
+    +thumbHtml
+    +'<div class="story-body"><div class="story-show">'+ep.showName+'</div><div class="story-title">'+ep.epTitle+'</div>'+(meta?'<div class="story-meta">'+meta+'</div>':'')+covBar(ep,false)+actionsHtml+'</div></div>';
 }
-function expandStory(el) {
-  var vid=el.dataset.vid;
-  if (!vid) return;
-  var ep=JSON.parse(el.dataset.ep.replace(/&quot;/g,'"'));
-  var safeUrl=(ep.feed||'').replace(/"/g,'&quot;');
-  el.innerHTML='<div style="width:100%;padding:10px">'+ytEmbed(vid)+'<div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-top:8px;margin-bottom:3px">'+ep.s+'</div><div style="font-size:13px;font-weight:500;margin-bottom:8px">'+ep.t+'</div><div style="display:flex;gap:4px">'+(ep.sp?'<a class="plt sp" href="'+ep.sp+'" target="_blank" rel="noopener">Spotify</a>':'')+(ep.ap?'<a class="plt ap" href="'+ep.ap+'" target="_blank" rel="noopener">Apple</a>':'')+(ep.feed?'<button class="plt az" onclick="goAnalyze(&quot;'+safeUrl+'&quot;)">Analyze &#8599;</button>':'')+'</div></div>';
-  el.onclick=null; el.style.cursor='default';
+
+// Load YouTube player into thumbnail container only — action buttons stay untouched
+function loadStoryPlayer(videoId) {
+  var wrap = document.getElementById('svw-'+videoId);
+  if (!wrap) return;
+  wrap.innerHTML='<iframe src="https://www.youtube.com/embed/'+videoId+'?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:120px;height:72px;border-radius:var(--r);display:block"></iframe>';
 }
 
 // ── BROWSE ──

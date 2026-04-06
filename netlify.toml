@@ -162,3 +162,8 @@
   from = "/api/search"
   to = "/.netlify/functions/search"
   status = 200
+
+[[redirects]]
+  from = "/api/for-you"
+  to = "/.netlify/functions/for-you"
+  status = 200
