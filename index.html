@@ -4976,10 +4976,13 @@ async function loadShowProfile(slug,compareSlug) {
   el.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3);font-size:12px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading show intelligence&hellip;</div>';
   try {
     var data=await fetch('/api/show-profile?id='+encodeURIComponent(slug)).then(function(r){return r.json();});
-    // FIX 2: Enrich with real iTunes metadata
+    // Enrich with real iTunes metadata
     var showName=(data.show&&data.show.name)||slug;
     var itunesMeta=await fetchItunesMeta(showName);
-    _spData=data; renderShowProfile(data,slug,compareSlug,itunesMeta);
+    // Fetch RSS episodes + description in parallel with iTunes
+    var rssFeedUrl=(itunesMeta&&itunesMeta.feedUrl)||(data.show&&data.show.feedUrl)||null;
+    var rssData=rssFeedUrl?await fetchRSSFeed(rssFeedUrl):null;
+    _spData=data; renderShowProfile(data,slug,compareSlug,itunesMeta,rssData);
     if (compareSlug) { renderCompareLoading(); var cdata=await fetch('/api/show-profile?id='+encodeURIComponent(compareSlug)).then(function(r){return r.json();}); _spCompareData=cdata; renderComparePanel(data,cdata); }
   } catch(e) { el.innerHTML='<div style="padding:40px 20px;text-align:center;color:var(--text3)">Failed to load show profile. Please try again.</div>'; }
 }
@@ -4988,7 +4991,7 @@ async function loadShowProfile(slug,compareSlug) {
 async function fetchItunesMeta(showName) {
   if (!showName) return null;
   try {
-    var res=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(showName)+'&media=podcast&entity=podcast&limit=3',{signal:AbortSignal.timeout(5000)});
+    var res=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(showName)+'&media=podcast&entity=podcast&limit=5',{signal:AbortSignal.timeout(5000)});
     if (!res.ok) return null;
     var d=await res.json();
     var results=d.results||[];
@@ -5002,6 +5005,10 @@ async function fetchItunesMeta(showName) {
       var score=overlap/Math.max(wa.size,wb.size,1);
       if (score>bestScore){bestScore=score;best=r;}
     });
+    // Collect similar shows (rest of results excluding best match)
+    var similar=results.filter(function(r){return r!==best;}).slice(0,3).map(function(r){
+      return {name:r.collectionName||'',artist:r.artistName||'',artwork:r.artworkUrl100||'',itunesUrl:r.collectionViewUrl||'',feedUrl:r.feedUrl||''};
+    });
     return {
       artwork: best.artworkUrl600||best.artworkUrl100||null,
       name: best.collectionName||best.trackName||null,
@@ -5010,10 +5017,44 @@ async function fetchItunesMeta(showName) {
       trackCount: best.trackCount||null,
       feedUrl: best.feedUrl||null,
       itunesUrl: best.collectionViewUrl||best.trackViewUrl||null,
+      description: best.description||best.longDescription||null,
+      country: best.country||null,
+      similar: similar,
     };
   } catch(e) { return null; }
 }
-function renderShowProfile(data,slug,compareSlug,itunes) {
+
+// Fetch and parse RSS feed for recent episodes + description
+async function fetchRSSFeed(feedUrl) {
+  if (!feedUrl) return null;
+  try {
+    var res=await fetch('/api/proxy-image?url='+encodeURIComponent(feedUrl),{signal:AbortSignal.timeout(8000)});
+    if (!res.ok) return null;
+    var text=await res.text();
+    if (!text.includes('<rss') && !text.includes('<feed')) return null;
+    // Parse description from channel
+    var descMatch=text.match(/<description><!\[CDATA\[([\s\S]*?)\]\]>/i)
+      ||text.match(/<description>([\s\S]*?)<\/description>/i);
+    var desc=descMatch?descMatch[1].trim().replace(/<[^>]*>/g,'').substring(0,1200):'';
+    var hostMatch=text.match(/<itunes:author><!\[CDATA\[(.*?)\]\]>/i)
+      ||text.match(/<itunes:author>(.*?)<\/itunes:author>/i);
+    var host=hostMatch?hostMatch[1].trim():'';
+    // Parse episodes
+    var items=text.match(/<item>[\s\S]*?<\/item>/gi)||[];
+    var episodes=items.slice(0,10).map(function(item){
+      var title=(item.match(/<title><!\[CDATA\[(.*?)\]\]>/i)||item.match(/<title>(.*?)<\/title>/i)||['',''])[1];
+      var pubDate=(item.match(/<pubDate>(.*?)<\/pubDate>/i)||['',''])[1];
+      var duration=(item.match(/<itunes:duration>(.*?)<\/itunes:duration>/i)||['',''])[1];
+      var epUrl=(item.match(/<enclosure[^>]+url="([^"]+)"/i)||['',''])[1]
+        ||(item.match(/<link>(.*?)<\/link>/i)||['',''])[1];
+      var guid=(item.match(/<guid[^>]*>(.*?)<\/guid>/i)||['',''])[1];
+      var artwork=(item.match(/<itunes:image[^>]+href="([^"]+)"/i)||['',''])[1];
+      return {title:title.trim(),pubDate:pubDate.trim(),duration:duration.trim(),url:epUrl.trim(),guid:guid.trim(),artwork:artwork.trim()};
+    }).filter(function(ep){return ep.title;});
+    return {description:desc, host:host, episodes:episodes};
+  } catch(e) { return null; }
+}
+function renderShowProfile(data,slug,compareSlug,itunes,rss) {
   var show=data.show||{}, m=data.metrics||{}, episodes=data.episodes||[], driftData=data.driftData||[];
   var yt=data.youtubeChannel||null;
   var el=document.getElementById('sp-content');
@@ -5024,6 +5065,12 @@ function renderShowProfile(data,slug,compareSlug,itunes) {
   var displayName=(itunes&&itunes.name)||show.name||slug;
   var feedUrl=(itunes&&itunes.feedUrl)||show.feedUrl||null;
   var eName=encodeURIComponent(displayName);
+  var hostName=(itunes&&itunes.artist)||(rss&&rss.host)||show.host||null;
+  var description=(itunes&&itunes.description)||(rss&&rss.description)||show.description||null;
+  var totalEpisodes=(itunes&&itunes.trackCount)||null;
+  var countryFlag={'US':'🇺🇸','GB':'🇬🇧','AU':'🇦🇺','CA':'🇨🇦','KR':'🇰🇷','IE':'🇮🇪','NZ':'🇳🇿','IN':'🇮🇳'}[(itunes&&itunes.country)||'']||'';
+  var rssEpisodes=(rss&&rss.episodes)||[];
+  var similar=(itunes&&itunes.similar)||[];
   var html='';
 
   // YouTube channel layout — banner + avatar + stats + video grid
@@ -5050,6 +5097,13 @@ function renderShowProfile(data,slug,compareSlug,itunes) {
     if (yt.channelId) html+='<a href="https://youtube.com/channel/'+yt.channelId+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:12px;font-weight:600;color:var(--text2);text-decoration:none">View channel ↗</a>';
     if (data.episodeCount>0) html+='<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share &#8599;</button>';
     html+='</div></div></div>';
+    // Channel description
+    var ytDesc=yt.channelDescription||(rss&&rss.description)||null;
+    if (ytDesc) {
+      var ytShort=ytDesc.length>400?ytDesc.substring(0,400)+'…':ytDesc;
+      html+='<div class="sp-section"><div class="sp-section-lbl">About this channel</div>';
+      html+='<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+ytShort+'</div></div>';
+    }
     // Recent videos grid
     if (yt.recentVideos&&yt.recentVideos.length) {
       html+='<div class="sp-section"><div class="sp-section-lbl">Recent videos ('+yt.recentVideos.length+')</div>';
@@ -5069,11 +5123,12 @@ function renderShowProfile(data,slug,compareSlug,itunes) {
     // Standard podcast layout
     var artHtml=artwork?'<img class="sp-art" src="'+artwork+'" alt="" onerror="this.className=\'sp-art-ph\';this.textContent=\'🎙\'">':"<div class='sp-art-ph'>&#127897;</div>";
     html+='<div class="sp-header">'+artHtml+'<div class="sp-header-body">';
-    html+='<div class="sp-show-label">Podcast'+(itunes&&itunes.category?' &middot; '+itunes.category:'')+'</div>';
+    html+='<div class="sp-show-label">Podcast'+(itunes&&itunes.category?' &middot; '+itunes.category:'')+(countryFlag?' &middot; '+countryFlag:'')+'</div>';
     html+='<div class="sp-name">'+displayName+'</div>';
-    if (itunes&&itunes.artist) html+='<div style="font-size:13px;color:var(--text3);margin-bottom:8px">'+itunes.artist+'</div>';
+    if (hostName) html+='<div style="font-size:14px;color:var(--text2);margin-bottom:6px;font-weight:500">by '+hostName+'</div>';
+    if (totalEpisodes) html+='<div style="font-size:12px;color:var(--text3);margin-bottom:8px">'+totalEpisodes.toLocaleString()+' episodes</div>';
     html+='<div class="sp-badges">'+biasBadge;
-    if (data.episodeCount>0) html+='<span class="bpill" style="background:var(--bg3);border-color:var(--border2);color:var(--text2)">'+data.episodeCount+' episode'+(data.episodeCount===1?'':'s')+' analyzed</span>';
+    if (data.episodeCount>0) html+='<span class="bpill" style="background:var(--bg3);border-color:var(--border2);color:var(--text2)">'+data.episodeCount+' analyzed on Podlens</span>';
     html+='</div>';
     html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">';
     html+='<a href="https://open.spotify.com/search/'+eName+'/podcasts" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Spotify</a>';
@@ -5085,6 +5140,20 @@ function renderShowProfile(data,slug,compareSlug,itunes) {
     html+='</div></div></div>';
   }
 
+  // ABOUT THIS SHOW — description from iTunes or RSS
+  if (description) {
+    var shortDesc=description.length>400?description.substring(0,400)+'…':description;
+    var needsMore=description.length>400;
+    html+='<div class="sp-section">';
+    html+='<div class="sp-section-lbl">About this show</div>';
+    html+='<div id="sp-desc-short" style="font-size:14px;line-height:1.65;color:var(--text2)">'+shortDesc+'</div>';
+    if (needsMore) {
+      html+='<div id="sp-desc-full" style="font-size:14px;line-height:1.65;color:var(--text2);display:none">'+description+'</div>';
+      html+='<button id="sp-desc-toggle" onclick="(function(){var s=document.getElementById(\'sp-desc-short\'),f=document.getElementById(\'sp-desc-full\'),b=document.getElementById(\'sp-desc-toggle\');var shown=f.style.display!==\'none\';s.style.display=shown?\'block\':\'none\';f.style.display=shown?\'none\':\'block\';b.textContent=shown?\'Read more\':\'Show less\';})()" style="margin-top:8px;background:none;border:none;color:var(--navy);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);padding:0">Read more</button>';
+    }
+    html+='</div>';
+  }
+
   if (data.episodeCount===0 && !yt) {
     html+='<div class="sp-empty">';
     html+='<h3>Nothing analyzed from this show yet</h3>';
@@ -5094,7 +5163,38 @@ function renderShowProfile(data,slug,compareSlug,itunes) {
     } else {
       html+='<button class="sp-analyze-btn" style="font-size:15px;padding:12px 28px" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
     }
-    html+='</div>'+buildCompareTrigger(slug,null);
+    html+='</div>';
+    // Show latest RSS episodes even for unanalyzed shows
+    if (rssEpisodes.length) {
+      html+='<div class="sp-section"><div class="sp-section-lbl">Latest episodes — pick one to analyze</div>';
+      rssEpisodes.forEach(function(ep){
+        var safeUrl=(ep.url||'').replace(/"/g,'&quot;');
+        var dateStr='';
+        if (ep.pubDate) { try { dateStr=new Date(ep.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){} }
+        var dur=ep.duration?formatDuration(ep.duration):'';
+        var meta=[dateStr,dur].filter(Boolean).join(' · ');
+        html+='<div class="sp-ep-row" style="cursor:pointer" onclick="'+(safeUrl?'goAnalyze(&quot;'+safeUrl+'&quot;)':'showView(\'analyze\')')+'">';
+        html+='<div class="sp-ep-title">'+ep.title+'</div>';
+        if (meta) html+='<div class="sp-ep-date">'+meta+'</div>';
+        html+='<div style="margin-top:6px">';
+        if (safeUrl) html+='<button onclick="event.stopPropagation();goAnalyze(&quot;'+safeUrl+'&quot;)" style="font-size:11px;padding:4px 10px;background:var(--navy);color:#fff;border:none;border-radius:3px;cursor:pointer;font-family:var(--ff);font-weight:600">Analyze &rarr;</button>';
+        html+='</div></div>';
+      });
+      html+='</div>';
+    }
+    if (similar.length) {
+      html+='<div class="sp-section"><div class="sp-section-lbl">Similar shows</div>';
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">';
+      similar.forEach(function(s){
+        var sSlug=s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        html+='<div style="display:flex;gap:10px;align-items:center;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer" onclick="showView(\'show\');loadShowProfile(\''+sSlug+'\',null)">';
+        html+=(s.artwork?'<img src="'+artworkProxy(s.artwork)+'" style="width:40px;height:40px;border-radius:6px;object-fit:cover;flex-shrink:0" alt="" onerror="this.style.display=\'none\'">':'<div style="width:40px;height:40px;border-radius:6px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center">&#127897;</div>');
+        html+='<div style="min-width:0"><div style="font-size:12px;font-weight:600;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+s.name+'</div>';
+        html+='<div style="font-size:11px;color:var(--text3)">'+s.artist+'</div></div></div>';
+      });
+      html+='</div></div>';
+    }
+    html+=buildCompareTrigger(slug,null);
     el.innerHTML=html;
     // Store enriched feedUrl for goAnalyzeShow()
     if (!show.feedUrl && feedUrl) { if (!_spData.show) _spData.show={}; _spData.show.feedUrl=feedUrl; }
@@ -5134,7 +5234,7 @@ function renderShowProfile(data,slug,compareSlug,itunes) {
   }
   if (driftData.length>=3) { html+='<div class="sp-section"><div class="sp-section-lbl">Bias drift &mdash; score over time</div>'+buildDriftSvg(driftData)+'</div>'; }
   if (episodes.length) {
-    html+='<div class="sp-section"><div class="sp-section-lbl">Analyzed episodes ('+episodes.length+')</div>';
+    html+='<div class="sp-section"><div class="sp-section-lbl">Analyzed on Podlens ('+episodes.length+')</div>';
     episodes.forEach(function(ep){
       var bpCls={['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[ep.biasLabel]||'bp-center';
       var dateStr=ep.createdAt?new Date(ep.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
@@ -5144,9 +5244,55 @@ function renderShowProfile(data,slug,compareSlug,itunes) {
     });
     html+='</div>';
   }
+
+  // LATEST EPISODES from RSS feed
+  if (rssEpisodes.length) {
+    html+='<div class="sp-section"><div class="sp-section-lbl">Latest episodes</div>';
+    rssEpisodes.forEach(function(ep){
+      var safeUrl=(ep.url||'').replace(/"/g,'&quot;');
+      var dateStr='';
+      if (ep.pubDate) { try { dateStr=new Date(ep.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){} }
+      var dur=ep.duration?formatDuration(ep.duration):'';
+      var meta=[dateStr,dur].filter(Boolean).join(' · ');
+      html+='<div class="sp-ep-row" style="cursor:pointer" onclick="'+( safeUrl ? 'goAnalyze(&quot;'+safeUrl+'&quot;)' : 'showView(\'analyze\')')+'">';
+      html+='<div class="sp-ep-title">'+ep.title+'</div>';
+      if (meta) html+='<div class="sp-ep-date">'+meta+'</div>';
+      html+='<div style="display:flex;gap:6px;margin-top:6px">';
+      if (safeUrl) html+='<button onclick="event.stopPropagation();goAnalyze(&quot;'+safeUrl+'&quot;)" style="font-size:11px;padding:4px 10px;background:var(--navy);color:#fff;border:none;border-radius:3px;cursor:pointer;font-family:var(--ff);font-weight:600">Analyze &rarr;</button>';
+      html+='</div></div>';
+    });
+    html+='</div>';
+  }
+
+  // SIMILAR SHOWS
+  if (similar.length) {
+    html+='<div class="sp-section"><div class="sp-section-lbl">Similar shows</div>';
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">';
+    similar.forEach(function(s){
+      var sSlug=s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      var safeUrl=(s.feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      html+='<div style="display:flex;gap:10px;align-items:center;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer" onclick="showView(\'show\');loadShowProfile(\''+sSlug+'\',null)">';
+      html+=(s.artwork?'<img src="'+artworkProxy(s.artwork)+'" style="width:40px;height:40px;border-radius:6px;object-fit:cover;flex-shrink:0" alt="" onerror="this.style.display=\'none\'">':'<div style="width:40px;height:40px;border-radius:6px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center">&#127897;</div>');
+      html+='<div style="min-width:0"><div style="font-size:12px;font-weight:600;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+s.name+'</div>';
+      html+='<div style="font-size:11px;color:var(--text3)">'+s.artist+'</div></div></div>';
+    });
+    html+='</div></div>';
+  }
+
   html+='<div id="sp-compare-wrap">'+buildCompareTrigger(_spSlug,compareSlug)+'</div>';
   el.innerHTML=html;
   if (compareSlug&&_spCompareData) renderComparePanel(data,_spCompareData);
+}
+function formatDuration(d) {
+  if (!d) return '';
+  if (typeof d === 'string' && d.includes(':')) {
+    var parts=d.split(':').map(Number);
+    if (parts.length===3) { var h=parts[0],m=parts[1]; return h>0?h+'h '+m+'m':m+'m'; }
+    if (parts.length===2) return parts[0]+'m '+parts[1]+'s';
+  }
+  var secs=parseInt(d,10); if (isNaN(secs)||secs<=0) return '';
+  var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60);
+  return h>0?h+'h '+m+'m':m+'m';
 }
 function spMetric(label,val,sub,barPct,barColor) {
   return '<div class="sp-metric"><div class="sp-metric-lbl">'+label+'</div><div class="sp-metric-val">'+val+'</div><div class="sp-metric-sub">'+sub+'</div><div class="sp-metric-bar"><div class="sp-metric-fill" style="width:'+Math.min(100,Math.max(0,barPct))+'%;background:'+barColor+'"></div></div></div>';
