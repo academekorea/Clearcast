@@ -1637,6 +1637,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 .showcase-card.bias-balanced{border-top:3px solid #10B981;background:linear-gradient(160deg,rgba(16,185,129,.06) 0%,var(--bg-card,var(--bg2)) 40%)}
 .showcase-card-header{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px}
 .showcase-artwork{width:64px;height:64px;border-radius:12px;object-fit:cover;flex-shrink:0;background:var(--bg-secondary,var(--bg3))}
+.showcase-art-fallback{width:64px;height:64px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;font-family:'Playfair Display',Georgia,serif}
 .showcase-show-name{font-size:.9rem;font-weight:700;color:var(--text-primary,var(--text));margin:0 0 4px;line-height:1.3}
 .showcase-episode{font-size:.78rem;color:var(--text-secondary,var(--text2));margin:0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .showcase-bias-section{margin-bottom:12px}
@@ -2037,8 +2038,8 @@ body.light-mode,[data-theme="light"]{
     <!-- SHOWCASE SECTION -->
     <section class="showcase-section" id="see-it">
       <div class="showcase-header">
-        <h2>See it in action</h2>
-        <p>Real analysis. Real podcasts. No signup needed.</p>
+        <h2><span data-en>See it in action</span><span data-ko>실제로 확인해보세요</span></h2>
+        <p><span data-en>Real analysis. Real podcasts. No signup needed.</span><span data-ko>실제 분석. 실제 팟캐스트. 가입 없이 바로 확인.</span></p>
       </div>
       <div class="showcase-grid" id="showcase-grid">
         <div class="showcase-skeleton"><div class="skeleton-line" style="height:64px;width:100%;margin-bottom:16px"></div><div class="skeleton-line" style="height:16px;width:70%"></div><div class="skeleton-line" style="height:14px;width:90%"></div></div>
@@ -2046,9 +2047,9 @@ body.light-mode,[data-theme="light"]{
         <div class="showcase-skeleton"><div class="skeleton-line" style="height:64px;width:100%;margin-bottom:16px"></div><div class="skeleton-line" style="height:16px;width:75%"></div><div class="skeleton-line" style="height:14px;width:80%"></div></div>
       </div>
       <div class="showcase-footer">
-        <p>These are real analyses of real episodes.</p>
-        <p>Connect your podcasts to see what <em>you</em> actually listen to.</p>
-        <a href="#" onclick="openModal('signup');return false;" class="btn-primary" style="margin-top:16px;display:inline-block;text-decoration:none;padding:12px 28px">Get started free &rarr;</a>
+        <p><span data-en>These are real analyses of real episodes.</span><span data-ko>실제 에피소드의 실제 분석입니다.</span></p>
+        <p><span data-en>Connect your podcasts to see what <em>you</em> actually listen to.</span><span data-ko>내가 실제로 듣는 것이 무엇인지 확인해보세요.</span></p>
+        <a href="#" onclick="openModal('signup');return false;" class="btn-primary" style="margin-top:16px;display:inline-block;text-decoration:none;padding:12px 28px"><span data-en>Get started free &rarr;</span><span data-ko>무료로 시작하기 &rarr;</span></a>
       </div>
     </section>
 
@@ -8491,6 +8492,18 @@ function rotateSpotlight() {
     });
 })();
 
+function _showcaseArtFallback(img) {
+  var name = img.alt || '?';
+  var letter = name.charAt(0).toUpperCase();
+  var colors = ['#1a3a5c','#2d6a4f','#6b3a3a','#3a3a6b','#5c4a1a'];
+  var idx = name.charCodeAt(0) % colors.length;
+  var fb = document.createElement('div');
+  fb.className = 'showcase-art-fallback';
+  fb.textContent = letter;
+  fb.style.background = colors[idx];
+  if (img.parentNode) img.parentNode.replaceChild(fb, img);
+}
+
 function renderShowcaseCard(c) {
   var dir = c.bias_direction || 'balanced';
   var score = Math.max(5, Math.min(95, c.bias_score || 50));
@@ -8498,22 +8511,24 @@ function renderShowcaseCard(c) {
   var onclick = c.analysis_url
     ? ''
     : ' onclick="showToast(\'Analysis coming soon — check back shortly\',3000);return false;"';
+  var isKo = document.documentElement.dataset.mode === 'korean';
+  var seeMore = isKo ? '전체 분석 보기 &rarr;' : 'See full analysis &rarr;';
+  var markerLeft = score + '%';
   return '<article class="showcase-card bias-' + dir + '">'
     + '<div class="showcase-card-header">'
-    + '<img src="' + _esc(c.show_artwork || '') + '" alt="' + _esc(c.show_name || '') + '" class="showcase-artwork" onerror="this.src=\'/favicon.svg\'">'
+    + '<img src="' + _esc(c.show_artwork || '') + '" alt="' + _esc(c.show_name || '') + '" class="showcase-artwork" onerror="_showcaseArtFallback(this)">'
     + '<div class="showcase-meta"><h3 class="showcase-show-name">' + _esc(c.show_name || '') + '</h3>'
     + '<p class="showcase-episode">' + _esc(c.episode_title || '') + '</p></div>'
     + '</div>'
     + '<div class="showcase-bias-section">'
-    + '<div class="bias-bar-row">'
-    + '<span class="bias-end-label">LEFT</span>'
-    + '<div class="bias-track"><div class="bias-dot" style="left:' + score + '%"></div></div>'
-    + '<span class="bias-end-label">RIGHT</span>'
+    + '<div class="bias-bar-widget" style="position:relative;height:12px;border-radius:6px;overflow:hidden;margin:8px 0">'
+    + '<div class="bias-bar-gradient" style="position:absolute;inset:0;border-radius:6px;background:linear-gradient(to right,#3B82F6,#60A5FA,#94A3B8,#FCA5A5,#EF4444)"></div>'
+    + '<div class="bias-bar-marker" style="position:absolute;top:50%;left:' + markerLeft + ';transform:translate(-50%,-50%);width:4px;height:18px;background:#fff;border-radius:2px;box-shadow:0 0 0 2px rgba(0,0,0,0.3)"></div>'
     + '</div>'
-    + '<span class="bias-pill ' + dir + '">' + _esc(c.bias_label || '') + '</span>'
+    + '<span class="bias-result-label ' + dir + '">' + _esc(c.bias_label || '') + '</span>'
     + '</div>'
     + '<blockquote class="showcase-finding">&ldquo;' + _esc(c.top_finding || '') + '&rdquo;</blockquote>'
-    + '<a href="' + _esc(href) + '" class="showcase-see-more"' + onclick + '>See full analysis &rarr;</a>'
+    + '<a href="' + _esc(href) + '" class="showcase-see-more"' + onclick + '>' + seeMore + '</a>'
     + '</article>';
 }
 

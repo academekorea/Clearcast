@@ -6,7 +6,8 @@ const PLACEHOLDERS = [
   {
     slug: "jre",
     show_name: "The Joe Rogan Experience",
-    episode_title: "Analysis loading — check back soon",
+    host: "Joe Rogan",
+    episode_title: "Episode #2254 \u2014 Elon Musk",
     episode_date: "",
     bias_label: "Lightly Right-Leaning",
     bias_score: 62,
@@ -20,7 +21,8 @@ const PLACEHOLDERS = [
   {
     slug: "lex-fridman",
     show_name: "Lex Fridman Podcast",
-    episode_title: "Analysis loading — check back soon",
+    host: "Lex Fridman",
+    episode_title: "Episode #419 \u2014 Sam Altman: OpenAI, AGI and the Future",
     episode_date: "",
     bias_label: "Mostly Balanced",
     bias_score: 52,
@@ -34,27 +36,29 @@ const PLACEHOLDERS = [
   {
     slug: "the-daily",
     show_name: "The Daily",
-    episode_title: "Analysis loading — check back soon",
+    host: "Michael Barbaro",
+    episode_title: "The Housing Crisis, Explained",
     episode_date: "",
     bias_label: "Lightly Left-Leaning",
     bias_score: 38,
     bias_direction: "left",
-    top_finding: "NYT editorial framing emphasizes institutional sources and progressive policy framing",
+    top_finding: "NYT editorial framing emphasizes institutional sources and progressive policy perspectives",
     show_artwork: "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/da/5d/72/da5d7247-1a90-a0b5-6b6e-7ec26aca7a8a/mza_2948437641474798613.jpg/600x600bb.jpg",
     analysis_url: null,
     source_type: "rss",
     is_placeholder: true,
   },
   {
-    slug: "fresh-air",
-    show_name: "Fresh Air",
-    episode_title: "Analysis loading — check back soon",
+    slug: "npr-politics",
+    show_name: "NPR Politics Podcast",
+    host: "NPR",
+    episode_title: "After the Vote: Inside the Results",
     episode_date: "",
-    bias_label: "Moderately Left-Leaning",
-    bias_score: 32,
+    bias_label: "Left-Leaning",
+    bias_score: 30,
     bias_direction: "left",
-    top_finding: "NPR production values with consistent progressive framing of cultural and political subjects",
-    show_artwork: "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/ac/01/6c/ac016c3a-3c1e-c9a8-7d8c-03fbfe7a62b1/mza_7688453540609889793.jpg/600x600bb.jpg",
+    top_finding: "Consistent progressive framing on policy issues with limited conservative perspective representation",
+    show_artwork: "https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/36/e6/cb/36e6cb82-ed41-5f64-9f96-a33c08a9e3f4/mza_10614506638977432099.jpg/600x600bb.jpg",
     analysis_url: null,
     source_type: "rss",
     is_placeholder: true,
@@ -64,7 +68,7 @@ const PLACEHOLDERS = [
 const KOREAN_PLACEHOLDER = {
   slug: "korean-showcase",
   show_name: "지식인의 사랑방",
-  episode_title: "분석 로딩 중 — 잠시 후 다시 확인해주세요",
+  episode_title: "AI와 한국 사회의 미래",
   episode_date: "",
   bias_label: "중립적",
   bias_score: 50,
@@ -86,7 +90,7 @@ export default async (req: Request) => {
 
   const slugs = isKorean
     ? ["jre", "lex-fridman", "the-daily", "korean-showcase"]
-    : ["jre", "lex-fridman", "the-daily", "fresh-air"];
+    : ["jre", "lex-fridman", "the-daily", "npr-politics"];
 
   const placeholderMap: Record<string, any> = {};
   for (const p of PLACEHOLDERS) placeholderMap[p.slug] = p;

@@ -240,6 +240,21 @@ async function getEvents(url: URL) {
 async function handleControl(body: any, adminEmail: string) {
   const { action, userId, value } = body;
 
+  if (action === "rebuild-showcases") {
+    try {
+      const origin = "https://podlens.app";
+      const res = await fetch(`${origin}/api/build-showcases`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-email": adminEmail },
+        signal: AbortSignal.timeout(30000)
+      });
+      const data = await res.json().catch(() => ({}));
+      return json({ ok: res.ok, status: res.status, data });
+    } catch (e) {
+      return json({ error: String(e) }, 500);
+    }
+  }
+
   if (!action || !userId) {
     return json({ error: "action and userId required" }, 400);
   }
