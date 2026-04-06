@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FAQ — Podlens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="description" content="Frequently asked questions about Podlens — podcast bias intelligence.">
+<meta property="og:title" content="FAQ — Podlens">
+<meta property="og:description" content="Frequently asked questions about Podlens.">
+<meta property="og:image" content="https://podlens.app/og-image.png">
+<meta property="og:url" content="https://podlens.app/faq">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0f2027">
+<link rel="canonical" href="https://podlens.app/faq">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--text:#1a1a1a;--text2:#555;--text3:#999;--navy:#0f2027;--border:rgba(0,0,0,0.1);--ff:'Inter',-apple-system,sans-serif;--ffs:'Playfair Display',Georgia,serif;--r:4px}
+@media(prefers-color-scheme:dark){:root{--bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--text:#FAF9F6;--text2:#888;--text3:#555;--border:rgba(255,255,255,0.08)}}
+[data-theme="dark"]{--bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--text:#FAF9F6;--text2:#888;--text3:#555;--border:rgba(255,255,255,0.08)}
+[data-theme="light"]{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--text:#1a1a1a;--text2:#555;--text3:#999;--border:rgba(0,0,0,0.1)}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.7}
+a{color:var(--navy)}
+[data-theme="dark"] a{color:inherit}
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+.logo{font-family:var(--ffs);font-size:20px;font-weight:700;color:var(--navy);text-decoration:none;flex-shrink:0;margin-right:auto}
+[data-theme="dark"] .logo{color:var(--text)}
+.nl{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:var(--r);text-decoration:none}
+.nl:hover{background:var(--bg3);color:var(--text)}
+.mode-toggle{background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px;line-height:1;flex-shrink:0}
+.doc{max-width:680px;margin:60px auto;padding:0 24px 80px}
+.doc h1{font-family:var(--ffs);font-size:40px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.doc .meta{font-size:13px;color:var(--text3);margin-bottom:48px}
+.faq-item{border-bottom:1px solid var(--border);padding:28px 0}
+.faq-item:first-of-type{border-top:1px solid var(--border)}
+.faq-q{font-family:var(--ffs);font-size:1.1rem;font-weight:600;color:var(--text);margin-bottom:12px;line-height:1.4}
+.faq-a{color:var(--text2);line-height:1.7;font-size:.95rem}
+.faq-a a{color:var(--navy)}
+footer{border-top:1px solid var(--border);padding:40px 24px;background:var(--bg2)}
+.footer-bottom{max-width:960px;margin:0 auto;font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+<script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()
+function toggleMode(){var isNowLight=document.body.classList.toggle('light-mode');document.documentElement.setAttribute('data-theme',isNowLight?'light':'dark');document.querySelectorAll('.mode-toggle').forEach(function(btn){btn.textContent=isNowLight?'☀️':'🌙';});localStorage.setItem('podlens-mode',isNowLight?'light':'dark');localStorage.setItem('pl-theme',isNowLight?'light':'dark');}
+document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.body.classList.add('light-mode');document.documentElement.setAttribute('data-theme','light');document.querySelectorAll('.mode-toggle').forEach(function(b){b.textContent='☀️';});}});
+</script>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/"><span style="font-weight:400">POD</span>LENS</a>
+  <a class="nl" href="/pricing.html">Pricing</a>
+  <a class="nl" href="/about.html">About</a>
+  <button class="mode-toggle" onclick="toggleMode()" aria-label="Toggle theme">🌙</button>
+</nav>
+
+<div class="doc">
+  <h1>Frequently Asked Questions</h1>
+  <div class="meta">Can&rsquo;t find your answer? <a href="mailto:hello@podlens.app">Email us</a> — we respond within 24 hours.</div>
+
+  <div class="faq-item">
+    <div class="faq-q">How does Podlens analyze podcasts?</div>
+    <div class="faq-a">We transcribe the episode audio using AI transcription, then analyze the full transcript for political framing, language patterns, missing perspectives, and host influence. All analysis is grounded in the actual words spoken in the episode — not assumptions about the show, host, or network. Every finding is tied to specific, quotable moments.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Is Podlens free to use?</div>
+    <div class="faq-a">Yes. The free plan includes 4 analyses per month, full access to our discovery platform, a personal bias fingerprint that builds over time, and a weekly digest. No credit card required. <a href="/pricing.html">Paid plans</a> start at $8/month for more analyses and advanced features like source citations, audio briefings, and deeper analysis.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Which podcasts does Podlens support?</div>
+    <div class="faq-a">Any podcast with publicly available audio or captions. We support shows from all major platforms — just paste a YouTube video URL, a Spotify episode link, an Apple Podcasts URL, or any direct RSS/MP3 link. We support hundreds of thousands of shows across all genres and languages.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">How accurate is the bias detection?</div>
+    <div class="faq-a">Our analysis is based entirely on the transcript — specific words, framing choices, and structural patterns. We don't make assumptions about a show based on reputation or network affiliation. Every finding is grounded in evidence from that specific episode. No automated system is perfect, and bias is inherently complex and context-dependent. We recommend treating our analysis as one informed perspective, not a final verdict.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Does Podlens support languages other than English?</div>
+    <div class="faq-a">Yes. We fully support Korean podcasts at <a href="/kr">podlens.app/kr</a> with a localized experience and Korean-specific political framework. More languages are in active development.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">How do I cancel my subscription?</div>
+    <div class="faq-a">Go to <strong>Settings → Subscription → Manage Billing</strong>. Your access continues until the end of your current billing period — you won't be charged again. For help, email <a href="mailto:hello@podlens.app">hello@podlens.app</a>.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Is my listening data private?</div>
+    <div class="faq-a">Yes. We never sell your personal data. Your listening history, analysis results, and bias fingerprint are private to your account and are never shared with third parties for advertising purposes. See our <a href="/privacy.html">Privacy Policy</a> for full details.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">How do I contact support?</div>
+    <div class="faq-a">Email us at <a href="mailto:hello@podlens.app">hello@podlens.app</a>. We respond within 24 hours, usually faster.</div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Podlens &middot; podlens.app</span>
+    <span>
+      <a href="/privacy.html" style="color:inherit;margin-right:16px">Privacy</a>
+      <a href="/terms.html" style="color:inherit;margin-right:16px">Terms</a>
+      <a href="mailto:hello@podlens.app" style="color:inherit">hello@podlens.app</a>
+    </span>
+  </div>
+</footer>
+</body>
+</html>

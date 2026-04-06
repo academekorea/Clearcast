@@ -1361,21 +1361,22 @@ body.player-on .lap{bottom:72px}
 .onb-success-sub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:24px;line-height:1.5}
 
 /* ── FOOTER ── */
-footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);background:var(--bg)}
-.footer-inner{max-width:900px;margin:0 auto}
-.footer-brand{margin-bottom:48px}
-.footer-logo{font-family:var(--ffs);font-size:24px;font-weight:700;color:var(--navy);margin-bottom:8px;display:block}
-[data-theme="dark"] .footer-logo{color:var(--text)}
-.footer-tagline{font-size:14px;color:var(--text3)}
-.footer-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;margin-bottom:48px}
-@media(max-width:640px){.footer-cols{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:380px){.footer-cols{grid-template-columns:1fr}}
-.footer-col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:14px}
-.footer-links{display:flex;flex-direction:column;gap:8px}
-.footer-links a,.footer-links button{font-size:13px;color:var(--text2);text-decoration:none;background:none;border:none;cursor:pointer;font-family:var(--ff);padding:0;text-align:left;transition:color .1s}
+footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);background:var(--bg2)}
+.footer-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-brand{}
+.footer-logo-link{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);font-family:var(--ffs);font-size:16px;font-weight:700;letter-spacing:.06em;margin-bottom:12px}
+.footer-tagline{color:var(--text3);font-size:.825rem;line-height:1.5;margin-bottom:20px;max-width:200px}
+.footer-social{display:flex;gap:14px;flex-wrap:wrap}
+.footer-social-link{color:var(--text3);transition:color .15s;display:flex;align-items:center;text-decoration:none}
+.footer-social-link:hover{color:var(--text)}
+.footer-col-title{font-size:.65rem;font-weight:700;letter-spacing:.12em;color:var(--text3);margin-bottom:16px;text-transform:uppercase}
+.footer-links{display:flex;flex-direction:column;gap:10px}
+.footer-links a,.footer-links button{font-size:.875rem;color:var(--text2);text-decoration:none;background:none;border:none;cursor:pointer;font-family:var(--ff);padding:0;text-align:left;transition:color .15s;line-height:1.4}
 .footer-links a:hover,.footer-links button:hover{color:var(--text)}
-.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)}
-.footer-no-ads{font-size:11px;color:var(--text3)}
+.footer-bottom-row{max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.footer-copy,.footer-made{font-size:.75rem;color:var(--text3)}
+@media(max-width:900px){.footer-inner{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}}
+@media(max-width:600px){.footer-inner{grid-template-columns:1fr}}
 
 /* ── MOBILE NAV ── */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:4px 0;z-index:150}
@@ -1542,7 +1543,7 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 }
 @media(max-width:640px){
   .hiw-section,.proof-section,.trending-section,.unheard-section{padding:48px 20px}
-  .footer-cols{gap:24px}
+  .footer-inner{gap:24px}
   footer.site-footer{padding:60px 20px 48px}
   .nav{padding:0 16px;gap:4px}
   .analyze-wrap{padding:24px 16px}
@@ -1642,11 +1643,24 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 .trending-card-title{font-size:12px;font-weight:600;line-height:1.35;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .trending-card-show{font-size:10px;color:var(--text3)}
 /* Showcase section */
+/* ── TICKER ── */
+.ticker-section{padding:18px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg2);overflow:hidden;margin:40px 0}
+.ticker-label{text-align:center;font-size:.65rem;font-weight:700;letter-spacing:.15em;color:var(--text3);margin-bottom:12px}
+.ticker-wrapper{overflow:hidden;width:100%;-webkit-mask-image:linear-gradient(to right,transparent,black 8%,black 92%,transparent);mask-image:linear-gradient(to right,transparent,black 8%,black 92%,transparent)}
+.ticker-track{display:flex;width:max-content;animation:ticker-scroll 50s linear infinite}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{display:flex;align-items:center;gap:10px;padding:0 28px;white-space:nowrap;border-right:1px solid var(--border)}
+.ticker-show-name{font-size:.85rem;font-weight:500;color:var(--text2)}
+.ticker-bias{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:8px}
+.ticker-bias.left{color:#60A5FA;background:rgba(59,130,246,.1)}
+.ticker-bias.right{color:#F87171;background:rgba(239,68,68,.1)}
+.ticker-bias.balanced{color:#34D399;background:rgba(16,185,129,.1)}
 .showcase-section{padding:80px 24px;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border)}
 .showcase-header{text-align:center;margin-bottom:48px}
 .showcase-header h2{font-size:2rem;font-weight:700;color:var(--text);margin-bottom:8px;font-family:var(--ffs)}
 .showcase-header p{color:var(--text2);font-size:1.1rem}
-.showcase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-bottom:48px}
+.showcase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:48px;max-width:1100px;margin-left:auto;margin-right:auto}
 .showcase-card{background:var(--bg-card,var(--bg2));border:1px solid var(--border-new,var(--border));border-radius:16px;padding:24px;transition:transform .2s,border-color .2s;cursor:default}
 .showcase-card:hover{transform:translateY(-4px);border-color:var(--accent,var(--navy))}
 .showcase-card.bias-right{border-top:3px solid #EF4444;background:linear-gradient(160deg,rgba(239,68,68,.06) 0%,var(--bg-card,var(--bg2)) 40%)}
@@ -1674,8 +1688,9 @@ footer.site-footer{padding:80px 24px 48px;border-top:1px solid var(--border);bac
 .showcase-skeleton{background:var(--bg-card,var(--bg2));border:1px solid var(--border-new,var(--border));border-radius:16px;padding:24px;animation:skeleton-pulse 1.5s ease infinite}
 @keyframes skeleton-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .skeleton-line{background:var(--border-new,var(--border));border-radius:4px;margin-bottom:12px}
-@media(max-width:768px){.showcase-grid{grid-template-columns:1fr}}
-@media(max-width:480px){.showcase-section{padding:48px 16px}.showcase-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:16px;padding-bottom:16px;grid-template-columns:unset}.showcase-card{min-width:280px;scroll-snap-align:start;flex-shrink:0}}
+@media(max-width:900px){.showcase-grid{grid-template-columns:repeat(2,1fr)}.showcase-card:nth-child(3){display:none}}
+@media(max-width:600px){.showcase-grid{grid-template-columns:1fr}.showcase-card:nth-child(3){display:block}}
+@media(max-width:480px){.showcase-section{padding:48px 16px}}
 /* Mode toggle */
 .mode-toggle{background:none;border:none;font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:transform .2s ease,background .2s;line-height:1;flex-shrink:0}
 .mode-toggle:hover{transform:scale(1.25);background:rgba(128,128,128,0.1)}
@@ -1812,22 +1827,21 @@ body.light-mode,[data-theme="light"]{
   try {
     var saved = ''
     try { saved = localStorage.getItem('podlens-region') || '' } catch(e) {}
-    var lang = navigator.language || ''
+    var cachedGeo = ''
+    try { cachedGeo = localStorage.getItem('podlens-geo') || '' } catch(e) {}
+    // Korean = explicit /kr path, saved ko-KR preference, or cached Korean IP
+    // NOT browser language — only IP-based detection
     var isKorean =
       saved === 'ko-KR' ||
       window.location.pathname.startsWith('/kr') ||
-      lang.toLowerCase().startsWith('ko')
+      cachedGeo === 'kr'
 
     if (!isKorean) {
-      // Remove Korean hreflang tags so Google doesn't
-      // show Korean sitelinks to non-Korean users
       document.querySelectorAll(
         'link[hreflang="ko"],link[hreflang="ko-KR"]'
       ).forEach(function(el) {
         el && el.parentNode && el.parentNode.removeChild(el)
       })
-
-      // Hide Korean language switcher
       var switcher = document.getElementById('lang-switch-wrap')
       if (switcher) switcher.style.display = 'none'
     }
@@ -2051,6 +2065,12 @@ body.light-mode,[data-theme="light"]{
       </div>
       <a href="#" onclick="openModal('signup');return false" class="btn-start-free">Get started free &rarr;</a>
     </section>
+
+    <!-- TICKER -->
+    <div class="ticker-section" id="ticker-section">
+      <div class="ticker-label"><span data-en>RECENTLY ANALYZED</span><span data-ko>최근 분석됨</span></div>
+      <div class="ticker-wrapper"><div class="ticker-track" id="ticker-track"></div></div>
+    </div>
 
     <!-- SHOWCASE SECTION -->
     <section class="showcase-section" id="see-it">
@@ -2647,63 +2667,84 @@ body.light-mode,[data-theme="light"]{
 <!-- FOOTER -->
 <footer class="site-footer" id="site-footer">
   <div class="footer-inner">
+
+    <!-- Brand -->
     <div class="footer-brand">
-      <div class="footer-logo">
-        <div class="pl-lockup" style="gap:8px">
-          <img src="/favicon.svg" alt="" width="24" height="24" style="border-radius:4px;opacity:.8;flex-shrink:0">
-          <span style="width:1px;height:24px;background:var(--border2);flex-shrink:0"></span>
-          <span class="pl-lockup-wm" style="font-size:16px"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
-        </div>
-      </div>
-      <div class="footer-tagline">Media literacy for the audio generation.</div>
-    </div>
-    <div class="footer-cols">
-      <div>
-        <div class="footer-col-title">Discover</div>
-        <div class="footer-links">
-          <a href="/" onclick="showHome();return false">Home</a>
-          <button onclick="showView('discover');showFeed('foryou')">Trending</button>
-          <button onclick="showView('discover');showFeed('unheard')">Unheard</button>
-          <button onclick="showView('discover');showFeed('compare')">Compare Shows</button>
-          <button onclick="showView('analyze')">Analyze</button>
-        </div>
-      </div>
-      <div>
-        <div class="footer-col-title">Company</div>
-        <div class="footer-links">
-          <a href="/about.html">About</a>
-          <a href="/how-it-works.html">How it works</a>
-          <a href="/pricing.html">Pricing</a>
-          <a href="#">Blog</a>
-          <a href="#">Careers</a>
-        </div>
-      </div>
-      <div>
-        <div class="footer-col-title">Help</div>
-        <div class="footer-links">
-          <a href="mailto:hello@podlens.app">Contact</a>
-          <a href="/how-it-works.html#faq">FAQ</a>
-          <a href="/privacy.html">Privacy Policy</a>
-          <a href="/terms.html">Terms of Service</a>
-        </div>
-      </div>
-      <div>
-        <div class="footer-col-title">Tools</div>
-        <div class="footer-links">
-          <a href="/extension.html">Browser Extension</a>
-          <a href="#">Daily Newsletter</a>
-          <a href="#">Unheard Report</a>
-        </div>
+      <a href="/" class="footer-logo-link" onclick="showHome();return false">
+        <img src="/favicon-32x32.png" alt="Podlens" width="24" height="24" style="border-radius:4px">
+        <span><span style="font-weight:400">POD</span>LENS</span>
+      </a>
+      <p class="footer-tagline">
+        <span data-en>Media literacy for the audio generation.</span>
+        <span data-ko>오디오 세대를 위한 미디어 리터러시.</span>
+      </p>
+      <div class="footer-social">
+        <a href="https://twitter.com/podlensapp" target="_blank" rel="noopener" class="footer-social-link" aria-label="X (Twitter)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="https://instagram.com/podlensapp" target="_blank" rel="noopener" class="footer-social-link" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+        <a href="https://tiktok.com/@podlensapp" target="_blank" rel="noopener" class="footer-social-link" aria-label="TikTok">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.15a8.16 8.16 0 004.77 1.52V7.24a4.85 4.85 0 01-1-.55z"/></svg>
+        </a>
+        <a href="https://linkedin.com/company/podlens" target="_blank" rel="noopener" class="footer-social-link" aria-label="LinkedIn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="https://youtube.com/@podlensapp" target="_blank" rel="noopener" class="footer-social-link" aria-label="YouTube">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        </a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span>&copy; 2026 Podlens &mdash; AI analysis grounded in the actual transcript. Not a substitute for critical thinking.</span>
-      <span class="footer-no-ads">No ads. No conflicts of interest. Ever.</span>
+
+    <!-- Discover -->
+    <div>
+      <div class="footer-col-title"><span data-en>DISCOVER</span><span data-ko>탐색</span></div>
+      <div class="footer-links">
+        <a href="/" onclick="showHome();return false"><span data-en>Home</span><span data-ko>홈</span></a>
+        <button onclick="showView('discover');showFeed('foryou')"><span data-en>Trending</span><span data-ko>트렌드</span></button>
+        <button onclick="showView('discover');showFeed('unheard')"><span data-en>Unheard</span><span data-ko>언헤드</span></button>
+        <button onclick="showView('analyze')"><span data-en>Analyze a show</span><span data-ko>팟캐스트 분석</span></button>
+      </div>
     </div>
-    <div id="kr-footer" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);text-align:center">
-      Podlens 한국어 베타 &middot; 피드백 환영 &middot; <a href="mailto:hello@podlens.app" style="color:inherit">hello@podlens.app</a>
+
+    <!-- Company -->
+    <div>
+      <div class="footer-col-title"><span data-en>COMPANY</span><span data-ko>회사</span></div>
+      <div class="footer-links">
+        <a href="/about.html"><span data-en>About</span><span data-ko>소개</span></a>
+        <a href="/how-it-works.html"><span data-en>How it works</span><span data-ko>작동 방식</span></a>
+        <a href="/pricing.html"><span data-en>Pricing</span><span data-ko>요금제</span></a>
+      </div>
     </div>
+
+    <!-- Help -->
+    <div>
+      <div class="footer-col-title"><span data-en>HELP</span><span data-ko>도움말</span></div>
+      <div class="footer-links">
+        <a href="mailto:hello@podlens.app"><span data-en>Contact</span><span data-ko>문의하기</span></a>
+        <a href="/faq.html">FAQ</a>
+        <a href="/privacy.html"><span data-en>Privacy Policy</span><span data-ko>개인정보처리방침</span></a>
+        <a href="/terms.html"><span data-en>Terms of Service</span><span data-ko>이용약관</span></a>
+      </div>
+    </div>
+
+    <!-- Tools -->
+    <div>
+      <div class="footer-col-title"><span data-en>TOOLS</span><span data-ko>도구</span></div>
+      <div class="footer-links">
+        <a href="/extension.html"><span data-en>Browser Extension</span><span data-ko>브라우저 확장</span></a>
+        <a href="#" onclick="openModal('signup');return false"><span data-en>Daily Newsletter</span><span data-ko>뉴스레터</span></a>
+      </div>
+    </div>
+
   </div>
+  <div class="footer-bottom-row">
+    <p class="footer-copy">&copy; 2026 Podlens. <span data-en>All rights reserved.</span><span data-ko>All rights reserved.</span></p>
+    <p class="footer-made"><span data-en>Understand what you listen to.</span><span data-ko>듣는 것을 이해하세요.</span></p>
+  </div>
+  <!-- compat: applyKoreanMode references this id -->
+  <div id="kr-footer" style="display:none"></div>
 </footer>
 
 <!-- MOBILE NAV -->
@@ -3075,15 +3116,44 @@ window.switchToKorean = function() {
   window.location.href = '/kr' + (path || '') + window.location.search;
 };
 
-window.initLangSwitch = function() {
+window.initLangSwitch = async function() {
   var wrap = document.getElementById('lang-switch-wrap');
   if (!wrap) return;
 
   var isKrPath = window.location.pathname.startsWith('/kr');
   var saved = '';
   try { saved = localStorage.getItem('podlens-region') || ''; } catch(e) {}
-  var browserKo = (navigator.language || '').toLowerCase().startsWith('ko');
-  var isKoreanUser = isKrPath || saved === 'ko-KR' || (browserKo && saved !== 'international');
+
+  // Check geo cache and expiry
+  var cachedGeo = '';
+  try { cachedGeo = localStorage.getItem('podlens-geo') || ''; } catch(e) {}
+  var geoExpires = 0;
+  try { geoExpires = parseInt(localStorage.getItem('podlens-geo-expires') || '0', 10); } catch(e) {}
+  if (geoExpires && Date.now() > geoExpires) {
+    try { localStorage.removeItem('podlens-geo'); localStorage.removeItem('podlens-geo-expires'); } catch(e) {}
+    cachedGeo = '';
+  }
+
+  var isKoreanIP = cachedGeo === 'kr';
+
+  // Fetch geo if no valid cache
+  if (!cachedGeo && !isKrPath && saved !== 'ko-KR' && saved !== 'international') {
+    try {
+      var res = await fetch('/api/geo-detect', { cache: 'no-store' });
+      var data = await res.json();
+      isKoreanIP = !!(data.isKorean);
+      try {
+        localStorage.setItem('podlens-geo', isKoreanIP ? 'kr' : 'us');
+        localStorage.setItem('podlens-geo-expires', String(Date.now() + 86400000));
+      } catch(e) {}
+    } catch(e) {
+      isKoreanIP = false;
+    }
+  }
+
+  // Korean user = /kr path, explicit ko-KR saved, OR Korean IP
+  // NEVER browser language alone
+  var isKoreanUser = isKrPath || saved === 'ko-KR' || isKoreanIP;
 
   if (!isKoreanUser) {
     wrap.innerHTML = '';
@@ -3098,7 +3168,7 @@ window.initLangSwitch = function() {
   }
 };
 
-document.addEventListener('DOMContentLoaded', window.initLangSwitch);
+document.addEventListener('DOMContentLoaded', function() { window.initLangSwitch(); });
 
 function initNav() {
   var u = plUser();
@@ -8548,12 +8618,11 @@ function rotateSpotlight() {
   var grid = document.getElementById('showcase-grid');
   if (!grid) return;
 
-  var region = (function() {
-    try {
-      var cookie = document.cookie.split(';').find(function(c) { return c.trim().startsWith('pl_region='); });
-      return cookie ? cookie.split('=')[1] : 'INTL';
-    } catch { return 'INTL'; }
-  })();
+  // Detect Korean: /kr path or explicit ko-KR preference — never browser language
+  var isKorean = window.location.pathname.startsWith('/kr') ||
+    (function() { try { return localStorage.getItem('podlens-region') === 'ko-KR'; } catch(e) { return false; } })();
+
+  var region = isKorean ? 'KR' : 'INTL';
 
   fetch('/api/showcases?region=' + region)
     .then(function(r) { return r.json(); })
@@ -8563,12 +8632,50 @@ function rotateSpotlight() {
         if (sec) sec.remove();
         return;
       }
-      grid.innerHTML = data.showcases.map(renderShowcaseCard).join('');
+      // Always render exactly 3 cards — never more
+      var cards = data.showcases.slice(0, 3);
+      grid.innerHTML = cards.map(renderShowcaseCard).join('');
     })
     .catch(function() {
       var sec = document.querySelector('.showcase-section');
       if (sec) sec.remove();
     });
+})();
+
+// ── PODCAST TICKER ───────────────────────────────────────────────────────────
+(function initTicker() {
+  var track = document.getElementById('ticker-track');
+  if (!track) return;
+  var isKorean = window.location.pathname.startsWith('/kr') ||
+    (function() { try { return localStorage.getItem('podlens-region') === 'ko-KR'; } catch(e) { return false; } })();
+
+  var ITEMS = [
+    { name: 'The Joe Rogan Experience', label: 'Lightly Right-Leaning', dir: 'right' },
+    { name: 'NPR Politics Podcast', label: 'Left-Leaning', dir: 'left' },
+    { name: 'The Daily', label: 'Lightly Left-Leaning', dir: 'left' },
+    { name: 'Lex Fridman Podcast', label: 'Mostly Balanced', dir: 'balanced' },
+    { name: 'Huberman Lab', label: 'Mostly Balanced', dir: 'balanced' },
+    { name: 'Ben Shapiro Show', label: 'Right-Leaning', dir: 'right' },
+    { name: 'Pod Save America', label: 'Left-Leaning', dir: 'left' },
+    { name: 'Tim Pool Daily', label: 'Right-Leaning', dir: 'right' },
+    { name: 'Radiolab', label: 'Mostly Balanced', dir: 'balanced' },
+    { name: 'Fresh Air', label: 'Lightly Left-Leaning', dir: 'left' },
+    { name: 'Serial', label: 'Mostly Balanced', dir: 'balanced' },
+    { name: 'The Glenn Beck Program', label: 'Strongly Right-Leaning', dir: 'right' },
+    { name: 'Democracy Now!', label: 'Strongly Left-Leaning', dir: 'left' },
+    { name: 'Hidden Brain', label: 'Lightly Left-Leaning', dir: 'left' },
+    { name: 'Stuff You Should Know', label: 'Mostly Balanced', dir: 'balanced' },
+    { name: '시사인 팟캐스트', label: '약간 좌편향', dir: 'left', ko: true },
+    { name: '뉴스공장', label: '좌편향', dir: 'left', ko: true },
+    { name: '이슈 있슈', label: '중립적', dir: 'balanced', ko: true },
+  ];
+
+  var items = isKorean ? ITEMS : ITEMS.filter(function(i) { return !i.ko; });
+  var doubled = items.concat(items);
+  track.innerHTML = doubled.map(function(item) {
+    return '<div class="ticker-item"><span class="ticker-show-name">' + item.name +
+      '</span><span class="ticker-bias ' + item.dir + '">' + item.label + '</span></div>';
+  }).join('');
 })();
 
 function _showcaseArtFallback(img) {
