@@ -27,7 +27,7 @@
 <link rel="alternate" hreflang="x-default" href="https://podlens.app">
 <link rel="stylesheet" media="print" href="/print.css">
 <script>
-/* Early region tag — sets html[data-region] for CSS hooks */
+/* Early region tag — sets html[data-region] and [data-mode] for CSS hooks */
 (function() {
   try {
     var saved = localStorage.getItem('podlens-region') || '';
@@ -35,9 +35,9 @@
     if (isKr || saved === 'ko-KR') {
       document.documentElement.lang = 'ko';
       document.documentElement.dataset.region = 'ko-KR';
+      document.documentElement.dataset.mode = 'korean';
     } else {
-      document.documentElement.dataset.region =
-        saved || 'international';
+      document.documentElement.dataset.region = saved || 'international';
     }
   } catch(e) {}
 })();
@@ -1660,6 +1660,12 @@ body.light-mode,[data-theme="light"]{
 .adm-pagination{display:flex;gap:8px;margin-top:16px;justify-content:center}
 .adm-page-btn{border:1px solid var(--border);border-radius:4px;padding:6px 12px;font-size:12px;cursor:pointer;background:none;color:var(--text2)}
 .adm-page-btn.on{background:var(--navy);color:white;border-color:var(--navy)}
+/* ── KOREAN MODE: show/hide data-en / data-ko spans ── */
+[data-mode="korean"] [data-en]{display:none!important}
+[data-mode="korean"] [data-ko]{display:revert!important}
+[data-mode="korean"] [data-ko-inline]{display:inline!important}
+[data-ko]{display:none}
+[data-ko-inline]{display:none}
 </style>
 <!-- Hotjar / ContentSquare -->
 <script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
@@ -1757,6 +1763,19 @@ body.light-mode,[data-theme="light"]{
   else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}
   else if(s){document.documentElement.setAttribute('data-theme',s);}
 })()</script>
+
+<script>
+/* Korean meta tags — set before page renders */
+(function() {
+  try {
+    if (window.location.pathname.startsWith('/kr')) {
+      document.title = 'Podlens — 지금 실제로 무엇을 듣고 있는지 알아보세요';
+      var desc = document.querySelector('meta[name="description"]');
+      if (desc) desc.setAttribute('content', 'Podlens는 모든 팟캐스트의 편향을 분석합니다. Spotify, YouTube, Apple 팟캐스트를 연결하고 즉각적인 인사이트를 받으세요. 무료로 시작하세요.');
+    }
+  } catch(e) {}
+})();
+</script>
 
 <!-- BRANDED SPLASH SCREEN -->
 <div class="pl-splash" id="pl-splash">
@@ -2874,7 +2893,7 @@ function setPlUser(obj) {
   }
 }
 
-window.podlensSetInternational = function() {
+window.switchToInternational = function() {
   try {
     localStorage.setItem('podlens-region', 'international');
     document.cookie = 'podlens-region=international; path=/; max-age=31536000; SameSite=Lax';
@@ -2883,44 +2902,39 @@ window.podlensSetInternational = function() {
   window.location.href = path + window.location.search;
 };
 
-window.podlensSetKorean = function(e) {
-  if (e) e.preventDefault();
+window.switchToKorean = function() {
   try {
     localStorage.setItem('podlens-region', 'ko-KR');
     document.cookie = 'podlens-region=ko-KR; path=/; max-age=31536000; SameSite=Lax';
-  } catch(e2) {}
-  window.location.href = '/kr' + window.location.pathname + window.location.search;
+  } catch(e) {}
+  var path = window.location.pathname.replace(/^\/kr/, '');
+  window.location.href = '/kr' + (path || '') + window.location.search;
 };
 
-// Keep backward compat alias
-function switchToInternational() { window.podlensSetInternational(); }
-
-function renderKrLangSwitch() {
-  var wrap = document.getElementById('lang-switch-wrap');
-  if (!wrap) return;
-  wrap.innerHTML = '<button class="lang-switch" onclick="podlensSetInternational()">🌐 English</button>';
-}
-
-function renderLangSwitch() {
+window.initLangSwitch = function() {
   var wrap = document.getElementById('lang-switch-wrap');
   if (!wrap) return;
 
-  if (window.location.pathname.startsWith('/kr')) {
-    renderKrLangSwitch();
-    return;
-  }
-
+  var isKrPath = window.location.pathname.startsWith('/kr');
   var saved = '';
   try { saved = localStorage.getItem('podlens-region') || ''; } catch(e) {}
-  var lang = (navigator.language || '').toLowerCase();
-  var isKoreanUser = saved === 'ko-KR' || lang.startsWith('ko');
+  var browserKo = (navigator.language || '').toLowerCase().startsWith('ko');
+  var isKoreanUser = isKrPath || saved === 'ko-KR' || (browserKo && saved !== 'international');
 
-  if (isKoreanUser && saved !== 'international') {
-    wrap.innerHTML = '<a href="/kr" class="lang-switch" onclick="podlensSetKorean(event)">🌐 한국어</a>';
-  } else {
+  if (!isKoreanUser) {
     wrap.innerHTML = '';
+    wrap.style.display = 'none';
+    return;
   }
-}
+  wrap.style.display = '';
+  if (isKrPath || saved === 'ko-KR') {
+    wrap.innerHTML = '<button class="lang-switch" onclick="window.switchToInternational()">🌐 International</button>';
+  } else {
+    wrap.innerHTML = '<button class="lang-switch" onclick="window.switchToKorean()">🌐 한국어</button>';
+  }
+};
+
+document.addEventListener('DOMContentLoaded', window.initLangSwitch);
 
 function renderNavAuth() {
   var u = plUser();
@@ -3855,11 +3869,41 @@ function renderBiasBar(leftPct, centerPct, rightPct) {
 // ── BIAS BAR HELPERS ──
 function biasPlainLabel(leftPct, rightPct) {
   var diff = Math.abs((leftPct||0) - (rightPct||0));
+  var isKo = (typeof isKoreanMode === 'function' && isKoreanMode()) ||
+    document.documentElement.dataset.mode === 'korean';
+  if (isKo) {
+    if (diff < 20) return '균형잡힘';
+    if (diff < 40) return '약간 편향';
+    if (diff < 60) return '중간 편향';
+    if (diff < 80) return '심한 편향';
+    return '극단적 편향';
+  }
   if (diff < 20) return 'Mostly balanced';
   if (diff < 40) return 'Lightly one-sided';
   if (diff < 60) return 'Moderately biased';
   if (diff < 80) return 'Heavily one-sided';
   return 'Extremely one-sided';
+}
+
+function getBiasLabel(score) {
+  var isKo = (typeof isKoreanMode === 'function' && isKoreanMode()) ||
+    document.documentElement.dataset.mode === 'korean';
+  if (isKo) {
+    if (score >= 45 && score <= 55) return '대체로 균형';
+    if (score >= 35 && score < 45) return '약간 좌편향';
+    if (score > 55 && score <= 65) return '약간 우편향';
+    if (score >= 20 && score < 35) return '좌편향';
+    if (score > 65 && score <= 80) return '우편향';
+    if (score < 20) return '강한 좌편향';
+    return '강한 우편향';
+  }
+  if (score >= 45 && score <= 55) return 'Mostly Balanced';
+  if (score >= 35 && score < 45) return 'Lightly Left';
+  if (score > 55 && score <= 65) return 'Lightly Right';
+  if (score >= 20 && score < 35) return 'Left-Leaning';
+  if (score > 65 && score <= 80) return 'Right-Leaning';
+  if (score < 20) return 'Strongly Left';
+  return 'Strongly Right';
 }
 
 // ── COVERAGE BAR — uses gradient bias bar ──
@@ -3950,7 +3994,8 @@ async function loadBrowse(genre, el) {
   var grid=document.getElementById('show-grid'), loading=document.getElementById('browse-loading');
   grid.style.display='none'; loading.style.display='flex'; grid.innerHTML='';
   try {
-    var data=await fetch('/api/marketplace?genre='+genre).then(function(r){return r.json();});
+    var _region = (typeof isKoreanMode === 'function' && isKoreanMode()) ? 'ko-KR' : 'international';
+    var data=await fetch('/api/marketplace?genre='+genre+'&region='+_region).then(function(r){return r.json();});
     var shows=data.podcasts||[];
     if (!shows.length) { loading.innerHTML='<p style="color:var(--text3)">Could not load. Try another category.</p>'; return; }
     grid.innerHTML=shows.map(function(p){
@@ -6471,18 +6516,18 @@ function renderFeaturedPlayer(item) {
 // ── GEO / i18n / REGION ──────────────────────────────────────────────────
 
 function detectSettings() {
+  // /kr path always means Korean mode — highest priority
+  if (window.location.pathname.startsWith('/kr')) {
+    return { region:'KR', lang:'ko', currency:'KRW', store:'kr' };
+  }
+  // podlens-region key (set by geo detection and lang switcher)
+  var plRegion = '';
+  try { plRegion = localStorage.getItem('podlens-region') || ''; } catch(e) {}
+  if (plRegion === 'ko-KR') return { region:'KR', lang:'ko', currency:'KRW', store:'kr' };
+  if (plRegion === 'international') return { region:'INTL', lang:'en', currency:'USD', store:'us' };
+  // Legacy pl_prefs_region key
   var saved = localStorage.getItem('pl_prefs_region');
-  if (saved) try { return JSON.parse(saved); } catch {}
-  // Read edge-function cookie
-  var cookies = {};
-  document.cookie.split('; ').forEach(function(c) {
-    var parts = c.split('=');
-    if (parts.length >= 2) cookies[parts[0].trim()] = parts[1].trim();
-  });
-  if (cookies.pl_region) return {
-    region: cookies.pl_region, lang: cookies.pl_lang || 'en',
-    currency: cookies.pl_currency || 'USD', store: cookies.pl_store || 'us',
-  };
+  if (saved) try { return JSON.parse(saved); } catch(e) {}
   // Browser language fallback
   var bl = (navigator.language || 'en').toLowerCase();
   if (bl.startsWith('ko')) return { region:'KR', lang:'ko', currency:'KRW', store:'kr' };
@@ -7424,7 +7469,7 @@ function renderProfileEmptyState(el) {
 enforcePlanRules();
 if (plUser()) document.body.classList.add('authenticated');
 renderNavAuth();
-if (window.location.pathname.startsWith('/kr')) { renderKrLangSwitch(); } else { renderLangSwitch(); }
+if (typeof window.initLangSwitch === 'function') window.initLangSwitch();
 // Apply region, translations, Korean mode
 updateRegionUI();
 applyTranslations(_settings.lang);
