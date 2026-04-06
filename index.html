@@ -5679,7 +5679,7 @@ async function loadShowProfile(slug,compareSlug) {
 async function fetchItunesMeta(showName) {
   if (!showName) return null;
   try {
-    var res=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(showName)+'&media=podcast&entity=podcast&limit=5',{signal:AbortSignal.timeout(5000)});
+    var res=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(showName)+'&media=podcast&entity=podcast&limit=10',{signal:AbortSignal.timeout(5000)});
     if (!res.ok) return null;
     var d=await res.json();
     var results=d.results||[];
@@ -5693,9 +5693,19 @@ async function fetchItunesMeta(showName) {
       var score=overlap/Math.max(wa.size,wb.size,1);
       if (score>bestScore){bestScore=score;best=r;}
     });
-    // Collect similar shows (rest of results excluding best match)
-    var similar=results.filter(function(r){return r!==best;}).slice(0,3).map(function(r){
-      return {name:r.collectionName||'',artist:r.artistName||'',artwork:r.artworkUrl100||'',itunesUrl:r.collectionViewUrl||'',feedUrl:r.feedUrl||''};
+    // Collect similar shows — exclude self by collectionId AND name, deduplicate by collectionId
+    var bestNameNorm=(best.collectionName||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
+    var seenIds=new Set();
+    seenIds.add(best.collectionId);
+    var similar=results.filter(function(r){
+      if (r===best) return false;
+      if (r.collectionId && seenIds.has(r.collectionId)) return false;
+      var rNameNorm=(r.collectionName||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
+      if (rNameNorm===bestNameNorm) return false;
+      if (r.collectionId) seenIds.add(r.collectionId);
+      return true;
+    }).slice(0,3).map(function(r){
+      return {name:r.collectionName||'',artist:r.artistName||'',artwork:r.artworkUrl100||'',itunesUrl:r.collectionViewUrl||'',feedUrl:r.feedUrl||'',collectionId:r.collectionId||''};
     });
     return {
       artwork: best.artworkUrl600||best.artworkUrl100||null,
