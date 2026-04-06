@@ -7,6 +7,12 @@
   node_bundler = "esbuild"
   included_files = ["netlify/functions/lib/**"]
 
+[functions."analyze"]
+  timeout = 26
+
+[functions."start-analysis"]
+  timeout = 30
+
 [functions."status"]
   timeout = 26
 

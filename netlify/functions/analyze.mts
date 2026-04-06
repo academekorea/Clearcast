@@ -420,6 +420,80 @@ async function extractAudioUrl(url: string): Promise<string | null> {
   }
 }
 
+// ── RSS FEED DETECTION + PARSING ──────────────────────────────────────────
+
+function isRssFeedUrl(url: string): boolean {
+  const path = new URL(url).pathname.toLowerCase();
+  return !!(
+    path.includes("/feed") ||
+    path.includes("/rss")  ||
+    path.includes("/podcast.xml") ||
+    path.endsWith(".xml")  ||
+    path.endsWith(".rss")
+  );
+}
+
+interface RssFeedResult {
+  audioUrl: string;
+  showName: string | null;
+  episodeTitle: string | null;
+}
+
+async function getLatestEpisodeFromFeed(feedUrl: string): Promise<RssFeedResult | null> {
+  try {
+    const res = await fetch(feedUrl, {
+      headers: { "User-Agent": "Podlens/1.0 podcast intelligence" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) {
+      console.error(`[analyze] RSS feed ${feedUrl} returned ${res.status}`);
+      return null;
+    }
+    const xml = await res.text();
+
+    // Extract channel title (handles CDATA and plain text)
+    const showTitleMatch =
+      xml.match(/<channel>[\s\S]*?<title><!\[CDATA\[([^\]]+)\]\]><\/title>/) ||
+      xml.match(/<channel>[\s\S]*?<title>([^<]{1,200})<\/title>/);
+    const feedShowName = showTitleMatch ? showTitleMatch[1].trim() : null;
+
+    // Find first <item>
+    const itemMatch = xml.match(/<item>([\s\S]*?)<\/item>/i);
+    if (!itemMatch) {
+      console.error("[analyze] No <item> found in RSS feed:", feedUrl);
+      return null;
+    }
+    const item = itemMatch[1];
+
+    // Episode title
+    const epTitleMatch =
+      item.match(/<title><!\[CDATA\[([^\]]+)\]\]><\/title>/) ||
+      item.match(/<title>([^<]{1,200})<\/title>/);
+    const feedEpTitle = epTitleMatch ? epTitleMatch[1].trim() : null;
+
+    // Audio URL — try enclosure (double and single quotes), then media:content
+    const audioMatch =
+      item.match(/<enclosure[^>]+url="([^"]+)"/i) ||
+      item.match(/<enclosure[^>]+url='([^']+)'/i) ||
+      item.match(/<media:content[^>]+url="([^"]+)"/i) ||
+      item.match(/<media:content[^>]+url='([^']+)'/i);
+
+    if (!audioMatch) {
+      console.error("[analyze] No audio URL found in RSS feed item:", feedUrl);
+      return null;
+    }
+
+    return {
+      audioUrl: audioMatch[1].replace(/&amp;/g, "&"),
+      showName: feedShowName,
+      episodeTitle: feedEpTitle,
+    };
+  } catch (e: any) {
+    console.error("[analyze] RSS feed error:", e?.message);
+    return null;
+  }
+}
+
 function isAudioUrl(url: string): boolean {
   return !!(
     url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i) ||
@@ -713,7 +787,7 @@ export default async (req: Request) => {
       }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
 
-    // ── Non-YouTube: direct audio / RSS path ──────────────────────────────
+    // ── Non-YouTube: RSS feed / direct audio path ────────────────────────
     const url = rawUrl;
     const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
     if (!assemblyKey) {
@@ -722,6 +796,30 @@ export default async (req: Request) => {
       });
     }
 
+    // ── RSS feed: extract latest episode audio URL + metadata ──────────
+    try {
+      if (isRssFeedUrl(url)) {
+        console.log(`[analyze] RSS feed detected: ${url}`);
+        const rssResult = await getLatestEpisodeFromFeed(url);
+        if (rssResult) {
+          console.log(`[analyze] RSS: show="${rssResult.showName}" ep="${rssResult.episodeTitle}" audio="${rssResult.audioUrl}"`);
+          return submitToAssemblyAI(rssResult.audioUrl, url, {
+            episodeTitle: episodeTitle || rssResult.episodeTitle || null,
+            showName:     showName     || rssResult.showName    || null,
+            showSlug:     showSlug     || null,
+            showArtwork:  showArtwork  || null,
+            showFeedUrl:  url,
+          }, blobStore, assemblyKey);
+        }
+        // Fall through to generic extractAudioUrl if parser returns null
+        console.log(`[analyze] RSS parse failed, falling back to extractAudioUrl`);
+      }
+    } catch (rssErr: any) {
+      console.error("[analyze] RSS handler error:", rssErr?.message);
+      // Fall through to generic path
+    }
+
+    // ── Generic: direct audio file or URL that may contain audio ────────
     let audioUrl = url;
     if (!url.match(/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i)) {
       const extracted = await extractAudioUrl(url);
