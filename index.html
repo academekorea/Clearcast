@@ -3945,6 +3945,7 @@ var _fetchMetaToken = 0; // race-condition guard for fetchLoadingMeta
 var _analyzeStages = null;
 var _currentChannelTitle = '';
 var _episodes = [];
+var _submittedFeedUrl = null; // original URL submitted by user — used for display in fetchLoadingMeta
 
 var TOPICS = ['Israel-Gaza','Iran war','Fed rates','AI regulation','Trump tariffs','Ukraine','Climate','Supreme Court','Immigration','Economy'];
 
@@ -4766,6 +4767,7 @@ async function handleAnalyze() {
 }
 
 async function loadEpisodes(feedUrl) {
+  _submittedFeedUrl = feedUrl; // store original so startAnalysis can display the right domain
   var btn=document.getElementById('go-btn');
   btn.disabled=true; btn.textContent='Loading\u2026';
   try {
@@ -4827,7 +4829,10 @@ function startAnalysis(audioUrl, epTitle, showName) {
   // Start rotating insight cards
   startInsightCards();
   // Fetch iTunes metadata immediately for preview
-  fetchLoadingMeta(audioUrl);
+  // Use original submitted URL (e.g. lexfridman.com/feed/podcast/) not the resolved CDN audio URL
+  var _displayUrl = _submittedFeedUrl || audioUrl;
+  _submittedFeedUrl = null; // clear after use
+  fetchLoadingMeta(_displayUrl);
   document.getElementById('ld-title').textContent='Checking cache\u2026';
   document.getElementById('ld-msg').textContent='Looking up previous results\u2026';
   var btn=document.getElementById('go-btn');
