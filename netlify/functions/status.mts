@@ -1,29 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
-const ANALYSIS_PROMPT = `You are a media literacy expert analyzing a podcast transcript for bias, factual accuracy, and framing patterns.
-
-Analyze the transcript and return a JSON object with this exact structure:
-{
-  "biasScore": <number from -100 (far left) to +100 (far right)>,
-  "biasLabel": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
-  "factualityLabel": <"Mostly factual" | "Mixed factuality" | "Unreliable">,
-  "omissionRisk": <"Low" | "Med" | "High">,
-  "flags": [
-    {
-      "type": <"fact-check" | "framing" | "omission" | "sponsor-note" | "context">,
-      "title": <short description under 15 words>,
-      "detail": <explanation 1-2 sentences, grounded in fact>
-    }
-  ]
-}
-
-Rules:
-- Only flag things you are highly confident about
-- Every fact-check flag must be verifiable against known public information
-- Be specific, not vague
-- Maximum 6 flags
-- Return ONLY the JSON, no other text`;
 
 export default async (req: Request) => {
   const url = new URL(req.url);
@@ -46,7 +23,7 @@ export default async (req: Request) => {
     });
   }
 
-  // Already done
+  // Already done or already running
   if (job.status === "complete") {
     return new Response(JSON.stringify(job), {
       status: 200,
@@ -55,6 +32,13 @@ export default async (req: Request) => {
   }
 
   if (job.status === "error") {
+    return new Response(JSON.stringify(job), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  if (job.status === "analyzing") {
     return new Response(JSON.stringify(job), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -86,75 +70,19 @@ export default async (req: Request) => {
     });
   }
 
-  // Transcription done — run Claude analysis
-  const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
-  const text = transcript.text || "";
+  // Transcription done — kick off Claude analysis in background
+  await store.setJSON(jobId, { ...job, status: "analyzing" });
 
-  // Truncate to ~8000 words to stay within token limits
-  const words = text.split(" ");
-  const truncated = words.slice(0, 8000).join(" ");
+  const analysisUrl = new URL(req.url);
+  const baseUrl = analysisUrl.origin;
 
-  const controller = new AbortController();
-  const claudeTimeout = setTimeout(() => controller.abort(), 8000);
-  const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
-    signal: controller.signal,
+  fetch(`${baseUrl}/api/run-analysis`, {
     method: "POST",
-    headers: {
-      "x-api-key": anthropicKey!,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1500,
-      messages: [
-        {
-          role: "user",
-          content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${truncated}`,
-        },
-      ],
-    }),
-  });
-  clearTimeout(claudeTimeout);
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jobId, transcriptText: transcript.text, jobData: job }),
+  }).catch(() => {});
 
-  if (!claudeRes.ok) {
-    const err = await claudeRes.text();
-    const updated = { ...job, status: "error", error: "Claude error: " + err };
-    await store.setJSON(jobId, updated);
-    return new Response(JSON.stringify(updated), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  const claudeData = await claudeRes.json();
-  const rawText = claudeData.content?.[0]?.text || "{}";
-
-  let analysis;
-  try {
-    analysis = JSON.parse(rawText.replace(/```json|```/g, "").trim());
-  } catch {
-    analysis = { error: "Failed to parse analysis" };
-  }
-
-  // Get episode title from transcript chapters or audio URL
-  const episodeTitle = job.episodeTitle || transcript.chapters?.[0]?.headline || "Podcast episode";
-
-  const result = {
-    status: "complete",
-    jobId,
-    url: job.url,
-    episodeTitle,
-    showName: job.showName || "",
-    duration: transcript.audio_duration
-      ? `${Math.round(transcript.audio_duration / 60)} min`
-      : "Unknown",
-    ...analysis,
-  };
-
-  await store.setJSON(jobId, result);
-
-  return new Response(JSON.stringify(result), {
+  return new Response(JSON.stringify({ ...job, status: "analyzing" }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

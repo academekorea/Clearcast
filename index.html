@@ -4953,7 +4953,10 @@ function pollStatus(jobId, audioUrl) {
       } else if (d.status==='error') {
         clearInterval(_poll); showAnalyzeErr(friendlyError(d.error||'Analysis failed.','pollStatus')); resetBtn();
       } else {
-        // still pending — advance step
+        // still pending (transcribing / analyzing) — keep polling, advance step
+        if (d.status==='analyzing') {
+          var ldTitle=document.getElementById('ld-title'); if (ldTitle) ldTitle.textContent='Transcript ready \u2014 analyzing with AI\u2026';
+        }
         lafCompleteStep(si);
         si=Math.min(si+1,4);
         if (!document.getElementById('laf-step-'+si)) lafAddStep(si, false);
