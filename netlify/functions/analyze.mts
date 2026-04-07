@@ -58,7 +58,7 @@ export default async (req: Request) => {
     body: JSON.stringify({
       audio_url: audioUrl,
       auto_chapters: true,
-      speech_models: ["nano"],
+      speech_models: ["universal-2"],
     }),
   });
 
