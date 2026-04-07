@@ -27,16 +27,57 @@ Rules:
 - Return ONLY the JSON, no other text`;
 
 export default async (req: Request) => {
+  // AssemblyAI sends a POST webhook when transcription completes
+  // It also accepts direct POST calls for manual triggering
   if (req.method !== "POST") {
     return new Response("OK", { status: 200 });
   }
 
-  const { jobId, transcriptText, episodeTitle, showName, audioUrl, audioDuration } = await req.json();
+  const body = await req.json();
+
+  // AssemblyAI webhook payload has transcript_id and status
+  const transcriptId = body.transcript_id;
+  const webhookStatus = body.status;
+
+  // Only process completed transcriptions
+  if (webhookStatus && webhookStatus !== "completed") {
+    return new Response("OK", { status: 200 });
+  }
+
+  if (!transcriptId) {
+    return new Response("Missing transcript_id", { status: 400 });
+  }
 
   const store = getStore("podlens-jobs");
-  const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
+  const job = await store.get(transcriptId, { type: "json" }) as any;
 
-  const words = (transcriptText || "").split(" ");
+  if (!job) {
+    return new Response("Job not found", { status: 404 });
+  }
+
+  // Already processed
+  if (job.status === "complete" || job.status === "error") {
+    return new Response("OK", { status: 200 });
+  }
+
+  // Fetch the full transcript from AssemblyAI
+  const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
+  const transcriptRes = await fetch(
+    `https://api.assemblyai.com/v2/transcript/${transcriptId}`,
+    { headers: { authorization: assemblyKey! } }
+  );
+  const transcript = await transcriptRes.json();
+
+  if (transcript.status !== "completed") {
+    return new Response("Not completed yet", { status: 200 });
+  }
+
+  // Mark as analyzing
+  await store.setJSON(transcriptId, { ...job, status: "analyzing" });
+
+  // Run Claude analysis
+  const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
+  const words = (transcript.text || "").split(" ");
   const truncated = words.slice(0, 6000).join(" ");
 
   try {
@@ -82,20 +123,22 @@ export default async (req: Request) => {
 
     const result = {
       status: "complete",
-      jobId,
-      url: audioUrl,
-      episodeTitle,
-      showName,
-      duration: audioDuration ? `${Math.round(audioDuration / 60)} min` : "Unknown",
+      jobId: transcriptId,
+      url: job.url,
+      episodeTitle: job.episodeTitle || transcript.chapters?.[0]?.headline || "Podcast Episode",
+      showName: job.showName || "",
+      duration: transcript.audio_duration
+        ? `${Math.round(transcript.audio_duration / 60)} min`
+        : "Unknown",
       ...analysis,
     };
 
-    await store.setJSON(jobId, result);
+    await store.setJSON(transcriptId, result);
 
   } catch (err: any) {
-    await store.setJSON(jobId, {
+    await store.setJSON(transcriptId, {
       status: "error",
-      jobId,
+      jobId: transcriptId,
       error: err.message || "Analysis failed",
     });
   }
