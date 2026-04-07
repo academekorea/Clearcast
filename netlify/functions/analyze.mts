@@ -57,7 +57,6 @@ export default async (req: Request) => {
       audio_url: audioUrl,
       speech_models: ["universal-2"],
       auto_chapters: true,
-      webhook_url: "https://podlens.app/api/run-analysis",
     }),
   });
 

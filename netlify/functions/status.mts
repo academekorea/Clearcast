@@ -1,6 +1,31 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
+const ANALYSIS_PROMPT = `You are a media literacy expert analyzing a podcast transcript for bias, factual accuracy, and framing patterns.
+
+Analyze the transcript and return a JSON object with this exact structure:
+{
+  "biasScore": <number from -100 (far left) to +100 (far right)>,
+  "biasLabel": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
+  "factualityLabel": <"Mostly factual" | "Mixed factuality" | "Unreliable">,
+  "omissionRisk": <"Low" | "Med" | "High">,
+  "summary": <2-3 sentence plain English summary of what this episode is about and how it leans>,
+  "flags": [
+    {
+      "type": <"fact-check" | "framing" | "omission" | "sponsor-note" | "context">,
+      "title": <short description under 15 words>,
+      "detail": <explanation 1-2 sentences, grounded in fact>
+    }
+  ]
+}
+
+Rules:
+- Only flag things you are highly confident about
+- Every fact-check flag must be verifiable against known public information
+- Be specific, not vague
+- Maximum 6 flags
+- Return ONLY the JSON, no other text`;
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const jobId = url.pathname.split("/").pop();
@@ -22,7 +47,101 @@ export default async (req: Request) => {
     });
   }
 
-  return new Response(JSON.stringify(job), {
+  if (job.status === "complete" || job.status === "error") {
+    return new Response(JSON.stringify(job), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
+  const aaiRes = await fetch(`https://api.assemblyai.com/v2/transcript/${job.transcriptId}`, {
+    headers: { authorization: assemblyKey! },
+  });
+  const transcript = await aaiRes.json();
+
+  if (transcript.status === "error") {
+    const updated = { ...job, status: "error", error: transcript.error };
+    await store.setJSON(jobId, updated);
+    return new Response(JSON.stringify(updated), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  if (transcript.status !== "completed") {
+    return new Response(JSON.stringify({ status: "transcribing", jobId }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Transcription done — run Claude inline
+  const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
+  const words = (transcript.text || "").split(" ");
+  const truncated = words.slice(0, 8000).join(" ");
+
+  const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key": anthropicKey!,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1500,
+      messages: [
+        {
+          role: "user",
+          content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${truncated}`,
+        },
+      ],
+    }),
+  });
+
+  if (!claudeRes.ok) {
+    const err = await claudeRes.text();
+    const updated = { ...job, status: "error", error: "Claude error: " + err };
+    await store.setJSON(jobId, updated);
+    return new Response(JSON.stringify(updated), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const claudeData = await claudeRes.json();
+  const rawText = claudeData.content?.[0]?.text || "{}";
+
+  let analysis;
+  try {
+    analysis = JSON.parse(rawText.replace(/```json|```/g, "").trim());
+  } catch {
+    analysis = {
+      biasScore: 0,
+      biasLabel: "Center",
+      factualityLabel: "Mostly factual",
+      omissionRisk: "Low",
+      summary: "Analysis could not be parsed.",
+      flags: [],
+    };
+  }
+
+  const result = {
+    status: "complete",
+    jobId,
+    url: job.url,
+    episodeTitle: job.episodeTitle || transcript.chapters?.[0]?.headline || "Podcast Episode",
+    showName: job.showName || "",
+    duration: transcript.audio_duration
+      ? `${Math.round(transcript.audio_duration / 60)} min`
+      : "Unknown",
+    ...analysis,
+  };
+
+  await store.setJSON(jobId, result);
+
+  return new Response(JSON.stringify(result), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
@@ -30,4 +149,5 @@ export default async (req: Request) => {
 
 export const config: Config = {
   path: "/api/status/:jobId",
+  timeout: 30,
 };
