@@ -54,6 +54,22 @@ export default async (req: Request) => {
     });
   }
 
+  if (job.status === "analyzing") {
+    const elapsed = Date.now() - (job.analyzingStartedAt || Date.now());
+    if (elapsed > 300000) {
+      const timeout = { ...job, status: "error", error: "Analysis timed out" };
+      await store.setJSON(jobId, timeout);
+      return new Response(JSON.stringify(timeout), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return new Response(JSON.stringify({ status: "analyzing", jobId }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
   const aaiRes = await fetch(`https://api.assemblyai.com/v2/transcript/${job.transcriptId}`, {
     headers: { authorization: assemblyKey! },
@@ -75,6 +91,13 @@ export default async (req: Request) => {
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  // Mark as analyzing immediately so retrigger is blocked if Claude times out
+  await store.setJSON(jobId, {
+    ...job,
+    status: "analyzing",
+    analyzingStartedAt: Date.now(),
+  });
 
   // Transcription done — run Claude inline
   const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");

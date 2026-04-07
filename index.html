@@ -3592,7 +3592,7 @@ function enforcePlanRules() {
 function checkAnalysisLimit() {
   var u = plUser();
   if (!u) return false;
-  var plan = (u.plan || '').toLowerCase();
+  var plan = String(u.plan || '').toLowerCase();
   if (plan === 'free') {
     // Free tier: 4 analyses/month (FREE_TIER_MONTHLY_ANALYSES=4)
     var monthLimit = 4;
@@ -3689,7 +3689,7 @@ function showTrialExpiryRecap(u) {
 // ── CITATIONS GATE ──
 function canSeeCitations() {
   var u = plUser();
-  var plan = (u && u.plan || '').toLowerCase();
+  var plan = String(u && u.plan || '').toLowerCase();
   return plan === 'operator' || plan === 'studio';
 }
 
@@ -3785,7 +3785,7 @@ function renderDashStats(u, recent) {
 function renderDashUnheardPreview(u) {
   var el = document.getElementById('sb-unheard-preview');
   if (!el) return;
-  var plan = (u && u.plan || '').toLowerCase();
+  var plan = String(u && u.plan || '').toLowerCase();
   var isPro = plan === 'operator' || plan === 'studio' || plan === 'trial';
   if (!isPro) {
     el.innerHTML = '<div style="margin-bottom:8px;color:var(--text2)">Stories only one side is covering this week&hellip;</div>'
@@ -3810,7 +3810,7 @@ function renderDashUnheardPreview(u) {
 function loadSqWidget() {
   var u = plUser();
   if (!u || !u.id) return;
-  var plan = (u.plan || 'free').toLowerCase();
+  var plan = String(u.plan || 'free').toLowerCase();
   var eligible = plan === 'creator' || plan === 'operator' || plan === 'studio';
   var widget = document.getElementById('sq-widget');
   if (!widget) return;
@@ -4616,7 +4616,7 @@ function renderTopShows() {
 async function loadUnheard() {
   var el=document.getElementById('fp-unheard');
   var u=plUser();
-  var plan=(u&&u.plan||'').toLowerCase();
+  var plan=String(u&&u.plan||'').toLowerCase();
   var isPro=plan==='operator'||plan==='studio'||plan==='trial';
 
   if (!isPro) {
@@ -5239,7 +5239,7 @@ var _audioBlobUrls={}; // cache blob URLs by jobId
 
 function toggleAudioSummary(jobId, script) {
   var cu = plUser();
-  var plan = (cu && cu.plan || '').toLowerCase();
+  var plan = String(cu && cu.plan || '').toLowerCase();
   var canPlayFull = plan === 'creator' || plan === 'operator' || plan === 'studio';
 
   // --- Non-Creator: 10-second Web Speech preview ---
@@ -5426,7 +5426,7 @@ function renderTranscriptHighlights(data) {
       quotes.push({text:c.quote,ts:c.timestamp||'',label:c.explanation||'',dir:dir,finding:ftLabel(f.type)});
     });
   });
-  var u=plUser(); var plan=(u&&u.plan||'').toLowerCase();
+  var u=plUser(); var plan=String(u&&u.plan||'').toLowerCase();
   var canFull=plan==='operator'||plan==='studio';
   var shown=canFull?quotes:quotes.slice(0,10);
   var html='<div style="padding:0 0 24px">';
@@ -5461,7 +5461,7 @@ function renderResults(data) {
   if (data.jobId) _currentJobId = data.jobId;
   window._lastAnalysisResult = data; // used by share system
   var vid=ytId(data.url||'');
-  var u=plUser(); var plan=(u&&u.plan||'').toLowerCase();
+  var u=plUser(); var plan=String(u&&u.plan||'').toLowerCase();
   var canPlay=plan==='creator'||plan==='operator'||plan==='studio'||plan==='trial';
   var isPartial=data.status==='partial';
 
@@ -5682,7 +5682,7 @@ function renderResults(data) {
   // ── SHARE SECTION ──
   var shareSection = '';
   if (!isPartial && plUser()) {
-    var u2 = plUser(); var plan2 = (u2 && u2.plan||'').toLowerCase();
+    var u2 = plUser(); var plan2 = String(u2 && u2.plan||'').toLowerCase();
     var canShare = canAccess('shareCards') || plan2 === 'trial';
     var safeData = JSON.stringify({
       episodeTitle: data.episodeTitle || '',
@@ -5709,7 +5709,7 @@ function renderResults(data) {
   // ── DOWNLOAD REPORT ──
   var downloadBtn = '';
   if (!isPartial && plUser()) {
-    var u3 = plUser(); var plan3 = (u3 && u3.plan||'').toLowerCase();
+    var u3 = plUser(); var plan3 = String(u3 && u3.plan||'').toLowerCase();
     var canDl = plan3 === 'creator' || plan3 === 'operator' || plan3 === 'studio';
     var dlLabel = (plan3 === 'operator' || plan3 === 'studio') ? '&#9660; Download Full Report' : '&#9660; Download Basic Report';
     if (canDl) {
@@ -6691,8 +6691,7 @@ function showGraceBanner(graceUntil) {
 function canAccess(feature) {
   var u = plUser();
   if (!u) return false;
-  var plan = enforcePlanRules() || u.plan || 'free';
-  plan = plan.toLowerCase();
+  var plan = String(enforcePlanRules() || u.plan || 'free').toLowerCase();
   var FREE_AND_UP = ['free','trial','creator','operator','studio'];
   var tiers = {
     audioBriefing:           ['creator','operator','studio'],
@@ -7078,7 +7077,7 @@ var _currentJobId = null;
 function downloadReport() {
   var u = plUser();
   if (!u) { showUpgrade(); return; }
-  var plan = (u.plan || '').toLowerCase();
+  var plan = String(u.plan || '').toLowerCase();
   var canBasic = plan === 'creator' || plan === 'operator' || plan === 'studio';
   if (!canBasic) { showUpgrade(); return; }
   var type = (plan === 'operator' || plan === 'studio') ? 'full' : 'basic';
@@ -7928,7 +7927,7 @@ function renderSpotifyConnected(data, u) {
   var fp = data.preliminaryFingerprint;
   var fpLocked = data.fingerprintLocked;
   var suggestions = data.suggestedAnalyses || [];
-  var plan = (u.plan || 'free').toLowerCase();
+  var plan = String(u.plan || 'free').toLowerCase();
   var isPaid = ['creator','operator','studio'].indexOf(plan) > -1;
 
   var html = '<div class="sp-conn-body">';
@@ -8366,7 +8365,7 @@ function trackLockedClick() {
 function maybeShowNudge(trigger) {
   var u = plUser();
   if (!u) return;
-  var plan = (u.plan || '').toLowerCase();
+  var plan = String(u.plan || '').toLowerCase();
   if (['creator','operator','studio','pilot'].indexOf(plan) > -1) return;
   if (Date.now() - _lastNudgeShown < NUDGE_COOLDOWN) return;
   _lastNudgeShown = Date.now();
