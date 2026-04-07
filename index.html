@@ -3279,7 +3279,7 @@ function _renderNavAvatar(u) {
   var tierLabel = u.plan || 'free';
   var isSuperAdmin = u.email === 'academekorea@gmail.com' || u.isSuperAdmin;
   var adminRows = isSuperAdmin
-    ? '<a href="/account?tab=admin" class="dropdown-item" style="color:#dc2626;font-weight:600">\uD83D\uDD34 Admin Panel</a><div class="dropdown-divider"></div>'
+    ? '<button class="dropdown-item" onclick="closeUserMenu();showView(\'admin\')" style="color:#dc2626;font-weight:600;background:none;border:none;cursor:pointer;text-align:left;width:100%">\uD83D\uDD34 Admin Panel</button><div class="dropdown-divider"></div>'
     : '';
   var adminBadge = isSuperAdmin ? ' <span style="background:#dc2626;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;letter-spacing:.04em;vertical-align:middle">ADMIN</span>' : '';
   el.innerHTML = '<div class="notif-bell-wrap" id="notif-bell-wrap">'
@@ -3306,6 +3306,22 @@ function _renderNavAvatar(u) {
     + '<button class="danger" onclick="doLogout()">Sign out</button>'
     + '</div></div>';
   loadNotifCount(u.id);
+  // Admin nav button — only for super admin, injected dynamically
+  var existingAdminBtn = document.getElementById('nl-admin');
+  if (isSuperAdmin && !existingAdminBtn) {
+    var navLoggedIn = document.getElementById('nav-logged-in');
+    if (navLoggedIn) {
+      var adminNavBtn = document.createElement('button');
+      adminNavBtn.className = 'nav-link nl';
+      adminNavBtn.id = 'nl-admin';
+      adminNavBtn.textContent = '🔴 Admin';
+      adminNavBtn.style.cssText = 'color:#dc2626;font-weight:600';
+      adminNavBtn.onclick = function() { showView('admin'); };
+      navLoggedIn.insertBefore(adminNavBtn, navLoggedIn.firstChild);
+    }
+  } else if (!isSuperAdmin && existingAdminBtn) {
+    existingAdminBtn.remove();
+  }
 }
 
 function _highlightActiveNavLink() {
@@ -4002,6 +4018,7 @@ function showView(name) {
   var mb = document.getElementById('mob-' + name);
   if (mb) mb.classList.add('on');
   if (name === 'discover' && !_feedInit) { initFeed(); }
+  if (name === 'admin') { var _au = plUser(); if (_au && (_au.isSuperAdmin || _au.email === 'academekorea@gmail.com')) { adminLoad('overview'); } else { showView('home'); } }
   // Hide footer when in non-home views (except show)
   var footer = document.getElementById('site-footer');
   if (footer) footer.style.display = (name === 'home' || name === 'show') ? '' : 'none';
