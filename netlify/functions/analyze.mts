@@ -17,6 +17,8 @@ export default async (req: Request) => {
   const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
 
   let audioUrl = url;
+  let episodeTitle = "Podcast episode";
+  let showName = "";
 
   // If it's an RSS feed, extract the first episode's audio URL
   if (url.includes("rss") || url.includes("feed") || url.endsWith(".xml")) {
@@ -32,6 +34,12 @@ export default async (req: Request) => {
           headers: { "Content-Type": "application/json" },
         });
       }
+      const titleMatch = rssText.match(/<item[^>]*>[\s\S]*?<title><!\[CDATA\[(.*?)\]\]>/i)
+        || rssText.match(/<item[^>]*>[\s\S]*?<title>(.*?)<\/title>/i);
+      if (titleMatch) episodeTitle = titleMatch[1].trim();
+      const showTitleMatch = rssText.match(/<channel[^>]*>[\s\S]*?<title><!\[CDATA\[(.*?)\]\]>/i)
+        || rssText.match(/<channel[^>]*>[\s\S]*?<title>(.*?)<\/title>/i);
+      if (showTitleMatch) showName = showTitleMatch[1].trim();
     } catch {
       return new Response(JSON.stringify({ error: "Failed to parse RSS feed" }), {
         status: 400,
@@ -50,7 +58,7 @@ export default async (req: Request) => {
     body: JSON.stringify({
       audio_url: audioUrl,
       auto_chapters: true,
-      speech_models: ["universal-2"],
+      speech_model: "universal-2",
     }),
   });
 
@@ -72,6 +80,8 @@ export default async (req: Request) => {
     status: "transcribing",
     transcriptId,
     url,
+    episodeTitle,
+    showName,
     createdAt: Date.now(),
   });
 

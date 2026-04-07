@@ -94,7 +94,10 @@ export default async (req: Request) => {
   const words = text.split(" ");
   const truncated = words.slice(0, 8000).join(" ");
 
+  const controller = new AbortController();
+  const claudeTimeout = setTimeout(() => controller.abort(), 8000);
   const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+    signal: controller.signal,
     method: "POST",
     headers: {
       "x-api-key": anthropicKey!,
@@ -112,6 +115,7 @@ export default async (req: Request) => {
       ],
     }),
   });
+  clearTimeout(claudeTimeout);
 
   if (!claudeRes.ok) {
     const err = await claudeRes.text();
@@ -134,13 +138,14 @@ export default async (req: Request) => {
   }
 
   // Get episode title from transcript chapters or audio URL
-  const episodeTitle = transcript.chapters?.[0]?.headline || "Podcast episode";
+  const episodeTitle = job.episodeTitle || transcript.chapters?.[0]?.headline || "Podcast episode";
 
   const result = {
     status: "complete",
     jobId,
     url: job.url,
     episodeTitle,
+    showName: job.showName || "",
     duration: transcript.audio_duration
       ? `${Math.round(transcript.audio_duration / 60)} min`
       : "Unknown",
