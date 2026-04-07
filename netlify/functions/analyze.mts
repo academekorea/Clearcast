@@ -59,6 +59,7 @@ export default async (req: Request) => {
       audio_url: audioUrl,
       auto_chapters: true,
       speech_models: ["universal-2"],
+      audio_end_at: 1800000,
     }),
   });
 
