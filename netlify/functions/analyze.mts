@@ -15,31 +15,30 @@ export default async (req: Request) => {
   }
 
   const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
-
   let audioUrl = url;
-  let episodeTitle = "Podcast episode";
+  let episodeTitle = "Podcast Episode";
   let showName = "";
 
-  // If it's an RSS feed, extract the first episode's audio URL
   if (url.includes("rss") || url.includes("feed") || url.endsWith(".xml")) {
     try {
       const rssRes = await fetch(url);
       const rssText = await rssRes.text();
-      const match = rssText.match(/<enclosure[^>]+url="([^"]+)"/i);
-      if (match) {
-        audioUrl = match[1];
-      } else {
+
+      const audioMatch = rssText.match(/<enclosure[^>]+url="([^"]+)"/i);
+      if (!audioMatch) {
         return new Response(JSON.stringify({ error: "Could not find audio in RSS feed" }), {
           status: 400,
           headers: { "Content-Type": "application/json" },
         });
       }
-      const titleMatch = rssText.match(/<item[^>]*>[\s\S]*?<title><!\[CDATA\[(.*?)\]\]>/i)
-        || rssText.match(/<item[^>]*>[\s\S]*?<title>(.*?)<\/title>/i);
-      if (titleMatch) episodeTitle = titleMatch[1].trim();
-      const showTitleMatch = rssText.match(/<channel[^>]*>[\s\S]*?<title><!\[CDATA\[(.*?)\]\]>/i)
-        || rssText.match(/<channel[^>]*>[\s\S]*?<title>(.*?)<\/title>/i);
-      if (showTitleMatch) showName = showTitleMatch[1].trim();
+      audioUrl = audioMatch[1];
+
+      const showMatch = rssText.match(/<channel[^>]*>[\s\S]*?<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/i);
+      if (showMatch) showName = showMatch[1].trim();
+
+      const epMatch = rssText.match(/<item[^>]*>[\s\S]*?<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/i);
+      if (epMatch) episodeTitle = epMatch[1].trim();
+
     } catch {
       return new Response(JSON.stringify({ error: "Failed to parse RSS feed" }), {
         status: 400,
@@ -48,7 +47,6 @@ export default async (req: Request) => {
     }
   }
 
-  // Submit to AssemblyAI
   const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
     headers: {
@@ -71,14 +69,12 @@ export default async (req: Request) => {
   }
 
   const aaiData = await aaiRes.json();
-  const transcriptId = aaiData.id;
-  const jobId = transcriptId;
+  const jobId = aaiData.id;
 
-  // Store job in Netlify Blobs
   const store = getStore("podlens-jobs");
   await store.setJSON(jobId, {
     status: "transcribing",
-    transcriptId,
+    transcriptId: jobId,
     url,
     episodeTitle,
     showName,

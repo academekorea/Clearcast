@@ -9,6 +9,7 @@ Analyze the transcript and return a JSON object with this exact structure:
   "biasLabel": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
   "factualityLabel": <"Mostly factual" | "Mixed factuality" | "Unreliable">,
   "omissionRisk": <"Low" | "Med" | "High">,
+  "summary": <2-3 sentence plain English summary of what this episode is about and how it leans>,
   "flags": [
     {
       "type": <"fact-check" | "framing" | "omission" | "sponsor-note" | "context">,
@@ -27,22 +28,16 @@ Rules:
 
 export default async (req: Request) => {
   if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+    return new Response("OK", { status: 200 });
   }
 
-  const { jobId, transcriptText, jobData } = await req.json();
-  if (!jobId || !transcriptText) {
-    return new Response(JSON.stringify({ error: "jobId and transcriptText required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  const { jobId, transcriptText, episodeTitle, showName, audioUrl, audioDuration } = await req.json();
 
   const store = getStore("podlens-jobs");
   const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
 
-  // Truncate to ~8000 words to stay within token limits
-  const truncated = transcriptText.split(" ").slice(0, 8000).join(" ");
+  const words = (transcriptText || "").split(" ");
+  const truncated = words.slice(0, 6000).join(" ");
 
   try {
     const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -65,9 +60,7 @@ export default async (req: Request) => {
     });
 
     if (!claudeRes.ok) {
-      const err = await claudeRes.text();
-      await store.setJSON(jobId, { ...jobData, status: "error", error: "Claude error: " + err });
-      return new Response(JSON.stringify({ error: "Claude error" }), { status: 500 });
+      throw new Error("Claude API error: " + await claudeRes.text());
     }
 
     const claudeData = await claudeRes.json();
@@ -77,30 +70,37 @@ export default async (req: Request) => {
     try {
       analysis = JSON.parse(rawText.replace(/```json|```/g, "").trim());
     } catch {
-      analysis = { error: "Failed to parse analysis" };
+      analysis = {
+        biasScore: 0,
+        biasLabel: "Center",
+        factualityLabel: "Mostly factual",
+        omissionRisk: "Low",
+        summary: "Analysis could not be parsed.",
+        flags: [],
+      };
     }
-
-    const episodeTitle = jobData.episodeTitle || "Podcast episode";
 
     const result = {
       status: "complete",
       jobId,
-      url: jobData.url,
+      url: audioUrl,
       episodeTitle,
-      showName: jobData.showName || "",
+      showName,
+      duration: audioDuration ? `${Math.round(audioDuration / 60)} min` : "Unknown",
       ...analysis,
     };
 
     await store.setJSON(jobId, result);
 
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+  } catch (err: any) {
+    await store.setJSON(jobId, {
+      status: "error",
+      jobId,
+      error: err.message || "Analysis failed",
     });
-  } catch (e: any) {
-    await store.setJSON(jobId, { ...jobData, status: "error", error: e?.message || "Analysis failed" });
-    return new Response(JSON.stringify({ error: "Analysis failed" }), { status: 500 });
   }
+
+  return new Response("OK", { status: 200 });
 };
 
 export const config: Config = {
