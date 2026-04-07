@@ -175,7 +175,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
 (function() {
   var shareId = location.pathname.split('/').pop() || location.pathname.split('/').slice(-2, -1)[0];
   var data = null;
-  var isKo = navigator.language.startsWith('ko');
+  var isKo = (navigator.language || '').startsWith('ko');
 
   if (isKo) {
     document.getElementById('kakao-share-btn').style.display = 'inline-flex';
@@ -237,6 +237,12 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
     }
 
     // Bias bar
+    if (typeof d.biasScore === 'number' && !d.audioLean) {
+      var bs = d.biasScore;
+      var rp = Math.round(Math.max(0, Math.min(100, bs)));
+      var lp = Math.round(Math.max(0, Math.min(100, -bs)));
+      d.audioLean = { leftPct: lp, centerPct: Math.max(0, 100 - lp - rp), rightPct: rp };
+    }
     var al = d.audioLean || {};
     var l = al.leftPct || 0, c = al.centerPct || 0, r = al.rightPct || 0;
     document.getElementById('bar-l').style.width = l + '%';
@@ -276,7 +282,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
       var btn = document.querySelector('.share-btn.primary');
       btn.textContent = '✓ Copied!';
       setTimeout(function(){ btn.innerHTML = '📋 Copy link'; }, 1800);
-    });
+    }).catch(function(){ window.prompt('Copy this link:', location.href); });
     logEvent('share_created', { method: 'copy', share_id: shareId });
   };
 
@@ -308,8 +314,6 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
 })();
 </script>
 
-<!-- PostHog -->
-<script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),i=0;i<o.length;i++)g(u,o[i]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ',{api_host:'https://us.i.posthog.com',capture_pageview:true,capture_pageleave:true});</script>
 <!-- Sentry -->
 <script src="https://browser.sentry-cdn.com/7.x.x/bundle.min.js" crossorigin="anonymous"></script>
 <script>if(window.Sentry)Sentry.init({dsn:"https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128",environment:"production",tracesSampleRate:0.2});
