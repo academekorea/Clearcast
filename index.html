@@ -7104,7 +7104,7 @@ function downloadReport() {
 
 function exportCsv() {
   var u = plUser();
-  if (!u || (u.plan || '').toLowerCase() !== 'studio') {
+  if (!u || String(u.plan || '').toLowerCase() !== 'studio') {
     showUpgrade('csvExport'); return;
   }
   plToast('Preparing CSV export…');
