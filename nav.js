@@ -71,8 +71,9 @@
   function _buildLoggedOut(navLinks, path) {
     navLinks.innerHTML =
       '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '">Discover</a>'
-      + '<a href="/how-it-works.html" class="nav-link' + (_isActive('/how-it-works.html', path) ? ' active' : '') + '">How it works</a>'
-      + '<a href="/pricing.html" class="nav-link' + (_isActive('/pricing.html', path) ? ' active' : '') + '">Pricing</a>'
+      + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '">Analyze</a>'
+      + '<a href="/library.html" class="nav-link' + (_isActive('/library.html', path) ? ' active' : '') + '">Library</a>'
+      + '<a href="/account.html" class="nav-link' + (_isActive('/account.html', path) ? ' active' : '') + '">Account</a>'
       + '<a href="/" class="nav-link nav-signin" onclick="if(typeof openModal===\'function\'){openModal(\'login\');return false}">Sign in</a>';
   }
 
@@ -96,8 +97,9 @@
 
     navLinks.innerHTML =
       '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '">Discover</a>'
+      + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '">Analyze</a>'
       + '<a href="/library.html" class="nav-link' + (_isActive('/library.html', path) ? ' active' : '') + '">Library</a>'
-      + '<a href="/dashboard.html" class="nav-link' + (_isActive('/dashboard.html', path) ? ' active' : '') + '">Dashboard</a>'
+      + '<a href="/account.html" class="nav-link' + (_isActive('/account.html', path) ? ' active' : '') + '">Account</a>'
       + '<button class="nav-theme" id="nav-theme-btn" aria-label="Toggle theme">' + (isDark ? '🌙' : '☀️') + '</button>'
       + '<div class="nav-dd-wrap">'
       + '<button class="nav-avatar-btn" id="nav-avatar-btn" aria-label="Profile menu">' + avatarInner + '</button>'
@@ -107,7 +109,6 @@
       + '<div class="nav-dd-email">' + _esc(u.email || '') + '</div>'
       + '</div>'
       + adminRow
-      + '<a href="/dashboard.html" class="nav-dd-item">Dashboard</a>'
       + '<a href="/account?tab=profile" class="nav-dd-item">View &amp; Edit Profile</a>'
       + '<a href="/account?tab=settings" class="nav-dd-item">Settings</a>'
       + '<a href="/account?tab=billing" class="nav-dd-item">Billing &amp; Plans</a>'
