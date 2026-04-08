@@ -85,11 +85,18 @@ export default async (req: Request) => {
       }
     }
 
-    // Step 2: Fetch audio from Railway (90-second timeout)
-    const audioRes = await fetch(`${audioServiceUrl}/audio?url=${encodeURIComponent(youtubeUrl)}`, {
+    // Step 2: Extract via Railway POST /extract (captions first, audio fallback)
+    const youtubeSecret = Netlify.env.get("YOUTUBE_SERVICE_SECRET");
+    const extractRes = await fetch(`${audioServiceUrl}/extract`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(youtubeSecret ? { "Authorization": `Bearer ${youtubeSecret}` } : {}),
+      },
+      body: JSON.stringify({ url: youtubeUrl }),
       signal: AbortSignal.timeout(90000),
     });
-    if (!audioRes.ok) {
+    if (!extractRes.ok) {
       const msg = "AUDIO_EXTRACTION_FAILED";
       await transcripts.setJSON(jobId, { status: "error", message: msg });
       await jobs.setJSON(jobId, { status: "error", error: msg, code: "AUDIO_EXTRACTION_FAILED" });
@@ -98,7 +105,41 @@ export default async (req: Request) => {
       });
     }
 
-    const audioBuffer = await audioRes.arrayBuffer();
+    const extractData = await extractRes.json();
+    if (!extractData.success) {
+      const msg = extractData.error || "AUDIO_EXTRACTION_FAILED";
+      const code = extractData.code || "AUDIO_EXTRACTION_FAILED";
+      await transcripts.setJSON(jobId, { status: "error", message: msg });
+      await jobs.setJSON(jobId, { status: "error", error: msg, code });
+      return new Response(JSON.stringify({ error: msg }), {
+        status: 502, headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Fast path: captions returned — skip AssemblyAI entirely
+    if (extractData.method === "captions" && extractData.transcript) {
+      const duration = extractData.metadata?.duration
+        ? `${Math.round(extractData.metadata.duration / 60)} min` : "";
+      await transcripts.setJSON(jobId, { status: "complete", transcript: extractData.transcript });
+      await jobs.setJSON(jobId, { status: "transcribed", transcript: extractData.transcript, duration });
+      if (videoId) {
+        await cache.setJSON(videoId, { transcript: extractData.transcript, duration, createdAt: Date.now() });
+      }
+      return new Response(JSON.stringify({ status: "complete", method: "captions" }), {
+        status: 200, headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Audio path: decode base64 MP3 and upload to AssemblyAI
+    if (!extractData.audioData) {
+      const msg = "No audio data returned from extraction service";
+      await transcripts.setJSON(jobId, { status: "error", message: msg });
+      await jobs.setJSON(jobId, { status: "error", error: msg });
+      return new Response(JSON.stringify({ error: msg }), {
+        status: 502, headers: { "Content-Type": "application/json" },
+      });
+    }
+    const audioBuffer = Buffer.from(extractData.audioData, "base64");
 
     // Step 3: Upload audio buffer to AssemblyAI
     const uploadRes = await fetch("https://api.assemblyai.com/v2/upload", {

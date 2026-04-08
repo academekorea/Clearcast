@@ -18,15 +18,10 @@ function isYouTubeUrl(url: string): boolean {
 }
 
 async function resolveUrl(url: string): Promise<string> {
-  // YouTube URLs need audio extraction via Railway/yt-dlp — AssemblyAI cannot
-  // download audio from youtube.com watch pages directly.
-  if (isYouTubeUrl(url)) {
-    const audioServiceUrl = Netlify.env.get("AUDIO_SERVICE_URL");
-    if (audioServiceUrl) {
-      return `${audioServiceUrl}/audio?url=${encodeURIComponent(url)}`;
-    }
-    return url; // graceful fallback if service not configured
-  }
+  // YouTube URLs are handled entirely by transcribe-background via POST /extract.
+  // resolve-redirect only resolves podcast tracking redirect chains (pdst.fm,
+  // podtrac, Chartable, etc.) — return YouTube URLs unchanged.
+  if (isYouTubeUrl(url)) return url;
 
   // Attempt 1: lightweight HEAD request — most servers support this
   try {
