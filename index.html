@@ -2031,6 +2031,135 @@ body.light-mode,[data-theme="light"]{
 
 /* Padding below dock when visible */
 .ar-dock-spacer{height:100px}
+
+/* ── V7 Dashboard Design (reference: podlens_dashboard_v7.html) ── */
+#results .v7-dash{background:#f5f5f3;border-radius:8px;padding:0 0 8px}
+.v7-trow{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+@media(max-width:900px){.v7-trow{grid-template-columns:1fr}}
+.v7-card{background:#fff;border:0.5px solid #e4e4e4;border-radius:10px;padding:13px}
+.v7-artwork{background:#e8e8e8;border-radius:7px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;border:0.5px solid #ddd;overflow:hidden}
+.v7-artwork img{width:100%;height:100%;object-fit:cover;display:block}
+.v7-aicon{width:52px;height:52px;border-radius:9px;background:#1a3050;display:flex;align-items:center;justify-content:center;font-size:22px}
+.v7-ctls{margin-top:11px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.v7-cb{background:none;border:none;color:#aaa;cursor:pointer;font-size:11px;padding:5px 7px;font-family:inherit}
+.v7-pc{width:34px;height:34px;border-radius:50%;background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.v7-spd{font-size:10px;color:#999;padding:3px 7px;border:0.5px solid #ddd;border-radius:4px;cursor:pointer;background:none;font-family:inherit}
+.v7-spd.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.v7-abar{margin-top:12px}
+.v7-abarlbl{font-size:10px;color:#bbb;display:flex;justify-content:space-between;margin-bottom:5px}
+.v7-atrack{height:3px;background:#e0e0e0;border-radius:2px;position:relative;cursor:pointer}
+.v7-afill{height:100%;background:#1a1a1a;border-radius:2px;width:0}
+.v7-athumb{width:9px;height:9px;border-radius:50%;background:#1a1a1a;position:absolute;top:-3px;left:0;transform:translateX(-50%);pointer-events:none}
+.v7-rc{display:flex;flex-direction:column;gap:12px}
+.v7-gtop{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.v7-gav{width:38px;height:38px;border-radius:50%;background:#dce8f5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#185fa5;flex-shrink:0}
+.v7-gname{font-size:13px;font-weight:500;color:#1a1a1a}
+.v7-grole{font-size:10px;color:#999;margin-top:2px}
+.v7-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.v7-chip{font-size:10px;padding:2px 7px;border-radius:10px;border:0.5px solid #e0e0e0;color:#999}
+.v7-lchip{font-size:10px;padding:2px 7px;border-radius:10px;background:#e6f1fb;border:0.5px solid #b5d4f4;color:#185fa5}
+.v7-srow{display:flex;gap:6px;flex-wrap:wrap;padding-top:8px;border-top:0.5px solid #eee}
+.v7-sl{font-size:10px;color:#bbb;padding:3px 7px;border:0.5px solid #e8e8e8;border-radius:5px;cursor:pointer;text-decoration:none;display:inline-block}
+.v7-sl:hover{color:#555;border-color:#ccc}
+.v7-sl-pl{color:#185fa5!important;border-color:#b5d4f4!important;background:#f0f7ff}
+.v7-lbl{font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.v7-bbtn{background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:7px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
+.v7-bdesc{font-size:11px;color:#666;line-height:1.5;margin-bottom:9px}
+.v7-bdur{font-size:10px;color:#bbb;margin-left:4px}
+.v7-biasrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:6px}
+.v7-pdot{width:5px;height:5px;border-radius:50%;background:#d97706;animation:pulse 1.2s infinite;flex-shrink:0}
+.v7-bias-bar-wrap{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:8px 0;position:relative}
+.v7-bias-seg-l{background:#e0352b}
+.v7-bias-seg-c{background:#c8c4b8}
+.v7-bias-seg-r{background:#3a7fd4}
+.v7-bias-marker{position:absolute;top:-3px;width:3px;height:16px;background:#fff;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.15);z-index:1}
+.v7-bpcts{display:flex;gap:16px;font-size:11px;margin-top:6px;flex-wrap:wrap}
+.v7-bverdict{margin-top:8px;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;display:inline-block}
+.v7-bverdict-l{background:#fde8e7;color:#b83228}
+.v7-bverdict-b{background:#f0f0ee;color:#666}
+.v7-bverdict-r{background:#e8f0fe;color:#1a5fa8}
+.v7-enote{font-size:10px;color:#d97706;margin-top:5px}
+.v7-sec{margin-bottom:18px}
+.v7-seclbl{font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.v7-mrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.v7-mc{background:#fff;border:0.5px solid #e4e4e4;border-radius:7px;padding:10px;text-align:center}
+.v7-mv{font-size:18px;font-weight:500;color:#1a1a1a}
+.v7-ml{font-size:10px;color:#bbb;margin-top:2px}
+.v7-ms{font-size:10px;margin-top:2px}
+.v7-ms-hi{color:#16a34a}.v7-ms-mod{color:#d97706}.v7-ms-lo{color:#ea580c}
+.v7-findings-wrap{border:0.5px solid #e8e8e8;border-radius:8px;overflow:hidden;margin-bottom:18px}
+.v7-fi{display:grid;grid-template-columns:78px 1fr 18px;gap:10px;padding:11px 12px;border-bottom:0.5px solid #f0f0f0;align-items:center;cursor:pointer;transition:background .12s}
+.v7-fi.open,.v7-fi:hover{background:#fafafa}
+.v7-ftag{padding:3px 6px;border-radius:4px;font-size:10px;font-weight:500;text-align:center;white-space:nowrap}
+.v7-fc{background:#fbeaf0;color:#b83268;border:0.5px solid #f4c0d1}
+.v7-ff{background:#fef3e2;color:#92580a;border:0.5px solid #fac775}
+.v7-fx{background:#f5f5f3;color:#888;border:0.5px solid #e0e0e0}
+.v7-fo{background:#f0eefe;color:#6040b0;border:0.5px solid #cec8f0}
+.v7-fs{background:#fef0e6;color:#a04010;border:0.5px solid #f5c090}
+.v7-ftitle{font-size:12px;font-weight:500;color:#2a2a2a;margin-bottom:2px}
+.v7-fbody{font-size:11px;color:#aaa;line-height:1.4}
+.v7-farrow{font-size:13px;color:#ccc;transition:transform .2s}
+.v7-fi.open .v7-farrow{transform:rotate(90deg)}
+.v7-expand{background:#f9f9f7;border-bottom:0.5px solid #f0f0f0;padding:14px 16px;display:none}
+.v7-expand.show{display:block}
+.v7-exp-summary{font-size:12px;color:#666;line-height:1.7;margin-bottom:14px;padding-bottom:12px;border-bottom:0.5px solid #eee}
+.v7-exp-lbl{font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.v7-exp-ev{background:#fff;border:0.5px solid #eee;border-radius:7px;padding:10px 12px;margin-bottom:7px}
+.v7-exp-time{font-size:10px;color:#bbb;font-weight:500;margin-bottom:3px}
+.v7-exp-quote{font-size:11px;color:#666;line-height:1.6;font-style:italic}
+.v7-exp-note{font-size:10px;color:#bbb;margin-top:5px;padding-top:5px;border-top:0.5px solid #f0f0f0}
+.v7-exp-impact{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:0.5px solid #f5f5f5}
+.v7-exp-impact:last-child{border-bottom:none}
+.v7-exp-dot{width:4px;height:4px;border-radius:50%;background:#ccc;margin-top:6px;flex-shrink:0}
+.v7-exp-impact-text{font-size:11px;color:#888;line-height:1.5}
+.v7-exp-balanced{background:#f0f7f0;border:0.5px solid #c0ddc0;border-radius:7px;padding:10px 12px;margin-top:4px}
+.v7-exp-bal-lbl{font-size:10px;color:#5a8a5a;margin-bottom:3px}
+.v7-exp-bal-text{font-size:11px;color:#4a7a4a;line-height:1.6}
+.v7-kfi{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-bottom:0.5px solid #f0f0f0;cursor:pointer;transition:background .12s}
+.v7-kfi.open,.v7-kfi:hover{background:#fafafa}
+.v7-kfd{width:5px;height:5px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.v7-kft{font-size:12px;color:#555;line-height:1.5;flex:1}
+.v7-kfarrow{font-size:13px;color:#ccc;transition:transform .2s;flex-shrink:0;margin-top:2px}
+.v7-kfi.open .v7-kfarrow{transform:rotate(90deg)}
+.v7-blur-r{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:0.5px solid #f0f0f0}
+.v7-btext{height:9px;border-radius:3px;background:#f0f0f0;flex:1;filter:blur(3px)}
+.v7-lock{color:#ccc;font-size:11px}
+.v7-upbar{background:#fafafa;border:0.5px solid #e8e8e8;border-radius:7px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+.v7-uptxt{font-size:11px;color:#bbb}
+.v7-upbtn{font-size:11px;padding:4px 10px;background:none;border:0.5px solid #d0d0d0;border-radius:5px;color:#555;cursor:pointer}
+.v7-cit{padding:8px 0;border-bottom:0.5px solid #f0f0f0;display:flex;gap:8px}
+.v7-cit:last-child{border-bottom:none}
+.v7-cnum{font-size:10px;color:#ccc;width:14px;flex-shrink:0;margin-top:1px}
+.v7-ctitle2{font-size:11px;color:#555}
+.v7-csrc{font-size:10px;color:#bbb;margin-top:2px}
+.v7-drbar{background:#fff;border:0.5px solid #e4e4e4;border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.v7-drtitle{font-size:13px;font-weight:500;color:#2a2a2a;margin-bottom:3px}
+.v7-drdesc{font-size:10px;color:#bbb;line-height:1.6}
+.v7-drpri{background:#1a1a1a;color:#fff;border:none;padding:7px 14px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:inherit}
+.v7-drsec{background:none;border:0.5px solid #d0d0d0;color:#666;padding:7px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit}
+.v7-drlocked{display:flex;align-items:center;gap:5px;font-size:11px;color:#bbb;padding:7px 12px;border:0.5px solid #e8e8e8;border-radius:6px}
+.v7-cdlrow{margin-top:9px;padding-top:9px;border-top:0.5px solid #eee;display:flex;align-items:center;justify-content:space-between}
+.v7-eta-banner{background:#fffbeb;border:0.5px solid #fde68a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.v7-eta-text{font-size:12px;color:#92580a}
+.v7-eta-sub{font-size:10px;color:#b58a40;margin-top:2px}
+.v7-eta-pct{font-size:10px;color:#b58a40;white-space:nowrap}
+.v7-ep-header{display:flex;align-items:center;gap:10px;padding:14px 0 14px;border-bottom:0.5px solid #eee;margin-bottom:18px}
+.v7-ep-art{width:48px;height:48px;border-radius:6px;overflow:hidden;flex-shrink:0;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-size:20px}
+.v7-ep-art img{width:100%;height:100%;object-fit:cover;display:block}
+.v7-ep-title{font-size:14px;font-weight:600;color:#1a1a1a;line-height:1.3;flex:1;min-width:0}
+.v7-ep-show{font-size:12px;color:#999;margin-top:2px}
+.v7-ep-actions{display:flex;gap:8px;flex-shrink:0}
+.v7-act-btn{font-size:11px;color:#999;border:0.5px solid #e0e0e0;background:none;border-radius:5px;padding:5px 10px;cursor:pointer;font-family:inherit}
+.v7-act-btn:hover{color:#555;border-color:#bbb}
+.v7-preview-bar{background:#fff;border-bottom:0.5px solid #eee;padding:9px 0 12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.v7-prev-lbl{font-size:11px;color:#bbb}
+.v7-prev-pill{background:transparent;border:0.5px solid #d0d0d0;color:#aaa;padding:4px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit}
+.v7-prev-pill.on-free{border-color:#333;color:#aaa}
+.v7-prev-pill.on-creator{border-color:#7a4500;color:#ef9f27}
+.v7-prev-pill.on-operator{border-color:#0c3a6a;color:#378add}
+.v7-prev-cta{font-size:11px;color:#999;margin-left:auto}
+.v7-prev-cta a{color:#378add;cursor:pointer;text-decoration:none}
+.v7-main{padding:16px}
 /* ── Tier gating ── */
 .ar-preview-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);margin-bottom:16px;font-size:12px;color:var(--text3);flex-wrap:wrap}
 .ar-preview-label{flex-shrink:0}
@@ -5792,11 +5921,11 @@ function arSetSpeed(rate, btn) {
   } else if (_arMedia.type === 'audio' && _arMedia.audio) {
     _arMedia.audio.playbackRate = rate;
   }
-  document.querySelectorAll('.ar-speed-btn').forEach(function(b) { b.classList.remove('on'); });
+  document.querySelectorAll('.ar-speed-btn,.v7-spd').forEach(function(b) { b.classList.remove('on'); });
   if (btn) btn.classList.add('on');
 }
 function arScrub(e) {
-  var track = document.getElementById('ar-scrubber');
+  var track = document.getElementById('ar-scrubber') || document.getElementById('v7-atrack');
   if (!track) return;
   var pct = (e.clientX - track.getBoundingClientRect().left) / track.offsetWidth;
   if (_arMedia.type === 'yt') {
@@ -5808,6 +5937,10 @@ function arScrub(e) {
 }
 function arToggleFinding(el) {
   el.classList.toggle('open');
+  var next = el.nextElementSibling;
+  if (next && (next.classList.contains('v7-expand') || next.classList.contains('expand'))) {
+    next.classList.toggle('show');
+  }
 }
 function _arShowDock(data) {
   var dock = document.getElementById('ar-dock');
@@ -5847,14 +5980,24 @@ function _arInitNativeAudio(audioUrl, data) {
   _arMedia.audio = a;
   function fmt(s) { if (!isFinite(s)) return '0:00'; var m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; }
   a.addEventListener('timeupdate', function() {
+    var pct = a.duration ? (a.currentTime / a.duration * 100) : 0;
     var fill = document.getElementById('ar-scrubber-fill');
     var cur = document.getElementById('ar-time-cur');
-    if (fill && a.duration) fill.style.width = (a.currentTime / a.duration * 100) + '%';
+    if (fill && a.duration) fill.style.width = pct + '%';
     if (cur) cur.textContent = fmt(a.currentTime);
+    // v7 scrubber
+    var v7fill = document.getElementById('v7-afill');
+    var v7thumb = document.getElementById('v7-athumb');
+    var v7cur = document.getElementById('v7-time-cur');
+    if (v7fill) v7fill.style.width = pct.toFixed(2) + '%';
+    if (v7thumb) v7thumb.style.left = pct.toFixed(2) + '%';
+    if (v7cur) v7cur.textContent = fmt(a.currentTime);
   });
   a.addEventListener('loadedmetadata', function() {
     var dur = document.getElementById('ar-time-dur');
     if (dur) dur.textContent = fmt(a.duration);
+    var v7dur = document.getElementById('v7-time-dur');
+    if (v7dur) v7dur.textContent = fmt(a.duration);
     var track = document.getElementById('ar-scrubber');
     if (!track || !a.duration) return;
     var lean = data.audioLean || {};
@@ -5891,117 +6034,109 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
   var _cleanTitle = decodeHTMLEntities(epTitle) || 'Loading episode\u2026';
   var _cleanShow = decodeHTMLEntities(showName) || '';
 
+  var html = '<div class="v7-dash"><div class="v7-main">';
+
   // ── EPISODE HEADER ──
-  var html = '<div class="ar-ep-header">'
-    + '<div class="ar-ep-art" id="ar-skel-art"><div class="ar-skel ar-skel-block" style="width:56px;height:56px;border-radius:6px;margin:0"></div></div>'
-    + '<div class="ar-ep-meta">'
-    + '<div class="ar-ep-title">' + _cleanTitle + '</div>'
-    + (_cleanShow ? '<div class="ar-ep-show">' + _cleanShow + '</div>' : '')
+  html += '<div class="v7-ep-header">'
+    + '<div class="v7-ep-art" id="ar-skel-art"><span>\uD83C\uDFA7</span></div>'
+    + '<div style="flex:1;min-width:0">'
+    + '<div class="v7-ep-title">' + _cleanTitle + '</div>'
+    + (_cleanShow ? '<div class="v7-ep-show">' + _cleanShow + '</div>' : '')
     + '</div>'
-    + '<div class="ar-ep-actions">'
-    + '<button class="ar-act-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button>'
+    + '<div class="v7-ep-actions">'
+    + '<button class="v7-act-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button>'
     + '</div></div>';
 
   // ── ETA BANNER ──
-  html += '<div class="ar-eta" id="ar-eta">'
-    + '<div class="ar-eta-left">'
-    + '<div class="ar-eta-text">Analyzing this episode &mdash; usually 2&ndash;5 minutes</div>'
-    + '<div class="ar-eta-sub">Play the episode while you wait &middot; findings appear as they complete</div>'
-    + '</div>'
-    + '<div class="ar-eta-pct" id="ar-eta-pct">Analyzing&hellip;</div>'
+  html += '<div class="v7-eta-banner" id="ar-eta">'
+    + '<div><div class="v7-eta-text">Analyzing this episode &mdash; usually 2&ndash;5 minutes</div>'
+    + '<div class="v7-eta-sub">Play the episode while you wait &middot; findings appear as they complete</div></div>'
+    + '<div class="v7-eta-pct" id="ar-eta-pct">Analyzing&hellip;</div>'
     + '</div>';
 
-  // ── LEFT COLUMN ──
-  var left = '<div class="ar-media-slot" id="ar-media-slot">';
+  // ── TWO-COLUMN ROW ──
+  html += '<div class="v7-trow">';
+
+  // Left col: media + controls + abar
+  var left = '';
   if (vid) {
     _arMedia.type = 'yt'; _arMedia.ytVid = vid;
-    left += '<iframe id="yt-iframe-' + vid + '"'
+    left += '<div class="v7-artwork" style="position:relative">'
+      + '<iframe id="yt-iframe-' + vid + '"'
       + ' src="https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&enablejsapi=1"'
       + ' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
-      + ' allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;display:block"></iframe>';
+      + ' allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>'
+      + '</div>';
   } else {
-    left += '<div class="ar-artwork-wrap"><div class="ar-artwork-ph">\uD83C\uDFA7</div></div>';
+    left += '<div class="v7-artwork"><div class="v7-aicon">\uD83C\uDFA7</div></div>';
   }
-  left += '</div>';
-  left += '<div class="ar-scrubber-row">'
-    + '<span class="ar-time" id="ar-time-cur">0:00</span>'
-    + '<div class="ar-scrubber-track" id="ar-scrubber" onclick="arScrub(event)">'
-    + '<div class="ar-scrubber-fill" id="ar-scrubber-fill" style="position:relative;height:100%;width:0;background:var(--navy);border-radius:3px"></div>'
-    + '</div>'
-    + '<span class="ar-time ar-time-dur" id="ar-time-dur"></span>'
+  left += '<div class="v7-ctls">'
+    + '<button class="v7-cb" onclick="arSkip(-30)">&#8634; 30s</button>'
+    + '<button class="v7-pc" id="ar-play-btn" onclick="arPlayPause()">&#9654;</button>'
+    + '<button class="v7-cb" onclick="arSkip(30)">30s &#8635;</button>'
+    + '<button class="v7-spd on" onclick="arSetSpeed(1,this)">1&times;</button>'
+    + '<button class="v7-spd" onclick="arSetSpeed(1.25,this)">1.25&times;</button>'
+    + '<button class="v7-spd" onclick="arSetSpeed(1.5,this)">1.5&times;</button>'
+    + '<button class="v7-spd" onclick="arSetSpeed(2,this)">2&times;</button>'
     + '</div>';
-  left += '<div class="ar-ctrl-row">'
-    + '<button class="ar-ctrl-btn" onclick="arSkip(-30)" title="Back 30 seconds">\u221230</button>'
-    + '<button class="ar-ctrl-btn ar-play-btn" id="ar-play-btn" onclick="arPlayPause()">&#9654;</button>'
-    + '<button class="ar-ctrl-btn" onclick="arSkip(30)" title="Forward 30 seconds">+30</button>'
-    + '<div class="ar-speed-group">'
-    + '<button class="ar-speed-btn on" onclick="arSetSpeed(1,this)">1\xd7</button>'
-    + '<button class="ar-speed-btn" onclick="arSetSpeed(1.25,this)">1.25\xd7</button>'
-    + '<button class="ar-speed-btn" onclick="arSetSpeed(1.5,this)">1.5\xd7</button>'
-    + '<button class="ar-speed-btn" onclick="arSetSpeed(2,this)">2\xd7</button>'
-    + '</div>'
-    + '</div>';
-
-  // ── RIGHT COLUMN — skeleton cards + early-signal bias bar ──
-  var right = '';
-
-  // Guest / Host — skeleton
-  right += '<div class="ar-card"><div class="ar-card-hd">Guest &middot; Host</div>'
-    + '<div class="ar-card-body">'
-    + '<div class="ar-skel ar-skel-ln" style="width:55%;margin-bottom:8px"></div>'
-    + '<div class="ar-skel ar-skel-ln" style="width:35%"></div>'
+  left += '<div class="v7-abar">'
+    + '<div class="v7-abarlbl"><span id="v7-time-cur">0:00</span><span id="v7-time-dur"></span></div>'
+    + '<div class="v7-atrack" id="v7-atrack" onclick="arScrub(event)">'
+    + '<div class="v7-afill" id="v7-afill"></div>'
+    + '<div class="v7-athumb" id="v7-athumb"></div>'
     + '</div></div>';
 
-  // Audio briefing — skeleton
-  right += '<div class="ar-card"><div class="ar-card-hd">Audio briefing &middot; Before you listen</div>'
-    + '<div class="ar-card-body">'
-    + '<div class="ar-skel ar-skel-ln" style="width:80%;margin-bottom:8px"></div>'
+  // Right col: skeleton cards
+  var right = '<div class="v7-rc">';
+  right += '<div class="v7-card">'
+    + '<div class="v7-gtop">'
+    + '<div class="v7-gav"><div class="ar-skel" style="width:38px;height:38px;border-radius:50%;margin:0"></div></div>'
+    + '<div><div class="ar-skel ar-skel-ln" style="width:110px;margin-bottom:6px"></div><div class="ar-skel ar-skel-ln" style="width:75px"></div></div>'
+    + '</div></div>';
+  right += '<div class="v7-card">'
+    + '<div class="v7-lbl">Audio briefing &middot; Before you listen</div>'
+    + '<div class="ar-skel ar-skel-ln" style="width:85%;margin-bottom:8px"></div>'
     + '<div class="ar-skel ar-skel-ln" style="width:50%"></div>'
-    + '</div></div>';
-
-  // Political lean — early signal state (neutral/equal)
-  right += '<div class="ar-card">'
-    + '<div class="ar-card-hd">Political lean &mdash; how this episode frames issues '
-    + '<span class="ar-lean-badge ar-lean-analyzing"><span class="ar-pulse-dot">&#9679;</span> Early signal</span></div>'
-    + '<div class="ar-card-body">'
-    + '<div class="ar-lean-note">Calculating based on transcript &mdash; updating as analysis continues</div>'
-    + '<div class="ar-bias-bar-outer">'
-    + '<div class="ar-bias-bar">'
-    + '<div class="ar-bias-l" style="width:33%"></div>'
-    + '<div class="ar-bias-c" style="width:34%"></div>'
-    + '<div class="ar-bias-r" style="width:33%"></div>'
-    + '<div class="ar-bias-pin" style="left:33%"></div>'
-    + '</div></div>'
-    + '<div class="ar-bias-pcts">'
-    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-l"></span><span class="ar-skel" style="display:inline-block;width:52px;height:11px;border-radius:3px;vertical-align:middle"></span></span>'
-    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-c"></span><span class="ar-skel" style="display:inline-block;width:60px;height:11px;border-radius:3px;vertical-align:middle"></span></span>'
-    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-r"></span><span class="ar-skel" style="display:inline-block;width:52px;height:11px;border-radius:3px;vertical-align:middle"></span></span>'
+    + '</div>';
+  right += '<div class="v7-card">'
+    + '<div class="v7-biasrow">'
+    + '<div class="v7-lbl" style="margin-bottom:0">Political lean &mdash; how this episode frames issues</div>'
+    + '<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#d97706"><div class="v7-pdot"></div>Early signal</div>'
     + '</div>'
-    + '<div class="ar-bias-footnote">Based on language patterns and framing choices &mdash; not a judgment of the host&rsquo;s personal politics</div>'
-    + '</div></div>';
+    + '<div style="position:relative"><div class="v7-bias-bar-wrap">'
+    + '<div class="v7-bias-seg-l" style="width:33%"></div>'
+    + '<div class="v7-bias-seg-c" style="width:34%"></div>'
+    + '<div class="v7-bias-seg-r" style="width:33%"></div>'
+    + '<div class="v7-bias-marker" style="left:33%"></div>'
+    + '</div></div>'
+    + '<div class="v7-bpcts">'
+    + '<span style="color:#e0352b">&#9679; <span class="ar-skel" style="display:inline-block;width:44px;height:10px;border-radius:3px;vertical-align:middle"></span></span>'
+    + '<span style="color:#999">&#9642; <span class="ar-skel" style="display:inline-block;width:52px;height:10px;border-radius:3px;vertical-align:middle"></span></span>'
+    + '<span style="color:#3a7fd4">&#9679; <span class="ar-skel" style="display:inline-block;width:44px;height:10px;border-radius:3px;vertical-align:middle"></span></span>'
+    + '</div>'
+    + '<div class="v7-enote">Calculating based on transcript &mdash; updating as analysis continues</div>'
+    + '</div>';
+  right += '</div>'; // end v7-rc
 
-  html += '<div class="ar-top-grid"><div>' + left + '</div><div>' + right + '</div></div>';
+  html += '<div>' + left + '</div>' + right + '</div>'; // end v7-trow
 
-  // ── METRICS ROW — skeleton ──
-  html += '<div class="ar-metrics-row">'
-    + '<div class="ar-metric-card"><div class="ar-metric-lbl">Host trust</div>'
-    + '<div class="ar-skel ar-skel-block" style="height:32px;border-radius:4px;margin-top:8px"></div></div>'
-    + '<div class="ar-metric-card"><div class="ar-metric-lbl">Source quality</div>'
-    + '<div class="ar-skel ar-skel-block" style="height:32px;border-radius:4px;margin-top:8px"></div></div>'
-    + '<div class="ar-metric-card"><div class="ar-metric-lbl">Guest balance</div>'
-    + '<div class="ar-skel ar-skel-block" style="height:32px;border-radius:4px;margin-top:8px"></div></div>'
+  // ── METRICS — skeleton ──
+  html += '<div class="v7-mrow">'
+    + '<div class="v7-mc"><div class="ar-skel ar-skel-block" style="height:22px;border-radius:4px;margin-bottom:6px"></div><div class="v7-ml">Host trust</div></div>'
+    + '<div class="v7-mc"><div class="ar-skel ar-skel-block" style="height:22px;border-radius:4px;margin-bottom:6px"></div><div class="v7-ml">Source quality</div></div>'
+    + '<div class="v7-mc"><div class="ar-skel ar-skel-block" style="height:22px;border-radius:4px;margin-bottom:6px"></div><div class="v7-ml">Guest balance</div></div>'
     + '</div>';
 
   // ── FINDINGS — skeleton ──
-  html += '<div class="ar-section"><div class="ar-section-hd">Worth knowing before you listen</div>'
-    + '<div class="ar-partial-note"><div class="feed-spin" style="width:16px;height:16px;border-width:2px;margin:0"></div>Identifying key moments&hellip;</div>'
-    + '<div style="padding:8px 16px 12px">'
-    + '<div class="ar-skel ar-skel-ln" style="width:70%;margin-bottom:8px"></div>'
-    + '<div class="ar-skel ar-skel-block"></div>'
+  html += '<div class="v7-sec"><div class="v7-seclbl">Worth knowing before you listen</div>'
+    + '<div class="v7-findings-wrap">'
+    + '<div style="padding:12px;display:flex;align-items:center;gap:8px">'
+    + '<div class="feed-spin" style="width:14px;height:14px;border-width:2px;margin:0"></div>'
+    + '<span style="font-size:11px;color:#bbb">Identifying key moments&hellip;</span></div>'
+    + '<div class="ar-skel ar-skel-ln" style="margin:0 12px 12px;width:65%"></div>'
     + '</div></div>';
 
-  // Dock spacer
-  html += '<div class="ar-dock-spacer"></div>';
+  html += '</div><div class="ar-dock-spacer"></div></div>'; // close v7-main, dock-spacer, v7-dash
 
   document.getElementById('results').innerHTML = html;
 
@@ -6014,20 +6149,31 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
       _arScrubProgId = setInterval(function() {
         var p = _ytPlayers[vid];
         if (!p) return;
-        var fill = document.getElementById('ar-scrubber-fill');
-        var cur = document.getElementById('ar-time-cur');
-        var dur = document.getElementById('ar-time-dur');
         function fmt(s) { if (!isFinite(s)||!s) return '0:00'; var m=Math.floor(s/60),sc=Math.floor(s%60); return m+':'+(sc<10?'0':'')+sc; }
         try {
           var ct = p.getCurrentTime(); var dt = p.getDuration();
-          if (fill && dt) fill.style.width = (ct/dt*100).toFixed(2)+'%';
+          var pct = dt ? (ct/dt*100) : 0;
+          var fill = document.getElementById('v7-afill');
+          var thumb = document.getElementById('v7-athumb');
+          var cur = document.getElementById('v7-time-cur');
+          var dur = document.getElementById('v7-time-dur');
+          if (fill) fill.style.width = pct.toFixed(2) + '%';
+          if (thumb) thumb.style.left = pct.toFixed(2) + '%';
           if (cur) cur.textContent = fmt(ct);
           if (dur && dt) dur.textContent = fmt(dt);
         } catch(e) {}
-        if (!document.getElementById('ar-scrubber-fill')) { clearInterval(_arScrubProgId); _arScrubProgId = null; }
+        if (!document.getElementById('v7-afill')) { clearInterval(_arScrubProgId); _arScrubProgId = null; }
       }, 500);
     }, 200);
   }
+}
+
+// ── v7 helper: finding tag → CSS class + label ──────────────────────────────
+function _v7FtCls(t) {
+  return {'framing':'v7-ff','fact-check':'v7-fc','omission':'v7-fo','sponsor-note':'v7-fs','sponsor':'v7-fs','context':'v7-fx'}[t]||'v7-fx';
+}
+function _v7FtLabel(t) {
+  return {'framing':'FRAMING','fact-check':'FACT CHECK','omission':'OMISSION','sponsor-note':'SPONSOR','sponsor':'SPONSOR','context':'CONTEXT'}[t]||(t||'').toUpperCase();
 }
 
 function renderResults(data) {
@@ -6043,218 +6189,187 @@ function renderResults(data) {
   _arShowDock(data);
   _arSetDockStatus(!isPartial);
 
-  // ── GUEST PREVIEW BAR (not signed in) ──
-  var header='';
-  if (!u) {
-    header += '<div class="ar-preview-bar">'
-      + '<span class="ar-preview-label">Previewing as:</span>'
-      + '<div class="ar-preview-pills">'
-      + '<button class="ar-preview-pill'+(_previewTier==='free'?' active':'')+'" onclick="setPreviewTier(\'free\')">Free</button>'
-      + '<button class="ar-preview-pill'+(_previewTier==='creator'?' active':'')+'" onclick="setPreviewTier(\'creator\')">Creator &mdash; $12/mo</button>'
-      + '<button class="ar-preview-pill'+(_previewTier==='operator'?' active':'')+'" onclick="setPreviewTier(\'operator\')">Operator &mdash; $39/mo</button>'
-      + '</div>'
-      + '<span class="ar-preview-cta"><a onclick="if(typeof openModal===\'function\')openModal(\'signup\')">Sign up to get started &rarr;</a></span>'
-      + '</div>';
-  }
-
-  // ── EPISODE HEADER ──
-  header+='<div class="ar-ep-header">';
-  header+='<div class="ar-ep-art">'+(data.artworkUrl?'<img src="'+data.artworkUrl+'" onerror="this.style.display=\'none\'">':'\uD83C\uDFA7')+'</div>';
-  header+='<div class="ar-ep-meta">';
-  header+='<div class="ar-ep-title">'+(decodeHTMLEntities(data.episodeTitle)||'Episode Analysis')+'</div>';
-  if (data.showName) header+='<div class="ar-ep-show">'+decodeHTMLEntities(data.showName)+(data.duration?' &middot; '+data.duration:'')+'</div>';
-  header+='</div>';
-  header+='<div class="ar-ep-actions">';
-  header+='<button class="ar-act-btn" onclick="shareAnalysis(\''+data.jobId+'\')">&#8599; Share</button>';
-  header+='<button class="ar-act-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button>';
-  header+='</div></div>';
-
-  // ── HELPERS ──
-  function _arEtaText(dur) {
-    // dur is "H:MM:SS" or "M:SS" string
+  // ── INNER HELPERS ──
+  function _etaText(dur) {
     if (!dur) return null;
     var parts = dur.split(':').map(Number);
     var totalMin = parts.length === 3 ? parts[0]*60+parts[1] : parts[0];
     if (totalMin < 30) return '~2 minutes';
-    if (totalMin < 60) return '~3–4 minutes';
-    if (totalMin < 120) return '~5–6 minutes';
-    return '~7–9 minutes';
+    if (totalMin < 60) return '~3\u20134 minutes';
+    if (totalMin < 120) return '~5\u20136 minutes';
+    return '~7\u20139 minutes';
   }
-  function _arFtTagClass(t) {
-    return {framing:'ar-ft-framing','fact-check':'ar-ft-fact',omission:'ar-ft-omission','sponsor-note':'ar-ft-sponsor',sponsor:'ar-ft-sponsor',context:'ar-ft-context'}[t]||'ar-ft-context';
-  }
-  function _arFtLabel(t) {
-    return {framing:'Framing','fact-check':'Fact Check',omission:'Omission','sponsor-note':'Sponsor',sponsor:'Sponsor',context:'Context'}[t]||t;
-  }
-  function _arFindingHtml(f, idx) {
-    var cit = (f.citations || [])[0];
-    var evClass = {framing:'ev-framing','fact-check':'ev-fact',omission:'ev-omission','sponsor-note':'ev-sponsor',sponsor:'ev-sponsor',context:''}[f.type]||'';
-    var body = '<div class="ar-finding-body">';
-    body += '<p class="ar-finding-summary">'+(f.detail||f.summary||'')+'</p>';
-    if (cit) {
-      body += '<div class="ar-evidence '+evClass+'">';
-      if (cit.timestamp) body += '<div class="ar-ev-ts">'+cit.timestamp+'</div>';
-      if (cit.quote) body += '<blockquote class="ar-ev-quote">\u201c'+cit.quote+'\u201d</blockquote>';
-      if (cit.explanation) body += '<div class="ar-ev-note">'+cit.explanation+'</div>';
-      body += '</div>';
-    }
-    if (f.impacts && f.impacts.length) {
-      body += '<ul class="ar-impacts">';
-      f.impacts.forEach(function(imp){ body += '<li>'+imp+'</li>'; });
-      body += '</ul>';
-    } else if (f.whyItMatters && f.whyItMatters.length) {
-      body += '<ul class="ar-impacts">';
-      f.whyItMatters.forEach(function(w){ body += '<li>'+w+'</li>'; });
-      body += '</ul>';
-    }
-    if (f.balanced || f.whatBalancedLooksLike) {
-      var bText = f.balanced || f.whatBalancedLooksLike;
-      body += '<div class="ar-balanced"><div class="ar-balanced-lbl">What balanced looks like</div>'+bText+'</div>';
-    }
-    var maxCit = _cfg.citations; // 0=none, 5=creator, 99=all
+
+  // Build v7 expand body for a finding
+  function _v7Expand(f) {
+    var maxCit = _cfg.citations;
     var allCits = f.citations || [];
-    // Show citations up to max (first citation already shown above as evidence)
-    if (maxCit >= 1 && allCits.length > 1) {
-      var extraCits = maxCit >= 99 ? allCits.slice(1) : allCits.slice(1, maxCit);
-      if (extraCits.length > 0) {
-        body += '<div style="margin-top:8px">';
-        extraCits.forEach(function(c){
-          body += '<div class="ar-cite-item" style="padding:6px 0;border:none">';
-          if (c.timestamp) body += '<div class="ar-cite-ts">'+c.timestamp+'</div>';
-          if (c.quote) body += '<div class="ar-cite-quote">\u201c'+c.quote+'\u201d</div>';
-          if (c.explanation) body += '<div class="ar-cite-exp">'+c.explanation+'</div>';
-          body += '</div>';
-        });
-        body += '</div>';
-      }
+    var shownCits = maxCit >= 99 ? allCits : allCits.slice(0, Math.max(maxCit, 0));
+    var html2 = '';
+    html2 += '<div class="v7-exp-summary">' + (f.detail || f.summary || '') + '</div>';
+    if (shownCits.length) {
+      html2 += '<div class="v7-exp-lbl">Evidence from this episode</div>';
+      shownCits.forEach(function(c) {
+        html2 += '<div class="v7-exp-ev">';
+        if (c.timestamp) html2 += '<div class="v7-exp-time">' + c.timestamp + '</div>';
+        if (c.quote) html2 += '<div class="v7-exp-quote">\u201c' + c.quote + '\u201d</div>';
+        if (c.explanation) html2 += '<div class="v7-exp-note">' + c.explanation + '</div>';
+        html2 += '</div>';
+      });
     }
-    // Gate: if no citations allowed, blur the evidence block
+    var impacts = f.impacts || f.whyItMatters || [];
+    if (impacts.length) {
+      html2 += '<div class="v7-exp-lbl" style="margin-top:8px">Why it matters</div>';
+      impacts.forEach(function(imp) {
+        html2 += '<div class="v7-exp-impact"><div class="v7-exp-dot"></div><div class="v7-exp-impact-text">' + imp + '</div></div>';
+      });
+    }
+    var bal = f.balanced || f.whatBalancedLooksLike;
+    if (bal) {
+      html2 += '<div class="v7-exp-lbl" style="margin-top:8px">What balanced would look like</div>';
+      html2 += '<div class="v7-exp-balanced"><div class="v7-exp-bal-lbl">A more balanced approach</div><div class="v7-exp-bal-text">' + bal + '</div></div>';
+    }
     if (maxCit === 0 && allCits.length > 0) {
-      body += '<div class="ar-gate-wrap" style="margin-top:8px">'
-        + '<div class="ar-gate-content" style="padding:8px;background:var(--bg3);border-radius:4px;font-size:11px;color:var(--text3)">'
-        + allCits.length+' source citation'+(allCits.length>1?'s':'')+' available'
-        + '</div>'
-        + '<div class="ar-gate-overlay">'
-        + '<div class="ar-gate-msg">Unlocks with Creator</div>'
-        + '<a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a>'
-        + '</div></div>';
+      html2 += '<div class="v7-upbar"><span class="v7-uptxt">' + allCits.length + ' citation' + (allCits.length > 1 ? 's' : '') + ' available &mdash; unlocks with Creator</span><button class="v7-upbtn" onclick="location.href=\'/pricing\'">Upgrade &rarr;</button></div>';
     } else if (maxCit > 0 && maxCit < 99 && allCits.length > maxCit) {
-      var hiddenCount = allCits.length - maxCit;
-      body += '<div class="ar-gate-wrap" style="margin-top:8px">'
-        + '<div class="ar-gate-content" style="padding:8px;background:var(--bg3);border-radius:4px;font-size:11px;color:var(--text3)">'
-        + hiddenCount+' more citation'+(hiddenCount>1?'s':'')+' available'
-        + '</div>'
-        + '<div class="ar-gate-overlay">'
-        + '<div class="ar-gate-msg">Unlocks with Operator</div>'
-        + '<a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a>'
-        + '</div></div>';
+      var hid = allCits.length - maxCit;
+      html2 += '<div class="v7-upbar"><span class="v7-uptxt">' + hid + ' more citation' + (hid > 1 ? 's' : '') + ' &mdash; unlocks with Operator</span><button class="v7-upbtn" onclick="location.href=\'/pricing\'">Upgrade &rarr;</button></div>';
     }
-    body += '</div>';
-    var leanDot = f.type === 'framing' ? '<span class="ar-lean-dot ar-lean-dot-l"></span>'
-      : f.type === 'omission' ? '<span class="ar-lean-dot" style="background:var(--amber)"></span>'
-      : '<span class="ar-lean-dot ar-lean-dot-c"></span>';
-    return '<div class="ar-finding" onclick="arToggleFinding(this)">'
-      + '<div class="ar-finding-header">'
-      + '<span class="ar-ftag '+_arFtTagClass(f.type)+'">'+_arFtLabel(f.type)+'</span>'
-      + leanDot
-      + '<div class="ar-finding-title">'+f.title+'</div>'
-      + '<div class="ar-chevron">&#8250;</div>'
+    return html2;
+  }
+
+  // v7 finding row + expand sibling
+  function _v7FindingHtml(f) {
+    return '<div class="v7-fi" onclick="arToggleFinding(this)">'
+      + '<div class="v7-ftag ' + _v7FtCls(f.type) + '">' + _v7FtLabel(f.type) + '</div>'
+      + '<div><div class="v7-ftitle">' + (f.title || '') + '</div><div class="v7-fbody">' + (f.summary || '') + '</div></div>'
+      + '<div class="v7-farrow">&#8250;</div>'
       + '</div>'
-      + body
+      + '<div class="v7-expand">' + _v7Expand(f) + '</div>';
+  }
+
+  // ── BUILD HTML ──
+  var html = '<div class="v7-dash"><div class="v7-main">';
+
+  // Preview bar (guests)
+  if (!u) {
+    html += '<div class="v7-preview-bar">'
+      + '<span class="v7-prev-lbl">Previewing as:</span>'
+      + '<button class="v7-prev-pill' + (_previewTier==='free' ? ' on-free' : '') + '" onclick="setPreviewTier(\'free\')">Free</button>'
+      + '<button class="v7-prev-pill' + (_previewTier==='creator' ? ' on-creator' : '') + '" onclick="setPreviewTier(\'creator\')">Creator &mdash; $12/mo</button>'
+      + '<button class="v7-prev-pill' + (_previewTier==='operator' ? ' on-operator' : '') + '" onclick="setPreviewTier(\'operator\')">Operator &mdash; $39/mo</button>'
+      + '<span class="v7-prev-cta"><a onclick="if(typeof openModal===\'function\')openModal(\'signup\')">Sign up to get started &rarr;</a></span>'
       + '</div>';
   }
 
-  // ── LEFT COLUMN: media slot + scrubber + controls ──
-  var left = '<div class="ar-media-slot" id="ar-media-slot">';
+  // Episode header
+  html += '<div class="v7-ep-header">'
+    + '<div class="v7-ep-art">' + (data.artworkUrl ? '<img src="' + data.artworkUrl + '" onerror="this.style.display=\'none\'">' : '\uD83C\uDFA7') + '</div>'
+    + '<div style="flex:1;min-width:0">'
+    + '<div class="v7-ep-title">' + (decodeHTMLEntities(data.episodeTitle) || 'Episode Analysis') + '</div>'
+    + (data.showName ? '<div class="v7-ep-show">' + decodeHTMLEntities(data.showName) + (data.duration ? ' &middot; ' + data.duration : '') + '</div>' : '')
+    + '</div>'
+    + '<div class="v7-ep-actions">'
+    + '<button class="v7-act-btn" onclick="shareAnalysis(\'' + data.jobId + '\')">&#8599; Share</button>'
+    + '<button class="v7-act-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button>'
+    + '</div></div>';
+
+  // ETA banner (partial only)
+  if (isPartial) {
+    var etaEst = _etaText(data.duration);
+    var etaMsg = etaEst && data.duration
+      ? 'Episode is ' + data.duration + ' &mdash; full analysis ready in about ' + etaEst
+      : 'Analyzing this episode &mdash; usually 2&ndash;5 minutes';
+    html += '<div class="v7-eta-banner" id="ar-eta">'
+      + '<div><div class="v7-eta-text">' + etaMsg + '</div>'
+      + '<div class="v7-eta-sub">First findings appear in ~90 seconds &middot; Play while you wait</div></div>'
+      + '<div class="v7-eta-pct" id="ar-eta-pct">Analyzing&hellip;</div>'
+      + '</div>';
+  }
+
+  // ── TWO-COLUMN ROW ──
+  html += '<div class="v7-trow">';
+
+  // Left: media + controls + abar
+  var left = '';
   if (vid) {
     _arMedia.type = 'yt'; _arMedia.ytVid = vid;
-    left += '<iframe id="yt-iframe-'+vid+'"'
-      +' src="https://www.youtube.com/embed/'+vid+'?rel=0&modestbranding=1&enablejsapi=1"'
-      +' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
-      +' allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;display:block"></iframe>';
+    left += '<div class="v7-artwork" style="position:relative">'
+      + '<iframe id="yt-iframe-' + vid + '"'
+      + ' src="https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&enablejsapi=1"'
+      + ' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
+      + ' allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>'
+      + '</div>';
   } else if (data.artworkUrl) {
-    left += '<div class="ar-artwork-wrap"><img src="'+data.artworkUrl+'" alt="" onerror="this.style.display=\'none\'"></div>';
+    left += '<div class="v7-artwork"><img src="' + data.artworkUrl + '" alt="" onerror="this.style.display=\'none\'"></div>';
   } else {
-    left += '<div class="ar-artwork-wrap"><div class="ar-artwork-ph">\uD83C\uDFA7</div></div>';
+    left += '<div class="v7-artwork"><div class="v7-aicon">\uD83C\uDFA7</div></div>';
   }
-  left += '</div>';
-  // Scrubber
-  left += '<div class="ar-scrubber-row">'
-    + '<span class="ar-time" id="ar-time-cur">0:00</span>'
-    + '<div class="ar-scrubber-track" id="ar-scrubber" onclick="arScrub(event)">'
-    + '<div class="ar-scrubber-fill" id="ar-scrubber-fill" style="position:relative;height:100%;width:0;background:var(--navy);border-radius:3px"></div>'
-    + '</div>'
-    + '<span class="ar-time ar-time-dur" id="ar-time-dur">'+(data.duration||'')+'</span>'
+  left += '<div class="v7-ctls">'
+    + '<button class="v7-cb" onclick="arSkip(-30)">&#8634; 30s</button>'
+    + '<button class="v7-pc" id="ar-play-btn" onclick="arPlayPause()">&#9654;</button>'
+    + '<button class="v7-cb" onclick="arSkip(30)">30s &#8635;</button>'
+    + '<button class="v7-spd on" onclick="arSetSpeed(1,this)">1&times;</button>'
+    + '<button class="v7-spd" onclick="arSetSpeed(1.25,this)">1.25&times;</button>'
+    + '<button class="v7-spd" onclick="arSetSpeed(1.5,this)">1.5&times;</button>'
+    + '<button class="v7-spd" onclick="arSetSpeed(2,this)">2&times;</button>'
     + '</div>';
-  // Controls
-  left += '<div class="ar-ctrl-row">'
-    + '<button class="ar-ctrl-btn" onclick="arSkip(-30)" title="Back 30 seconds">−30</button>'
-    + '<button class="ar-ctrl-btn ar-play-btn" id="ar-play-btn" onclick="arPlayPause()">&#9654;</button>'
-    + '<button class="ar-ctrl-btn" onclick="arSkip(30)" title="Forward 30 seconds">+30</button>'
-    + '<div class="ar-speed-group">'
-    + '<button class="ar-speed-btn on" onclick="arSetSpeed(1,this)">1×</button>'
-    + '<button class="ar-speed-btn" onclick="arSetSpeed(1.25,this)">1.25×</button>'
-    + '<button class="ar-speed-btn" onclick="arSetSpeed(1.5,this)">1.5×</button>'
-    + '<button class="ar-speed-btn" onclick="arSetSpeed(2,this)">2×</button>'
-    + '</div>'
-    + '</div>';
+  left += '<div class="v7-abar">'
+    + '<div class="v7-abarlbl"><span id="v7-time-cur">0:00</span><span id="v7-time-dur">' + (data.duration || '') + '</span></div>'
+    + '<div class="v7-atrack" id="v7-atrack" onclick="arScrub(event)">'
+    + '<div class="v7-afill" id="v7-afill"></div>'
+    + '<div class="v7-athumb" id="v7-athumb"></div>'
+    + '</div></div>';
 
-  // ── RIGHT COLUMN ──
-  var right = '';
+  // Right: guest + briefing + bias
+  var right = '<div class="v7-rc">';
 
-  // Guest / Host card
+  // Guest / host card
   var guest = data.guest || data.host || null;
   if (guest && guest.name) {
     var gIni = (guest.name||'?').trim().split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
-    right += '<div class="ar-card">';
-    right += '<div class="ar-card-hd">Guest &middot; Host</div>';
-    right += '<div class="ar-card-body"><div class="ar-guest-row">';
-    right += '<div class="ar-guest-avatar">'+gIni+'</div>';
-    right += '<div class="ar-guest-info">';
-    right += '<div class="ar-guest-name">'+guest.name+'</div>';
-    if (guest.role) right += '<div class="ar-guest-role">'+guest.role+'</div>';
-    right += '<div class="ar-chips">';
-    if (guest.lean) right += '<span class="ar-chip">'+guest.lean+'</span>';
-    if (guest.episodeCount) right += '<span class="ar-chip">'+guest.episodeCount+' episodes</span>';
-    if (guest.credibility) {
-      var cClass = guest.credibility.toLowerCase().indexOf('high')>=0?'ar-chip-green':guest.credibility.toLowerCase().indexOf('low')>=0?'ar-chip-red':'ar-chip-amber';
-      right += '<span class="ar-chip '+cClass+'">'+guest.credibility+'</span>';
-    }
+    right += '<div class="v7-card">';
+    right += '<div class="v7-gtop"><div class="v7-gav">' + gIni + '</div><div><div class="v7-gname">' + guest.name + '</div>';
+    if (guest.role) right += '<div class="v7-grole">' + guest.role + '</div>';
+    right += '</div></div>';
+    right += '<div class="v7-chips">';
+    if (guest.lean) right += '<div class="v7-lchip">' + guest.lean + '</div>';
+    if (guest.episodeCount) right += '<div class="v7-chip">' + guest.episodeCount + ' episodes</div>';
+    if (guest.credibility) right += '<div class="v7-chip">' + guest.credibility + '</div>';
     right += '</div>';
-    right += '<div class="ar-guest-links">';
-    if (guest.twitter) right += '<a class="ar-social-link" href="https://x.com/'+guest.twitter+'" target="_blank" rel="noopener">𝕏 @'+guest.twitter+'</a>';
-    if (guest.instagram) right += '<a class="ar-social-link" href="https://instagram.com/'+guest.instagram+'" target="_blank" rel="noopener">Instagram</a>';
-    if (guest.linkedin) right += '<a class="ar-social-link" href="'+guest.linkedin+'" target="_blank" rel="noopener">LinkedIn</a>';
-    if (guest.website) right += '<a class="ar-social-link" href="'+guest.website+'" target="_blank" rel="noopener">'+((guest.website||'').replace(/^https?:\/\//,'').split('/')[0])+'</a>';
-    var guestSlug = guest.slug || (guest.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
-    right += '<a class="ar-social-link ar-pl-link" href="/guest/'+guestSlug+'">Podlens profile &rarr;</a>';
-    right += '</div></div></div></div></div>';
+    right += '<div class="v7-srow">';
+    if (guest.twitter) right += '<a class="v7-sl" href="https://x.com/' + guest.twitter + '" target="_blank" rel="noopener">\uD835\uDD4F @' + guest.twitter + '</a>';
+    if (guest.linkedin) right += '<a class="v7-sl" href="' + guest.linkedin + '" target="_blank" rel="noopener">in LinkedIn</a>';
+    if (guest.website) right += '<a class="v7-sl" href="' + guest.website + '" target="_blank" rel="noopener">&#127760; Web</a>';
+    var gSlug = guest.slug || (guest.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    right += '<a class="v7-sl v7-sl-pl" href="/guest/' + gSlug + '">\uD83C\uDFA7 Podlens profile</a>';
+    right += '</div></div>';
+  } else {
+    right += '<div class="v7-card"><div class="v7-gtop">'
+      + '<div class="v7-gav" style="background:#eee;color:#bbb">?</div>'
+      + '<div><div class="v7-gname" style="color:#bbb">Guest info loading&hellip;</div></div>'
+      + '</div></div>';
   }
 
   // Audio briefing card
-  right += '<div class="ar-card">';
-  right += '<div class="ar-card-hd">Audio briefing &middot; Before you listen</div>';
-  right += '<div class="ar-card-body">';
+  right += '<div class="v7-card"><div class="v7-lbl">Audio briefing &middot; Before you listen</div>';
   if (data.audioScript) {
     var safeScript = data.audioScript.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-    var briefClick = 'toggleAudioSummary(\''+data.jobId+'\',\''+safeScript+'\')';
-    right += '<div class="ar-brief-desc">2-minute spoken summary covering political lean, missing voices, and sponsor flags &mdash; before you press play.</div>';
-    right += '<div class="ar-brief-ctrl">';
-    right += '<button class="ar-brief-play" id="audio-play-btn-'+data.jobId+'" onclick="'+briefClick+'">';
-    right += '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>';
-    right += '<span class="ar-brief-dur">'+(_cfg.audioFull ? '~1:30' : '30-sec preview')+'</span>';
+    var briefClick = 'toggleAudioSummary(\'' + data.jobId + '\',\'' + safeScript + '\')';
+    right += '<div class="v7-bdesc">2-min spoken summary covering political lean, missing voices, and sponsor flags.</div>';
+    right += '<div style="display:flex;align-items:center;gap:8px">';
+    right += '<button class="v7-bbtn" id="audio-play-btn-' + data.jobId + '" onclick="' + briefClick + '">&#9654; Play briefing</button>';
+    right += '<span class="v7-bdur">' + (_cfg.audioFull ? '~2 min' : '30-sec preview') + '</span>';
     right += '</div>';
-    if (!_cfg.audioFull) right += '<div class="ar-gate-wrap" style="margin-top:8px"><div class="ar-gate-content" style="padding:8px;font-size:11px;color:var(--text3)">Full 2-minute briefing available</div><div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Creator</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div></div>';
-    right += '<div class="audio-progress-rail" style="margin-top:10px"><div class="audio-progress-fill" id="audio-prog-'+data.jobId+'"></div></div>';
-    right += '<div class="audio-waveform" id="audio-wave-'+data.jobId+'" style="margin-top:8px;display:none"><span></span><span></span><span></span><span></span><span></span></div>';
+    if (!_cfg.audioFull) right += '<div class="v7-upbar" style="margin-top:8px"><span class="v7-uptxt">Full briefing unlocks with Creator</span><button class="v7-upbtn" onclick="location.href=\'/pricing\'">Upgrade &rarr;</button></div>';
+    right += '<div class="audio-progress-rail" style="margin-top:10px"><div class="audio-progress-fill" id="audio-prog-' + data.jobId + '"></div></div>';
   } else if (isPartial) {
-    right += '<div class="ar-brief-desc">Audio briefing generates when analysis completes.</div>';
-    right += '<div class="ar-brief-ctrl"><button class="ar-brief-play" disabled style="opacity:.4;cursor:default"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><span class="ar-brief-dur">Generating&hellip;</span></div>';
-    right += '<div class="ar-brief-preview-note">30-second preview available now &middot; Full brief ready after analysis</div>';
+    right += '<div class="v7-bdesc">Audio briefing generates when analysis completes.</div>';
+    right += '<div style="display:flex;align-items:center;gap:8px"><button class="v7-bbtn" disabled style="opacity:.4;cursor:default">&#9654; Generating&hellip;</button></div>';
   } else {
-    right += '<div class="ar-brief-desc">No audio briefing available for this episode.</div>';
+    right += '<div class="v7-bdesc" style="color:#bbb">No audio briefing available for this episode.</div>';
   }
-  right += '</div></div>';
+  right += '</div>';
 
   // Bias bar card
   if (data.audioLean && typeof data.audioLean.leftPct !== 'undefined') {
@@ -6262,237 +6377,179 @@ function renderResults(data) {
     var lp = al.leftPct || 0, cp = al.centerPct || 0, rp = al.rightPct || 0;
     var total = lp + cp + rp || 100;
     var lw = (lp/total*100).toFixed(1), cw = (cp/total*100).toFixed(1), rw = (rp/total*100).toFixed(1);
-    // Pin position = percentage of left (left-leaning pushes pin left, right-leaning pushes right)
-    var pinLeft = (lp / total * 100).toFixed(1);
+    var pinLeft = (lp/total*100).toFixed(1);
     var verdict = biasPlainLabel(lp, rp);
-    var badgeHtml = isPartial
-      ? '<span class="ar-lean-badge ar-lean-analyzing"><span class="ar-pulse-dot">&#9679;</span> Early signal</span>'
-      : '<span class="ar-lean-badge ar-lean-complete">&#10003; Final</span>';
-    right += '<div class="ar-card">';
-    right += '<div class="ar-card-hd">Political lean &mdash; how this episode frames issues '+badgeHtml+'</div>';
-    right += '<div class="ar-card-body">';
-    if (isPartial) right += '<div class="ar-lean-note">Based on first 30 min &middot; updating as analysis continues</div>';
-    // THREE solid color blocks — NO gradient
-    right += '<div class="ar-bias-bar-outer">';
-    right += '<div class="ar-bias-bar">';
-    right += '<div class="ar-bias-l" style="width:'+lw+'%"></div>';
-    right += '<div class="ar-bias-c" style="width:'+cw+'%"></div>';
-    right += '<div class="ar-bias-r" style="width:'+rw+'%"></div>';
-    right += '<div class="ar-bias-pin" style="left:'+pinLeft+'%"></div>';
-    right += '</div></div>';
-    right += '<div class="ar-bias-pcts">';
-    right += '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-l"></span>'+lp+'% left</span>';
-    right += '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-c"></span>'+cp+'% center</span>';
-    right += '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-r"></span>'+rp+'% right</span>';
+    var vClass = Math.abs(lp - rp) < 20 ? 'v7-bverdict-b' : lp > rp ? 'v7-bverdict-l' : 'v7-bverdict-r';
+    right += '<div class="v7-card">';
+    right += '<div class="v7-biasrow"><div class="v7-lbl" style="margin-bottom:0">Political lean &mdash; how this episode frames issues</div>';
+    right += isPartial
+      ? '<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#d97706"><div class="v7-pdot"></div>Early signal</div>'
+      : '<div style="font-size:10px;color:#16a34a">&#10003; Final</div>';
     right += '</div>';
-    right += '<div class="ar-bias-verdict">'+verdict+'</div>';
-    right += '<div class="ar-bias-footnote">Based on language patterns and framing choices &mdash; not a judgment of the host&rsquo;s personal politics</div>';
-    right += '</div></div>';
+    if (isPartial) right += '<div class="v7-enote">Based on first 30 min &middot; updating as analysis continues</div>';
+    right += '<div style="position:relative"><div class="v7-bias-bar-wrap">'
+      + '<div class="v7-bias-seg-l" style="width:' + lw + '%"></div>'
+      + '<div class="v7-bias-seg-c" style="width:' + cw + '%"></div>'
+      + '<div class="v7-bias-seg-r" style="width:' + rw + '%"></div>'
+      + '<div class="v7-bias-marker" style="left:' + pinLeft + '%"></div>'
+      + '</div></div>';
+    right += '<div class="v7-bpcts">'
+      + '<span style="color:#e0352b">&#9679; ' + lp + '% left</span>'
+      + '<span style="color:#999">&#9642; ' + cp + '% center</span>'
+      + '<span style="color:#3a7fd4">&#9679; ' + rp + '% right</span>'
+      + '</div>';
+    right += '<div class="v7-bverdict ' + vClass + '">' + verdict + '</div>';
+    right += '<div class="v7-enote" style="color:#bbb;margin-top:6px">Based on language patterns and framing choices &mdash; not a judgment of the host&rsquo;s personal politics</div>';
+    right += '</div>';
+  } else {
+    right += '<div class="v7-card">'
+      + '<div class="v7-biasrow"><div class="v7-lbl" style="margin-bottom:0">Political lean</div>'
+      + '<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#d97706"><div class="v7-pdot"></div>Calculating</div></div>'
+      + '<div class="v7-enote">Analyzing transcript &mdash; lean appears in ~90 seconds</div>'
+      + '</div>';
   }
 
-  // ── FULL WIDTH BELOW ──
-  var below = '';
+  right += '</div>'; // end v7-rc
+  html += '<div>' + left + '</div>' + right + '</div>'; // end v7-trow
 
-  // 1. ETA banner (shown while partial, hidden when complete)
-  if (isPartial && data.duration) {
-    var etaEst = _arEtaText(data.duration);
-    if (etaEst) {
-      below += '<div class="ar-eta" id="ar-eta">'
-        + '<div class="ar-eta-left">'
-        + '<div class="ar-eta-text">Episode is '+data.duration+' &mdash; full analysis ready in about '+etaEst+'</div>'
-        + '<div class="ar-eta-sub">First findings appear in ~90 seconds &middot; Play the episode while you wait</div>'
-        + '</div>'
-        + '<div class="ar-eta-pct" id="ar-eta-pct">Analyzing&hellip;</div>'
-        + '</div>';
-    }
-  }
-
-  // 2. Quick metrics row
+  // ── METRICS ROW ──
   var trustScore = data.hostTrustScore;
   var trustOut10 = trustScore !== undefined ? (trustScore / 10).toFixed(1) : null;
   var trustLabel = data.hostTrustLabel || (trustScore > 65 ? 'High' : trustScore > 35 ? 'Moderate' : 'Low');
-  var trustClass = trustLabel === 'High' ? 'ar-metric-high' : trustLabel === 'Low' ? 'ar-metric-low' : 'ar-metric-mod';
+  var trustMsClass = trustLabel === 'High' ? 'v7-ms-hi' : trustLabel === 'Low' ? 'v7-ms-lo' : 'v7-ms-mod';
   var mvCount = (data.missingVoices || []).length;
   var guestBalScore = mvCount === 0 ? 9.0 : mvCount <= 2 ? 6.5 : mvCount <= 4 ? 4.0 : 2.5;
   var guestBalLabel = mvCount === 0 ? 'High' : mvCount <= 2 ? 'Moderate' : 'Low';
-  var guestBalClass = guestBalLabel === 'High' ? 'ar-metric-high' : guestBalLabel === 'Low' ? 'ar-metric-low' : 'ar-metric-mod';
-  // Source quality from factuality
+  var guestBalMsClass = guestBalLabel === 'High' ? 'v7-ms-hi' : guestBalLabel === 'Low' ? 'v7-ms-lo' : 'v7-ms-mod';
   var fl = data.factualityLabel || '';
-  var sqScore = fl.indexOf('🟢') >= 0 ? 8.5 : fl.indexOf('🟡') >= 0 ? 5.5 : fl.indexOf('🔴') >= 0 ? 2.5 : 6.0;
+  var sqScore = fl.indexOf('\uD83D\uDFE2') >= 0 ? 8.5 : fl.indexOf('\uD83D\uDFE1') >= 0 ? 5.5 : fl.indexOf('\uD83D\uDD34') >= 0 ? 2.5 : 6.0;
   var sqLabel = sqScore >= 7 ? 'High' : sqScore >= 4.5 ? 'Moderate' : 'Low';
-  var sqClass = sqLabel === 'High' ? 'ar-metric-high' : sqLabel === 'Low' ? 'ar-metric-low' : 'ar-metric-mod';
-  below += '<div class="ar-metrics-row">';
-  below += '<div class="ar-metric-card"><div class="ar-metric-lbl">Host trust</div>';
-  below += '<div class="ar-metric-val '+trustClass+'">'+(trustOut10 || '—')+'</div>';
-  below += '<div class="ar-metric-sub '+trustClass+'">'+trustLabel+'</div></div>';
-  below += '<div class="ar-metric-card"><div class="ar-metric-lbl">Source quality</div>';
-  below += '<div class="ar-metric-val '+sqClass+'">'+sqScore+'</div>';
-  below += '<div class="ar-metric-sub '+sqClass+'">'+sqLabel+'</div></div>';
-  below += '<div class="ar-metric-card"><div class="ar-metric-lbl">Guest balance</div>';
-  below += '<div class="ar-metric-val '+guestBalClass+'">'+guestBalScore+'</div>';
-  below += '<div class="ar-metric-sub '+guestBalClass+'">'+guestBalLabel+'</div></div>';
-  below += '</div>';
+  var sqMsClass = sqLabel === 'High' ? 'v7-ms-hi' : sqLabel === 'Low' ? 'v7-ms-lo' : 'v7-ms-mod';
+  html += '<div class="v7-mrow">'
+    + '<div class="v7-mc"><div class="v7-mv">' + (trustOut10 || '&mdash;') + '</div><div class="v7-ml">Host trust</div><div class="v7-ms ' + trustMsClass + '">' + trustLabel + '</div></div>'
+    + '<div class="v7-mc"><div class="v7-mv">' + sqScore + '</div><div class="v7-ml">Source quality</div><div class="v7-ms ' + sqMsClass + '">' + sqLabel + '</div></div>'
+    + '<div class="v7-mc"><div class="v7-mv">' + guestBalScore + '</div><div class="v7-ml">Guest balance</div><div class="v7-ms ' + guestBalMsClass + '">' + guestBalLabel + '</div></div>'
+    + '</div>';
 
-  // 3. "Worth knowing" — flags, sponsor first
+  // ── "WORTH KNOWING" FINDINGS ──
   var allFlags = (data.flags || []).slice();
-  // Put sponsor/sponsor-note first
   allFlags.sort(function(a, b) {
     var aS = (a.type === 'sponsor' || a.type === 'sponsor-note') ? 0 : 1;
     var bS = (b.type === 'sponsor' || b.type === 'sponsor-note') ? 0 : 1;
     return aS - bS;
   });
-  var visibleCount = _cfg.findingsVisible; // 2 for free, 5 for creator+
+  var visibleCount = _cfg.findingsVisible;
+  html += '<div class="v7-sec"><div class="v7-seclbl">Worth knowing before you listen'
+    + (allFlags.length ? ' <span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap any finding to expand</span>' : '')
+    + '</div><div class="v7-findings-wrap">';
   if (allFlags.length) {
-    below += '<div class="ar-section">';
-    below += '<div class="ar-section-hd">Worth knowing before you listen <span class="ar-hint">&middot; tap any finding to expand</span></div>';
     var shownFlags = allFlags.slice(0, visibleCount);
     var lockedFlags = allFlags.slice(visibleCount);
-    shownFlags.forEach(function(f, i) { below += _arFindingHtml(f, i); });
+    shownFlags.forEach(function(f) { html += _v7FindingHtml(f); });
     if (lockedFlags.length) {
-      // Build blurred preview of locked findings
-      var blurredHtml = '';
       lockedFlags.forEach(function(f) {
-        blurredHtml += '<div class="ar-finding">'
-          + '<div class="ar-finding-header"><span class="ar-ftag '+_arFtTagClass(f.type)+'">'+_arFtLabel(f.type)+'</span>'
-          + '<div class="ar-finding-title">'+f.title+'</div><div class="ar-chevron">&#8250;</div></div>'
-          + '</div>';
+        html += '<div class="v7-blur-r"><div class="v7-btext"></div><span class="v7-lock">&#128274;</span></div>';
       });
-      below += '<div class="ar-gate-wrap">'
-        + '<div class="ar-gate-content">'+blurredHtml+'</div>'
-        + '<div class="ar-gate-overlay">'
-        + '<div class="ar-gate-msg">'+lockedFlags.length+' more finding'+(lockedFlags.length>1?'s':'')+' &mdash; Unlocks with Creator</div>'
-        + '<a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a>'
-        + '</div></div>';
+      html += '<div class="v7-upbar"><span class="v7-uptxt">' + lockedFlags.length + ' more finding' + (lockedFlags.length > 1 ? 's' : '') + ' &mdash; unlocks with Creator</span><button class="v7-upbtn" onclick="location.href=\'/pricing\'">Upgrade &rarr;</button></div>';
     }
-    if (isPartial) below += '<div class="ar-partial-note"><div class="feed-spin" style="width:16px;height:16px;border-width:2px;margin:0"></div>More findings loading&hellip;</div>';
-    below += '</div>';
+    if (isPartial) html += '<div style="padding:10px 12px;display:flex;align-items:center;gap:8px"><div class="feed-spin" style="width:14px;height:14px;border-width:2px;margin:0"></div><span style="font-size:11px;color:#bbb">More findings loading&hellip;</span></div>';
   } else if (isPartial) {
-    below += '<div class="ar-section"><div class="ar-section-hd">Worth knowing before you listen</div>'
-      + '<div class="ar-partial-note"><div class="feed-spin" style="width:16px;height:16px;border-width:2px;margin:0"></div>Finding key moments&hellip;</div>'
-      + '<div style="padding:8px 16px 12px"><div class="ar-skel ar-skel-ln" style="width:60%"></div><div class="ar-skel ar-skel-block"></div></div></div>';
+    html += '<div style="padding:12px;display:flex;align-items:center;gap:8px"><div class="feed-spin" style="width:14px;height:14px;border-width:2px;margin:0"></div><span style="font-size:11px;color:#bbb">Identifying key moments&hellip;</span></div>'
+      + '<div class="ar-skel ar-skel-ln" style="margin:0 12px 12px;width:65%"></div>';
+  } else {
+    html += '<div style="padding:12px;font-size:11px;color:#bbb">No significant findings detected for this episode.</div>';
   }
+  html += '</div></div>';
 
-  // 4. Key findings (key quotes styled as findings) — gated by tierConfig.keyFindings
+  // ── KEY FINDINGS (keyQuotes) ──
   if (data.keyQuotes && data.keyQuotes.length) {
-    below += '<div class="ar-section">';
-    below += '<div class="ar-section-hd">Key findings <span class="ar-hint">&middot; tap to expand</span></div>';
+    html += '<div class="v7-sec"><div class="v7-seclbl">Key findings'
+      + (_cfg.keyFindings ? ' <span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap to expand</span>' : '')
+      + '</div><div class="v7-findings-wrap">';
     if (_cfg.keyFindings) {
       data.keyQuotes.forEach(function(q) {
-        var dir = q.concern === 'high' ? 'left' : q.concern === 'medium' ? 'right' : 'neutral';
-        var dotClass = dir === 'left' ? 'ar-lean-dot-l' : dir === 'right' ? 'ar-lean-dot-r' : 'ar-lean-dot-c';
-        var tagLabel = dir === 'left' ? 'Left-leaning' : dir === 'right' ? 'Right-leaning' : 'Notable';
-        var tagClass = dir === 'left' ? 'ar-ft-fact' : dir === 'right' ? 'ar-ft-framing' : 'ar-ft-context';
-        below += '<div class="ar-finding" onclick="arToggleFinding(this)">';
-        below += '<div class="ar-finding-header">';
-        below += '<span class="ar-ftag '+tagClass+'">'+tagLabel+'</span>';
-        below += '<span class="ar-lean-dot '+dotClass+'"></span>';
-        below += '<div class="ar-finding-title">'+(q.note||q.quote.substring(0,80)+(q.quote.length>80?'&hellip;':''))+'</div>';
-        below += '<div class="ar-chevron">&#8250;</div>';
-        below += '</div>';
-        below += '<div class="ar-finding-body">';
-        below += '<blockquote class="ar-ev-quote" style="margin:10px 0">\u201c'+q.quote+'\u201d</blockquote>';
-        if (q.note) below += '<div class="ar-finding-summary">'+q.note+'</div>';
-        below += '</div></div>';
+        var dotColor = q.concern === 'high' ? '#e0352b' : q.concern === 'medium' ? '#3a7fd4' : '#888';
+        html += '<div class="v7-kfi" onclick="arToggleFinding(this)">'
+          + '<div class="v7-kfd" style="background:' + dotColor + '"></div>'
+          + '<div class="v7-kft">' + (q.note || (q.quote||'').substring(0,80) + ((q.quote||'').length > 80 ? '&hellip;' : '')) + '</div>'
+          + '<div class="v7-kfarrow">&#8250;</div>'
+          + '</div>'
+          + '<div class="v7-expand"><div class="v7-exp-summary"><blockquote style="font-style:italic;color:#666">\u201c' + (q.quote||'') + '\u201d</blockquote>'
+          + (q.note ? '<div style="margin-top:8px;font-size:11px;color:#888">' + q.note + '</div>' : '')
+          + '</div></div>';
       });
     } else {
-      // Blurred/locked key findings
-      var blurredKQ = '';
-      data.keyQuotes.slice(0, 3).forEach(function(q) {
-        blurredKQ += '<div class="ar-finding"><div class="ar-finding-header">'
-          + '<span class="ar-ftag ar-ft-context">Notable</span>'
-          + '<div class="ar-finding-title">'+(q.note||q.quote.substring(0,60)+'&hellip;')+'</div>'
-          + '<div class="ar-chevron">&#8250;</div></div></div>';
+      data.keyQuotes.slice(0, 3).forEach(function() {
+        html += '<div class="v7-blur-r"><div class="v7-btext"></div><span class="v7-lock">&#128274;</span></div>';
       });
-      below += '<div class="ar-gate-wrap">'
-        + '<div class="ar-gate-content">'+blurredKQ+'</div>'
-        + '<div class="ar-gate-overlay">'
-        + '<div class="ar-gate-msg">Unlocks with Creator</div>'
-        + '<a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a>'
-        + '</div></div>';
+      html += '<div class="v7-upbar"><span class="v7-uptxt">Key findings unlock with Creator</span><button class="v7-upbtn" onclick="location.href=\'/pricing\'">Upgrade &rarr;</button></div>';
     }
-    below += '</div>';
+    html += '</div></div>';
   }
 
-  // 5. Summary (if available)
-  if (data.summary) {
-    below += '<div class="ar-section"><div class="ar-section-hd">Episode summary</div>';
-    below += '<div style="padding:14px 16px;font-size:13px;color:var(--text2);font-style:italic;line-height:1.7">\u201c'+data.summary+'\u201d</div></div>';
-  }
-
-  // 6. Topic breakdown
-  if (data.topicBreakdown && data.topicBreakdown.length) {
-    var topics = data.topicBreakdown.slice().sort(function(a,b){return b.percentage-a.percentage;});
-    var maxPct = topics[0].percentage || 1;
-    below += '<div class="ar-section"><div class="ar-section-hd">Topic breakdown</div>';
-    below += '<div class="ar-topic-bars">';
-    topics.slice(0, 8).forEach(function(t) {
-      var w = Math.round(t.percentage / maxPct * 100);
-      below += '<div class="ar-topic-row" title="'+t.topic+' appeared in '+t.percentage+'% of content">';
-      below += '<div class="ar-topic-lbl">'+t.topic+'</div>';
-      below += '<div class="ar-topic-track"><div class="ar-topic-fill" style="width:'+w+'%"></div></div>';
-      below += '<div class="ar-topic-pct">'+t.percentage+'%</div></div>';
-    });
-    if (topics.length > 8) {
-      below += '<button class="ghost-btn" style="margin:8px 16px;font-size:11px" onclick="var p=this.previousElementSibling;p&&(p.style.display=\'block\');this.style.display=\'none\'">Show all '+topics.length+' topics</button>';
+  // ── SOURCE CITATIONS ──
+  html += '<div class="v7-sec"><div class="v7-seclbl">Source citations</div>';
+  if (_cfg.citations > 0) {
+    var allCitsFlat = [];
+    (data.flags || []).forEach(function(f) { (f.citations || []).forEach(function(c) { allCitsFlat.push(c); }); });
+    var showCits = _cfg.citations >= 99 ? allCitsFlat : allCitsFlat.slice(0, _cfg.citations);
+    if (showCits.length) {
+      showCits.forEach(function(c, i) {
+        html += '<div class="v7-cit"><div class="v7-cnum">' + (i+1) + '</div><div>'
+          + '<div class="v7-ctitle2">' + (c.quote ? '\u201c' + c.quote.substring(0,80) + (c.quote.length>80?'\u2026':'\u201d') : (c.explanation||'Citation')) + '</div>'
+          + (c.timestamp ? '<div class="v7-csrc">at ' + c.timestamp + '</div>' : '')
+          + '</div></div>';
+      });
+    } else {
+      html += '<div style="padding:8px 0;font-size:11px;color:#bbb">No citations available for this episode.</div>';
     }
-    below += '</div></div>';
-  }
-
-  // 7. Missing voices
-  if (data.missingVoices && data.missingVoices.length) {
-    below += '<div class="ar-section"><div class="ar-section-hd">Missing voices</div>';
-    below += '<div class="ar-mv-list">';
-    data.missingVoices.forEach(function(v) {
-      below += '<div class="ar-mv-item"><div class="ar-mv-dot"></div><div class="ar-mv-text">'+v+'</div></div>';
-    });
-    below += '</div></div>';
-  }
-
-  // 8. Platform links
-  below += '<div class="ar-platforms" id="ar-platforms">';
-  below += '<div class="ar-plat-lbl">Listen on</div>';
-  below += '<div class="ar-plat-row" id="platform-btns-row">';
-  below += '<span class="plat-btn ploading" id="plat-spotify">Finding Spotify\u2026</span>';
-  if (vid) below += '<a class="plat-btn pyoutube" href="https://youtube.com/watch?v='+vid+'" target="_blank" rel="noopener">&#9654; YouTube</a>';
-  below += '<a class="plat-btn papple" href="https://podcasts.apple.com/search?term='+encodeURIComponent(data.showName||'')+'" target="_blank" rel="noopener">&#9654; Apple Podcasts</a>';
-  below += '</div></div>';
-
-  // 9. Share section
-  if (plUser()) {
-    var shareUrl = window.location.origin + '/analysis/' + (_currentJobId || '');
-    var u2 = plUser(); var plan2 = String(u2 && u2.plan||'').toLowerCase();
-    var canShare = canAccess('shareCards') || plan2 === 'trial';
-    below += '<div class="ar-section"><div class="ar-section-hd">Share this analysis</div>';
-    below += '<div class="ar-share-btns" style="padding:12px 16px">';
-    below += '<button class="ar-share-btn primary" onclick=\'copyShareLink("'+shareUrl+'")\'>&#128279; Copy link</button>';
-    below += '<button class="ar-share-btn" onclick=\'shareToX(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,audioLean:data.audioLean||{},shareUrl:shareUrl}))+'"))\'>\uD835\uDD4F Share to X</button>';
-    if (canShare) below += '<button class="ar-share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||'',audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"square","Download")\'>&#9660; Image card</button>';
-    below += '</div></div>';
-  }
-
-  // 10. Deep Analysis Report bar — single tierConfig source of truth
-  below += '<div class="ar-report-bar">';
-  below += '<div class="ar-report-bar-inner">';
-  below += '<div class="ar-report-title">&#128196; Deep Analysis Report</div>';
-  if (_cfg.deepReport) {
-    below += '<div class="ar-report-desc">Full report with source citations, transcript excerpts, and sponsor analysis.</div>';
-    below += '<button class="ar-report-btn" onclick="downloadReport()">Download full report</button>';
-  } else if (_cfg.creatorReport) {
-    below += '<div class="ar-report-desc">Summary report with bias overview and key findings.</div>';
-    below += '<button class="ar-report-btn" onclick="downloadReport()">Download Creator report</button>';
-    below += '<div class="ar-gate-wrap" style="margin-top:8px"><div class="ar-gate-content" style="font-size:11px;color:var(--text3);padding:6px">Full report with citations and transcript excerpts</div><div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Operator</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div></div>';
+    if (_cfg.citations < 99 && allCitsFlat.length > _cfg.citations) {
+      var moreC = allCitsFlat.length - _cfg.citations;
+      html += '<div class="v7-upbar"><span class="v7-uptxt">' + moreC + ' more citation' + (moreC>1?'s':'') + ' &mdash; unlocks with Operator</span><button class="v7-upbtn" onclick="location.href=\'/pricing\'">Upgrade &rarr;</button></div>';
+    }
   } else {
-    below += '<div class="ar-gate-wrap"><div class="ar-gate-content" style="font-size:11px;color:var(--text3);padding:6px">Download a PDF with the full analysis, citations, and transcript highlights.</div><div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Creator</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div></div>';
+    html += '<div class="v7-blur-r"><div class="v7-btext"></div><span class="v7-lock">&#128274;</span></div>'
+      + '<div class="v7-upbar"><span class="v7-uptxt">Citations unlock with Creator</span><button class="v7-upbtn" onclick="location.href=\'/pricing\'">Upgrade &rarr;</button></div>';
   }
-  below += '</div></div>';
+  html += '</div>';
 
-  // Dock spacer so content isn't hidden behind dock
-  below += '<div class="ar-dock-spacer"></div>';
+  // ── PLATFORM LINKS ──
+  html += '<div id="ar-platforms" style="margin-bottom:18px">'
+    + '<div class="v7-seclbl">Listen on</div>'
+    + '<div id="platform-btns-row" style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<span class="plat-btn ploading" id="plat-spotify">Finding Spotify&hellip;</span>'
+    + (vid ? '<a class="plat-btn pyoutube" href="https://youtube.com/watch?v=' + vid + '" target="_blank" rel="noopener">&#9654; YouTube</a>' : '')
+    + '<a class="plat-btn papple" href="https://podcasts.apple.com/search?term=' + encodeURIComponent(data.showName||'') + '" target="_blank" rel="noopener">&#9654; Apple Podcasts</a>'
+    + '</div></div>';
 
-  // ── ASSEMBLE ──
-  var html = header
-    + '<div class="ar-top-grid"><div>'+left+'</div><div>'+right+'</div></div>'
-    + below;
+  // ── SHARE (signed-in only) ──
+  if (u) {
+    var shareUrl = window.location.origin + '/analysis/' + (_currentJobId || '');
+    html += '<div class="v7-sec"><div class="v7-seclbl">Share this analysis</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+      + '<button class="v7-bbtn" onclick=\'copyShareLink("' + shareUrl + '")\'>&#128279; Copy link</button>'
+      + '<button class="v7-bbtn" style="background:#1a1a1a" onclick=\'shareToX(JSON.parse(decodeURIComponent("' + encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,audioLean:data.audioLean||{},shareUrl:shareUrl})) + '"))\'>\uD835\uDD4F Share to X</button>'
+      + '</div></div>';
+  }
+
+  // ── DEEP ANALYSIS REPORT BAR ──
+  html += '<div class="v7-drbar"><div style="flex:1">'
+    + '<div class="v7-drtitle">&#128196; Deep Analysis Report</div>';
+  if (_cfg.deepReport) {
+    html += '<div class="v7-drdesc">Claim-by-claim breakdown &middot; Narrative arc &middot; Missing voices &middot; Comparative bias &middot; <span style="color:#999">Downloadable PDF</span></div>';
+    html += '</div><div><button class="v7-drpri" onclick="downloadReport()">Download full report</button></div>';
+  } else if (_cfg.creatorReport) {
+    html += '<div class="v7-drdesc">Bias summary &middot; Top findings &middot; Host trust breakdown &middot; <span style="color:#999">Downloadable PDF</span></div>';
+    html += '<div class="v7-cdlrow"><span style="font-size:10px;color:#bbb">Your Creator report is ready</span><button class="v7-drsec" onclick="downloadReport()">Download</button></div>';
+    html += '</div><div><div class="v7-drlocked">&#128274; Full report &mdash; Operator</div></div>';
+  } else {
+    html += '<div class="v7-drdesc">Full intelligence report available on Creator and Operator plans.</div>';
+    html += '</div><div><div class="v7-drlocked">&#128274; Creator or above</div></div>';
+  }
+  html += '</div>';
+
+  html += '</div><div class="ar-dock-spacer"></div></div>'; // close v7-main, dock-spacer, v7-dash
+
   document.getElementById('results').innerHTML = html;
 
   // ── POST-RENDER: init players + platform buttons ──
@@ -6501,21 +6558,23 @@ function renderResults(data) {
     _arMedia.type = 'yt'; _arMedia.ytVid = vid;
     setTimeout(function() {
       initYouTubePlayer(vid, data);
-      // Hook YT progress to ar-scrubber
       _arScrubProgId = setInterval(function() {
         var p = _ytPlayers[vid];
         if (!p) return;
-        var fill = document.getElementById('ar-scrubber-fill');
-        var cur = document.getElementById('ar-time-cur');
-        var dur = document.getElementById('ar-time-dur');
         function fmt(s) { if (!isFinite(s)||!s) return '0:00'; var m=Math.floor(s/60),sc=Math.floor(s%60); return m+':'+(sc<10?'0':'')+sc; }
         try {
           var ct = p.getCurrentTime(); var dt = p.getDuration();
-          if (fill && dt) fill.style.width = (ct/dt*100).toFixed(2)+'%';
+          var pct = dt ? (ct/dt*100) : 0;
+          var fill = document.getElementById('v7-afill');
+          var thumb = document.getElementById('v7-athumb');
+          var cur = document.getElementById('v7-time-cur');
+          var dur = document.getElementById('v7-time-dur');
+          if (fill) fill.style.width = pct.toFixed(2) + '%';
+          if (thumb) thumb.style.left = pct.toFixed(2) + '%';
           if (cur) cur.textContent = fmt(ct);
-          if (dur && dt) dur.textContent = fmt(dt);
+          if (dur && dt && !data.duration) dur.textContent = fmt(dt);
         } catch(e) {}
-        if (!document.getElementById('ar-scrubber-fill')) { clearInterval(_arScrubProgId); _arScrubProgId = null; }
+        if (!document.getElementById('v7-afill')) { clearInterval(_arScrubProgId); _arScrubProgId = null; }
       }, 500);
     }, 200);
   }
