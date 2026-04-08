@@ -2278,7 +2278,7 @@ body.light-mode,[data-theme="light"]{
 
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">Or analyze any URL</div>
           <div class="hero-input-wrap">
-            <input type="text" id="hero-url-input" class="hero-input" placeholder="YouTube, Spotify, Apple Podcasts, RSS, or .mp3" autocomplete="off"/>
+            <input type="text" id="hero-url-input" class="hero-input" placeholder="YouTube, Spotify, Apple Podcasts, RSS, or .mp3" autocomplete="url"/>
             <button class="hero-analyze-btn" onclick="handleHeroAnalyze()" data-i18n="analyzeBtn">Analyze &rarr;</button>
           </div>
           <p class="hero-platforms">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
@@ -2580,7 +2580,7 @@ body.light-mode,[data-theme="light"]{
           <div class="dashboard-main">
             <!-- Analyze bar -->
             <div class="analyze-bar">
-              <input type="text" id="dash-url-input" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL to try it now&hellip;" autocomplete="off" onkeydown="if(event.key==='Enter')handleDashAnalyze()"/>
+              <input type="text" id="dash-url-input" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL to try it now&hellip;" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyze()"/>
               <button class="analyze-btn" onclick="handleDashAnalyze()">Analyze &rarr;</button>
             </div>
             <!-- Connect CTAs -->
@@ -2688,7 +2688,7 @@ body.light-mode,[data-theme="light"]{
           <div class="dashboard-main">
             <!-- Analyze bar -->
             <div class="analyze-bar">
-              <input type="text" id="dash-url-input-b" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL&hellip;" autocomplete="off" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
+              <input type="text" id="dash-url-input-b" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL&hellip;" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
               <button class="analyze-btn" onclick="handleDashAnalyzeB()">Analyze &rarr;</button>
             </div>
             <!-- Recent episodes -->
@@ -2874,7 +2874,7 @@ body.light-mode,[data-theme="light"]{
   <div class="analyze-wrap">
     <button class="sp-back-btn" onclick="showHome()">&larr; Back</button>
     <div class="analyze-url-row">
-      <input type="text" id="url-input" class="url-input" placeholder="Paste a YouTube URL, RSS feed, or MP3 link&hellip;" autocomplete="off"/>
+      <input type="text" id="url-input" class="url-input" placeholder="Paste a podcast URL, YouTube link, or Spotify episode" autocomplete="url"/>
       <button id="go-btn" class="go-btn" onclick="handleAnalyze()">Analyze</button>
     </div>
     <div class="ep-picker" id="ep-picker">
@@ -3330,7 +3330,7 @@ body.light-mode,[data-theme="light"]{
       <div class="onb-step" id="onb-step-2">
         <div class="auth-logo" style="text-align:left;margin-bottom:4px">Paste a podcast you love</div>
         <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Optional &mdash; we&rsquo;ll use this to personalize your feed.</p>
-        <div class="onb-field"><input type="text" id="onb-podcast-url" placeholder="https://feeds.example.com/podcast.rss" autocomplete="off"/></div>
+        <div class="onb-field"><input type="text" id="onb-podcast-url" placeholder="https://feeds.example.com/podcast.rss" autocomplete="url"/></div>
         <button class="auth-btn" onclick="onbNext(2)">Continue &rarr;</button>
         <div style="text-align:center"><button class="onb-skip" onclick="onbNext(2)">Skip</button></div>
       </div>
@@ -5096,7 +5096,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
         .catch(function(){ return audioUrl; });
 
   _resolvePromise.then(function(resolvedUrl){
-  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
+  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free'})})
     .then(function(d){
       // Guard: single YouTube video URLs should NEVER show feed lookup/episode picker
       var _isYtVideo = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(audioUrl);
