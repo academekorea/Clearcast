@@ -5079,26 +5079,29 @@ function startAnalysis(audioUrl, epTitle, showName) {
   btn.disabled=true; btn.textContent='Analyzing\u2026';
 
   var _analyzeUser=plUser()||{};
-  // Resolve redirect chains (pdst.fm, podtrac, megaphone, Chartable, etc.)
-  // before passing to AssemblyAI — tracking wrappers return HTML not audio.
-  // YouTube URLs are also routed through resolve-redirect, which converts them
-  // to Railway audio extraction URLs (yt-dlp) so AssemblyAI gets real audio.
-  // Skip only RSS/feed URLs (server handles those directly).
+  // All URLs (including RSS feeds and YouTube) go through resolve-redirect:
+  // - RSS/feed URLs: server parses XML and returns the latest episode enclosure URL
+  // - YouTube URLs: server returns unchanged (transcribe-background handles extraction)
+  // - Everything else: server follows redirect chains (pdst.fm, podtrac, Chartable, etc.)
   var _isYtUrl = /(?:youtube\.com|youtu\.be)/.test(audioUrl);
-  var _isFeedUrl = /rss|feed|\.xml/i.test(audioUrl);
-  var _resolvePromise = _isFeedUrl
-    ? Promise.resolve(audioUrl)
-    : fetch('/api/resolve-redirect', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({url: audioUrl}),
-        signal: AbortSignal.timeout(9000)
-      }).then(function(r){ return r.ok ? r.json() : null; })
-        .then(function(j){ return (j && j.resolved) ? j.resolved : audioUrl; })
-        .catch(function(){ return audioUrl; });
+  var _resolvePromise = fetch('/api/resolve-redirect', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({url: audioUrl}),
+      signal: AbortSignal.timeout(15000)
+    }).then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){ return j || {resolved: audioUrl}; })
+      .catch(function(){ return {resolved: audioUrl}; });
 
-  _resolvePromise.then(function(resolvedUrl){
-  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free'})})
+  _resolvePromise.then(function(resolveResult){
+  var resolvedUrl = (resolveResult && resolveResult.resolved) ? resolveResult.resolved : audioUrl;
+  var resolvedTitle = (resolveResult && resolveResult.episodeTitle) ? resolveResult.episodeTitle : epTitle;
+  var resolvedShow = (resolveResult && resolveResult.showName) ? resolveResult.showName : showName;
+  if (resolveResult && resolveResult.selectedFromFeed && resolvedTitle) {
+    var ldTitle = document.getElementById('ld-title');
+    if (ldTitle) { ldTitle.style.display=''; ldTitle.textContent='Analyzing latest episode: ' + resolvedTitle; }
+  }
+  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:resolvedTitle||undefined,showName:resolvedShow||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free'})})
     .then(function(d){
       // Guard: single YouTube video URLs should NEVER show feed lookup/episode picker
       var _isYtVideo = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(audioUrl);
