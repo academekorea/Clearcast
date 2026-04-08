@@ -73,8 +73,8 @@
       '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '">Discover</a>'
       + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '">Analyze</a>'
       + '<a href="/library.html" class="nav-link' + (_isActive('/library.html', path) ? ' active' : '') + '">Library</a>'
-      + '<a href="/account.html" class="nav-link' + (_isActive('/account.html', path) ? ' active' : '') + '">Account</a>'
-      + '<a href="/" class="nav-link nav-signin" onclick="if(typeof openModal===\'function\'){openModal(\'login\');return false}">Sign in</a>';
+      + '<a href="/" class="nav-link" onclick="if(typeof openModal===\'function\'){openModal(\'login\');return false}">Sign in</a>'
+      + '<a href="/" class="nav-signin" onclick="if(typeof openModal===\'function\'){openModal(\'signup\');return false}">Get started</a>';
   }
 
   function _buildLoggedIn(navLinks, u, path) {
@@ -83,9 +83,13 @@
     var isSuperAdmin = u.email === 'academekorea@gmail.com' || u.isSuperAdmin;
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
+    var _personSvg = '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+    var _ini = (displayName && displayName !== 'U') ? _initials(displayName) : null;
     var avatarInner = avatarUrl
       ? '<img class="nav-avatar-img" src="' + _esc(avatarUrl) + '" alt="' + _esc(displayName) + '" onerror="this.style.display=\'none\'">'
-      : '<div class="nav-avatar-ini" style="background:' + _avatarColor(displayName) + '">' + _initials(displayName) + '</div>';
+      : (_ini
+          ? '<div class="nav-avatar-ini" style="background:' + _avatarColor(displayName) + '">' + _ini + '</div>'
+          : '<div class="nav-avatar-ini" style="background:#6B7280;display:flex;align-items:center;justify-content:center;color:#fff">' + _personSvg + '</div>');
 
     var adminRow = isSuperAdmin
       ? '<a href="/account?tab=admin" class="nav-dd-item" style="color:#dc2626;font-weight:600">🔴 Admin Panel</a><div class="nav-dd-div"></div>'
@@ -99,7 +103,6 @@
       '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '">Discover</a>'
       + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '">Analyze</a>'
       + '<a href="/library.html" class="nav-link' + (_isActive('/library.html', path) ? ' active' : '') + '">Library</a>'
-      + '<a href="/account.html" class="nav-link' + (_isActive('/account.html', path) ? ' active' : '') + '">Account</a>'
       + '<button class="nav-theme" id="nav-theme-btn" aria-label="Toggle theme">' + (isDark ? '🌙' : '☀️') + '</button>'
       + '<div class="nav-dd-wrap">'
       + '<button class="nav-avatar-btn" id="nav-avatar-btn" aria-label="Profile menu">' + avatarInner + '</button>'
@@ -109,9 +112,8 @@
       + '<div class="nav-dd-email">' + _esc(u.email || '') + '</div>'
       + '</div>'
       + adminRow
-      + '<a href="/account?tab=profile" class="nav-dd-item">View &amp; Edit Profile</a>'
-      + '<a href="/account?tab=settings" class="nav-dd-item">Settings</a>'
-      + '<a href="/account?tab=billing" class="nav-dd-item">Billing &amp; Plans</a>'
+      + '<a href="/account.html" class="nav-dd-item">Account settings</a>'
+      + '<a href="/account?tab=billing" class="nav-dd-item">Billing &amp; subscription</a>'
       + '<div class="nav-dd-div"></div>'
       + '<button onclick="localStorage.removeItem(\'pl-user\');window.location.href=\'/\'" class="nav-dd-item">Sign out</button>'
       + '</div>'

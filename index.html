@@ -1402,7 +1402,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 
 /* ── MOBILE NAV ── */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:4px 0;z-index:150}
-@media(max-width:640px){.mob-nav{display:flex}.nav-links{display:none}.nav-search-wrap{display:none}#nav-discover-guest,#nav-analyze-guest,#nav-library-guest,#nav-account-guest,#nl-discover,#nl-analyze,#nl-library,#nl-account{display:none!important}}
+@media(max-width:640px){.mob-nav{display:flex}.nav-links{display:none}.nav-search-wrap{display:none}#nav-discover-guest,#nav-analyze-guest,#nav-library-guest,#nav-signin,#nav-getstarted,#nl-discover,#nl-analyze,#nl-library{display:none!important}}
 .mob-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:10px;font-family:var(--ff);transition:color .1s}
 .mob-btn.on,.mob-btn:hover{color:var(--text)}
 .mob-icon{font-size:20px;line-height:1}
@@ -1965,9 +1965,10 @@ body.light-mode,[data-theme="light"]{
       <button class="nav-link" id="nav-discover-guest" onclick="showView('discover')">Discover</button>
       <button class="nav-link" id="nav-analyze-guest" onclick="showView('analyze')">Analyze</button>
       <a href="/library.html" class="nav-link" id="nav-library-guest">Library</a>
-      <a href="/account.html" class="nav-link" id="nav-account-guest">Account</a>
-      <button class="nav-btn-signin" id="nav-signin"
+      <button class="nav-link" id="nav-signin"
          onclick="openModal('login');return false">Sign in</button>
+      <button class="nav-btn-signin" id="nav-getstarted"
+         onclick="openModal('signup');return false">Get started</button>
     </div>
 
     <!-- LOGGED IN: app links -->
@@ -1975,7 +1976,6 @@ body.light-mode,[data-theme="light"]{
       <button class="nav-link" id="nl-discover" onclick="showView('discover')">Discover</button>
       <button class="nav-link" id="nl-analyze" onclick="showView('analyze')">Analyze</button>
       <a class="nav-link" id="nl-library" href="/library.html">Library</a>
-      <a class="nav-link" id="nl-account" href="/account.html">Account</a>
       <button class="nav-theme-toggle" onclick="toggleMode()" id="mode-toggle-btn"
               aria-label="Toggle dark/light mode">🌙</button>
       <div id="lang-switch-wrap"></div>
@@ -3284,14 +3284,7 @@ function _renderNavAvatar(u) {
     ? '<button class="dropdown-item" onclick="closeUserMenu();showView(\'admin\')" style="color:#dc2626;font-weight:600;background:none;border:none;cursor:pointer;text-align:left;width:100%">\uD83D\uDD34 Admin Panel</button><div class="dropdown-divider"></div>'
     : '';
   var adminBadge = isSuperAdmin ? ' <span style="background:#dc2626;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;letter-spacing:.04em;vertical-align:middle">ADMIN</span>' : '';
-  el.innerHTML = '<div class="notif-bell-wrap" id="notif-bell-wrap">'
-    + '<button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifDropdown()" title="Notifications">🔔</button>'
-    + '<span class="notif-badge" id="notif-badge"></span>'
-    + '<div class="notif-dropdown" id="notif-dropdown">'
-    + '<div class="notif-header"><span class="notif-header-title">Notifications</span><button class="notif-mark-read" onclick="markNotifsRead()">Mark all read</button></div>'
-    + '<div id="notif-list"><div class="notif-empty">Loading\u2026</div></div>'
-    + '</div></div>'
-    + '<div class="user-menu-wrap">'
+  el.innerHTML = '<div class="user-menu-wrap">'
     + '<button class="nav-avatar-btn" id="avatar-btn" onclick="toggleUserMenu()" aria-label="Profile menu">' + avatarBtnInner + '</button>'
     + '<div class="profile-dropdown" id="user-dropdown">'
     + '<div class="profile-dropdown-header">' + headerAvatarHtml
@@ -3300,14 +3293,11 @@ function _renderNavAvatar(u) {
     + '<div class="dropdown-tier">' + tierLabel + ' plan</div></div></div>'
     + '<div class="dropdown-divider"></div>'
     + adminRows
-    + '<a href="/dashboard.html" class="dropdown-item">📊 Dashboard</a>'
-    + '<a href="/account?tab=profile" class="dropdown-item">\uD83D\uDC64 View &amp; Edit Profile</a>'
-    + '<a href="/account?tab=settings" class="dropdown-item">\u2699\uFE0F Settings</a>'
-    + '<a href="/account?tab=billing" class="dropdown-item">\uD83D\uDCB3 Billing &amp; Plans</a>'
+    + '<a href="/account.html" class="dropdown-item">Account settings</a>'
+    + '<a href="/account?tab=billing" class="dropdown-item">Billing &amp; subscription</a>'
     + '<div class="dropdown-divider"></div>'
     + '<button class="danger" onclick="doLogout()">Sign out</button>'
     + '</div></div>';
-  loadNotifCount(u.id);
   // Admin nav button — only for super admin, injected dynamically
   var existingAdminBtn = document.getElementById('nl-admin');
   if (isSuperAdmin && !existingAdminBtn) {
@@ -3346,6 +3336,12 @@ function _getAvatarColor(name) {
   return colors[((name||'U').charCodeAt(0)||0) % colors.length];
 }
 function getInitialsAvatar(name) {
+  var clean = (name || '').trim();
+  if (!clean || clean === 'U') {
+    return '<div class="nav-avatar-initials" style="background:#6B7280;display:flex;align-items:center;justify-content:center">'
+      + '<svg viewBox="0 0 24 24" fill="white" width="16" height="16" aria-hidden="true"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>'
+      + '</div>';
+  }
   return '<div class="nav-avatar-initials" style="background:' + _getAvatarColor(name) + '">' + _getInitials(name) + '</div>';
 }
 function getDropdownInitialsAvatar(name) {
