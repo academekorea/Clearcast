@@ -89,6 +89,7 @@ interface ResolveResult {
   resolved: string;
   episodeTitle?: string;
   showName?: string;
+  artwork?: string;
   selectedFromFeed?: boolean;
 }
 
@@ -105,6 +106,7 @@ async function resolveUrl(url: string): Promise<ResolveResult> {
           resolved: feed.enclosureUrl,
           episodeTitle: feed.episodeTitle || undefined,
           showName: feed.showName || undefined,
+          artwork: feed.artwork || undefined,
           selectedFromFeed: true,
         };
       }

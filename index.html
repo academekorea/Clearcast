@@ -1819,7 +1819,7 @@ body.light-mode,[data-theme="light"]{
 .ar-act-btn:hover{border-color:var(--text);color:var(--text)}
 
 /* Left column: media + controls */
-.ar-media-slot{border-radius:var(--r);overflow:hidden;background:#000;margin-bottom:0}
+.ar-media-slot{border-radius:var(--r);overflow:hidden;background:var(--bg3);margin-bottom:0}
 .ar-media-slot iframe{width:100%;aspect-ratio:16/9;border:none;display:block}
 .ar-artwork-wrap{aspect-ratio:1/1;max-height:340px;overflow:hidden;border-radius:var(--r);background:var(--bg3);display:flex;align-items:center;justify-content:center}
 .ar-artwork-wrap img{width:100%;height:100%;object-fit:cover}
@@ -4540,7 +4540,8 @@ async function loadForyouShows(region, user) {
 }
 
 // ── YOUTUBE ──
-function ytId(url) { if (!url) return null; var m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/); return m?m[1]:null; }
+function ytId(url) { if (!url) return null; var m=url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|v\/)|youtu\.be\/|m\.youtube\.com\/watch\?(?:.*&)?v=)([a-zA-Z0-9_-]{11})/); return m?m[1]:null; }
+function decodeHTMLEntities(str) { if (!str) return str; try { var ta=document.createElement('textarea'); ta.innerHTML=str; return ta.value; } catch(e){ return str; } }
 function ytEmbed(id) { return '<div class="yt-wrap"><iframe src="https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>'; }
 
 // ── GRADIENT BIAS BAR ──
@@ -5097,9 +5098,37 @@ function startAnalysis(audioUrl, epTitle, showName) {
   var resolvedUrl = (resolveResult && resolveResult.resolved) ? resolveResult.resolved : audioUrl;
   var resolvedTitle = (resolveResult && resolveResult.episodeTitle) ? resolveResult.episodeTitle : epTitle;
   var resolvedShow = (resolveResult && resolveResult.showName) ? resolveResult.showName : showName;
+  var resolvedArtwork = (resolveResult && resolveResult.artwork) ? resolveResult.artwork : '';
   if (resolveResult && resolveResult.selectedFromFeed && resolvedTitle) {
     var ldTitle = document.getElementById('ld-title');
-    if (ldTitle) { ldTitle.style.display=''; ldTitle.textContent='Analyzing latest episode: ' + resolvedTitle; }
+    if (ldTitle) { ldTitle.style.display=''; ldTitle.textContent='Analyzing latest episode: ' + decodeHTMLEntities(resolvedTitle); }
+    // Update skeleton header with decoded title and show
+    var skelTitleEl = document.querySelector('#results .ar-ep-title');
+    if (skelTitleEl) skelTitleEl.textContent = decodeHTMLEntities(resolvedTitle);
+    var skelShowEl = document.querySelector('#results .ar-ep-show');
+    if (skelShowEl && resolvedShow) skelShowEl.textContent = decodeHTMLEntities(resolvedShow);
+    // Update dock
+    var dockTitleEl = document.getElementById('ar-dock-title');
+    var dockShowEl = document.getElementById('ar-dock-show');
+    if (dockTitleEl) dockTitleEl.textContent = decodeHTMLEntities(resolvedTitle);
+    if (dockShowEl && resolvedShow) dockShowEl.textContent = decodeHTMLEntities(resolvedShow);
+    // Update artwork if returned from feed
+    if (resolvedArtwork) {
+      var skelArt = document.getElementById('ar-skel-art');
+      if (skelArt) skelArt.innerHTML = '<img src="'+resolvedArtwork+'" style="width:56px;height:56px;border-radius:6px;object-fit:cover" onerror="this.style.display=\'none\'">';
+      var mediaSlot = document.getElementById('ar-media-slot');
+      if (mediaSlot && !ytId(audioUrl)) {
+        mediaSlot.innerHTML = '<div class="ar-artwork-wrap"><img src="'+resolvedArtwork+'" alt="" onerror="this.style.display=\'none\'"></div>';
+      }
+    }
+  }
+  // Issue 5: init audio player immediately for RSS/podcast audio URLs
+  // so the episode is playable while analysis runs in the background.
+  if (resolvedUrl && !ytId(resolvedUrl) && /\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(resolvedUrl)) {
+    setTimeout(function() { _arInitNativeAudio(resolvedUrl, {}); }, 50);
+  } else if (resolvedUrl && !ytId(resolvedUrl) && resolveResult && resolveResult.selectedFromFeed) {
+    // Feed enclosure might not have extension — init anyway
+    setTimeout(function() { _arInitNativeAudio(resolvedUrl, {}); }, 50);
   }
   safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:resolvedTitle||undefined,showName:resolvedShow||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free'})})
     .then(function(d){
@@ -5788,8 +5817,8 @@ function _arShowDock(data) {
   var title = document.getElementById('ar-dock-title');
   var show = document.getElementById('ar-dock-show');
   if (art && data.artworkUrl) art.src = data.artworkUrl;
-  if (title) title.textContent = data.episodeTitle || 'Episode';
-  if (show) show.textContent = data.showName || '';
+  if (title) title.textContent = decodeHTMLEntities(data.episodeTitle) || 'Episode';
+  if (show) show.textContent = decodeHTMLEntities(data.showName) || '';
 }
 function _arSetDockStatus(complete) {
   var strip = document.getElementById('ar-progress-strip');
@@ -5854,17 +5883,20 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
   if (stripEl) stripEl.classList.remove('hidden');
   var dockTitle = document.getElementById('ar-dock-title');
   var dockShow = document.getElementById('ar-dock-show');
-  if (dockTitle) dockTitle.textContent = epTitle || 'Episode';
-  if (dockShow) dockShow.textContent = showName || '';
+  if (dockTitle) dockTitle.textContent = decodeHTMLEntities(epTitle) || 'Episode';
+  if (dockShow) dockShow.textContent = decodeHTMLEntities(showName) || '';
   _arSetDockStatus(false);
   _arUpdateProgress(0);
 
+  var _cleanTitle = decodeHTMLEntities(epTitle) || 'Loading episode\u2026';
+  var _cleanShow = decodeHTMLEntities(showName) || '';
+
   // ── EPISODE HEADER ──
   var html = '<div class="ar-ep-header">'
-    + '<div class="ar-ep-art"><div class="ar-skel ar-skel-block" style="width:56px;height:56px;border-radius:6px;margin:0"></div></div>'
+    + '<div class="ar-ep-art" id="ar-skel-art"><div class="ar-skel ar-skel-block" style="width:56px;height:56px;border-radius:6px;margin:0"></div></div>'
     + '<div class="ar-ep-meta">'
-    + '<div class="ar-ep-title">' + (epTitle || 'Loading episode\u2026') + '</div>'
-    + (showName ? '<div class="ar-ep-show">' + showName + '</div>' : '')
+    + '<div class="ar-ep-title">' + _cleanTitle + '</div>'
+    + (_cleanShow ? '<div class="ar-ep-show">' + _cleanShow + '</div>' : '')
     + '</div>'
     + '<div class="ar-ep-actions">'
     + '<button class="ar-act-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button>'
@@ -5941,9 +5973,9 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
     + '<div class="ar-bias-pin" style="left:33%"></div>'
     + '</div></div>'
     + '<div class="ar-bias-pcts">'
-    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-l"></span>&mdash;% left</span>'
-    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-c"></span>&mdash;% center</span>'
-    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-r"></span>&mdash;% right</span>'
+    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-l"></span><span class="ar-skel" style="display:inline-block;width:52px;height:11px;border-radius:3px;vertical-align:middle"></span></span>'
+    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-c"></span><span class="ar-skel" style="display:inline-block;width:60px;height:11px;border-radius:3px;vertical-align:middle"></span></span>'
+    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-r"></span><span class="ar-skel" style="display:inline-block;width:52px;height:11px;border-radius:3px;vertical-align:middle"></span></span>'
     + '</div>'
     + '<div class="ar-bias-footnote">Based on language patterns and framing choices &mdash; not a judgment of the host&rsquo;s personal politics</div>'
     + '</div></div>';
@@ -6029,8 +6061,8 @@ function renderResults(data) {
   header+='<div class="ar-ep-header">';
   header+='<div class="ar-ep-art">'+(data.artworkUrl?'<img src="'+data.artworkUrl+'" onerror="this.style.display=\'none\'">':'\uD83C\uDFA7')+'</div>';
   header+='<div class="ar-ep-meta">';
-  header+='<div class="ar-ep-title">'+(data.episodeTitle||'Episode Analysis')+'</div>';
-  if (data.showName) header+='<div class="ar-ep-show">'+data.showName+(data.duration?' &middot; '+data.duration:'')+'</div>';
+  header+='<div class="ar-ep-title">'+(decodeHTMLEntities(data.episodeTitle)||'Episode Analysis')+'</div>';
+  if (data.showName) header+='<div class="ar-ep-show">'+decodeHTMLEntities(data.showName)+(data.duration?' &middot; '+data.duration:'')+'</div>';
   header+='</div>';
   header+='<div class="ar-ep-actions">';
   header+='<button class="ar-act-btn" onclick="shareAnalysis(\''+data.jobId+'\')">&#8599; Share</button>';
