@@ -5106,7 +5106,24 @@ function startAnalysis(audioUrl, epTitle, showName) {
   btn.disabled=true; btn.textContent='Analyzing\u2026';
 
   var _analyzeUser=plUser()||{};
-  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
+  // Resolve redirect chains (pdst.fm, podtrac, megaphone, Chartable, etc.)
+  // before passing to AssemblyAI — tracking wrappers return HTML not audio.
+  // Skip for YouTube (handled separately) and RSS/feed URLs (server resolves those).
+  var _isYtUrl = /(?:youtube\.com|youtu\.be)/.test(audioUrl);
+  var _isFeedUrl = /rss|feed|\.xml/i.test(audioUrl);
+  var _resolvePromise = (_isYtUrl || _isFeedUrl)
+    ? Promise.resolve(audioUrl)
+    : fetch('/api/resolve-redirect', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({url: audioUrl}),
+        signal: AbortSignal.timeout(9000)
+      }).then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(j){ return (j && j.resolved) ? j.resolved : audioUrl; })
+        .catch(function(){ return audioUrl; });
+
+  _resolvePromise.then(function(resolvedUrl){
+  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
     .then(function(d){
       // Guard: single YouTube video URLs should NEVER show feed lookup/episode picker
       var _isYtVideo = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(audioUrl);
@@ -5146,6 +5163,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
       pollStatus(d.jobId, audioUrl);
     })
     .catch(function(err){ showAnalyzeErr(friendlyError(err,'start-analysis')); resetBtn(); });
+  }); // end _resolvePromise.then
 }
 
 var _lafSteps=[
