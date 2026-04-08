@@ -5082,50 +5082,46 @@ function _showGuestUpsellBanner() {
 function startAnalysis(audioUrl, epTitle, showName) {
   epTitle=epTitle||''; showName=showName||'';
   document.getElementById('ep-picker').classList.remove('on');
-  document.getElementById('results').innerHTML='';
   document.getElementById('empty-state').style.display='none';
-  document.getElementById('atabs').classList.remove('on');
-  document.querySelectorAll('.apanel').forEach(function(p){ p.classList.remove('on'); });
-  document.getElementById('loading').classList.add('on');
-  document.getElementById('laf-steps').innerHTML='';
-  document.getElementById('laf-progress').style.width='0%';
-  document.getElementById('laf-eta').textContent='\u00a0';
-  // Reset meta preview
-  var metaEl=document.getElementById('laf-meta'); if(metaEl){metaEl.style.display='none';metaEl.innerHTML='';}
-  // Start rotating insight cards
-  startInsightCards();
-  // Fetch iTunes metadata immediately for preview
-  // Use original submitted URL (e.g. lexfridman.com/feed/podcast/) not the resolved CDN audio URL
+  // Preserve original URL for display (e.g. feed URL before resolution)
   var _displayUrl = _submittedFeedUrl || audioUrl;
-  _submittedFeedUrl = null; // clear after use
-  fetchLoadingMeta(_displayUrl);
-  document.getElementById('ld-title').textContent='Checking cache\u2026';
-  document.getElementById('ld-msg').textContent='Looking up previous results\u2026';
+  _submittedFeedUrl = null;
+
+  // Show the dashboard immediately — player is usable right away
+  document.getElementById('atabs').classList.add('on');
+  document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
+  document.getElementById('apanel-results').classList.add('on');
+  renderSkeletonDashboard(audioUrl, epTitle, showName);
+
   var btn=document.getElementById('go-btn');
   btn.disabled=true; btn.textContent='Analyzing\u2026';
-  if (_analyzeStages) clearInterval(_analyzeStages);
-  var _stageIdx=0;
-  var _stages=[['Checking cache\u2026','Looking up previous results\u2026'],['Reading captions\u2026','Fetching YouTube auto-captions\u2026'],['Searching podcast directories\u2026','Checking Apple Podcasts and Podcast Index\u2026']];
-  _analyzeStages=setInterval(function(){ _stageIdx=Math.min(_stageIdx+1,_stages.length-1); document.getElementById('ld-title').textContent=_stages[_stageIdx][0]; document.getElementById('ld-msg').textContent=_stages[_stageIdx][1]; },3500);
+
   var _analyzeUser=plUser()||{};
   safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:audioUrl,episodeTitle:epTitle||undefined,showName:showName||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
     .then(function(d){
-      clearInterval(_analyzeStages);
       // Guard: single YouTube video URLs should NEVER show feed lookup/episode picker
       var _isYtVideo = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(audioUrl);
       // ── Fallback: episode picker (Apple/PodcastIndex found a feed) ──
       // Only for channel imports, never for single video URLs
       if (d.status==='needs_episode_selection' && !_isYtVideo) {
-        document.getElementById('loading').classList.remove('on');
-        stopInsightCards(); resetBtn();
+        // Clear skeleton, go back to picker
+        document.getElementById('atabs').classList.remove('on');
+        document.querySelectorAll('.apanel').forEach(function(p){ p.classList.remove('on'); });
+        document.getElementById('results').innerHTML='';
+        var dockEl=document.getElementById('ar-dock'); if(dockEl) dockEl.classList.add('hidden');
+        var stripEl=document.getElementById('ar-progress-strip'); if(stripEl) stripEl.classList.add('hidden');
+        resetBtn();
         showEpisodePickerFromYT(d.feedUrl, d.showName, d.showArtwork, d.channelName||'');
         return;
       }
       // ── Fallback: smart search (nothing found) ──
-      // For YouTube videos, force-continue analysis rather than showing search UI
       if (d.status==='needs_search' && !_isYtVideo) {
-        document.getElementById('loading').classList.remove('on');
-        stopInsightCards(); resetBtn();
+        document.getElementById('atabs').classList.remove('on');
+        document.querySelectorAll('.apanel').forEach(function(p){ p.classList.remove('on'); });
+        document.getElementById('results').innerHTML='';
+        var dockEl2=document.getElementById('ar-dock'); if(dockEl2) dockEl2.classList.add('hidden');
+        var stripEl2=document.getElementById('ar-progress-strip'); if(stripEl2) stripEl2.classList.add('hidden');
+        resetBtn();
         showSmartSearchUI(d.channelName||'');
         return;
       }
@@ -5140,7 +5136,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
       }
       pollStatus(d.jobId, audioUrl);
     })
-    .catch(function(err){ clearInterval(_analyzeStages); showAnalyzeErr(friendlyError(err,'start-analysis')); resetBtn(); });
+    .catch(function(err){ showAnalyzeErr(friendlyError(err,'start-analysis')); resetBtn(); });
 }
 
 var _lafSteps=[
@@ -5184,56 +5180,41 @@ function pollStatus(jobId, audioUrl) {
   _currentJobId = jobId;
   var si=0; var shownPartial=false;
   if (_poll) clearInterval(_poll);
-  lafAddStep(si, false);
   _poll=setInterval(async function(){
     try {
       var _statusPlan = String((plUser()||{}).plan||'free').toLowerCase();
       var d=await safeFetch('/api/status/'+encodeURIComponent(jobId)+'?plan='+encodeURIComponent(_statusPlan));
       if (d.status==='partial'&&!shownPartial) {
-        lafCompleteStep(si);
-        si=Math.min(si+1,5);
-        lafAddStep(si, false);
         shownPartial=true;
-        stopInsightCards();
-        document.getElementById('loading').classList.remove('on');
-        document.getElementById('atabs').classList.add('on');
-        document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
-        document.getElementById('apanel-results').classList.add('on');
+        _arUpdateProgress(50);
         d.url=audioUrl; renderResults(_enrichWithAudioLean(d));
       } else if (d.status==='complete') {
         clearInterval(_poll);
-        if (!shownPartial) {
-          for (var k=0;k<=5;k++) { if (document.getElementById('laf-step-'+k)) lafCompleteStep(k); else lafAddStep(k,true); }
-        }
-        lafAddStep(6, true);
-        var progEl=document.getElementById('laf-progress'); if (progEl) progEl.style.width='100%';
-        document.getElementById('loading').classList.remove('on');
-        document.getElementById('atabs').classList.add('on');
-        document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
-        document.getElementById('apanel-results').classList.add('on');
         resetBtn(); d.url=audioUrl;
-        stopInsightCards();
         _enrichWithAudioLean(d);
         if (!shownPartial) trackAnalysis(d);
         renderResults(d);
         renderTranscriptHighlights(d);
+        _arUpdateProgress(100);
         plToast('\u2705 Analysis complete');
       } else if (d.status==='error') {
         clearInterval(_poll); showAnalyzeErr(friendlyError(d.error||'Analysis failed.','pollStatus')); resetBtn();
       } else {
-        // still pending (transcribing / analyzing) — keep polling, advance step
-        if (d.status==='analyzing') {
-          var ldTitle=document.getElementById('ld-title'); if (ldTitle) ldTitle.textContent='Transcript ready \u2014 analyzing with AI\u2026';
-        }
-        lafCompleteStep(si);
-        si=Math.min(si+1,4);
-        if (!document.getElementById('laf-step-'+si)) lafAddStep(si, false);
+        // still pending (transcribing / analyzing) — advance progress bar
+        si++;
+        _arUpdateProgress(Math.min(45, si * 8));
       }
     } catch(e){ console.error('[pollStatus]', e && e.message); /* keep polling on transient errors */ }
   },4000);
 }
 
 async function startTranscriptionFallback(youtubeUrl, epTitle, showName) {
+  // Clear the skeleton dashboard so loading div can take over
+  document.getElementById('atabs').classList.remove('on');
+  document.querySelectorAll('.apanel').forEach(function(p){ p.classList.remove('on'); });
+  document.getElementById('results').innerHTML='';
+  var _dfDock=document.getElementById('ar-dock'); if(_dfDock) _dfDock.classList.add('hidden');
+  var _dfStrip=document.getElementById('ar-progress-strip'); if(_dfStrip) _dfStrip.classList.add('hidden');
   document.getElementById('ld-title').textContent='Finding podcast feed\u2026';
   document.getElementById('ld-msg').textContent='Checking if this YouTube channel has an RSS feed\u2026';
   document.getElementById('loading').classList.add('on');
@@ -5727,6 +5708,7 @@ function thFilter(btn, dir) {
 // ── RENDER RESULTS (2-col dashboard) ──
 // ── AR: unified media controller state ──
 var _arMedia = { type: null, ytVid: null, audio: null };
+var _arScrubProgId = null; // cleared before re-creating scrubber interval
 
 function arPlayPause() {
   var btn = document.getElementById('ar-play-btn');
@@ -5844,6 +5826,160 @@ function _arInitNativeAudio(audioUrl, data) {
     });
   });
   a.addEventListener('ended', function() { _arSetPlayIcon(false, document.getElementById('ar-play-btn'), document.getElementById('ar-dock-play')); });
+}
+
+function renderSkeletonDashboard(audioUrl, epTitle, showName) {
+  var vid = ytId(audioUrl || '');
+
+  // Show dock + progress strip immediately
+  var dockEl = document.getElementById('ar-dock');
+  var stripEl = document.getElementById('ar-progress-strip');
+  if (dockEl) dockEl.classList.remove('hidden');
+  if (stripEl) stripEl.classList.remove('hidden');
+  var dockTitle = document.getElementById('ar-dock-title');
+  var dockShow = document.getElementById('ar-dock-show');
+  if (dockTitle) dockTitle.textContent = epTitle || 'Episode';
+  if (dockShow) dockShow.textContent = showName || '';
+  _arSetDockStatus(false);
+  _arUpdateProgress(0);
+
+  // ── EPISODE HEADER ──
+  var html = '<div class="ar-ep-header">'
+    + '<div class="ar-ep-art"><div class="ar-skel ar-skel-block" style="width:56px;height:56px;border-radius:6px;margin:0"></div></div>'
+    + '<div class="ar-ep-meta">'
+    + '<div class="ar-ep-title">' + (epTitle || 'Loading episode\u2026') + '</div>'
+    + (showName ? '<div class="ar-ep-show">' + showName + '</div>' : '')
+    + '</div>'
+    + '<div class="ar-ep-actions">'
+    + '<button class="ar-act-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button>'
+    + '</div></div>';
+
+  // ── ETA BANNER ──
+  html += '<div class="ar-eta" id="ar-eta">'
+    + '<div class="ar-eta-left">'
+    + '<div class="ar-eta-text">Analyzing this episode &mdash; usually 2&ndash;5 minutes</div>'
+    + '<div class="ar-eta-sub">Play the episode while you wait &middot; findings appear as they complete</div>'
+    + '</div>'
+    + '<div class="ar-eta-pct" id="ar-eta-pct">Analyzing&hellip;</div>'
+    + '</div>';
+
+  // ── LEFT COLUMN ──
+  var left = '<div class="ar-media-slot" id="ar-media-slot">';
+  if (vid) {
+    _arMedia.type = 'yt'; _arMedia.ytVid = vid;
+    left += '<iframe id="yt-iframe-' + vid + '"'
+      + ' src="https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&enablejsapi=1"'
+      + ' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
+      + ' allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;display:block"></iframe>';
+  } else {
+    left += '<div class="ar-artwork-wrap"><div class="ar-artwork-ph">\uD83C\uDFA7</div></div>';
+  }
+  left += '</div>';
+  left += '<div class="ar-scrubber-row">'
+    + '<span class="ar-time" id="ar-time-cur">0:00</span>'
+    + '<div class="ar-scrubber-track" id="ar-scrubber" onclick="arScrub(event)">'
+    + '<div class="ar-scrubber-fill" id="ar-scrubber-fill" style="position:relative;height:100%;width:0;background:var(--navy);border-radius:3px"></div>'
+    + '</div>'
+    + '<span class="ar-time ar-time-dur" id="ar-time-dur"></span>'
+    + '</div>';
+  left += '<div class="ar-ctrl-row">'
+    + '<button class="ar-ctrl-btn" onclick="arSkip(-30)" title="Back 30 seconds">\u221230</button>'
+    + '<button class="ar-ctrl-btn ar-play-btn" id="ar-play-btn" onclick="arPlayPause()">&#9654;</button>'
+    + '<button class="ar-ctrl-btn" onclick="arSkip(30)" title="Forward 30 seconds">+30</button>'
+    + '<div class="ar-speed-group">'
+    + '<button class="ar-speed-btn on" onclick="arSetSpeed(1,this)">1\xd7</button>'
+    + '<button class="ar-speed-btn" onclick="arSetSpeed(1.25,this)">1.25\xd7</button>'
+    + '<button class="ar-speed-btn" onclick="arSetSpeed(1.5,this)">1.5\xd7</button>'
+    + '<button class="ar-speed-btn" onclick="arSetSpeed(2,this)">2\xd7</button>'
+    + '</div>'
+    + '</div>';
+
+  // ── RIGHT COLUMN — skeleton cards + early-signal bias bar ──
+  var right = '';
+
+  // Guest / Host — skeleton
+  right += '<div class="ar-card"><div class="ar-card-hd">Guest &middot; Host</div>'
+    + '<div class="ar-card-body">'
+    + '<div class="ar-skel ar-skel-ln" style="width:55%;margin-bottom:8px"></div>'
+    + '<div class="ar-skel ar-skel-ln" style="width:35%"></div>'
+    + '</div></div>';
+
+  // Audio briefing — skeleton
+  right += '<div class="ar-card"><div class="ar-card-hd">Audio briefing &middot; Before you listen</div>'
+    + '<div class="ar-card-body">'
+    + '<div class="ar-skel ar-skel-ln" style="width:80%;margin-bottom:8px"></div>'
+    + '<div class="ar-skel ar-skel-ln" style="width:50%"></div>'
+    + '</div></div>';
+
+  // Political lean — early signal state (neutral/equal)
+  right += '<div class="ar-card">'
+    + '<div class="ar-card-hd">Political lean &mdash; how this episode frames issues '
+    + '<span class="ar-lean-badge ar-lean-analyzing"><span class="ar-pulse-dot">&#9679;</span> Early signal</span></div>'
+    + '<div class="ar-card-body">'
+    + '<div class="ar-lean-note">Calculating based on transcript &mdash; updating as analysis continues</div>'
+    + '<div class="ar-bias-bar-outer">'
+    + '<div class="ar-bias-bar">'
+    + '<div class="ar-bias-l" style="width:33%"></div>'
+    + '<div class="ar-bias-c" style="width:34%"></div>'
+    + '<div class="ar-bias-r" style="width:33%"></div>'
+    + '<div class="ar-bias-pin" style="left:33%"></div>'
+    + '</div></div>'
+    + '<div class="ar-bias-pcts">'
+    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-l"></span>&mdash;% left</span>'
+    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-c"></span>&mdash;% center</span>'
+    + '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-r"></span>&mdash;% right</span>'
+    + '</div>'
+    + '<div class="ar-bias-footnote">Based on language patterns and framing choices &mdash; not a judgment of the host&rsquo;s personal politics</div>'
+    + '</div></div>';
+
+  html += '<div class="ar-top-grid"><div>' + left + '</div><div>' + right + '</div></div>';
+
+  // ── METRICS ROW — skeleton ──
+  html += '<div class="ar-metrics-row">'
+    + '<div class="ar-metric-card"><div class="ar-metric-lbl">Host trust</div>'
+    + '<div class="ar-skel ar-skel-block" style="height:32px;border-radius:4px;margin-top:8px"></div></div>'
+    + '<div class="ar-metric-card"><div class="ar-metric-lbl">Source quality</div>'
+    + '<div class="ar-skel ar-skel-block" style="height:32px;border-radius:4px;margin-top:8px"></div></div>'
+    + '<div class="ar-metric-card"><div class="ar-metric-lbl">Guest balance</div>'
+    + '<div class="ar-skel ar-skel-block" style="height:32px;border-radius:4px;margin-top:8px"></div></div>'
+    + '</div>';
+
+  // ── FINDINGS — skeleton ──
+  html += '<div class="ar-section"><div class="ar-section-hd">Worth knowing before you listen</div>'
+    + '<div class="ar-partial-note"><div class="feed-spin" style="width:16px;height:16px;border-width:2px;margin:0"></div>Identifying key moments&hellip;</div>'
+    + '<div style="padding:8px 16px 12px">'
+    + '<div class="ar-skel ar-skel-ln" style="width:70%;margin-bottom:8px"></div>'
+    + '<div class="ar-skel ar-skel-block"></div>'
+    + '</div></div>';
+
+  // Dock spacer
+  html += '<div class="ar-dock-spacer"></div>';
+
+  document.getElementById('results').innerHTML = html;
+
+  // Post-render: init YouTube player
+  if (vid) {
+    if (_arScrubProgId) { clearInterval(_arScrubProgId); _arScrubProgId = null; }
+    _arMedia.type = 'yt'; _arMedia.ytVid = vid;
+    setTimeout(function() {
+      initYouTubePlayer(vid, {});
+      _arScrubProgId = setInterval(function() {
+        var p = _ytPlayers[vid];
+        if (!p) return;
+        var fill = document.getElementById('ar-scrubber-fill');
+        var cur = document.getElementById('ar-time-cur');
+        var dur = document.getElementById('ar-time-dur');
+        function fmt(s) { if (!isFinite(s)||!s) return '0:00'; var m=Math.floor(s/60),sc=Math.floor(s%60); return m+':'+(sc<10?'0':'')+sc; }
+        try {
+          var ct = p.getCurrentTime(); var dt = p.getDuration();
+          if (fill && dt) fill.style.width = (ct/dt*100).toFixed(2)+'%';
+          if (cur) cur.textContent = fmt(ct);
+          if (dur && dt) dur.textContent = fmt(dt);
+        } catch(e) {}
+        if (!document.getElementById('ar-scrubber-fill')) { clearInterval(_arScrubProgId); _arScrubProgId = null; }
+      }, 500);
+    }, 200);
+  }
 }
 
 function renderResults(data) {
@@ -6243,11 +6379,12 @@ function renderResults(data) {
 
   // ── POST-RENDER: init players + platform buttons ──
   if (vid) {
+    if (_arScrubProgId) { clearInterval(_arScrubProgId); _arScrubProgId = null; }
     _arMedia.type = 'yt'; _arMedia.ytVid = vid;
     setTimeout(function() {
       initYouTubePlayer(vid, data);
       // Hook YT progress to ar-scrubber
-      var progId = setInterval(function() {
+      _arScrubProgId = setInterval(function() {
         var p = _ytPlayers[vid];
         if (!p) return;
         var fill = document.getElementById('ar-scrubber-fill');
@@ -6260,7 +6397,7 @@ function renderResults(data) {
           if (cur) cur.textContent = fmt(ct);
           if (dur && dt) dur.textContent = fmt(dt);
         } catch(e) {}
-        if (!document.getElementById('ar-scrubber-fill')) clearInterval(progId);
+        if (!document.getElementById('ar-scrubber-fill')) { clearInterval(_arScrubProgId); _arScrubProgId = null; }
       }, 500);
     }, 200);
   }
