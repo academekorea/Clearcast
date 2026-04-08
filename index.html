@@ -1800,6 +1800,237 @@ body.light-mode,[data-theme="light"]{
 .nav-btn-signin:hover{opacity:.85!important}
 .nav-theme-toggle{background:none!important;border:none!important;cursor:pointer!important;font-size:16px!important;padding:6px!important;border-radius:8px!important;margin:0 4px!important;line-height:1!important}
 @media(max-width:640px){.nav-link{display:none!important}.nav-bar{padding:0 16px!important}.nav-search-wrap{display:none!important}}
+
+/* ── ANALYSIS RESULTS REDESIGN ── */
+/* Top grid */
+.ar-wrap{max-width:1400px;margin:0 auto}
+.ar-top-grid{display:grid;grid-template-columns:58fr 42fr;gap:24px;align-items:start;margin-bottom:24px}
+@media(max-width:900px){.ar-top-grid{grid-template-columns:1fr}}
+
+/* Episode header */
+.ar-ep-header{display:flex;align-items:center;gap:12px;padding:16px 0 18px;border-bottom:0.5px solid var(--border);margin-bottom:24px}
+.ar-ep-art{width:44px;height:44px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden}
+.ar-ep-art img{width:100%;height:100%;object-fit:cover}
+.ar-ep-meta{flex:1;min-width:0}
+.ar-ep-title{font-family:var(--ffs);font-size:17px;font-weight:600;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ar-ep-show{font-size:12px;color:var(--text3);margin-top:2px}
+.ar-ep-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.ar-act-btn{padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;font-family:var(--ff);transition:all .1s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center}
+.ar-act-btn:hover{border-color:var(--text);color:var(--text)}
+
+/* Left column: media + controls */
+.ar-media-slot{border-radius:var(--r);overflow:hidden;background:#000;margin-bottom:0}
+.ar-media-slot iframe{width:100%;aspect-ratio:16/9;border:none;display:block}
+.ar-artwork-wrap{aspect-ratio:1/1;max-height:340px;overflow:hidden;border-radius:var(--r);background:var(--bg3);display:flex;align-items:center;justify-content:center}
+.ar-artwork-wrap img{width:100%;height:100%;object-fit:cover}
+.ar-artwork-ph{font-size:64px;color:var(--text3)}
+.ar-scrubber-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.ar-scrubber-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;position:relative;cursor:pointer;border:0.5px solid var(--border)}
+.ar-scrubber-fill{height:100%;background:var(--navy);border-radius:3px;width:0;pointer-events:none}
+.ar-time{font-size:11px;color:var(--text3);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:36px}
+.ar-time-dur{text-align:right}
+.ar-ctrl-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+.ar-ctrl-btn{width:36px;height:36px;border-radius:50%;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:var(--ff);flex-shrink:0;transition:all .1s;line-height:1}
+.ar-ctrl-btn:hover{border-color:var(--text);color:var(--text)}
+.ar-play-btn{background:var(--navy)!important;color:#fff!important;border-color:var(--navy)!important;width:44px!important;height:44px!important;font-size:16px!important}
+.ar-play-btn:hover{opacity:.85}
+.ar-speed-group{display:flex;gap:3px;margin-left:auto}
+.ar-speed-btn{padding:3px 8px;border:0.5px solid var(--border2);border-radius:10px;background:transparent;color:var(--text2);cursor:pointer;font-size:11px;font-family:var(--ff);transition:all .1s}
+.ar-speed-btn.on,.ar-speed-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* Right column cards */
+.ar-card{border:0.5px solid var(--border);border-radius:var(--r);background:var(--bg2);margin-bottom:12px;overflow:hidden}
+.ar-card-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ar-card-body{padding:14px}
+
+/* Guest/host card */
+.ar-guest-row{display:flex;gap:12px;align-items:flex-start}
+.ar-guest-avatar{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.ar-guest-info{flex:1;min-width:0}
+.ar-guest-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.ar-guest-role{font-size:12px;color:var(--text3);margin-bottom:8px}
+.ar-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.ar-chip{padding:2px 8px;border:0.5px solid var(--border2);border-radius:10px;font-size:10px;font-weight:600;color:var(--text2);background:var(--bg3)}
+.ar-chip-green{border-color:rgba(16,185,129,.3);color:#059669;background:rgba(16,185,129,.06)}
+.ar-chip-amber{border-color:rgba(180,83,9,.3);color:var(--amber);background:var(--amber-bg)}
+.ar-chip-red{border-color:rgba(226,75,74,.3);color:var(--left);background:var(--left-bg)}
+.ar-guest-links{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ar-social-link{font-size:11px;color:var(--text3);text-decoration:none;padding:3px 8px;border:0.5px solid var(--border);border-radius:var(--r);transition:all .1s;white-space:nowrap}
+.ar-social-link:hover{border-color:var(--text2);color:var(--text)}
+.ar-pl-link{border-color:var(--navy);color:var(--navy);font-weight:600}
+.ar-pl-link:hover{background:var(--navy);color:#fff}
+
+/* Audio briefing card */
+.ar-brief-ctrl{display:flex;align-items:center;gap:10px;margin-top:10px}
+.ar-brief-play{width:36px;height:36px;border-radius:50%;background:var(--navy);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:opacity .15s}
+.ar-brief-play:hover{opacity:.85}
+.ar-brief-dur{font-size:12px;color:var(--text3)}
+.ar-brief-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-top:6px}
+.ar-brief-preview-note{font-size:11px;color:var(--text3);margin-top:6px;font-style:italic}
+
+/* Bias bar card */
+.ar-lean-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.03em}
+.ar-lean-analyzing{background:var(--amber-bg);color:var(--amber);border:0.5px solid rgba(180,83,9,.25)}
+.ar-lean-complete{background:rgba(16,185,129,.08);color:#059669;border:0.5px solid rgba(16,185,129,.25)}
+.ar-lean-note{font-size:11px;color:var(--text3);margin-bottom:10px;font-style:italic}
+/* Solid 3-block bias bar */
+.ar-bias-bar-outer{position:relative;margin-bottom:8px}
+.ar-bias-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;position:relative}
+.ar-bias-l{background:var(--left);height:100%}
+.ar-bias-c{background:#D1CFC9;height:100%}
+.ar-bias-r{background:var(--right);height:100%}
+.ar-bias-pin{position:absolute;top:-3px;width:3px;height:20px;background:#fff;border-radius:2px;box-shadow:0 0 0 1.5px rgba(0,0,0,.25);transform:translateX(-50%);pointer-events:none}
+.ar-bias-pcts{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.ar-pct-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.ar-pct-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ar-pct-dot-l{background:var(--left)}
+.ar-pct-dot-c{background:#D1CFC9;border:0.5px solid var(--border2)}
+.ar-pct-dot-r{background:var(--right)}
+.ar-bias-verdict{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.ar-bias-footnote{font-size:10px;color:var(--text3);font-style:italic}
+
+/* ETA banner */
+.ar-eta{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;background:var(--amber-bg);border:0.5px solid rgba(180,83,9,.2);border-radius:var(--r);margin-bottom:20px}
+.ar-eta-left{flex:1;min-width:0}
+.ar-eta-text{font-size:13px;font-weight:600;color:var(--amber);margin-bottom:2px}
+.ar-eta-sub{font-size:11px;color:var(--amber);opacity:.75}
+.ar-eta-pct{font-size:13px;font-weight:700;color:var(--amber);white-space:nowrap;flex-shrink:0}
+@keyframes ar-pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
+.ar-pulse-dot{animation:ar-pulse-dot 1.2s ease-in-out infinite;display:inline-block;margin-right:3px}
+
+/* Quick metrics row */
+.ar-metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.ar-metric-card{padding:16px;text-align:center;border-right:0.5px solid var(--border);background:var(--bg2)}
+.ar-metric-card:last-child{border-right:none}
+.ar-metric-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px}
+.ar-metric-val{font-family:var(--ffs);font-size:26px;font-weight:700;line-height:1;margin-bottom:4px}
+.ar-metric-sub{font-size:11px;font-weight:600}
+.ar-metric-high{color:#059669}
+.ar-metric-mod{color:var(--amber)}
+.ar-metric-low{color:var(--left)}
+
+/* Findings / sections */
+.ar-section{border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:20px;background:var(--bg2)}
+.ar-section-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);padding:10px 16px;background:var(--bg3);border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:6px}
+.ar-hint{font-weight:400;font-style:italic;text-transform:none;letter-spacing:0;color:var(--text3);opacity:.75}
+/* Accordion finding row */
+.ar-finding{border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .1s}
+.ar-finding:last-child{border-bottom:none}
+.ar-finding:hover{background:var(--bg3)}
+.ar-finding-header{display:flex;align-items:center;gap:10px;padding:11px 16px}
+.ar-finding-title{flex:1;font-size:13px;font-weight:500;color:var(--text)}
+.ar-chevron{width:16px;height:16px;color:var(--text3);flex-shrink:0;transition:transform .2s;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1}
+.ar-finding.open .ar-chevron{transform:rotate(90deg)}
+.ar-finding-body{display:none;padding:0 16px 14px;border-top:0.5px solid var(--border);background:var(--bg)}
+.ar-finding.open .ar-finding-body{display:block}
+.ar-finding-summary{font-size:13px;color:var(--text2);line-height:1.6;margin:10px 0}
+.ar-evidence{background:var(--bg3);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;border-left:3px solid var(--border2)}
+.ar-evidence.ev-sponsor{border-left-color:var(--amber)}
+.ar-evidence.ev-fact{border-left-color:var(--left)}
+.ar-evidence.ev-framing{border-left-color:var(--right)}
+.ar-evidence.ev-omission{border-left-color:var(--purple,#5B21B6)}
+.ar-ev-ts{font-size:10px;color:var(--text3);font-weight:700;margin-bottom:4px}
+.ar-ev-quote{font-size:12px;color:var(--text);font-style:italic;line-height:1.55;margin-bottom:6px;border:none;padding:0}
+.ar-ev-note{font-size:11px;color:var(--text2);line-height:1.4}
+.ar-impacts{margin:0 0 10px 0;padding-left:16px}
+.ar-impacts li{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:3px}
+.ar-balanced{background:rgba(16,185,129,.07);border:0.5px solid rgba(16,185,129,.2);border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.5}
+.ar-balanced-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#059669;margin-bottom:4px}
+
+/* Tags */
+.ar-ftag{padding:2px 7px;border-radius:var(--r);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;white-space:nowrap}
+.ar-ft-sponsor{background:var(--amber-bg);color:var(--amber);border:0.5px solid rgba(180,83,9,.2)}
+.ar-ft-fact{background:var(--left-bg);color:var(--left);border:0.5px solid rgba(226,75,74,.2)}
+.ar-ft-framing{background:var(--right-bg);color:var(--right);border:0.5px solid rgba(55,138,221,.2)}
+.ar-ft-omission{background:var(--purple-bg,#F5F3FF);color:var(--purple,#5B21B6);border:0.5px solid var(--purple-border,#DDD6FE)}
+.ar-ft-context{background:var(--center-bg,#F5F5F5);color:var(--text2);border:0.5px solid var(--border2)}
+
+/* Bias dot in findings */
+.ar-lean-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;margin-right:3px;vertical-align:middle}
+.ar-lean-dot-l{background:var(--left)}
+.ar-lean-dot-r{background:var(--right)}
+.ar-lean-dot-c{background:#9E9E9E}
+
+/* Deep analysis report bar */
+.ar-report-bar{border:0.5px solid var(--border);border-radius:var(--r);background:var(--bg2);padding:16px;margin-bottom:20px}
+.ar-report-bar-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ar-report-title{font-size:13px;font-weight:700;flex-shrink:0}
+.ar-report-desc{font-size:12px;color:var(--text2);flex:1;min-width:0}
+.ar-report-btn{padding:7px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--ff);white-space:nowrap;transition:opacity .15s;text-decoration:none;display:inline-block}
+.ar-report-btn:hover{opacity:.85}
+.ar-report-locked{opacity:.45;cursor:not-allowed}
+
+/* Platform buttons (new context) */
+.ar-platforms{margin-bottom:20px}
+.ar-plat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:8px}
+.ar-plat-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Analysis progress strip (above dock) */
+.ar-progress-strip{position:fixed;bottom:64px;left:0;right:0;background:var(--bg2);border-top:0.5px solid var(--border);padding:6px 24px;display:flex;align-items:center;gap:12px;z-index:149;font-size:11px;color:var(--text3)}
+.ar-progress-strip.hidden{display:none}
+.ar-prog-label{white-space:nowrap;font-weight:600;color:var(--amber)}
+.ar-prog-track{flex:1;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.ar-prog-fill{height:100%;background:var(--amber);border-radius:2px;width:0;transition:width .6s ease}
+.ar-prog-pct{white-space:nowrap;font-weight:600;min-width:80px;text-align:right}
+
+/* Bottom dock */
+.ar-dock{position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--bg2);border-top:0.5px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 20px;z-index:150;box-shadow:0 -2px 12px rgba(0,0,0,.08)}
+.ar-dock.hidden{display:none}
+.ar-dock-art{width:36px;height:36px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.ar-dock-meta{flex:1;min-width:0}
+.ar-dock-title{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ar-dock-show{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ar-dock-ctrl{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ar-dock-btn{width:30px;height:30px;border-radius:50%;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--ff);transition:all .1s}
+.ar-dock-btn:hover{border-color:var(--text);color:var(--text)}
+.ar-dock-play-btn{background:var(--navy)!important;border-color:var(--navy)!important;color:#fff!important;width:36px!important;height:36px!important;font-size:14px!important}
+.ar-dock-status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;flex-shrink:0;white-space:nowrap}
+.ar-dock-status.analyzing{color:var(--amber)}
+.ar-dock-status.complete{color:#059669}
+
+/* Partial loading skeleton */
+.ar-partial-note{padding:12px 16px;font-size:12px;color:var(--text3);display:flex;align-items:center;gap:8px;border-top:0.5px solid var(--border)}
+.ar-skel{background:var(--bg3);border-radius:var(--r);animation:pulse 1.5s ease-in-out infinite}
+.ar-skel-ln{height:10px;margin-bottom:6px}
+.ar-skel-block{height:48px}
+
+/* Topic bars in full-width section */
+.ar-topic-bars{display:flex;flex-direction:column;gap:6px;padding:14px 16px}
+.ar-topic-row{display:flex;align-items:center;gap:8px}
+.ar-topic-lbl{font-size:12px;color:var(--text2);flex:1;min-width:0;word-break:break-word;line-height:1.35;padding-right:6px}
+.ar-topic-track{flex:2;height:7px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.ar-topic-fill{height:100%;border-radius:3px;background:var(--navy)}
+.ar-topic-pct{font-size:11px;color:var(--text3);width:32px;text-align:right;flex-shrink:0}
+
+/* Missing voices */
+.ar-mv-list{padding:4px 0}
+.ar-mv-item{display:flex;gap:10px;align-items:flex-start;padding:8px 16px;border-bottom:0.5px solid var(--border)}
+.ar-mv-item:last-child{border-bottom:none}
+.ar-mv-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px}
+.ar-mv-text{font-size:13px;color:var(--text2)}
+
+/* Transcript section */
+.ar-transcript-body{padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7}
+
+/* Citation list */
+.ar-cite-list{padding:4px 0}
+.ar-cite-item{padding:10px 16px;border-bottom:0.5px solid var(--border);display:flex;flex-direction:column;gap:4px}
+.ar-cite-item:last-child{border-bottom:none}
+.ar-cite-ts{font-size:10px;color:var(--text3);font-weight:700}
+.ar-cite-quote{font-size:12px;font-style:italic;color:var(--text);line-height:1.55}
+.ar-cite-exp{font-size:11px;color:var(--text2);line-height:1.4}
+
+/* Share section */
+.ar-share-section{margin-top:0;padding:14px 16px;border-top:0.5px solid var(--border);background:var(--bg3)}
+.ar-share-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:10px}
+.ar-share-btns{display:flex;gap:6px;flex-wrap:wrap}
+.ar-share-btn{padding:6px 13px;border:0.5px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:11px;font-family:var(--ff);transition:all .1s;white-space:nowrap}
+.ar-share-btn:hover{border-color:var(--text);color:var(--text)}
+.ar-share-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ar-share-btn.primary:hover{opacity:.85}
+
+/* Padding below dock when visible */
+.ar-dock-spacer{height:100px}
 </style>
 <!-- Hotjar / ContentSquare -->
 <script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
@@ -2687,6 +2918,28 @@ body.light-mode,[data-theme="light"]{
     </div>
     <div class="apanel" id="apanel-transcript">
       <div id="transcript-content"></div>
+    </div>
+  </div>
+  <!-- Analysis progress strip — shown while analyzing, fixed above dock -->
+  <div class="ar-progress-strip hidden" id="ar-progress-strip">
+    <span class="ar-prog-label">Analysis progress</span>
+    <div class="ar-prog-track"><div class="ar-prog-fill" id="ar-prog-fill"></div></div>
+    <span class="ar-prog-pct" id="ar-prog-pct">0% complete</span>
+  </div>
+  <!-- Bottom dock — visible once analysis starts -->
+  <div class="ar-dock hidden" id="ar-dock">
+    <img class="ar-dock-art" id="ar-dock-art" src="" alt="">
+    <div class="ar-dock-meta">
+      <div class="ar-dock-title" id="ar-dock-title">Loading…</div>
+      <div class="ar-dock-show" id="ar-dock-show"></div>
+    </div>
+    <div class="ar-dock-ctrl">
+      <button class="ar-dock-btn" onclick="arSkip(-30)" title="Back 30s">−30</button>
+      <button class="ar-dock-btn ar-dock-play-btn" id="ar-dock-play" onclick="arPlayPause()" title="Play / Pause">▶</button>
+      <button class="ar-dock-btn" onclick="arSkip(30)" title="Forward 30s">+30</button>
+    </div>
+    <div class="ar-dock-status analyzing" id="ar-dock-status">
+      <span class="ar-pulse-dot">●</span> Analyzing
     </div>
   </div>
 </div><!-- /view-analyze -->
@@ -5472,6 +5725,127 @@ function thFilter(btn, dir) {
 }
 
 // ── RENDER RESULTS (2-col dashboard) ──
+// ── AR: unified media controller state ──
+var _arMedia = { type: null, ytVid: null, audio: null };
+
+function arPlayPause() {
+  var btn = document.getElementById('ar-play-btn');
+  var dockBtn = document.getElementById('ar-dock-play');
+  if (_arMedia.type === 'yt') {
+    var p = _arMedia.ytVid && _ytPlayers[_arMedia.ytVid];
+    if (!p) return;
+    try {
+      if (p.getPlayerState && p.getPlayerState() === 1) { p.pauseVideo(); _arSetPlayIcon(false, btn, dockBtn); }
+      else { p.playVideo(); _arSetPlayIcon(true, btn, dockBtn); }
+    } catch(e) {}
+  } else if (_arMedia.type === 'audio' && _arMedia.audio) {
+    var a = _arMedia.audio;
+    if (a.paused) { a.play(); _arSetPlayIcon(true, btn, dockBtn); }
+    else { a.pause(); _arSetPlayIcon(false, btn, dockBtn); }
+  }
+}
+function _arSetPlayIcon(playing, btn, dockBtn) {
+  var icon = playing ? '⏸' : '▶';
+  if (btn) btn.textContent = icon;
+  if (dockBtn) dockBtn.textContent = icon;
+}
+function arSkip(secs) {
+  if (_arMedia.type === 'yt') {
+    var p = _arMedia.ytVid && _ytPlayers[_arMedia.ytVid];
+    if (!p) return;
+    try { p.seekTo(Math.max(0, p.getCurrentTime() + secs), true); } catch(e) {}
+  } else if (_arMedia.type === 'audio' && _arMedia.audio) {
+    _arMedia.audio.currentTime = Math.max(0, (_arMedia.audio.currentTime || 0) + secs);
+  }
+}
+function arSetSpeed(rate, btn) {
+  if (_arMedia.type === 'yt') {
+    var p = _arMedia.ytVid && _ytPlayers[_arMedia.ytVid];
+    if (p) try { p.setPlaybackRate(rate); } catch(e) {}
+  } else if (_arMedia.type === 'audio' && _arMedia.audio) {
+    _arMedia.audio.playbackRate = rate;
+  }
+  document.querySelectorAll('.ar-speed-btn').forEach(function(b) { b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+}
+function arScrub(e) {
+  var track = document.getElementById('ar-scrubber');
+  if (!track) return;
+  var pct = (e.clientX - track.getBoundingClientRect().left) / track.offsetWidth;
+  if (_arMedia.type === 'yt') {
+    var p = _arMedia.ytVid && _ytPlayers[_arMedia.ytVid];
+    if (p) try { p.seekTo(p.getDuration() * pct, true); } catch(e2) {}
+  } else if (_arMedia.type === 'audio' && _arMedia.audio) {
+    if (_arMedia.audio.duration) _arMedia.audio.currentTime = _arMedia.audio.duration * pct;
+  }
+}
+function arToggleFinding(el) {
+  el.classList.toggle('open');
+}
+function _arShowDock(data) {
+  var dock = document.getElementById('ar-dock');
+  if (!dock) return;
+  dock.classList.remove('hidden');
+  var art = document.getElementById('ar-dock-art');
+  var title = document.getElementById('ar-dock-title');
+  var show = document.getElementById('ar-dock-show');
+  if (art && data.artworkUrl) art.src = data.artworkUrl;
+  if (title) title.textContent = data.episodeTitle || 'Episode';
+  if (show) show.textContent = data.showName || '';
+}
+function _arSetDockStatus(complete) {
+  var strip = document.getElementById('ar-progress-strip');
+  var statusEl = document.getElementById('ar-dock-status');
+  if (complete) {
+    if (strip) strip.classList.add('hidden');
+    if (statusEl) { statusEl.className = 'ar-dock-status complete'; statusEl.textContent = '✓ Analysis complete'; }
+  } else {
+    if (strip) strip.classList.remove('hidden');
+    if (statusEl) { statusEl.className = 'ar-dock-status analyzing'; statusEl.innerHTML = '<span class="ar-pulse-dot">●</span> Analyzing'; }
+  }
+}
+function _arUpdateProgress(pct) {
+  var fill = document.getElementById('ar-prog-fill');
+  var pctEl = document.getElementById('ar-prog-pct');
+  var etaPct = document.getElementById('ar-eta-pct');
+  if (fill) fill.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = Math.round(pct) + '% complete';
+  if (etaPct) etaPct.textContent = Math.round(pct) + '% complete';
+}
+function _arInitNativeAudio(audioUrl, data) {
+  if (_arMedia.audio) { _arMedia.audio.pause(); _arMedia.audio = null; }
+  var a = new Audio(audioUrl);
+  a.preload = 'metadata';
+  _arMedia.type = 'audio';
+  _arMedia.audio = a;
+  function fmt(s) { if (!isFinite(s)) return '0:00'; var m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; }
+  a.addEventListener('timeupdate', function() {
+    var fill = document.getElementById('ar-scrubber-fill');
+    var cur = document.getElementById('ar-time-cur');
+    if (fill && a.duration) fill.style.width = (a.currentTime / a.duration * 100) + '%';
+    if (cur) cur.textContent = fmt(a.currentTime);
+  });
+  a.addEventListener('loadedmetadata', function() {
+    var dur = document.getElementById('ar-time-dur');
+    if (dur) dur.textContent = fmt(a.duration);
+    var track = document.getElementById('ar-scrubber');
+    if (!track || !a.duration) return;
+    var lean = data.audioLean || {};
+    (lean.citations || []).forEach(function(c) {
+      if (!c.timestamp) return;
+      var secs = tsToSeconds(c.timestamp);
+      if (!secs || secs > a.duration) return;
+      var d = document.createElement('div');
+      d.className = 'ep-adot ep-adot-' + (lean.rightPct > lean.leftPct ? 'right' : 'left');
+      d.style.cssText = 'position:absolute;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;border:1.5px solid var(--bg2);z-index:2;cursor:pointer;left:' + (secs/a.duration*100).toFixed(2) + '%';
+      d.style.background = lean.rightPct > lean.leftPct ? 'var(--right)' : 'var(--left)';
+      d.addEventListener('click', function(e) { e.stopPropagation(); a.currentTime = secs; });
+      track.appendChild(d);
+    });
+  });
+  a.addEventListener('ended', function() { _arSetPlayIcon(false, document.getElementById('ar-play-btn'), document.getElementById('ar-dock-play')); });
+}
+
 function renderResults(data) {
   if (data.jobId) _currentJobId = data.jobId;
   window._lastAnalysisResult = data; // used by share system
@@ -5480,280 +5854,419 @@ function renderResults(data) {
   var canPlay=plan==='creator'||plan==='operator'||plan==='studio'||plan==='trial';
   var isPartial=data.status==='partial';
 
-  // ── HEADER BAR ──
-  var header='<div class="res-header">';
-  header+='<div class="res-header-art">';
-  if (data.artworkUrl) header+='<img src="'+data.artworkUrl+'" style="width:48px;height:48px;border-radius:50%;object-fit:cover" onerror="this.style.display=\'none\'">';
-  else header+='\uD83C\uDFA7';
+  // Show / update dock
+  _arShowDock(data);
+  _arSetDockStatus(!isPartial);
+
+  // ── EPISODE HEADER ──
+  var header='<div class="ar-ep-header">';
+  header+='<div class="ar-ep-art">'+(data.artworkUrl?'<img src="'+data.artworkUrl+'" onerror="this.style.display=\'none\'">':'\uD83C\uDFA7')+'</div>';
+  header+='<div class="ar-ep-meta">';
+  header+='<div class="ar-ep-title">'+(data.episodeTitle||'Episode Analysis')+'</div>';
+  if (data.showName) header+='<div class="ar-ep-show">'+data.showName+(data.duration?' &middot; '+data.duration:'')+'</div>';
   header+='</div>';
-  header+='<div class="res-header-ep">';
-  header+='<div class="res-header-title">'+(data.episodeTitle||'Episode Analysis')+'</div>';
-  if (data.showName) header+='<div class="res-header-show">'+data.showName+(data.duration?' &middot; '+data.duration:'')+'</div>';
-  header+='</div>';
-  if (data.biasLabel) header+='<div class="res-header-center"><span class="bpill '+bpClass(data.biasLabel||'Center')+'" style="font-size:12px;padding:4px 12px"><span class="dot"></span>'+data.biasLabel+'</span></div>';
-  header+='<div class="res-header-right">';
-  if (vid) header+='<a class="res-plat-btn" href="https://youtube.com/watch?v='+vid+'" target="_blank" rel="noopener">&#9654; YouTube</a>';
-  header+='<button class="res-act-btn" onclick="shareAnalysis(\''+data.jobId+'\')">&#8599; Share</button>';
-  header+='<button class="res-act-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button>';
+  header+='<div class="ar-ep-actions">';
+  header+='<button class="ar-act-btn" onclick="shareAnalysis(\''+data.jobId+'\')">&#8599; Share</button>';
+  header+='<button class="ar-act-btn" onclick="document.getElementById(\'url-input\').value=\'\';document.getElementById(\'ep-picker\').classList.remove(\'on\')">Analyze another</button>';
   header+='</div></div>';
 
-  // ── LEFT COLUMN ──
-  var left='';
+  // ── HELPERS ──
+  function _arEtaText(dur) {
+    // dur is "H:MM:SS" or "M:SS" string
+    if (!dur) return null;
+    var parts = dur.split(':').map(Number);
+    var totalMin = parts.length === 3 ? parts[0]*60+parts[1] : parts[0];
+    if (totalMin < 30) return '~2 minutes';
+    if (totalMin < 60) return '~3–4 minutes';
+    if (totalMin < 120) return '~5–6 minutes';
+    return '~7–9 minutes';
+  }
+  function _arFtTagClass(t) {
+    return {framing:'ar-ft-framing','fact-check':'ar-ft-fact',omission:'ar-ft-omission','sponsor-note':'ar-ft-sponsor',sponsor:'ar-ft-sponsor',context:'ar-ft-context'}[t]||'ar-ft-context';
+  }
+  function _arFtLabel(t) {
+    return {framing:'Framing','fact-check':'Fact Check',omission:'Omission','sponsor-note':'Sponsor',sponsor:'Sponsor',context:'Context'}[t]||t;
+  }
+  function _arFindingHtml(f, idx) {
+    var cit = (f.citations || [])[0];
+    var evClass = {framing:'ev-framing','fact-check':'ev-fact',omission:'ev-omission','sponsor-note':'ev-sponsor',sponsor:'ev-sponsor',context:''}[f.type]||'';
+    var body = '<div class="ar-finding-body">';
+    body += '<p class="ar-finding-summary">'+(f.detail||f.summary||'')+'</p>';
+    if (cit) {
+      body += '<div class="ar-evidence '+evClass+'">';
+      if (cit.timestamp) body += '<div class="ar-ev-ts">'+cit.timestamp+'</div>';
+      if (cit.quote) body += '<blockquote class="ar-ev-quote">\u201c'+cit.quote+'\u201d</blockquote>';
+      if (cit.explanation) body += '<div class="ar-ev-note">'+cit.explanation+'</div>';
+      body += '</div>';
+    }
+    if (f.impacts && f.impacts.length) {
+      body += '<ul class="ar-impacts">';
+      f.impacts.forEach(function(imp){ body += '<li>'+imp+'</li>'; });
+      body += '</ul>';
+    } else if (f.whyItMatters && f.whyItMatters.length) {
+      body += '<ul class="ar-impacts">';
+      f.whyItMatters.forEach(function(w){ body += '<li>'+w+'</li>'; });
+      body += '</ul>';
+    }
+    if (f.balanced || f.whatBalancedLooksLike) {
+      var bText = f.balanced || f.whatBalancedLooksLike;
+      body += '<div class="ar-balanced"><div class="ar-balanced-lbl">What balanced looks like</div>'+bText+'</div>';
+    }
+    if (canSeeCitations() && (f.citations||[]).length > 1) {
+      body += '<div style="margin-top:8px">';
+      f.citations.slice(1).forEach(function(c){
+        body += '<div class="ar-cite-item" style="padding:6px 0;border:none">';
+        if (c.timestamp) body += '<div class="ar-cite-ts">'+c.timestamp+'</div>';
+        if (c.quote) body += '<div class="ar-cite-quote">\u201c'+c.quote+'\u201d</div>';
+        if (c.explanation) body += '<div class="ar-cite-exp">'+c.explanation+'</div>';
+        body += '</div>';
+      });
+      body += '</div>';
+    } else if (!canSeeCitations() && (f.citations||[]).length) {
+      body += '<div class="citations-gate" style="margin-top:8px"><div class="citations-gate-text">See exact transcript quotes supporting this finding. <strong>Operator</strong> feature.</div><button class="citations-gate-btn" onclick="showUpgrade()">Unlock</button></div>';
+    }
+    body += '</div>';
+    var leanDot = f.type === 'framing' ? '<span class="ar-lean-dot ar-lean-dot-l"></span>'
+      : f.type === 'omission' ? '<span class="ar-lean-dot" style="background:var(--amber)"></span>'
+      : '<span class="ar-lean-dot ar-lean-dot-c"></span>';
+    return '<div class="ar-finding" onclick="arToggleFinding(this)">'
+      + '<div class="ar-finding-header">'
+      + '<span class="ar-ftag '+_arFtTagClass(f.type)+'">'+_arFtLabel(f.type)+'</span>'
+      + leanDot
+      + '<div class="ar-finding-title">'+f.title+'</div>'
+      + '<div class="ar-chevron">&#8250;</div>'
+      + '</div>'
+      + body
+      + '</div>';
+  }
 
-  // Panel: YouTube embed player (if YouTube source)
+  // ── LEFT COLUMN: media slot + scrubber + controls ──
+  var left = '<div class="ar-media-slot" id="ar-media-slot">';
   if (vid) {
-    left+='<div class="yt-player-wrap" id="yt-player-wrap">';
-    left+='<div style="border-radius:var(--r);overflow:hidden;background:#000"><iframe id="yt-iframe-'+vid+'"'
+    _arMedia.type = 'yt'; _arMedia.ytVid = vid;
+    left += '<iframe id="yt-iframe-'+vid+'"'
       +' src="https://www.youtube.com/embed/'+vid+'?rel=0&modestbranding=1&enablejsapi=1"'
       +' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
-      +' allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;display:block"></iframe></div>';
-    left+='<div class="yt-scrubber-wrap">';
-    left+='<div class="yt-scrubber-track" id="yt-track-'+vid+'" onclick="ytSeekFromClick(event,\''+vid+'\')"><div class="yt-scrubber-progress" id="yt-prog-'+vid+'"></div></div>';
-    left+='<div class="yt-legend"><span><span class="yt-leg-dot" style="background:var(--left)"></span>Right-leaning</span>'
-      +'<span><span class="yt-leg-dot" style="background:var(--right)"></span>Left-leaning</span>'
-      +'<span><span class="yt-leg-dot" style="background:#888"></span>Missing context</span></div>';
-    left+='</div></div>';
-  } else if (data.url && data.url.match(/\.(mp3|m4a|ogg|wav|aac)/i)) {
-    // Panel: Native audio player (RSS/MP3 source)
-    left+=buildNativePlayerHtml(data);
+      +' allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;display:block"></iframe>';
+  } else if (data.artworkUrl) {
+    left += '<div class="ar-artwork-wrap"><img src="'+data.artworkUrl+'" alt="" onerror="this.style.display=\'none\'"></div>';
+  } else {
+    left += '<div class="ar-artwork-wrap"><div class="ar-artwork-ph">\uD83C\uDFA7</div></div>';
   }
-
-  // Panel: Audio Briefing Player
-  if (data.audioScript) {
-    var safeScript=data.audioScript.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-    var clickHandler='toggleAudioSummary(\''+data.jobId+'\',\''+safeScript+'\')';
-    left+='<div class="audio-player" id="audio-player-'+data.jobId+'" style="margin-bottom:16px">';
-    left+='<div class="audio-player-inner">';
-    left+='<button class="audio-play-btn" id="audio-play-btn-'+data.jobId+'" onclick="'+clickHandler+'" title="Listen to briefing">';
-    left+='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>';
-    left+='<div class="audio-player-info">';
-    left+='<div class="audio-player-title">Analysis Briefing &middot; ~1 min 30 sec</div>';
-    left+='<div class="audio-player-meta" id="audio-status-'+data.jobId+'">'+(canPlay?'Play briefing':'Preview &middot; first 10 seconds free')+'</div>';
-    left+='<div class="audio-player-sub">'+(canPlay?'AI-generated context':'Full briefing on Creator plan')+'</div>';
-    left+='</div>';
-    left+='<div class="audio-waveform" id="audio-wave-'+data.jobId+'"><span></span><span></span><span></span><span></span><span></span></div>';
-    left+='</div>';
-    left+='<div class="audio-progress-rail"><div class="audio-progress-fill" id="audio-prog-'+data.jobId+'"></div></div>';
-    left+='</div>';
-  }
-
-  // Panel: Political Lean
-  if (data.audioLean && typeof data.audioLean.leftPct !== 'undefined') {
-    var al=data.audioLean;
-    var plainLabel=biasPlainLabel(al.leftPct, al.rightPct);
-    var plainColor=al.leftPct>60||al.rightPct>60?'var(--left)':al.leftPct>39||al.rightPct>39?'var(--amber)':'var(--right)';
-    if (Math.abs((al.leftPct||0)-(al.rightPct||0))<20) plainColor='green';
-    left+='<div class="res-panel">';
-    left+='<div class="res-panel-hd">Political Lean &mdash; how this episode frames issues '+tipBtn('bias')+'</div>';
-    left+='<div class="res-panel-body">';
-    left+='<div class="al-track" style="margin-bottom:8px">';
-    if (al.leftPct) left+='<div class="al-l" style="width:'+al.leftPct+'%"></div>';
-    if (al.centerPct) left+='<div class="al-c" style="width:'+al.centerPct+'%"></div>';
-    if (al.rightPct) left+='<div class="al-r" style="width:'+al.rightPct+'%"></div>';
-    left+='</div>';
-    left+='<div class="al-counts" style="margin-bottom:8px">';
-    if (al.leftPct) left+='<span class="alc"><span class="alcd" style="background:var(--left-bar)"></span>&#128308; '+al.leftPct+'% left</span>';
-    if (al.centerPct) left+='<span class="alc"><span class="alcd" style="background:var(--center-bar)"></span>&#9726; '+al.centerPct+'% center</span>';
-    if (al.rightPct) left+='<span class="alc"><span class="alcd" style="background:var(--right-bar)"></span>&#128309; '+al.rightPct+'% right</span>';
-    left+='</div>';
-    left+='<span class="bpill" style="font-size:12px;padding:4px 12px;background:var(--bg3);color:'+plainColor+';border-color:var(--border2)">'+plainLabel+'</span>';
-    if (al.basis) left+='<div class="al-basis" style="margin-top:8px">'+al.basis+'</div>';
-    left+='<div class="al-footnote" style="margin-top:8px">Based on language patterns and framing choices &mdash; not the host&rsquo;s personal politics</div>';
-    var leanCits=al.citations||[];
-    if (leanCits.length) {
-      if (canSeeCitations()) {
-        var leanDir=al.leftPct>al.rightPct?'lean-left':al.rightPct>al.leftPct?'lean-right':'lean-center';
-        left+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')" style="margin-top:10px">Why this lean? ('+leanCits.length+' source'+(leanCits.length>1?'s':'')+') &#9660;</button>';
-        left+='<div class="citations-panel">';
-        leanCits.forEach(function(c){
-          left+='<div class="citation-item '+leanDir+'">';
-          if (c.timestamp) left+='<div class="citation-ts">'+c.timestamp+'</div>';
-          left+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
-          if (c.explanation) left+='<div class="citation-exp">'+c.explanation+'</div>';
-          left+='</div>';
-        });
-        left+='<div class="citations-confidence">Based on '+leanCits.length+' instance'+(leanCits.length>1?'s':'')+'</div></div>';
-      } else {
-        left+='<div class="citations-gate" style="margin-top:8px"><div class="citations-gate-text">See exact transcript quotes that support this lean. <strong>Operator</strong> feature.</div><button class="citations-gate-btn" onclick="showUpgrade()">Unlock &mdash; $39/mo</button></div>';
-      }
-    }
-    left+='</div></div>';
-  }
-
-  // Panel: Findings 2×2
-  var oc=data.omissionRisk==='High'?'var(--left)':data.omissionRisk==='Med'?'var(--amber)':'green';
-  var tc=data.hostTrustScore>60?'var(--left)':data.hostTrustScore>30?'var(--amber)':'var(--right)';
-  var mvCount=(data.missingVoices||[]).length;
-  var factFlags=(data.flags||[]).filter(function(f){return f.type==='fact-check';}).length;
-  left+='<div class="findings-grid">';
-  left+='<div class="finding-cell"><div class="finding-lbl">Host Trust</div>';
-  left+='<div class="finding-val" style="color:'+tc+'">'+(data.hostTrustScore!==undefined?data.hostTrustScore+'/100':'&mdash;')+'</div>';
-  if (data.hostTrustLabel) left+='<div style="font-size:11px;color:var(--text3);margin-bottom:4px">'+data.hostTrustLabel+'</div>';
-  left+='</div>';
-  left+='<div class="finding-cell"><div class="finding-lbl">Missing Voices</div>';
-  left+='<div class="finding-val" style="color:'+oc+'">'+mvCount+' absent</div>';
-  left+='<div style="font-size:11px;color:var(--text3);margin-bottom:4px">'+data.omissionRisk+' omission risk</div>';
-  left+='</div>';
-  left+='<div class="finding-cell"><div class="finding-lbl">Sponsor Flags</div>';
-  left+='<div class="finding-val" style="color:'+(factFlags>0?'var(--amber)':'var(--text3)')+'">'+factFlags+' detected</div>';
-  left+='</div>';
-  left+='<div class="finding-cell"><div class="finding-lbl">Factuality</div>';
-  left+='<div class="finding-val" style="font-size:16px;padding-top:2px">'+(data.factualityLabel||'&mdash;')+'</div></div>';
-  left+='</div>';
-
-  if (data.summary) left+='<div class="r-summary" style="border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;padding:14px 16px">&ldquo;'+data.summary+'&rdquo;</div>';
-
-  // Panel: Key Quotes
-  if (data.keyQuotes&&data.keyQuotes.length) {
-    left+='<div class="res-panel"><div class="res-panel-hd">Key Transcript Moments</div><div class="res-panel-body">';
-    data.keyQuotes.forEach(function(q){
-      var dir=q.concern==='high'?'left':q.concern==='medium'?'right':'neutral';
-      var dirLabel=dir==='left'?'Left-leaning framing':dir==='right'?'Right-leaning framing':'Notable';
-      left+='<div class="kq-item kq-'+dir+'">';
-      left+='<div class="kq-text">&ldquo;'+q.quote+'&rdquo;</div>';
-      left+='<div class="kq-meta"><span class="kq-label">'+dirLabel+'</span>'+(q.note?'<span class="kq-label" style="color:var(--text3)">'+q.note+'</span>':'')+'</div>';
-      left+='</div>';
-    });
-    left+='</div></div>';
-  }
-
-  // Flags
-  var flags=(data.flags||[]).map(function(f){
-    var cits=f.citations||[];
-    var citHtml='';
-    if (cits.length) {
-      if (canSeeCitations()) {
-        var flagDir=f.type==='framing'||f.type==='omission'?'lean-left':'lean-center';
-        citHtml+='<button class="citations-toggle" onclick="this.nextElementSibling.classList.toggle(\'on\')" style="margin-top:6px">Why? ('+cits.length+' source'+(cits.length>1?'s':'')+') &#9660;</button>';
-        citHtml+='<div class="citations-panel">';
-        cits.forEach(function(c){
-          citHtml+='<div class="citation-item '+flagDir+'">';
-          if (c.timestamp) citHtml+='<div class="citation-ts">'+c.timestamp+'</div>';
-          citHtml+='<div class="citation-quote">&ldquo;'+c.quote+'&rdquo;</div>';
-          if (c.explanation) citHtml+='<div class="citation-exp">'+c.explanation+'</div>';
-          citHtml+='</div>';
-        });
-        citHtml+='<div class="citations-confidence">Based on '+cits.length+' instance'+(cits.length>1?'s':'')+'</div></div>';
-      } else {
-        citHtml='<div class="citations-gate" style="margin-top:6px"><div class="citations-gate-text">See exact quotes supporting this finding. <strong>Operator</strong> feature.</div><button class="citations-gate-btn" onclick="showUpgrade()">Unlock</button></div>';
-      }
-    }
-    return '<div class="flag-item"><span class="ftag '+ftClass(f.type)+'">'+ftLabel(f.type)+'</span><div><div class="flag-title">'+f.title+'</div><div class="flag-detail">'+f.detail+'</div>'+citHtml+'</div></div>';
-  }).join('');
-  if (flags&&!isPartial) left+='<div class="res-panel"><div class="res-panel-hd">Worth Knowing Before You Listen</div><div>'+flags+'</div></div>';
-
-  if (isPartial) {
-    left+='<div class="details-loading" style="margin-top:16px"><div class="feed-spin"></div>Finishing deep analysis&hellip;</div>';
-    left+='<div style="padding:12px 0"><div class="skel skel-line" style="width:40%"></div><div class="skel skel-block"></div></div>';
-  }
+  left += '</div>';
+  // Scrubber
+  left += '<div class="ar-scrubber-row">'
+    + '<span class="ar-time" id="ar-time-cur">0:00</span>'
+    + '<div class="ar-scrubber-track" id="ar-scrubber" onclick="arScrub(event)">'
+    + '<div class="ar-scrubber-fill" id="ar-scrubber-fill" style="position:relative;height:100%;width:0;background:var(--navy);border-radius:3px"></div>'
+    + '</div>'
+    + '<span class="ar-time ar-time-dur" id="ar-time-dur">'+(data.duration||'')+'</span>'
+    + '</div>';
+  // Controls
+  left += '<div class="ar-ctrl-row">'
+    + '<button class="ar-ctrl-btn" onclick="arSkip(-30)" title="Back 30 seconds">−30</button>'
+    + '<button class="ar-ctrl-btn ar-play-btn" id="ar-play-btn" onclick="arPlayPause()">&#9654;</button>'
+    + '<button class="ar-ctrl-btn" onclick="arSkip(30)" title="Forward 30 seconds">+30</button>'
+    + '<div class="ar-speed-group">'
+    + '<button class="ar-speed-btn on" onclick="arSetSpeed(1,this)">1×</button>'
+    + '<button class="ar-speed-btn" onclick="arSetSpeed(1.25,this)">1.25×</button>'
+    + '<button class="ar-speed-btn" onclick="arSetSpeed(1.5,this)">1.5×</button>'
+    + '<button class="ar-speed-btn" onclick="arSetSpeed(2,this)">2×</button>'
+    + '</div>'
+    + '</div>';
 
   // ── RIGHT COLUMN ──
-  var right='';
+  var right = '';
 
-  // Panel: Topic Breakdown
-  if (data.topicBreakdown&&data.topicBreakdown.length) {
-    var topics=data.topicBreakdown.slice().sort(function(a,b){return b.percentage-a.percentage;});
-    var maxPct=topics[0].percentage||1;
-    var showAll=topics.length<=8;
-    right+='<div class="res-panel"><div class="res-panel-hd">Topic Breakdown</div><div class="res-panel-body">';
-    right+='<div class="topic-bars" id="topic-bars-main">';
-    topics.forEach(function(t,i){
-      var propWidth=Math.round((t.percentage/maxPct)*100);
-      var hidden=(!showAll&&i>=8)?'style="display:none"':'';
-      right+='<div class="topic-bar-row topic-row-item" '+hidden+' title="This topic appeared in '+t.percentage+'% of content">';
-      right+='<div class="topic-bar-label">'+t.topic+'</div>';
-      right+='<div class="topic-bar-track"><div class="topic-bar-fill" style="width:'+propWidth+'%;background:var(--navy)"></div></div>';
-      right+='<div class="topic-bar-pct">'+t.percentage+'%</div></div>';
-    });
-    right+='</div>';
-    if (!showAll) right+='<button class="ghost-btn" style="margin-top:10px;font-size:11px" onclick="document.querySelectorAll(\'.topic-row-item\').forEach(function(r){r.style.display=\'\'});this.style.display=\'none\'">Show all '+topics.length+' topics</button>';
-    right+='</div></div>';
+  // Guest / Host card
+  var guest = data.guest || data.host || null;
+  if (guest && guest.name) {
+    var gIni = (guest.name||'?').trim().split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
+    right += '<div class="ar-card">';
+    right += '<div class="ar-card-hd">Guest &middot; Host</div>';
+    right += '<div class="ar-card-body"><div class="ar-guest-row">';
+    right += '<div class="ar-guest-avatar">'+gIni+'</div>';
+    right += '<div class="ar-guest-info">';
+    right += '<div class="ar-guest-name">'+guest.name+'</div>';
+    if (guest.role) right += '<div class="ar-guest-role">'+guest.role+'</div>';
+    right += '<div class="ar-chips">';
+    if (guest.lean) right += '<span class="ar-chip">'+guest.lean+'</span>';
+    if (guest.episodeCount) right += '<span class="ar-chip">'+guest.episodeCount+' episodes</span>';
+    if (guest.credibility) {
+      var cClass = guest.credibility.toLowerCase().indexOf('high')>=0?'ar-chip-green':guest.credibility.toLowerCase().indexOf('low')>=0?'ar-chip-red':'ar-chip-amber';
+      right += '<span class="ar-chip '+cClass+'">'+guest.credibility+'</span>';
+    }
+    right += '</div>';
+    right += '<div class="ar-guest-links">';
+    if (guest.twitter) right += '<a class="ar-social-link" href="https://x.com/'+guest.twitter+'" target="_blank" rel="noopener">𝕏 @'+guest.twitter+'</a>';
+    if (guest.instagram) right += '<a class="ar-social-link" href="https://instagram.com/'+guest.instagram+'" target="_blank" rel="noopener">Instagram</a>';
+    if (guest.linkedin) right += '<a class="ar-social-link" href="'+guest.linkedin+'" target="_blank" rel="noopener">LinkedIn</a>';
+    if (guest.website) right += '<a class="ar-social-link" href="'+guest.website+'" target="_blank" rel="noopener">'+((guest.website||'').replace(/^https?:\/\//,'').split('/')[0])+'</a>';
+    var guestSlug = guest.slug || (guest.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    right += '<a class="ar-social-link ar-pl-link" href="/guest/'+guestSlug+'">Podlens profile &rarr;</a>';
+    right += '</div></div></div></div></div>';
   }
 
-  // Panel: Missing Voices
-  if (data.missingVoices&&data.missingVoices.length) {
-    right+='<div class="res-panel"><div class="res-panel-hd">Missing Voices</div><div class="res-panel-body">';
-    data.missingVoices.forEach(function(v){
-      right+='<div class="mv-item"><div class="mv-dot"></div><div class="mv-body"><div class="mv-voice">'+v+'</div></div></div>';
-    });
-    right+='</div></div>';
+  // Audio briefing card
+  right += '<div class="ar-card">';
+  right += '<div class="ar-card-hd">Audio briefing &middot; Before you listen</div>';
+  right += '<div class="ar-card-body">';
+  if (data.audioScript) {
+    var safeScript = data.audioScript.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
+    var briefClick = 'toggleAudioSummary(\''+data.jobId+'\',\''+safeScript+'\')';
+    right += '<div class="ar-brief-desc">2-minute spoken summary covering political lean, missing voices, and sponsor flags &mdash; before you press play.</div>';
+    right += '<div class="ar-brief-ctrl">';
+    right += '<button class="ar-brief-play" id="audio-play-btn-'+data.jobId+'" onclick="'+briefClick+'">';
+    right += '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>';
+    right += '<span class="ar-brief-dur">'+(canPlay ? '~1:30' : 'Preview available')+'</span>';
+    right += '</div>';
+    if (!canPlay) right += '<div class="ar-brief-preview-note">Full briefing on Creator plan &middot; <button onclick="showUpgrade()" style="border:none;background:none;color:var(--navy);cursor:pointer;font-size:11px;font-family:var(--ff);text-decoration:underline;padding:0">Upgrade</button></div>';
+    right += '<div class="audio-progress-rail" style="margin-top:10px"><div class="audio-progress-fill" id="audio-prog-'+data.jobId+'"></div></div>';
+    right += '<div class="audio-waveform" id="audio-wave-'+data.jobId+'" style="margin-top:8px;display:none"><span></span><span></span><span></span><span></span><span></span></div>';
+  } else if (isPartial) {
+    right += '<div class="ar-brief-desc">Audio briefing generates when analysis completes.</div>';
+    right += '<div class="ar-brief-ctrl"><button class="ar-brief-play" disabled style="opacity:.4;cursor:default"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><span class="ar-brief-dur">Generating&hellip;</span></div>';
+    right += '<div class="ar-brief-preview-note">30-second preview available now &middot; Full brief ready after analysis</div>';
+  } else {
+    right += '<div class="ar-brief-desc">No audio briefing available for this episode.</div>';
+  }
+  right += '</div></div>';
+
+  // Bias bar card
+  if (data.audioLean && typeof data.audioLean.leftPct !== 'undefined') {
+    var al = data.audioLean;
+    var lp = al.leftPct || 0, cp = al.centerPct || 0, rp = al.rightPct || 0;
+    var total = lp + cp + rp || 100;
+    var lw = (lp/total*100).toFixed(1), cw = (cp/total*100).toFixed(1), rw = (rp/total*100).toFixed(1);
+    // Pin position = percentage of left (left-leaning pushes pin left, right-leaning pushes right)
+    var pinLeft = (lp / total * 100).toFixed(1);
+    var verdict = biasPlainLabel(lp, rp);
+    var badgeHtml = isPartial
+      ? '<span class="ar-lean-badge ar-lean-analyzing"><span class="ar-pulse-dot">&#9679;</span> Early signal</span>'
+      : '<span class="ar-lean-badge ar-lean-complete">&#10003; Final</span>';
+    right += '<div class="ar-card">';
+    right += '<div class="ar-card-hd">Political lean &mdash; how this episode frames issues '+badgeHtml+'</div>';
+    right += '<div class="ar-card-body">';
+    if (isPartial) right += '<div class="ar-lean-note">Based on first 30 min &middot; updating as analysis continues</div>';
+    // THREE solid color blocks — NO gradient
+    right += '<div class="ar-bias-bar-outer">';
+    right += '<div class="ar-bias-bar">';
+    right += '<div class="ar-bias-l" style="width:'+lw+'%"></div>';
+    right += '<div class="ar-bias-c" style="width:'+cw+'%"></div>';
+    right += '<div class="ar-bias-r" style="width:'+rw+'%"></div>';
+    right += '<div class="ar-bias-pin" style="left:'+pinLeft+'%"></div>';
+    right += '</div></div>';
+    right += '<div class="ar-bias-pcts">';
+    right += '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-l"></span>'+lp+'% left</span>';
+    right += '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-c"></span>'+cp+'% center</span>';
+    right += '<span class="ar-pct-item"><span class="ar-pct-dot ar-pct-dot-r"></span>'+rp+'% right</span>';
+    right += '</div>';
+    right += '<div class="ar-bias-verdict">'+verdict+'</div>';
+    right += '<div class="ar-bias-footnote">Based on language patterns and framing choices &mdash; not a judgment of the host&rsquo;s personal politics</div>';
+    right += '</div></div>';
   }
 
-  // Panel: Episode Info
-  right+='<div class="res-panel"><div class="res-panel-hd">Episode Info</div><div class="res-panel-body" style="font-size:13px;color:var(--text2)">';
-  if (data.showName) right+='<div style="font-weight:600;color:var(--text);margin-bottom:4px">'+data.showName+'</div>';
-  if (data.duration) right+='<div>Duration: '+data.duration+'</div>';
-  if (data.wordCount) right+='<div>~'+Math.round(data.wordCount/130)+' min read</div>';
-  if (vid) right+='<a href="https://youtube.com/watch?v='+vid+'" target="_blank" rel="noopener" style="color:var(--right);text-decoration:none;font-size:12px;display:block;margin-top:8px">&#9654; Watch on YouTube</a>';
-  right+='</div></div>';
+  // ── FULL WIDTH BELOW ──
+  var below = '';
 
-  // Panel: Sponsor Conflicts (if any)
-  if (data.sponsorConflicts&&data.sponsorConflicts.length) {
-    right+='<div class="res-panel"><div class="res-panel-hd">Sponsor Notes</div><div class="res-panel-body">';
-    data.sponsorConflicts.forEach(function(s){ right+='<div style="font-size:12px;color:var(--amber);display:flex;gap:6px;margin-bottom:6px"><span style="background:var(--amber-bg);padding:1px 7px;border-radius:var(--r);font-size:10px;font-weight:500;flex-shrink:0">Sponsor</span>'+s+'</div>'; });
-    right+='</div></div>';
-  }
-
-  // ── SHARE SECTION ──
-  var shareSection = '';
-  if (!isPartial && plUser()) {
-    var u2 = plUser(); var plan2 = String(u2 && u2.plan||'').toLowerCase();
-    var canShare = canAccess('shareCards') || plan2 === 'trial';
-    var safeData = JSON.stringify({
-      episodeTitle: data.episodeTitle || '',
-      showName: data.showName || '',
-      artworkUrl: data.artworkUrl || '',
-      audioLean: data.audioLean || {},
-      topicBreakdown: (data.topicBreakdown||[]).slice(0,5)
-    }).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
-    var shareUrl = window.location.origin + '/analysis/' + (_currentJobId || '');
-    shareSection = '<div class="share-analysis-section" id="analysis-share-section" style="margin-top:8px">'
-      + '<div class="share-section-title">Share this analysis</div>'
-      + '<div class="share-btns">'
-      + '<button class="share-btn primary" onclick=\'copyShareLink("'+shareUrl+'")\'>&#128279; Copy link</button>'
-      + '<button class="share-btn" onclick=\'shareToX(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,audioLean:data.audioLean||{},shareUrl:shareUrl}))+'"))\'>\uD835\uDD4F Share to X</button>'
-      + (canShare ? '<button class="share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||"",audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"square","&#9660; Download")\'>&#9660; Download PNG</button>' : '')
-      + (canShare ? '<button class="share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||"",audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"story","&#128247; Story")\'>&#128247; Story</button>' : '')
-      + (canShare ? '<button class="share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||"",audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"topic","&#128241; Topics")\'>&#128241; Topic card</button>' : '')
-      + '<button class="share-btn" onclick=\'shareToThreads(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,audioLean:data.audioLean||{}}))+'"))\'>\uD83E\uDDF5 Threads</button>'
-      + (isKoreanMode() ? '<div class="kakao-share-wrap on"><button class="kakao-share-btn" onclick=\'shareToKakao(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,url:data.url||window.location.href,audioLean:data.audioLean||{}}))+'"))\'><svg width="16" height="16" viewBox="0 0 512 512"><path fill="#1a1a1a" d="M255.5 48C132.6 48 32 129.4 32 231.4c0 63.3 38.5 119 97 155.3l-24.7 91.5c-2.1 7.8 6.1 14 12.9 9.7l108.5-72.3c9.9 1.3 20.1 2 30.8 2 122.9 0 223.5-81.4 223.5-183.4C480 129.4 378.4 48 255.5 48z"/></svg>\uCE74\uCE74\uC624\uD1A1 \uACF5\uC720</button></div>' : '')
-      + (canShare ? '' : '<span style="font-size:11px;color:rgba(255,255,255,.4);margin-left:4px">Image cards on <button onclick="showUpgrade()" style="color:white;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Creator plan</button></span>')
-      + '</div></div>';
-  }
-
-  // ── DOWNLOAD REPORT ──
-  var downloadBtn = '';
-  if (!isPartial && plUser()) {
-    var u3 = plUser(); var plan3 = String(u3 && u3.plan||'').toLowerCase();
-    var canDl = plan3 === 'creator' || plan3 === 'operator' || plan3 === 'studio';
-    var dlLabel = (plan3 === 'operator' || plan3 === 'studio') ? '&#9660; Download Full Report' : '&#9660; Download Basic Report';
-    if (canDl) {
-      downloadBtn = '<button class="download-report-btn" onclick="downloadReport()" style="margin-left:8px">'+dlLabel+'</button>';
-    } else {
-      downloadBtn = '<button class="download-report-btn locked" title="Available on Creator plan" onclick="showUpgrade()">&#9660; Download Report</button>';
+  // 1. ETA banner (shown while partial, hidden when complete)
+  if (isPartial && data.duration) {
+    var etaEst = _arEtaText(data.duration);
+    if (etaEst) {
+      below += '<div class="ar-eta" id="ar-eta">'
+        + '<div class="ar-eta-left">'
+        + '<div class="ar-eta-text">Episode is '+data.duration+' &mdash; full analysis ready in about '+etaEst+'</div>'
+        + '<div class="ar-eta-sub">First findings appear in ~90 seconds &middot; Play the episode while you wait</div>'
+        + '</div>'
+        + '<div class="ar-eta-pct" id="ar-eta-pct">Analyzing&hellip;</div>'
+        + '</div>';
     }
   }
 
-  // Inject download btn into header
-  var headerWithDl = header.replace('</div></div>', downloadBtn+'</div></div>');
+  // 2. Quick metrics row
+  var trustScore = data.hostTrustScore;
+  var trustOut10 = trustScore !== undefined ? (trustScore / 10).toFixed(1) : null;
+  var trustLabel = data.hostTrustLabel || (trustScore > 65 ? 'High' : trustScore > 35 ? 'Moderate' : 'Low');
+  var trustClass = trustLabel === 'High' ? 'ar-metric-high' : trustLabel === 'Low' ? 'ar-metric-low' : 'ar-metric-mod';
+  var mvCount = (data.missingVoices || []).length;
+  var guestBalScore = mvCount === 0 ? 9.0 : mvCount <= 2 ? 6.5 : mvCount <= 4 ? 4.0 : 2.5;
+  var guestBalLabel = mvCount === 0 ? 'High' : mvCount <= 2 ? 'Moderate' : 'Low';
+  var guestBalClass = guestBalLabel === 'High' ? 'ar-metric-high' : guestBalLabel === 'Low' ? 'ar-metric-low' : 'ar-metric-mod';
+  // Source quality from factuality
+  var fl = data.factualityLabel || '';
+  var sqScore = fl.indexOf('🟢') >= 0 ? 8.5 : fl.indexOf('🟡') >= 0 ? 5.5 : fl.indexOf('🔴') >= 0 ? 2.5 : 6.0;
+  var sqLabel = sqScore >= 7 ? 'High' : sqScore >= 4.5 ? 'Moderate' : 'Low';
+  var sqClass = sqLabel === 'High' ? 'ar-metric-high' : sqLabel === 'Low' ? 'ar-metric-low' : 'ar-metric-mod';
+  below += '<div class="ar-metrics-row">';
+  below += '<div class="ar-metric-card"><div class="ar-metric-lbl">Host trust</div>';
+  below += '<div class="ar-metric-val '+trustClass+'">'+(trustOut10 || '—')+'</div>';
+  below += '<div class="ar-metric-sub '+trustClass+'">'+trustLabel+'</div></div>';
+  below += '<div class="ar-metric-card"><div class="ar-metric-lbl">Source quality</div>';
+  below += '<div class="ar-metric-val '+sqClass+'">'+sqScore+'</div>';
+  below += '<div class="ar-metric-sub '+sqClass+'">'+sqLabel+'</div></div>';
+  below += '<div class="ar-metric-card"><div class="ar-metric-lbl">Guest balance</div>';
+  below += '<div class="ar-metric-val '+guestBalClass+'">'+guestBalScore+'</div>';
+  below += '<div class="ar-metric-sub '+guestBalClass+'">'+guestBalLabel+'</div></div>';
+  below += '</div>';
 
-  // ── PLATFORM BUTTONS BAR ──
-  var platBar='<div class="platform-btns-bar" id="platform-btns-bar">'
-    +'<div class="platform-btns-label">Listen on your preferred platform</div>'
-    +'<div class="platform-btns-row" id="platform-btns-row">'
-    +'<span class="plat-btn ploading" id="plat-spotify">Finding Spotify\u2026</span>'
-    +(vid?'<a class="plat-btn pyoutube" href="https://youtube.com/watch?v='+vid+'" target="_blank" rel="noopener">\u25ba YouTube</a>':'')
-    +'<a class="plat-btn papple" href="https://podcasts.apple.com/search?term='+encodeURIComponent(data.showName||'')
-    +'" target="_blank" rel="noopener">\u25ba Apple Podcasts</a>'
-    +'</div></div>';
+  // 3. "Worth knowing" — flags, sponsor first
+  var allFlags = (data.flags || []).slice();
+  // Put sponsor/sponsor-note first
+  allFlags.sort(function(a, b) {
+    var aS = (a.type === 'sponsor' || a.type === 'sponsor-note') ? 0 : 1;
+    var bS = (b.type === 'sponsor' || b.type === 'sponsor-note') ? 0 : 1;
+    return aS - bS;
+  });
+  if (allFlags.length) {
+    below += '<div class="ar-section">';
+    below += '<div class="ar-section-hd">Worth knowing before you listen <span class="ar-hint">&middot; tap any finding to expand</span></div>';
+    allFlags.forEach(function(f, i) { below += _arFindingHtml(f, i); });
+    if (isPartial) below += '<div class="ar-partial-note"><div class="feed-spin" style="width:16px;height:16px;border-width:2px;margin:0"></div>More findings loading&hellip;</div>';
+    below += '</div>';
+  } else if (isPartial) {
+    below += '<div class="ar-section"><div class="ar-section-hd">Worth knowing before you listen</div>'
+      + '<div class="ar-partial-note"><div class="feed-spin" style="width:16px;height:16px;border-width:2px;margin:0"></div>Finding key moments&hellip;</div>'
+      + '<div style="padding:8px 16px 12px"><div class="ar-skel ar-skel-ln" style="width:60%"></div><div class="ar-skel ar-skel-block"></div></div></div>';
+  }
+
+  // 4. Key findings (key quotes styled as findings)
+  if (data.keyQuotes && data.keyQuotes.length) {
+    below += '<div class="ar-section">';
+    below += '<div class="ar-section-hd">Key findings <span class="ar-hint">&middot; tap to expand</span></div>';
+    data.keyQuotes.forEach(function(q) {
+      var dir = q.concern === 'high' ? 'left' : q.concern === 'medium' ? 'right' : 'neutral';
+      var dotClass = dir === 'left' ? 'ar-lean-dot-l' : dir === 'right' ? 'ar-lean-dot-r' : 'ar-lean-dot-c';
+      var tagLabel = dir === 'left' ? 'Left-leaning' : dir === 'right' ? 'Right-leaning' : 'Notable';
+      var tagClass = dir === 'left' ? 'ar-ft-fact' : dir === 'right' ? 'ar-ft-framing' : 'ar-ft-context';
+      below += '<div class="ar-finding" onclick="arToggleFinding(this)">';
+      below += '<div class="ar-finding-header">';
+      below += '<span class="ar-ftag '+tagClass+'">'+tagLabel+'</span>';
+      below += '<span class="ar-lean-dot '+dotClass+'"></span>';
+      below += '<div class="ar-finding-title">'+(q.note||q.quote.substring(0,80)+(q.quote.length>80?'&hellip;':''))+'</div>';
+      below += '<div class="ar-chevron">&#8250;</div>';
+      below += '</div>';
+      below += '<div class="ar-finding-body">';
+      below += '<blockquote class="ar-ev-quote" style="margin:10px 0">\u201c'+q.quote+'\u201d</blockquote>';
+      if (q.note) below += '<div class="ar-finding-summary">'+q.note+'</div>';
+      below += '</div></div>';
+    });
+    below += '</div>';
+  }
+
+  // 5. Summary (if available)
+  if (data.summary) {
+    below += '<div class="ar-section"><div class="ar-section-hd">Episode summary</div>';
+    below += '<div style="padding:14px 16px;font-size:13px;color:var(--text2);font-style:italic;line-height:1.7">\u201c'+data.summary+'\u201d</div></div>';
+  }
+
+  // 6. Topic breakdown
+  if (data.topicBreakdown && data.topicBreakdown.length) {
+    var topics = data.topicBreakdown.slice().sort(function(a,b){return b.percentage-a.percentage;});
+    var maxPct = topics[0].percentage || 1;
+    below += '<div class="ar-section"><div class="ar-section-hd">Topic breakdown</div>';
+    below += '<div class="ar-topic-bars">';
+    topics.slice(0, 8).forEach(function(t) {
+      var w = Math.round(t.percentage / maxPct * 100);
+      below += '<div class="ar-topic-row" title="'+t.topic+' appeared in '+t.percentage+'% of content">';
+      below += '<div class="ar-topic-lbl">'+t.topic+'</div>';
+      below += '<div class="ar-topic-track"><div class="ar-topic-fill" style="width:'+w+'%"></div></div>';
+      below += '<div class="ar-topic-pct">'+t.percentage+'%</div></div>';
+    });
+    if (topics.length > 8) {
+      below += '<button class="ghost-btn" style="margin:8px 16px;font-size:11px" onclick="var p=this.previousElementSibling;p&&(p.style.display=\'block\');this.style.display=\'none\'">Show all '+topics.length+' topics</button>';
+    }
+    below += '</div></div>';
+  }
+
+  // 7. Missing voices
+  if (data.missingVoices && data.missingVoices.length) {
+    below += '<div class="ar-section"><div class="ar-section-hd">Missing voices</div>';
+    below += '<div class="ar-mv-list">';
+    data.missingVoices.forEach(function(v) {
+      below += '<div class="ar-mv-item"><div class="ar-mv-dot"></div><div class="ar-mv-text">'+v+'</div></div>';
+    });
+    below += '</div></div>';
+  }
+
+  // 8. Platform links
+  below += '<div class="ar-platforms" id="ar-platforms">';
+  below += '<div class="ar-plat-lbl">Listen on</div>';
+  below += '<div class="ar-plat-row" id="platform-btns-row">';
+  below += '<span class="plat-btn ploading" id="plat-spotify">Finding Spotify\u2026</span>';
+  if (vid) below += '<a class="plat-btn pyoutube" href="https://youtube.com/watch?v='+vid+'" target="_blank" rel="noopener">&#9654; YouTube</a>';
+  below += '<a class="plat-btn papple" href="https://podcasts.apple.com/search?term='+encodeURIComponent(data.showName||'')+'" target="_blank" rel="noopener">&#9654; Apple Podcasts</a>';
+  below += '</div></div>';
+
+  // 9. Share section
+  if (plUser()) {
+    var shareUrl = window.location.origin + '/analysis/' + (_currentJobId || '');
+    var u2 = plUser(); var plan2 = String(u2 && u2.plan||'').toLowerCase();
+    var canShare = canAccess('shareCards') || plan2 === 'trial';
+    below += '<div class="ar-section"><div class="ar-section-hd">Share this analysis</div>';
+    below += '<div class="ar-share-btns" style="padding:12px 16px">';
+    below += '<button class="ar-share-btn primary" onclick=\'copyShareLink("'+shareUrl+'")\'>&#128279; Copy link</button>';
+    below += '<button class="ar-share-btn" onclick=\'shareToX(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,audioLean:data.audioLean||{},shareUrl:shareUrl}))+'"))\'>\uD835\uDD4F Share to X</button>';
+    if (canShare) below += '<button class="ar-share-btn" onclick=\'downloadAnalysisCard(JSON.parse(decodeURIComponent("'+encodeURIComponent(JSON.stringify({episodeTitle:data.episodeTitle,showName:data.showName,artworkUrl:data.artworkUrl||'',audioLean:data.audioLean||{},topicBreakdown:(data.topicBreakdown||[]).slice(0,5)}))+'")),"square","Download")\'>&#9660; Image card</button>';
+    below += '</div></div>';
+  }
+
+  // 10. Deep Analysis Report bar
+  if (plUser()) {
+    var u4 = plUser(); var plan4 = String(u4 && u4.plan||'').toLowerCase();
+    var isOp = plan4 === 'operator' || plan4 === 'studio';
+    var isCr = plan4 === 'creator' || isOp;
+    below += '<div class="ar-report-bar">';
+    below += '<div class="ar-report-bar-inner">';
+    below += '<div class="ar-report-title">&#128196; Deep Analysis Report</div>';
+    if (isOp) {
+      below += '<div class="ar-report-desc">Full report with source citations, transcript excerpts, and sponsor analysis.</div>';
+      below += '<button class="ar-report-btn" onclick="downloadReport()">Download full report</button>';
+    } else if (isCr) {
+      below += '<div class="ar-report-desc">Summary report with bias overview and key findings.</div>';
+      below += '<button class="ar-report-btn" onclick="downloadReport()">Download Creator report</button>';
+      below += '<span style="font-size:11px;color:var(--text3);margin-left:8px">Full report on Operator</span>';
+    } else {
+      below += '<div class="ar-report-desc">Download a PDF report with the full analysis, citations, and transcript highlights.</div>';
+      below += '<button class="ar-report-btn ar-report-locked" onclick="showUpgrade()" title="Available on Creator+">Download report</button>';
+    }
+    below += '</div></div>';
+  }
+
+  // Dock spacer so content isn't hidden behind dock
+  below += '<div class="ar-dock-spacer"></div>';
 
   // ── ASSEMBLE ──
-  var html=headerWithDl+platBar+'<div class="res-grid"><div class="res-left-col">'+left+'</div><div class="res-right-col">'+right+'</div></div>'+shareSection;
-  document.getElementById('results').innerHTML=html;
+  var html = header
+    + '<div class="ar-top-grid"><div>'+left+'</div><div>'+right+'</div></div>'
+    + below;
+  document.getElementById('results').innerHTML = html;
 
   // ── POST-RENDER: init players + platform buttons ──
-  if (vid) { setTimeout(function(){ initYouTubePlayer(vid, data); }, 200); }
-  if (data.url && data.url.match(/\.(mp3|m4a|ogg|wav|aac)/i)) { setTimeout(function(){ initNativePlayer(data.url, data); }, 100); }
+  if (vid) {
+    _arMedia.type = 'yt'; _arMedia.ytVid = vid;
+    setTimeout(function() {
+      initYouTubePlayer(vid, data);
+      // Hook YT progress to ar-scrubber
+      var progId = setInterval(function() {
+        var p = _ytPlayers[vid];
+        if (!p) return;
+        var fill = document.getElementById('ar-scrubber-fill');
+        var cur = document.getElementById('ar-time-cur');
+        var dur = document.getElementById('ar-time-dur');
+        function fmt(s) { if (!isFinite(s)||!s) return '0:00'; var m=Math.floor(s/60),sc=Math.floor(s%60); return m+':'+(sc<10?'0':'')+sc; }
+        try {
+          var ct = p.getCurrentTime(); var dt = p.getDuration();
+          if (fill && dt) fill.style.width = (ct/dt*100).toFixed(2)+'%';
+          if (cur) cur.textContent = fmt(ct);
+          if (dur && dt) dur.textContent = fmt(dt);
+        } catch(e) {}
+        if (!document.getElementById('ar-scrubber-fill')) clearInterval(progId);
+      }, 500);
+    }, 200);
+  }
+  if (data.url && data.url.match(/\.(mp3|m4a|ogg|wav|aac)/i)) {
+    setTimeout(function() { _arInitNativeAudio(data.url, data); }, 100);
+  }
   if (!isPartial) { loadPlatformButtons(data); }
 }
 
