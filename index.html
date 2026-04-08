@@ -2031,6 +2031,20 @@ body.light-mode,[data-theme="light"]{
 
 /* Padding below dock when visible */
 .ar-dock-spacer{height:100px}
+/* ── Tier gating ── */
+.ar-preview-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);margin-bottom:16px;font-size:12px;color:var(--text3);flex-wrap:wrap}
+.ar-preview-label{flex-shrink:0}
+.ar-preview-pills{display:flex;gap:6px}
+.ar-preview-pill{padding:4px 12px;border-radius:999px;border:0.5px solid var(--border);background:transparent;font-size:12px;cursor:pointer;color:var(--text2);font-family:var(--ff);font-weight:500;transition:all .1s}
+.ar-preview-pill.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ar-preview-cta{margin-left:auto;font-size:11px;color:var(--text3)}
+.ar-preview-cta a{color:var(--navy);text-decoration:underline;cursor:pointer}
+.ar-gate-wrap{position:relative;border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.ar-gate-content{filter:blur(5px);pointer-events:none;user-select:none;opacity:.55}
+.ar-gate-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.ar-gate-msg{font-size:12px;font-weight:600;color:var(--text);background:var(--bg);padding:4px 12px;border-radius:4px;border:0.5px solid var(--border)}
+.ar-gate-btn{display:inline-block;padding:7px 18px;background:var(--navy);color:#fff;border-radius:4px;font-size:12px;font-weight:600;text-decoration:none;font-family:var(--ff);cursor:pointer;border:none;transition:opacity .1s}
+.ar-gate-btn:hover{opacity:.85}
 </style>
 <!-- Hotjar / ContentSquare -->
 <script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
@@ -5675,9 +5689,23 @@ function renderTranscriptHighlights(data) {
       quotes.push({text:c.quote,ts:c.timestamp||'',label:c.explanation||'',dir:dir,finding:ftLabel(f.type)});
     });
   });
-  var u=plUser(); var plan=String(u&&u.plan||'').toLowerCase();
-  var canFull=plan==='operator'||plan==='studio';
-  var shown=canFull?quotes:quotes.slice(0,10);
+  var tcfg = _getEffectiveTierConfig();
+  if (!tcfg.transcript) {
+    // Locked — show blurred preview + upgrade prompt
+    var blurHtml = '<div style="padding:0 0 24px">';
+    blurHtml += '<div class="ar-gate-wrap">';
+    blurHtml += '<div class="ar-gate-content">';
+    quotes.slice(0, 3).forEach(function(q) {
+      blurHtml += '<div class="th-quote th-'+q.dir+'" data-dir="'+q.dir+'" style="margin-bottom:8px">'
+        + '<div class="th-quote-text">&ldquo;'+q.text.substring(0,80)+'&hellip;&rdquo;</div></div>';
+    });
+    blurHtml += '</div>';
+    blurHtml += '<div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Operator</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div>';
+    blurHtml += '</div></div>';
+    document.getElementById('transcript-content').innerHTML = blurHtml;
+    return;
+  }
+  var shown=quotes; // full access
   var html='<div style="padding:0 0 24px">';
   html+='<div style="margin-bottom:16px;font-size:13px;color:var(--text2)">Significant moments extracted from the transcript — color-coded by framing direction.</div>';
   if (shown.length===0) { html+='<div style="color:var(--text3);font-size:13px;padding:24px 0;text-align:center">No transcript highlights available for this episode.</div></div>'; document.getElementById('transcript-content').innerHTML=html; return; }
@@ -5691,9 +5719,6 @@ function renderTranscriptHighlights(data) {
     if (q.label) html+='<span class="th-label">'+q.label+'</span>';
     html+='</div></div>';
   });
-  if (!canFull && quotes.length>10) {
-    html+='<div class="citations-gate" style="margin-top:16px"><div class="citations-gate-text">'+quotes.length+' total moments found. See all with full search on Operator.</div><button class="citations-gate-btn" onclick="showUpgrade()">Unlock &mdash; $39/mo</button></div>';
-  }
   html+='</div>';
   document.getElementById('transcript-content').innerHTML=html;
 }
@@ -5986,16 +6011,31 @@ function renderResults(data) {
   if (data.jobId) _currentJobId = data.jobId;
   window._lastAnalysisResult = data; // used by share system
   var vid=ytId(data.url||'');
-  var u=plUser(); var plan=String(u&&u.plan||'').toLowerCase();
-  var canPlay=plan==='creator'||plan==='operator'||plan==='studio'||plan==='trial';
+  var u=plUser();
   var isPartial=data.status==='partial';
+  // Single source of truth for all feature gating on this page
+  var _cfg = _getEffectiveTierConfig();
 
   // Show / update dock
   _arShowDock(data);
   _arSetDockStatus(!isPartial);
 
+  // ── GUEST PREVIEW BAR (not signed in) ──
+  var header='';
+  if (!u) {
+    header += '<div class="ar-preview-bar">'
+      + '<span class="ar-preview-label">Previewing as:</span>'
+      + '<div class="ar-preview-pills">'
+      + '<button class="ar-preview-pill'+(_previewTier==='free'?' active':'')+'" onclick="setPreviewTier(\'free\')">Free</button>'
+      + '<button class="ar-preview-pill'+(_previewTier==='creator'?' active':'')+'" onclick="setPreviewTier(\'creator\')">Creator &mdash; $12/mo</button>'
+      + '<button class="ar-preview-pill'+(_previewTier==='operator'?' active':'')+'" onclick="setPreviewTier(\'operator\')">Operator &mdash; $39/mo</button>'
+      + '</div>'
+      + '<span class="ar-preview-cta"><a onclick="if(typeof openModal===\'function\')openModal(\'signup\')">Sign up to get started &rarr;</a></span>'
+      + '</div>';
+  }
+
   // ── EPISODE HEADER ──
-  var header='<div class="ar-ep-header">';
+  header+='<div class="ar-ep-header">';
   header+='<div class="ar-ep-art">'+(data.artworkUrl?'<img src="'+data.artworkUrl+'" onerror="this.style.display=\'none\'">':'\uD83C\uDFA7')+'</div>';
   header+='<div class="ar-ep-meta">';
   header+='<div class="ar-ep-title">'+(data.episodeTitle||'Episode Analysis')+'</div>';
@@ -6048,18 +6088,43 @@ function renderResults(data) {
       var bText = f.balanced || f.whatBalancedLooksLike;
       body += '<div class="ar-balanced"><div class="ar-balanced-lbl">What balanced looks like</div>'+bText+'</div>';
     }
-    if (canSeeCitations() && (f.citations||[]).length > 1) {
-      body += '<div style="margin-top:8px">';
-      f.citations.slice(1).forEach(function(c){
-        body += '<div class="ar-cite-item" style="padding:6px 0;border:none">';
-        if (c.timestamp) body += '<div class="ar-cite-ts">'+c.timestamp+'</div>';
-        if (c.quote) body += '<div class="ar-cite-quote">\u201c'+c.quote+'\u201d</div>';
-        if (c.explanation) body += '<div class="ar-cite-exp">'+c.explanation+'</div>';
+    var maxCit = _cfg.citations; // 0=none, 5=creator, 99=all
+    var allCits = f.citations || [];
+    // Show citations up to max (first citation already shown above as evidence)
+    if (maxCit >= 1 && allCits.length > 1) {
+      var extraCits = maxCit >= 99 ? allCits.slice(1) : allCits.slice(1, maxCit);
+      if (extraCits.length > 0) {
+        body += '<div style="margin-top:8px">';
+        extraCits.forEach(function(c){
+          body += '<div class="ar-cite-item" style="padding:6px 0;border:none">';
+          if (c.timestamp) body += '<div class="ar-cite-ts">'+c.timestamp+'</div>';
+          if (c.quote) body += '<div class="ar-cite-quote">\u201c'+c.quote+'\u201d</div>';
+          if (c.explanation) body += '<div class="ar-cite-exp">'+c.explanation+'</div>';
+          body += '</div>';
+        });
         body += '</div>';
-      });
-      body += '</div>';
-    } else if (!canSeeCitations() && (f.citations||[]).length) {
-      body += '<div class="citations-gate" style="margin-top:8px"><div class="citations-gate-text">See exact transcript quotes supporting this finding. <strong>Operator</strong> feature.</div><button class="citations-gate-btn" onclick="showUpgrade()">Unlock</button></div>';
+      }
+    }
+    // Gate: if no citations allowed, blur the evidence block
+    if (maxCit === 0 && allCits.length > 0) {
+      body += '<div class="ar-gate-wrap" style="margin-top:8px">'
+        + '<div class="ar-gate-content" style="padding:8px;background:var(--bg3);border-radius:4px;font-size:11px;color:var(--text3)">'
+        + allCits.length+' source citation'+(allCits.length>1?'s':'')+' available'
+        + '</div>'
+        + '<div class="ar-gate-overlay">'
+        + '<div class="ar-gate-msg">Unlocks with Creator</div>'
+        + '<a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a>'
+        + '</div></div>';
+    } else if (maxCit > 0 && maxCit < 99 && allCits.length > maxCit) {
+      var hiddenCount = allCits.length - maxCit;
+      body += '<div class="ar-gate-wrap" style="margin-top:8px">'
+        + '<div class="ar-gate-content" style="padding:8px;background:var(--bg3);border-radius:4px;font-size:11px;color:var(--text3)">'
+        + hiddenCount+' more citation'+(hiddenCount>1?'s':'')+' available'
+        + '</div>'
+        + '<div class="ar-gate-overlay">'
+        + '<div class="ar-gate-msg">Unlocks with Operator</div>'
+        + '<a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a>'
+        + '</div></div>';
     }
     body += '</div>';
     var leanDot = f.type === 'framing' ? '<span class="ar-lean-dot ar-lean-dot-l"></span>'
@@ -6154,9 +6219,9 @@ function renderResults(data) {
     right += '<div class="ar-brief-ctrl">';
     right += '<button class="ar-brief-play" id="audio-play-btn-'+data.jobId+'" onclick="'+briefClick+'">';
     right += '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>';
-    right += '<span class="ar-brief-dur">'+(canPlay ? '~1:30' : 'Preview available')+'</span>';
+    right += '<span class="ar-brief-dur">'+(_cfg.audioFull ? '~1:30' : '30-sec preview')+'</span>';
     right += '</div>';
-    if (!canPlay) right += '<div class="ar-brief-preview-note">Full briefing on Creator plan &middot; <button onclick="showUpgrade()" style="border:none;background:none;color:var(--navy);cursor:pointer;font-size:11px;font-family:var(--ff);text-decoration:underline;padding:0">Upgrade</button></div>';
+    if (!_cfg.audioFull) right += '<div class="ar-gate-wrap" style="margin-top:8px"><div class="ar-gate-content" style="padding:8px;font-size:11px;color:var(--text3)">Full 2-minute briefing available</div><div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Creator</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div></div>';
     right += '<div class="audio-progress-rail" style="margin-top:10px"><div class="audio-progress-fill" id="audio-prog-'+data.jobId+'"></div></div>';
     right += '<div class="audio-waveform" id="audio-wave-'+data.jobId+'" style="margin-top:8px;display:none"><span></span><span></span><span></span><span></span><span></span></div>';
   } else if (isPartial) {
@@ -6253,10 +6318,29 @@ function renderResults(data) {
     var bS = (b.type === 'sponsor' || b.type === 'sponsor-note') ? 0 : 1;
     return aS - bS;
   });
+  var visibleCount = _cfg.findingsVisible; // 2 for free, 5 for creator+
   if (allFlags.length) {
     below += '<div class="ar-section">';
     below += '<div class="ar-section-hd">Worth knowing before you listen <span class="ar-hint">&middot; tap any finding to expand</span></div>';
-    allFlags.forEach(function(f, i) { below += _arFindingHtml(f, i); });
+    var shownFlags = allFlags.slice(0, visibleCount);
+    var lockedFlags = allFlags.slice(visibleCount);
+    shownFlags.forEach(function(f, i) { below += _arFindingHtml(f, i); });
+    if (lockedFlags.length) {
+      // Build blurred preview of locked findings
+      var blurredHtml = '';
+      lockedFlags.forEach(function(f) {
+        blurredHtml += '<div class="ar-finding">'
+          + '<div class="ar-finding-header"><span class="ar-ftag '+_arFtTagClass(f.type)+'">'+_arFtLabel(f.type)+'</span>'
+          + '<div class="ar-finding-title">'+f.title+'</div><div class="ar-chevron">&#8250;</div></div>'
+          + '</div>';
+      });
+      below += '<div class="ar-gate-wrap">'
+        + '<div class="ar-gate-content">'+blurredHtml+'</div>'
+        + '<div class="ar-gate-overlay">'
+        + '<div class="ar-gate-msg">'+lockedFlags.length+' more finding'+(lockedFlags.length>1?'s':'')+' &mdash; Unlocks with Creator</div>'
+        + '<a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a>'
+        + '</div></div>';
+    }
     if (isPartial) below += '<div class="ar-partial-note"><div class="feed-spin" style="width:16px;height:16px;border-width:2px;margin:0"></div>More findings loading&hellip;</div>';
     below += '</div>';
   } else if (isPartial) {
@@ -6265,27 +6349,44 @@ function renderResults(data) {
       + '<div style="padding:8px 16px 12px"><div class="ar-skel ar-skel-ln" style="width:60%"></div><div class="ar-skel ar-skel-block"></div></div></div>';
   }
 
-  // 4. Key findings (key quotes styled as findings)
+  // 4. Key findings (key quotes styled as findings) — gated by tierConfig.keyFindings
   if (data.keyQuotes && data.keyQuotes.length) {
     below += '<div class="ar-section">';
     below += '<div class="ar-section-hd">Key findings <span class="ar-hint">&middot; tap to expand</span></div>';
-    data.keyQuotes.forEach(function(q) {
-      var dir = q.concern === 'high' ? 'left' : q.concern === 'medium' ? 'right' : 'neutral';
-      var dotClass = dir === 'left' ? 'ar-lean-dot-l' : dir === 'right' ? 'ar-lean-dot-r' : 'ar-lean-dot-c';
-      var tagLabel = dir === 'left' ? 'Left-leaning' : dir === 'right' ? 'Right-leaning' : 'Notable';
-      var tagClass = dir === 'left' ? 'ar-ft-fact' : dir === 'right' ? 'ar-ft-framing' : 'ar-ft-context';
-      below += '<div class="ar-finding" onclick="arToggleFinding(this)">';
-      below += '<div class="ar-finding-header">';
-      below += '<span class="ar-ftag '+tagClass+'">'+tagLabel+'</span>';
-      below += '<span class="ar-lean-dot '+dotClass+'"></span>';
-      below += '<div class="ar-finding-title">'+(q.note||q.quote.substring(0,80)+(q.quote.length>80?'&hellip;':''))+'</div>';
-      below += '<div class="ar-chevron">&#8250;</div>';
-      below += '</div>';
-      below += '<div class="ar-finding-body">';
-      below += '<blockquote class="ar-ev-quote" style="margin:10px 0">\u201c'+q.quote+'\u201d</blockquote>';
-      if (q.note) below += '<div class="ar-finding-summary">'+q.note+'</div>';
-      below += '</div></div>';
-    });
+    if (_cfg.keyFindings) {
+      data.keyQuotes.forEach(function(q) {
+        var dir = q.concern === 'high' ? 'left' : q.concern === 'medium' ? 'right' : 'neutral';
+        var dotClass = dir === 'left' ? 'ar-lean-dot-l' : dir === 'right' ? 'ar-lean-dot-r' : 'ar-lean-dot-c';
+        var tagLabel = dir === 'left' ? 'Left-leaning' : dir === 'right' ? 'Right-leaning' : 'Notable';
+        var tagClass = dir === 'left' ? 'ar-ft-fact' : dir === 'right' ? 'ar-ft-framing' : 'ar-ft-context';
+        below += '<div class="ar-finding" onclick="arToggleFinding(this)">';
+        below += '<div class="ar-finding-header">';
+        below += '<span class="ar-ftag '+tagClass+'">'+tagLabel+'</span>';
+        below += '<span class="ar-lean-dot '+dotClass+'"></span>';
+        below += '<div class="ar-finding-title">'+(q.note||q.quote.substring(0,80)+(q.quote.length>80?'&hellip;':''))+'</div>';
+        below += '<div class="ar-chevron">&#8250;</div>';
+        below += '</div>';
+        below += '<div class="ar-finding-body">';
+        below += '<blockquote class="ar-ev-quote" style="margin:10px 0">\u201c'+q.quote+'\u201d</blockquote>';
+        if (q.note) below += '<div class="ar-finding-summary">'+q.note+'</div>';
+        below += '</div></div>';
+      });
+    } else {
+      // Blurred/locked key findings
+      var blurredKQ = '';
+      data.keyQuotes.slice(0, 3).forEach(function(q) {
+        blurredKQ += '<div class="ar-finding"><div class="ar-finding-header">'
+          + '<span class="ar-ftag ar-ft-context">Notable</span>'
+          + '<div class="ar-finding-title">'+(q.note||q.quote.substring(0,60)+'&hellip;')+'</div>'
+          + '<div class="ar-chevron">&#8250;</div></div></div>';
+      });
+      below += '<div class="ar-gate-wrap">'
+        + '<div class="ar-gate-content">'+blurredKQ+'</div>'
+        + '<div class="ar-gate-overlay">'
+        + '<div class="ar-gate-msg">Unlocks with Creator</div>'
+        + '<a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a>'
+        + '</div></div>';
+    }
     below += '</div>';
   }
 
@@ -6346,27 +6447,21 @@ function renderResults(data) {
     below += '</div></div>';
   }
 
-  // 10. Deep Analysis Report bar
-  if (plUser()) {
-    var u4 = plUser(); var plan4 = String(u4 && u4.plan||'').toLowerCase();
-    var isOp = plan4 === 'operator' || plan4 === 'studio';
-    var isCr = plan4 === 'creator' || isOp;
-    below += '<div class="ar-report-bar">';
-    below += '<div class="ar-report-bar-inner">';
-    below += '<div class="ar-report-title">&#128196; Deep Analysis Report</div>';
-    if (isOp) {
-      below += '<div class="ar-report-desc">Full report with source citations, transcript excerpts, and sponsor analysis.</div>';
-      below += '<button class="ar-report-btn" onclick="downloadReport()">Download full report</button>';
-    } else if (isCr) {
-      below += '<div class="ar-report-desc">Summary report with bias overview and key findings.</div>';
-      below += '<button class="ar-report-btn" onclick="downloadReport()">Download Creator report</button>';
-      below += '<span style="font-size:11px;color:var(--text3);margin-left:8px">Full report on Operator</span>';
-    } else {
-      below += '<div class="ar-report-desc">Download a PDF report with the full analysis, citations, and transcript highlights.</div>';
-      below += '<button class="ar-report-btn ar-report-locked" onclick="showUpgrade()" title="Available on Creator+">Download report</button>';
-    }
-    below += '</div></div>';
+  // 10. Deep Analysis Report bar — single tierConfig source of truth
+  below += '<div class="ar-report-bar">';
+  below += '<div class="ar-report-bar-inner">';
+  below += '<div class="ar-report-title">&#128196; Deep Analysis Report</div>';
+  if (_cfg.deepReport) {
+    below += '<div class="ar-report-desc">Full report with source citations, transcript excerpts, and sponsor analysis.</div>';
+    below += '<button class="ar-report-btn" onclick="downloadReport()">Download full report</button>';
+  } else if (_cfg.creatorReport) {
+    below += '<div class="ar-report-desc">Summary report with bias overview and key findings.</div>';
+    below += '<button class="ar-report-btn" onclick="downloadReport()">Download Creator report</button>';
+    below += '<div class="ar-gate-wrap" style="margin-top:8px"><div class="ar-gate-content" style="font-size:11px;color:var(--text3);padding:6px">Full report with citations and transcript excerpts</div><div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Operator</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div></div>';
+  } else {
+    below += '<div class="ar-gate-wrap"><div class="ar-gate-content" style="font-size:11px;color:var(--text3);padding:6px">Download a PDF with the full analysis, citations, and transcript highlights.</div><div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Creator</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div></div>';
   }
+  below += '</div></div>';
 
   // Dock spacer so content isn't hidden behind dock
   below += '<div class="ar-dock-spacer"></div>';
@@ -7360,6 +7455,28 @@ function showGraceBanner(graceUntil) {
 }
 
 // ── CANACCESS — TIER GATING ──
+// ── SINGLE SOURCE OF TRUTH: tier feature config ──
+var tierConfig = {
+  free:     { findingsVisible: 2, keyFindings: false, citations: 0,  transcript: false, audioFull: false, deepReport: false, creatorReport: false },
+  trial:    { findingsVisible: 5, keyFindings: true,  citations: 0,  transcript: true,  audioFull: false, deepReport: false, creatorReport: true  },
+  creator:  { findingsVisible: 5, keyFindings: true,  citations: 5,  transcript: false, audioFull: true,  deepReport: false, creatorReport: true  },
+  operator: { findingsVisible: 5, keyFindings: true,  citations: 99, transcript: true,  audioFull: true,  deepReport: true,  creatorReport: true  },
+  studio:   { findingsVisible: 5, keyFindings: true,  citations: 99, transcript: true,  audioFull: true,  deepReport: true,  creatorReport: true  }
+};
+var _previewTier = 'free'; // used for guest preview only
+
+function _getEffectiveTierConfig() {
+  var u = plUser();
+  if (!u) return tierConfig[_previewTier] || tierConfig.free;
+  var plan = String(enforcePlanRules() || u.plan || 'free').toLowerCase();
+  return tierConfig[plan] || tierConfig.free;
+}
+
+function setPreviewTier(tier) {
+  _previewTier = tier;
+  if (window._lastAnalysisResult) renderResults(window._lastAnalysisResult);
+}
+
 function canAccess(feature) {
   var u = plUser();
   if (!u) return false;
