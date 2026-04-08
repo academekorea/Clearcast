@@ -1,5 +1,17 @@
 {
-  "build": { "builder": "nixpacks" },
+  "build": {
+    "builder": "nixpacks",
+    "nixpacksPlan": {
+      "phases": {
+        "setup": {
+          "nixPkgs": ["nodejs_20", "python3", "yt-dlp"]
+        },
+        "install": {
+          "cmds": ["npm i"]
+        }
+      }
+    }
+  },
   "deploy": {
     "startCommand": "npm start",
     "healthcheckPath": "/health",

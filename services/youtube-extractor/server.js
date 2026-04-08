@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const youtubedl = require('youtube-dl-exec');
+const { execFile } = require('child_process');
+const util = require('util');
 const fs = require('fs');
 const path = require('path');
 
+const execFileAsync = util.promisify(execFile);
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -76,12 +78,13 @@ app.post('/extract', async (req, res) => {
 
   try {
     // Get metadata
-    const info = await youtubedl(url, {
-      dumpSingleJson: true,
-      noWarnings: true,
-      skipDownload: true,
-      noCallHome: true
-    });
+    const { stdout: metaStdout } = await execFileAsync('yt-dlp', [
+      '--dump-json',
+      '--no-warnings',
+      '--skip-download',
+      url
+    ]);
+    const info = JSON.parse(metaStdout);
 
     const metadata = {
       title: info.title,
@@ -95,15 +98,17 @@ app.post('/extract', async (req, res) => {
     // Try captions first
     try {
       const captionPath = path.join(tmpDir, `${videoId}.en.vtt`);
-      await youtubedl(url, {
-        writeSub: true,
-        writeAutoSub: true,
-        subLang: 'en',
-        subFormat: 'vtt',
-        skipDownload: true,
-        noWarnings: true,
-        output: path.join(tmpDir, '%(id)s.%(ext)s')
-      });
+
+      await execFileAsync('yt-dlp', [
+        '--write-sub',
+        '--write-auto-sub',
+        '--sub-lang', 'en',
+        '--sub-format', 'vtt',
+        '--skip-download',
+        '--no-warnings',
+        '-o', path.join(tmpDir, '%(id)s.%(ext)s'),
+        url
+      ]);
 
       if (fs.existsSync(captionPath)) {
         const vttContent = fs.readFileSync(captionPath, 'utf8');
@@ -122,13 +127,15 @@ app.post('/extract', async (req, res) => {
 
     // Fall back to audio extraction
     const audioPath = path.join(tmpDir, `${videoId}.mp3`);
-    await youtubedl(url, {
-      extractAudio: true,
-      audioFormat: 'mp3',
-      audioQuality: 0,
-      noWarnings: true,
-      output: path.join(tmpDir, '%(id)s.%(ext)s')
-    });
+
+    await execFileAsync('yt-dlp', [
+      '-x',
+      '--audio-format', 'mp3',
+      '--audio-quality', '0',
+      '--no-warnings',
+      '-o', path.join(tmpDir, '%(id)s.%(ext)s'),
+      url
+    ]);
 
     if (fs.existsSync(audioPath)) {
       const audioData = fs.readFileSync(audioPath).toString('base64');
