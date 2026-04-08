@@ -3968,11 +3968,6 @@ function showTrialExpiryRecap(u) {
 }
 
 // ── CITATIONS GATE ──
-function canSeeCitations() {
-  var u = plUser();
-  var plan = String(u && u.plan || '').toLowerCase();
-  return plan === 'operator' || plan === 'studio';
-}
 
 // ── HOME STATE ──
 function renderHomeState() {
@@ -7159,16 +7154,27 @@ function goAnalyzeShow() { var show=(_spData&&_spData.show)||{}; if (show.feedUr
 function viewAnalysis(jobId) {
   showView('analyze');
   document.getElementById('url-input').value='';
-  document.getElementById('results').innerHTML='';
   document.getElementById('empty-state').style.display='none';
-  document.getElementById('loading').classList.add('on');
-  document.getElementById('atabs').classList.remove('on');
-  document.querySelectorAll('.apanel').forEach(function(p){p.classList.remove('on');});
+  // Show results panel immediately with a spinner — no old loading div
+  document.getElementById('atabs').classList.add('on');
+  document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
+  document.getElementById('apanel-results').classList.add('on');
+  document.getElementById('results').innerHTML='<div style="padding:48px;text-align:center;color:var(--text3);font-size:13px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading analysis&hellip;</div>';
   var _rePlan = String((plUser()||{}).plan||'free').toLowerCase();
-  fetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_rePlan)).then(function(r){return r.json();}).then(function(d){
-    document.getElementById('loading').classList.remove('on');
-    if (d.status==='complete') { document.getElementById('atabs').classList.add('on'); document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on'); document.getElementById('apanel-results').classList.add('on'); renderResults(d); }
-  }).catch(function(){ document.getElementById('loading').classList.remove('on'); });
+  fetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_rePlan))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if (d.status==='complete') {
+        _enrichWithAudioLean(d);
+        renderResults(d);
+        renderTranscriptHighlights(d);
+      } else {
+        document.getElementById('results').innerHTML='<div style="padding:48px;text-align:center;color:var(--text3);font-size:13px">Analysis not yet complete.</div>';
+      }
+    })
+    .catch(function(){
+      document.getElementById('results').innerHTML='<div style="padding:48px;text-align:center;color:var(--text3);font-size:13px">Could not load analysis.</div>';
+    });
 }
 
 // ── COMPARE ──
