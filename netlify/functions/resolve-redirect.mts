@@ -13,7 +13,21 @@ import type { Config } from "@netlify/functions";
  * Falls back to the original URL on any error so analysis is never blocked.
  */
 
+function isYouTubeUrl(url: string): boolean {
+  return /(?:youtube\.com\/(?:watch|shorts|embed|v\/)|youtu\.be\/|m\.youtube\.com\/watch)/.test(url);
+}
+
 async function resolveUrl(url: string): Promise<string> {
+  // YouTube URLs need audio extraction via Railway/yt-dlp — AssemblyAI cannot
+  // download audio from youtube.com watch pages directly.
+  if (isYouTubeUrl(url)) {
+    const audioServiceUrl = Netlify.env.get("AUDIO_SERVICE_URL");
+    if (audioServiceUrl) {
+      return `${audioServiceUrl}/audio?url=${encodeURIComponent(url)}`;
+    }
+    return url; // graceful fallback if service not configured
+  }
+
   // Attempt 1: lightweight HEAD request — most servers support this
   try {
     const res = await fetch(url, {

@@ -5081,10 +5081,12 @@ function startAnalysis(audioUrl, epTitle, showName) {
   var _analyzeUser=plUser()||{};
   // Resolve redirect chains (pdst.fm, podtrac, megaphone, Chartable, etc.)
   // before passing to AssemblyAI — tracking wrappers return HTML not audio.
-  // Skip for YouTube (handled separately) and RSS/feed URLs (server resolves those).
+  // YouTube URLs are also routed through resolve-redirect, which converts them
+  // to Railway audio extraction URLs (yt-dlp) so AssemblyAI gets real audio.
+  // Skip only RSS/feed URLs (server handles those directly).
   var _isYtUrl = /(?:youtube\.com|youtu\.be)/.test(audioUrl);
   var _isFeedUrl = /rss|feed|\.xml/i.test(audioUrl);
-  var _resolvePromise = (_isYtUrl || _isFeedUrl)
+  var _resolvePromise = _isFeedUrl
     ? Promise.resolve(audioUrl)
     : fetch('/api/resolve-redirect', {
         method: 'POST',
