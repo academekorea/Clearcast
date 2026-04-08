@@ -2046,11 +2046,6 @@ body.light-mode,[data-theme="light"]{
 .ar-gate-btn{display:inline-block;padding:7px 18px;background:var(--navy);color:#fff;border-radius:4px;font-size:12px;font-weight:600;text-decoration:none;font-family:var(--ff);cursor:pointer;border:none;transition:opacity .1s}
 .ar-gate-btn:hover{opacity:.85}
 </style>
-<!-- Hotjar / ContentSquare -->
-<script src="https://t.contentsquare.net/uxa/f6610225eda39.js" async></script>
-<!-- Sentry -->
-<script src="https://browser.sentry-cdn.com/7.x.x/bundle.min.js" crossorigin="anonymous"></script>
-<script>if(window.Sentry)Sentry.init({dsn:"https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128",environment:"production",tracesSampleRate:0.2});</script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 </head>
 <body>
@@ -3405,30 +3400,8 @@ function setPlUser(obj) {
     localStorage.setItem('pl-user', JSON.stringify(obj));
     var banner = document.getElementById('founding-banner');
     if (banner) banner.style.display = 'none';
-    // PostHog identify + Sentry user context
-    try {
-      if (window.posthog && obj.id) {
-        posthog.identify(obj.id, {
-          email: obj.email || '',
-          name: obj.name || '',
-          tier: obj.plan || 'free',
-          region: obj.region || '',
-          founding_member: !!(obj.foundingMember),
-          pilot_member: !!(obj.pilotMember),
-        });
-      }
-    } catch(e) {}
-    try {
-      if (window.Sentry && obj.id) {
-        Sentry.setUser({ id: obj.id, email: obj.email || '' });
-        Sentry.setTag('tier', obj.plan || 'free');
-        Sentry.setTag('region', obj.region || '');
-      }
-    } catch(e) {}
   } else {
     localStorage.removeItem('pl-user');
-    try { if (window.posthog) posthog.reset(); } catch(e) {}
-    try { if (window.Sentry) Sentry.setUser(null); } catch(e) {}
   }
 }
 
