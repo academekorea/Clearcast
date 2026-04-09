@@ -2560,33 +2560,33 @@ body.light-mode,[data-theme="light"]{
       <button class="cat-pill-btn" onclick="filterTrendingGrid('sports',this)">Sports</button>
     </div>
 
-    <!-- TRENDING GRID (3 cols, full width) — static, no async -->
+    <!-- TRENDING GRID (3 cols, full width) — artwork loaded via iTunes -->
     <div class="trending-grid-section">
       <div class="tg-eyebrow">Trending</div>
       <div class="tg-title">Most analyzed this week</div>
       <div class="tg-grid" id="tg-grid">
         <div class="tg-card" onclick="showView('show');loadShowProfile('the-daily','https://feeds.simplecast.com/54nAGcIl')">
-          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/600x600bb.jpg" alt="The Daily" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-0">&#127897;</div></div>
           <div class="tg-card-body"><div class="tg-card-name">The Daily</div><div class="tg-card-artist">The New York Times</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
         </div>
         <div class="tg-card" onclick="showView('show');loadShowProfile('pod-save-america','https://feeds.megaphone.fm/pod-save-america')">
-          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/44/dc/61/44dc6141-25e9-5bb3-e19e-a2337233d19e/mza_5506771870755587769.jpg/600x600bb.jpg" alt="Pod Save America" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-1">&#127897;</div></div>
           <div class="tg-card-body"><div class="tg-card-name">Pod Save America</div><div class="tg-card-artist">Crooked Media</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
         </div>
         <div class="tg-card" onclick="showView('show');loadShowProfile('lex-fridman-podcast','https://lexfridman.com/feed/podcast/')">
-          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/3e/e3/9c/3ee39c89-de08-47a6-7f3d-3849cef6d255/mza_16657851278549137484.png/600x600bb.jpg" alt="Lex Fridman Podcast" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-2">&#127897;</div></div>
           <div class="tg-card-body"><div class="tg-card-name">Lex Fridman Podcast</div><div class="tg-card-artist">Lex Fridman</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
         </div>
         <div class="tg-card" onclick="showView('show');loadShowProfile('npr-politics-podcast','https://feeds.npr.org/510310/podcast.xml')">
-          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/71/15/1d/71151d33-32e7-f0e1-2a6b-412bf4835c5d/mza_9550948332778108059.jpg/600x600bb.jpg" alt="NPR Politics Podcast" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-3">&#127897;</div></div>
           <div class="tg-card-body"><div class="tg-card-name">NPR Politics Podcast</div><div class="tg-card-artist">NPR</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
         </div>
         <div class="tg-card" onclick="showView('show');loadShowProfile('the-ben-shapiro-show','https://feeds.megaphone.fm/WWO3519750917')">
-          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/b6/2c/2c/b62c2c46-3fd6-5733-2c82-b95b781a4b40/mza_17718419788103424619.jpg/600x600bb.jpg" alt="The Ben Shapiro Show" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-4">&#127897;</div></div>
           <div class="tg-card-body"><div class="tg-card-name">The Ben Shapiro Show</div><div class="tg-card-artist">Daily Wire</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
         </div>
         <div class="tg-card" onclick="showView('show');loadShowProfile('planet-money','https://feeds.npr.org/510289/podcast.xml')">
-          <div class="tg-art-wrap"><img class="tg-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/85/df/53/85df5334-0fae-28a9-2bc4-b97b81061d0e/mza_10839245066228881011.jpg/600x600bb.jpg" alt="Planet Money" loading="lazy" onerror="this.parentElement.innerHTML='<div class=tg-art-ph>🎙</div>'"></div>
+          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-5">&#127897;</div></div>
           <div class="tg-card-body"><div class="tg-card-name">Planet Money</div><div class="tg-card-artist">NPR</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
         </div>
       </div>
@@ -9691,6 +9691,54 @@ document.addEventListener('DOMContentLoaded', function() {
     document.documentElement.setAttribute('data-theme', 'light');
     document.querySelectorAll('.mode-toggle').forEach(function(btn) { btn.textContent = '☀️'; });
   }
+
+  // Load artwork for trending grid cards via iTunes
+  var TG_SHOWS = [
+    'The Daily',
+    'Pod Save America',
+    'Lex Fridman Podcast',
+    'NPR Politics Podcast',
+    'The Ben Shapiro Show',
+    'Planet Money'
+  ];
+  var TG_CACHE_KEY = 'pl_tg_artwork_v2';
+  var TG_TTL = 48 * 60 * 60 * 1000;
+
+  function applyTgArtwork(urls) {
+    urls.forEach(function(url, i) {
+      if (!url) return;
+      var el = document.getElementById('tg-art-' + i);
+      if (!el) return;
+      var img = document.createElement('img');
+      img.className = 'tg-art';
+      img.src = url;
+      img.alt = TG_SHOWS[i];
+      img.style.cssText = 'width:64px;height:64px;border-radius:6px;object-fit:cover;display:block';
+      img.onerror = function() { this.parentNode.innerHTML = '<div class="tg-art-ph">&#127897;</div>'; };
+      el.parentNode.replaceChild(img, el);
+    });
+  }
+
+  try {
+    var cached = JSON.parse(localStorage.getItem(TG_CACHE_KEY) || 'null');
+    if (cached && cached.ts && (Date.now() - cached.ts) < TG_TTL && cached.urls && cached.urls.length === TG_SHOWS.length) {
+      applyTgArtwork(cached.urls);
+      return;
+    }
+  } catch(e) {}
+
+  Promise.all(TG_SHOWS.map(function(name) {
+    return fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(name) + '&media=podcast&entity=podcast&limit=1')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var r = d.results && d.results[0];
+        return (r && (r.artworkUrl600 || r.artworkUrl100)) || null;
+      })
+      .catch(function() { return null; });
+  })).then(function(urls) {
+    applyTgArtwork(urls);
+    try { localStorage.setItem(TG_CACHE_KEY, JSON.stringify({ ts: Date.now(), urls: urls })); } catch(e) {}
+  });
 });
 
 // ── HERO PLATFORM CONNECT ────────────────────────────────────────────────────
