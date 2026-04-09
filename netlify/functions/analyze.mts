@@ -6,7 +6,8 @@ export default async (req: Request) => {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  const { url } = await req.json();
+  const body = await req.json();
+  const { url, episodeTitle: epTitleRaw, showName: showNameRaw } = body;
   if (!url) {
     return new Response(JSON.stringify({ error: "URL is required" }), {
       status: 400,
@@ -15,9 +16,34 @@ export default async (req: Request) => {
   }
 
   const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
-  let audioUrl = url;
-  let episodeTitle = "Podcast Episode";
-  let showName = "";
+  const audioUrl = url;
+  const episodeTitle = epTitleRaw || "";
+  const showName = showNameRaw || "";
+
+  const store = getStore("podlens-jobs");
+
+  // YouTube: route to transcribe-background (Railway) — AssemblyAI cannot handle YT URLs
+  const isYouTube = /(?:youtube\.com\/watch\?|youtu\.be\/)/.test(url);
+  if (isYouTube) {
+    const jobId = `yt-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    await store.setJSON(jobId, {
+      status: "pending",
+      jobId,
+      url,
+      episodeTitle: episodeTitle || "",
+      showName: showName || "",
+    });
+    // Fire transcribe-background async — do not await
+    fetch(`${process.env.URL}/.netlify/functions/transcribe-background`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jobId, youtubeUrl: url }),
+    }).catch(() => {});
+    return new Response(JSON.stringify({ jobId }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
@@ -43,7 +69,6 @@ export default async (req: Request) => {
   const aaiData = await aaiRes.json();
   const jobId = aaiData.id;
 
-  const store = getStore("podlens-jobs");
   await store.setJSON(jobId, {
     status: "transcribing",
     transcriptId: jobId,
