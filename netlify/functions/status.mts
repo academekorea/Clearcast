@@ -137,6 +137,7 @@ export default async (req: Request) => {
       ? `${Math.round(transcript.audio_duration / 60)} min`
       : "Unknown",
     ...analysis,
+    guest: analysis.guest || null,
   };
 
   await store.setJSON(jobId, result);

@@ -16,7 +16,12 @@ Analyze the transcript and return a JSON object with this exact structure:
       "title": <short description under 15 words>,
       "detail": <explanation 1-2 sentences, grounded in fact>
     }
-  ]
+  ],
+  "guest": {
+    "name": <string — the main guest or interviewee full name, null if none>,
+    "title": <string — their role or title e.g. "CEO, NVIDIA", null if unknown>,
+    "organization": <string — their company or organization, null if unknown>
+  }
 }
 
 Rules:
@@ -90,7 +95,7 @@ export default async (req: Request) => {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1500,
+        max_tokens: 1700,
         messages: [
           {
             role: "user",
