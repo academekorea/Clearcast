@@ -6836,6 +6836,30 @@ function trackAnalysis(data) {
     renderRecentlyAnalyzed();
     renderDashRecent();
     renderBiasFingerprint();
+    // Write completed analysis into u.analyzedEpisodes so Library tab shows history
+    var cu2 = plUser();
+    if (cu2 && cu2.id) {
+      var analyzed = cu2.analyzedEpisodes || [];
+      analyzed = analyzed.filter(function(e) {
+        return e.jobId !== (data.jobId || '');
+      });
+      analyzed.unshift({
+        jobId: data.jobId || '',
+        episodeTitle: data.episodeTitle || '',
+        showName: data.showName || '',
+        artworkUrl: data.artworkUrl || '',
+        biasLabel: data.biasLabel || '',
+        biasScore: data.biasScore || 0,
+        leftPct: (data.audioLean && data.audioLean.leftPct) || 0,
+        centerPct: (data.audioLean && data.audioLean.centerPct) || 0,
+        rightPct: (data.audioLean && data.audioLean.rightPct) || 0,
+        duration: data.duration || '',
+        url: data.url || '',
+        analyzedAt: new Date().toISOString()
+      });
+      cu2.analyzedEpisodes = analyzed.slice(0, 50);
+      setPlUser(cu2);
+    }
   } catch(e){}
 }
 function renderRecentlyAnalyzed() {
