@@ -2180,83 +2180,6 @@ body.light-mode,[data-theme="light"]{
 </head>
 <body>
 
-<script>
-/* PODLENS GEO DETECTION v2
-   Safe client-side Korean redirect.
-   Cannot crash the site. */
-(function podlensGeo() {
-  try {
-    var path = window.location.pathname
-    var search = window.location.search
-
-    /* Already on /kr — do nothing */
-    if (path.startsWith('/kr')) return
-
-    /* Read saved preference */
-    var saved = ''
-    try { saved = localStorage.getItem('podlens-region') || '' } catch(e) {}
-
-    /* User explicitly chose international. NEVER redirect. */
-    if (saved === 'international') return
-
-    /* User previously chose Korean. Redirect immediately. */
-    if (saved === 'ko-KR') {
-      window.location.replace('/kr' + path + search)
-      return
-    }
-
-    /* Korean browser language — treat as Korean user */
-    var lang = ''
-    try { lang = (navigator.language || navigator.userLanguage || '').toLowerCase() } catch(e) {}
-    if (lang.startsWith('ko')) {
-      try { localStorage.setItem('podlens-region', 'ko-KR') } catch(e) {}
-      window.location.replace('/kr' + path + search)
-      return
-    }
-
-    /* Unknown preference — check IP geo async.
-       Page loads normally regardless. */
-    fetch('/api/geo-detect', { method: 'GET', cache: 'no-store' })
-      .then(function(r) { if (!r.ok) return null; return r.json() })
-      .then(function(data) {
-        if (!data) return
-        if (data.isKorean) {
-          try { localStorage.setItem('podlens-region', 'ko-KR') } catch(e) {}
-          window.location.replace('/kr' + path + search)
-        }
-      })
-      .catch(function() { /* API failed — do nothing */ })
-
-  } catch(e) { /* Any error — do nothing, site loads normally */ }
-})()
-</script>
-
-<script>
-(function() {
-  try {
-    var saved = ''
-    try { saved = localStorage.getItem('podlens-region') || '' } catch(e) {}
-    var cachedGeo = ''
-    try { cachedGeo = localStorage.getItem('podlens-geo') || '' } catch(e) {}
-    // Korean = explicit /kr path, saved ko-KR preference, or cached Korean IP
-    // NOT browser language — only IP-based detection
-    var isKorean =
-      saved === 'ko-KR' ||
-      window.location.pathname.startsWith('/kr') ||
-      cachedGeo === 'kr'
-
-    if (!isKorean) {
-      document.querySelectorAll(
-        'link[hreflang="ko"],link[hreflang="ko-KR"]'
-      ).forEach(function(el) {
-        el && el.parentNode && el.parentNode.removeChild(el)
-      })
-      var switcher = document.getElementById('lang-switch-wrap')
-      if (switcher) switcher.style.display = 'none'
-    }
-  } catch(e) {}
-})()
-</script>
 
 <script>(function(){
   var s=localStorage.getItem('pl-theme')||localStorage.getItem('podlens-mode');
@@ -2265,18 +2188,6 @@ body.light-mode,[data-theme="light"]{
   else if(s){document.documentElement.setAttribute('data-theme',s);}
 })()</script>
 
-<script>
-/* Korean meta tags — set before page renders */
-(function() {
-  try {
-    if (window.location.pathname.startsWith('/kr')) {
-      document.title = 'Podlens — 지금 실제로 무엇을 듣고 있는지 알아보세요';
-      var desc = document.querySelector('meta[name="description"]');
-      if (desc) desc.setAttribute('content', 'Podlens는 모든 팟캐스트의 편향을 분석합니다. Spotify, YouTube, Apple 팟캐스트를 연결하고 즉각적인 인사이트를 받으세요. 무료로 시작하세요.');
-    }
-  } catch(e) {}
-})();
-</script>
 
 <!-- BRANDED SPLASH SCREEN -->
 <div class="pl-splash" id="pl-splash">
@@ -2291,27 +2202,6 @@ body.light-mode,[data-theme="light"]{
   <div class="pl-loader-bar"></div>
 </div>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <a href="/extension.html" class="topbar-l">Browser Extension &mdash; Coming Soon</a>
-<div class="topbar-r">
-    <div class="region-sel" id="region-sel">
-      <button class="region-btn" id="region-btn" onclick="toggleRegionMenu(event)">
-        <span id="region-flag">🌍</span>&nbsp;<span id="region-currency-label">International</span>
-      </button>
-      <div class="region-menu" id="region-menu">
-        <button onclick="setRegion('INTL','en','USD','us')">🌍 International</button>
-        <button onclick="setRegion('KR','ko','KRW','kr')">🇰🇷 한국 <span class="beta-pill">베타</span></button>
-      </div>
-    </div>
-    <div id="topbar-date"></div>
-  </div>
-</div>
-<!-- Korean beta banner (shown when region=KR) -->
-<div class="kr-beta-banner" id="kr-beta-banner">
-  🇰🇷 한국어 베타 서비스 중입니다 &mdash; 피드백을 보내주세요:
-  <a href="mailto:hello@podlens.app" style="color:inherit;font-weight:600">hello@podlens.app</a>
-</div>
 
 <!-- NAV -->
 <nav class="nav-bar" id="main-nav">
@@ -2348,8 +2238,7 @@ body.light-mode,[data-theme="light"]{
       <a class="nav-link" id="nl-library" href="/library.html">Library</a>
       <button class="nav-theme-toggle" onclick="toggleMode()" id="mode-toggle-btn"
               aria-label="Toggle dark/light mode">🌙</button>
-      <div id="lang-switch-wrap"></div>
-      <div id="nav-auth-area" style="display:contents"><!-- rendered by initNav() --></div>
+<div id="nav-auth-area" style="display:contents"><!-- rendered by initNav() --></div>
     </div>
 
   </div>
@@ -3513,12 +3402,6 @@ body.light-mode,[data-theme="light"]{
 
 <script>
 // ── THEME ──
-(function(){
-  var d = new Date(); var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var el = document.getElementById('topbar-date');
-  if (el) el.textContent = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
-})();
 
 // ── AUTH SYSTEM (localStorage) ──
 function plUser() {
