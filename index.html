@@ -1675,7 +1675,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .ticker-bias.left{color:#60A5FA;background:rgba(59,130,246,.1)}
 .ticker-bias.right{color:#F87171;background:rgba(239,68,68,.1)}
 .ticker-bias.balanced{color:#34D399;background:rgba(16,185,129,.1)}
-.showcase-section{padding:80px 40px;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border)}
+.showcase-section{padding:64px 24px;max-width:1000px;margin:0 auto;border-bottom:1px solid var(--border)}
 .showcase-header{text-align:center;margin-bottom:48px}
 .showcase-header h2{font-size:2rem;font-weight:700;color:var(--text);margin-bottom:8px;font-family:var(--ffs)}
 .showcase-header p{color:var(--text2);font-size:1.1rem}
@@ -2256,7 +2256,7 @@ body.light-mode,[data-theme="light"]{
 .ml{font-size:10px;color:#bbb;margin-top:2px}
 .ms{font-size:10px;margin-top:2px}
 .findings-wrap{border:0.5px solid #e8e8e8;border-radius:8px;overflow:hidden}
-.fi{display:grid;grid-template-columns:78px 1fr 18px;gap:10px;padding:11px 12px;border-bottom:0.5px solid #f0f0f0;align-items:center;cursor:pointer;transition:background .12s}
+.fi{display:grid;grid-template-columns:90px 1fr 18px;gap:12px;padding:12px 14px;border-bottom:0.5px solid #f0f0f0;align-items:start;cursor:pointer;transition:background .12s}
 .fi.open{background:#fafafa}
 .fi:hover{background:#fafafa}
 .ftag{padding:3px 6px;border-radius:4px;font-size:10px;font-weight:500;text-align:center;white-space:nowrap}
@@ -2526,7 +2526,7 @@ body.light-mode,[data-theme="light"]{
         <p>A real completed analysis. Switch tiers to see what each plan unlocks.</p>
       </div>
 
-      <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;max-width:1100px;margin:0 auto 40px">
+      <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;max-width:800px;margin:0 auto 40px">
 
         <!-- Tier switcher + tabs -->
         <div style="background:var(--bg3);padding:16px 24px;border-bottom:0.5px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:10px">
@@ -2725,10 +2725,7 @@ body.light-mode,[data-theme="light"]{
 
       </div>
 
-      <div class="showcase-footer">
-        <p>This is a real analysis of a real episode. Every podcast you analyze gets the same treatment.</p>
-        <p>Connect your listening history to see what <em>you</em> actually listen to.</p>
-      </div>
+
     </section>
 
 
@@ -2749,32 +2746,7 @@ body.light-mode,[data-theme="light"]{
     <div class="trending-grid-section">
       <div class="tg-eyebrow">Trending</div>
       <div class="tg-title">Most analyzed this week</div>
-      <div class="tg-grid" id="tg-grid">
-        <div class="tg-card" onclick="showView('show');loadShowProfile('the-daily','https://feeds.simplecast.com/54nAGcIl')">
-          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-0">&#127897;</div></div>
-          <div class="tg-card-body"><div class="tg-card-name">The Daily</div><div class="tg-card-artist">The New York Times</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
-        </div>
-        <div class="tg-card" onclick="showView('show');loadShowProfile('pod-save-america','https://feeds.megaphone.fm/pod-save-america')">
-          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-1">&#127897;</div></div>
-          <div class="tg-card-body"><div class="tg-card-name">Pod Save America</div><div class="tg-card-artist">Crooked Media</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
-        </div>
-        <div class="tg-card" onclick="showView('show');loadShowProfile('lex-fridman-podcast','https://lexfridman.com/feed/podcast/')">
-          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-2">&#127897;</div></div>
-          <div class="tg-card-body"><div class="tg-card-name">Lex Fridman Podcast</div><div class="tg-card-artist">Lex Fridman</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
-        </div>
-        <div class="tg-card" onclick="showView('show');loadShowProfile('npr-politics-podcast','https://feeds.npr.org/510310/podcast.xml')">
-          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-3">&#127897;</div></div>
-          <div class="tg-card-body"><div class="tg-card-name">NPR Politics Podcast</div><div class="tg-card-artist">NPR</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
-        </div>
-        <div class="tg-card" onclick="showView('show');loadShowProfile('the-ben-shapiro-show','https://feeds.megaphone.fm/WWO3519750917')">
-          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-4">&#127897;</div></div>
-          <div class="tg-card-body"><div class="tg-card-name">The Ben Shapiro Show</div><div class="tg-card-artist">Daily Wire</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
-        </div>
-        <div class="tg-card" onclick="showView('show');loadShowProfile('planet-money','https://feeds.npr.org/510289/podcast.xml')">
-          <div class="tg-art-wrap"><div class="tg-art-ph" id="tg-art-5">&#127897;</div></div>
-          <div class="tg-card-body"><div class="tg-card-name">Planet Money</div><div class="tg-card-artist">NPR</div><button class="tg-analyze-btn">Analyze &rarr;</button></div>
-        </div>
-      </div>
+      <div class="tg-grid" id="tg-grid"></div>
     </div>
 
     <!-- SOCIAL PROOF: 3 show cards -->
@@ -4514,12 +4486,30 @@ var _submittedFeedUrl = null; // original URL submitted by user — used for dis
 var TOPICS = ['Israel-Gaza','Iran war','Fed rates','AI regulation','Trump tariffs','Ukraine','Climate','Supreme Court','Immigration','Economy'];
 
 var CURATED_SHOWS = [
-  {name:'The Daily',artist:'The New York Times',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/600x600bb.jpg',feedUrl:'https://feeds.simplecast.com/54nAGcIl'},
-  {name:'Pod Save America',artist:'Crooked Media',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/44/dc/61/44dc6141-25e9-5bb3-e19e-a2337233d19e/mza_5506771870755587769.jpg/600x600bb.jpg',feedUrl:'https://feeds.megaphone.fm/pod-save-america'},
-  {name:'Lex Fridman Podcast',artist:'Lex Fridman',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/3e/e3/9c/3ee39c89-de08-47a6-7f3d-3849cef6d255/mza_16657851278549137484.png/600x600bb.jpg',feedUrl:'https://lexfridman.com/feed/podcast/'},
-  {name:'NPR Politics Podcast',artist:'NPR',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/71/15/1d/71151d33-32e7-f0e1-2a6b-412bf4835c5d/mza_9550948332778108059.jpg/600x600bb.jpg',feedUrl:'https://feeds.npr.org/510310/podcast.xml'},
-  {name:'The Ben Shapiro Show',artist:'Daily Wire',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/b6/2c/2c/b62c2c46-3fd6-5733-2c82-b95b781a4b40/mza_17718419788103424619.jpg/600x600bb.jpg',feedUrl:'https://feeds.megaphone.fm/WWO3519750917'},
-  {name:'Planet Money',artist:'NPR',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/85/df/53/85df5334-0fae-28a9-2bc4-b97b81061d0e/mza_10839245066228881011.jpg/600x600bb.jpg',feedUrl:'https://feeds.npr.org/510289/podcast.xml'},
+  {name:'The Daily',artist:'The New York Times',feedUrl:'https://feeds.simplecast.com/54nAGcIl',cat:'news'},
+  {name:'Pod Save America',artist:'Crooked Media',feedUrl:'https://feeds.megaphone.fm/pod-save-america',cat:'news'},
+  {name:'NPR Politics Podcast',artist:'NPR',feedUrl:'https://feeds.npr.org/510310/podcast.xml',cat:'news'},
+  {name:'The Ben Shapiro Show',artist:'Daily Wire',feedUrl:'https://feeds.megaphone.fm/WWO3519750917',cat:'news'},
+  {name:'The Ezra Klein Show',artist:'NYT Opinion',feedUrl:'https://feeds.simplecast.com/82FI35Px',cat:'news'},
+  {name:'Lex Fridman Podcast',artist:'Lex Fridman',feedUrl:'https://lexfridman.com/feed/podcast/',cat:'tech'},
+  {name:'Hard Fork',artist:'NYT Technology',feedUrl:'https://feeds.simplecast.com/l2i9YnTd',cat:'tech'},
+  {name:'Acquired',artist:'Ben Gilbert & David Rosenthal',feedUrl:'https://feeds.megaphone.fm/acquired',cat:'tech'},
+  {name:'Darknet Diaries',artist:'Jack Rhysider',feedUrl:'https://feeds.megaphone.fm/darknetdiaries',cat:'tech'},
+  {name:'All-In Podcast',artist:'Chamath, Jason, Sacks, Friedberg',feedUrl:'https://feeds.megaphone.fm/allin',cat:'business'},
+  {name:'Planet Money',artist:'NPR',feedUrl:'https://feeds.npr.org/510289/podcast.xml',cat:'business'},
+  {name:'How I Built This',artist:'NPR/Guy Raz',feedUrl:'https://feeds.npr.org/510313/podcast.xml',cat:'business'},
+  {name:'We Can Do Hard Things',artist:'Glennon Doyle',feedUrl:'https://feeds.megaphone.fm/wecandohardthings',cat:'society'},
+  {name:'Radiolab',artist:'WNYC Studios',feedUrl:'https://feeds.wnyc.org/radiolab',cat:'society'},
+  {name:'Serial',artist:'Serial Productions',feedUrl:'https://feeds.simplecast.com/xl626A5P',cat:'crime'},
+  {name:'My Favorite Murder',artist:'Karen Kilgariff & Georgia Hardstark',feedUrl:'https://feeds.megaphone.fm/myfavoritemurder',cat:'crime'},
+  {name:'Crime Junkie',artist:'audiochuck',feedUrl:'https://feeds.simplecast.com/MoTQX4v6',cat:'crime'},
+  {name:'Conan O'Brien Needs A Friend',artist:'Team Coco',feedUrl:'https://feeds.simplecast.com/dHoohVNH',cat:'comedy'},
+  {name:'Stuff You Should Know',artist:'iHeart',feedUrl:'https://feeds.megaphone.fm/stuffyoushouldknow',cat:'comedy'},
+  {name:'Fresh Air',artist:'NPR',feedUrl:'https://feeds.npr.org/381444908/podcast.xml',cat:'society'},
+  {name:'Huberman Lab',artist:'Andrew Huberman',feedUrl:'https://feeds.megaphone.fm/hubermanlab',cat:'health'},
+  {name:'Maintenance Phase',artist:'Aubrey Gordon & Michael Hobbes',feedUrl:'https://feeds.megaphone.fm/maintenancephase',cat:'health'},
+  {name:'The Bill Simmons Podcast',artist:'The Ringer',feedUrl:'https://feeds.megaphone.fm/billsimmons',cat:'sports'},
+  {name:'Pardon My Take',artist:'Barstool Sports',feedUrl:'https://feeds.megaphone.fm/pardonmytake',cat:'sports'},
 ];
 
 // ── CURATED ARTWORK SELF-HEALING ──
@@ -9072,9 +9062,48 @@ document.addEventListener('keydown', function(e) {
 
 // ── HOMEPAGE FUNCTIONS ──
 function filterTrendingGrid(category, btn) {
-  // Static content — just update button state, no reload
   document.querySelectorAll('.cat-pill-btn').forEach(function(b){ b.classList.remove('on'); });
   if (btn) btn.classList.add('on');
+  _tgCategory = category || 'all';
+  var el = document.getElementById('tg-grid');
+  if (!el) return;
+  var shows = category === 'all'
+    ? CURATED_SHOWS
+    : CURATED_SHOWS.filter(function(s){ return s.cat === category; });
+  if (!shows.length) shows = CURATED_SHOWS;
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v2') || 'null'); } catch(e) {}
+  var artworkMap = {};
+  if (cached && cached.urls && (Date.now() - cached.ts) < 48*60*60*1000) {
+    CURATED_SHOWS.forEach(function(s, i){ if (cached.urls[i]) artworkMap[s.name] = cached.urls[i]; });
+  }
+  el.innerHTML = shows.slice(0, 6).map(function(s, i) {
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+    var artId = 'tg-art-cat-' + i;
+    var art = artworkMap[s.name];
+    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')">'
+      + '<div class="tg-art-wrap">' + (art ? '<img class="tg-art" src="'+art+'" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover" onerror="this.style.display=\'none\'">' : '<div class="tg-art-ph" id="'+artId+'">&#127897;</div>') + '</div>'
+      + '<div class="tg-card-body"><div class="tg-card-name">'+s.name+'</div><div class="tg-card-artist">'+s.artist+'</div>'
+      + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
+  }).join('');
+  // Load missing artwork via iTunes
+  shows.slice(0, 6).forEach(function(s, i) {
+    if (artworkMap[s.name]) return;
+    var artEl = document.getElementById('tg-art-cat-' + i);
+    if (!artEl) return;
+    fetch('https://itunes.apple.com/search?term='+encodeURIComponent(s.name)+'&media=podcast&limit=1')
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var url = d.results && d.results[0] && (d.results[0].artworkUrl600 || d.results[0].artworkUrl100);
+        if (!url || !artEl.parentNode) return;
+        var img = document.createElement('img');
+        img.style.cssText = 'width:64px;height:64px;border-radius:6px;object-fit:cover';
+        img.src = url; img.alt = s.name;
+        img.onerror = function(){ this.style.display='none'; };
+        artEl.parentNode.replaceChild(img, artEl);
+      }).catch(function(){});
+  });
 }
 
 var _tgCategory = 'all';
@@ -10079,53 +10108,8 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('pl-theme', 'light');
   }
 
-  // Load artwork for trending grid cards via iTunes
-  var TG_SHOWS = [
-    'The Daily',
-    'Pod Save America',
-    'Lex Fridman Podcast',
-    'NPR Politics Podcast',
-    'The Ben Shapiro Show',
-    'Planet Money'
-  ];
-  var TG_CACHE_KEY = 'pl_tg_artwork_v2';
-  var TG_TTL = 48 * 60 * 60 * 1000;
-
-  function applyTgArtwork(urls) {
-    urls.forEach(function(url, i) {
-      if (!url) return;
-      var el = document.getElementById('tg-art-' + i);
-      if (!el) return;
-      var img = document.createElement('img');
-      img.className = 'tg-art';
-      img.src = url;
-      img.alt = TG_SHOWS[i];
-      img.style.cssText = 'width:64px;height:64px;border-radius:6px;object-fit:cover;display:block';
-      img.onerror = function() { this.parentNode.innerHTML = '<div class="tg-art-ph">&#127897;</div>'; };
-      el.parentNode.replaceChild(img, el);
-    });
-  }
-
-  try {
-    var cached = JSON.parse(localStorage.getItem(TG_CACHE_KEY) || 'null');
-    if (cached && cached.ts && (Date.now() - cached.ts) < TG_TTL && cached.urls && cached.urls.length === TG_SHOWS.length) {
-      applyTgArtwork(cached.urls);
-      return;
-    }
-  } catch(e) {}
-
-  Promise.all(TG_SHOWS.map(function(name) {
-    return fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(name) + '&media=podcast&entity=podcast&limit=1')
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        var r = d.results && d.results[0];
-        return (r && (r.artworkUrl600 || r.artworkUrl100)) || null;
-      })
-      .catch(function() { return null; });
-  })).then(function(urls) {
-    applyTgArtwork(urls);
-    try { localStorage.setItem(TG_CACHE_KEY, JSON.stringify({ ts: Date.now(), urls: urls })); } catch(e) {}
-  });
+  // Render tg-grid from CURATED_SHOWS and load artwork via iTunes
+  filterTrendingGrid('all', document.querySelector('.cat-pill-btn.on'));
 });
 
 // ── URL ROUTING — handle browser back/forward ─────────────────────────────────
