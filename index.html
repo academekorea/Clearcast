@@ -5155,6 +5155,13 @@ async function handleAnalyze() {
   var raw = document.getElementById('url-input').value.trim();
   if (!raw) { document.getElementById('url-input').focus(); return; }
 
+  // Clear demo state so it doesn't bleed into real analysis
+  window._lastAnalysisResult = null;
+  var resultsEl = document.getElementById('results');
+  if (resultsEl) resultsEl.innerHTML = '';
+  var transcriptEl = document.getElementById('transcript-content');
+  if (transcriptEl) transcriptEl.innerHTML = '';
+
   // Normalize — prepend https:// if no protocol
   if (!raw.startsWith('http://') && !raw.startsWith('https://')) raw = 'https://' + raw;
   document.getElementById('url-input').value = raw;
@@ -7115,7 +7122,7 @@ function setPreviewTier(tier) {
 var DEMO_RESULT = {
   jobId: 'demo',
   status: 'complete',
-  url: 'https://www.youtube.com/watch?v=eNliOm9NtCM',
+  url: '',
   episodeTitle: 'Jensen Huang: NVIDIA, AI, and the Future of Computing',
   showName: 'Lex Fridman Podcast',
   duration: '2h 18m',
