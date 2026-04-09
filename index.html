@@ -4663,7 +4663,11 @@ async function loadHomeTrending() {
   try {
     var data = await fetch('/api/stories?q=news').then(function(r){ return r.json(); });
     var eps = (data.results || []).slice(0, 5);
-    if (!eps.length) { el.innerHTML = '<div style="color:var(--text3);font-size:13px">No trending episodes right now.</div>'; return; }
+    if (!eps.length) {
+      // Fallback to curated shows when API returns nothing
+      _renderHomeTrendingFallback(el);
+      return;
+    }
     el.innerHTML = eps.map(function(ep, i) {
       var analyzeUrl = ep.feedUrl || ep.youtubeUrl || '';
       var safeUrl = analyzeUrl.replace(/"/g,'&quot;');
@@ -4684,7 +4688,32 @@ async function loadHomeTrending() {
         + (meta ? '<div class="trend-meta">'+meta+'</div>' : '')
         + bar + '</div></div>';
     }).join('');
-  } catch(e) { el.innerHTML = '<div style="color:var(--text3);font-size:13px">Could not load trending episodes.</div>'; }
+  } catch(e) { _renderHomeTrendingFallback(el); }
+}
+
+function _renderHomeTrendingFallback(el) {
+  if (!el) return;
+  var FALLBACK = [
+    { show:'The Joe Rogan Experience', ep:'#2254 — Elon Musk', dir:'right', url:'https://www.youtube.com/@joerogan' },
+    { show:'The Daily', ep:'How the Media Shapes What We Believe', dir:'left', url:'https://feeds.simplecast.com/54nAGcIl' },
+    { show:'Lex Fridman Podcast', ep:'Jensen Huang — NVIDIA & the AI Revolution', dir:'balanced', url:'https://www.youtube.com/watch?v=vif8NQcjVf0' },
+    { show:'Pod Save America', ep:'The Stakes This November', dir:'left', url:'https://feeds.megaphone.fm/pod-save-america' },
+    { show:'The Ben Shapiro Show', ep:'Daily News Briefing', dir:'right', url:'https://feeds.megaphone.fm/WWO3519750917' }
+  ];
+  el.innerHTML = FALLBACK.map(function(f, i) {
+    var col = f.dir==='left' ? '#378ADD' : f.dir==='right' ? '#E24B4A' : '#22c55e';
+    var label = f.dir==='left' ? 'Lightly Left-Leaning' : f.dir==='right' ? 'Lightly Right-Leaning' : 'Mostly Balanced';
+    var safeUrl = f.url.replace(/"/g,'&quot;');
+    var safeEp = f.ep.replace(/"/g,'').replace(/'/g,'');
+    var safeShow = f.show.replace(/"/g,'').replace(/'/g,'');
+    return '<div class="trend-row" onclick="analyzeEp(null,&quot;'+safeUrl+'&quot;,&quot;'+safeEp+'&quot;,&quot;'+safeShow+'&quot;)">'
+      + '<div class="trend-num">'+(i+1)+'</div>'
+      + '<div class="trend-art-wrap"><div class="trend-art-ph" style="background:#1a3050;color:#fff;font-size:20px">🎙</div></div>'
+      + '<div class="trend-body"><div class="trend-show">'+f.show+'</div>'
+      + '<div class="trend-title">'+f.ep+'</div>'
+      + '<span style="font-size:11px;font-weight:600;color:'+col+';background:'+col+'1a;padding:2px 8px;border-radius:999px">'+label+'</span>'
+      + '</div></div>';
+  }).join('');
 }
 
 // ── HERO ANALYZE ──
