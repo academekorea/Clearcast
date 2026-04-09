@@ -227,14 +227,14 @@ function renderResults(data) {
     + '<a class="sl sl-podlens" href="#">&#127897; PodLens profile</a>'
     + '</div></div>';
 
-  // Audio briefing card
+  // Audio briefing card — always playable using summary text via Web Speech API
+  var briefingScript = (data.summary || data.biasLabel || 'Analysis complete.').replace(/'/g,"&#39;").replace(/"/g,'&quot;');
   html += '<div class="pl-card">'
     + '<div class="lbl">Audio briefing \u00b7 Before you listen</div>'
     + '<div class="bdesc">'+(data.summary ? data.summary.substring(0,120)+(data.summary.length>120?'\u2026':'') : 'AI-narrated overview of bias, framing, and sponsor patterns.')+'</div>'
     + '<div style="display:flex;align-items:center;gap:8px">'
-    + (showFull
-        ? '<button class="bbtn" onclick="toggleAudioSummary(\''+(data.jobId||'')+'\',\'\')">\u25b6 Play briefing</button><span class="bdur">2 min 04 sec</span>'
-        : '<button class="bbtn" disabled style="opacity:.4;cursor:default">\u25b6 Play briefing</button><span class="bdur" style="color:#bbb">Creator+</span>')
+    + '<button class="bbtn" onclick="toggleAudioSummary(\''+(data.jobId||'demo')+'\',\''+briefingScript+'\')">\u25b6 Play briefing</button>'
+    + (showFull ? '<span class="bdur">~2 min</span>' : '<span class="bdur" style="color:#bbb">10 sec preview</span>')
     + '</div></div>';
 
   // Bias card
