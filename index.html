@@ -4254,7 +4254,9 @@ function renderDashFollowedShows(u) {
 }
 
 function renderDashRecent() {
-  var recent = getRecent();
+  var recent = getRecent().filter(function(r) {
+    return r.title && r.title !== 'Podcast Episode' && r.title !== 'Episode';
+  });
   var el = document.getElementById('dash-recent-list');
   if (!el) return;
   if (!recent.length) { el.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:12px 0">No episodes analyzed yet. Paste a URL above to get started.</div>'; return; }
@@ -7433,7 +7435,7 @@ function trackAnalysis(data) {
     }
     var recent=getRecent();
     var al=data.audioLean||{};
-    recent.unshift({title:data.episodeTitle||'Episode',biasLabel:data.biasLabel||'',url:data.url||'',showName:data.showName||'',leftPct:al.leftPct,centerPct:al.centerPct,rightPct:al.rightPct});
+    recent.unshift({title:data.episodeTitle||'',biasLabel:data.biasLabel||'',url:data.url||'',showName:data.showName||'',leftPct:al.leftPct,centerPct:al.centerPct,rightPct:al.rightPct});
     recent=recent.slice(0,10);
     localStorage.setItem('pl-recent',JSON.stringify(recent));
     renderRecentlyAnalyzed();
