@@ -5369,11 +5369,24 @@ function lafCompleteStep(idx) {
 
 function _enrichWithAudioLean(d) {
   if (typeof d.biasScore === 'number' && !d.audioLean) {
-    var bs = d.biasScore;
-    var rp = Math.round(Math.max(0, Math.min(100, bs)));
-    var lp = Math.round(Math.max(0, Math.min(100, -bs)));
-    var cp = Math.max(0, 100 - lp - rp);
-    d.audioLean = { leftPct: lp, centerPct: cp, rightPct: rp, plainEnglishLabel: d.biasLabel || '' };
+    var bs = Math.max(-100, Math.min(100, d.biasScore));
+    var absScore = Math.abs(bs);
+    var lp, cp, rp;
+    if (bs < -5) {
+      lp = Math.round(30 + absScore * 0.45);
+      rp = Math.max(5, Math.round(20 - absScore * 0.15));
+      cp = Math.max(5, 100 - lp - rp);
+    } else if (bs > 5) {
+      rp = Math.round(30 + absScore * 0.45);
+      lp = Math.max(5, Math.round(20 - absScore * 0.15));
+      cp = Math.max(5, 100 - lp - rp);
+    } else {
+      lp = 20; cp = 60; rp = 20;
+    }
+    d.audioLean = {
+      leftPct: lp, centerPct: cp, rightPct: rp,
+      plainEnglishLabel: d.biasLabel || ''
+    };
   }
   return d;
 }
@@ -6290,7 +6303,7 @@ function renderResults(data) {
   function _v7FindingHtml(f) {
     return '<div class="v7-fi" onclick="arToggleFinding(this)">'
       + '<div class="v7-ftag ' + _v7FtCls(f.type) + '">' + _v7FtLabel(f.type) + '</div>'
-      + '<div><div class="v7-ftitle">' + (f.title || '') + '</div><div class="v7-fbody">' + (f.summary || '') + '</div></div>'
+      + '<div><div class="v7-ftitle">' + (f.title || '') + '</div><div class="v7-fbody">' + (f.detail || f.summary || '') + '</div></div>'
       + '<div class="v7-farrow">&#8250;</div>'
       + '</div>'
       + '<div class="v7-expand">' + _v7Expand(f) + '</div>';
