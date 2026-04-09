@@ -19,34 +19,6 @@ export default async (req: Request) => {
   let episodeTitle = "Podcast Episode";
   let showName = "";
 
-  if (url.includes("rss") || url.includes("feed") || url.endsWith(".xml")) {
-    try {
-      const rssRes = await fetch(url);
-      const rssText = await rssRes.text();
-
-      const audioMatch = rssText.match(/<enclosure[^>]+url="([^"]+)"/i);
-      if (!audioMatch) {
-        return new Response(JSON.stringify({ error: "Could not find audio in RSS feed" }), {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-      audioUrl = audioMatch[1];
-
-      const showMatch = rssText.match(/<channel[^>]*>[\s\S]*?<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/i);
-      if (showMatch) showName = showMatch[1].trim();
-
-      const epMatch = rssText.match(/<item[^>]*>[\s\S]*?<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/i);
-      if (epMatch) episodeTitle = epMatch[1].trim();
-
-    } catch {
-      return new Response(JSON.stringify({ error: "Failed to parse RSS feed" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-  }
-
   const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
     headers: {
