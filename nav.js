@@ -71,10 +71,10 @@
   function _buildLoggedOut(navLinks, path) {
     navLinks.innerHTML =
       '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '">Discover</a>'
-      + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '">Analyze</a>'
-      + '<a href="/library.html" class="nav-link' + (_isActive('/library.html', path) ? ' active' : '') + '">Library</a>'
-      + '<a href="/" class="nav-link" onclick="if(typeof openModal===\'function\'){openModal(\'login\');return false}">Sign in</a>'
-      + '<a href="/" class="nav-signin" onclick="if(typeof openModal===\'function\'){openModal(\'signup\');return false}">Get started</a>';
+      + '<a href="/how-it-works.html" class="nav-link' + (_isActive('/how-it-works.html', path) ? ' active' : '') + '">How it works</a>'
+      + '<a href="/pricing.html" class="nav-link' + (_isActive('/pricing.html', path) ? ' active' : '') + '">Pricing</a>'
+      + '<button class="nav-theme-toggle mode-toggle" onclick="if(typeof toggleMode===\'function\')toggleMode()" aria-label="Toggle dark/light mode" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px">☀️</button>'
+      + '<a href="/" class="nav-signin" onclick="if(typeof openModal===\'function\'){openModal(\'login\');return false}">Sign in / up</a>';
   }
 
   function _buildLoggedIn(navLinks, u, path) {

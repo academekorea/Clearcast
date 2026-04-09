@@ -9214,15 +9214,13 @@ if (!handleUrlRouting()) {
 }
 
 // ── FOUNDING BANNER — always show to logged-out users on homepage ─────────────
-(function initFoundingBanner() {
+document.addEventListener('DOMContentLoaded', function() {
   if (plUser()) return;
   try { if (localStorage.getItem('pl-founding-dismissed') === '1') return; } catch(e) {}
   var banner = document.getElementById('founding-banner');
   if (!banner) return;
-  var activeView = document.querySelector('.view.on');
-  if (activeView && activeView.id !== 'view-home') return;
   banner.style.display = '';
-})();
+});
 
 // ── TASK 9: ENGAGEMENT NUDGE SYSTEM ──────────────────────────────────────────
 var _lockedClickCount = 0;
