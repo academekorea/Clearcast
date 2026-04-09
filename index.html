@@ -7628,6 +7628,8 @@ var _previewTier = 'free'; // used for guest preview only
 function _getEffectiveTierConfig() {
   var u = plUser();
   if (!u) return tierConfig[_previewTier] || tierConfig.free;
+  var SUPER_ADMIN_EMAIL = 'academekorea@gmail.com';
+  if (u.email === SUPER_ADMIN_EMAIL || u.isSuperAdmin) return tierConfig.studio;
   var plan = String(enforcePlanRules() || u.plan || 'free').toLowerCase();
   return tierConfig[plan] || tierConfig.free;
 }
