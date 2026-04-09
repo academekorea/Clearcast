@@ -1,10 +1,30 @@
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const { execFile } = require('child_process');
+const { execFile, execSync } = require('child_process');
 const util = require('util');
 const fs = require('fs');
 const path = require('path');
+
+// ── Global error handlers — log crashes, never let Railway SIGTERM silently ──
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err);
+});
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled rejection:', err);
+});
+
+// ── Startup checks ──
+try {
+  const v = execSync('yt-dlp --version').toString().trim();
+  console.log('yt-dlp version:', v);
+} catch (e) {
+  console.error('yt-dlp not found:', e.message);
+}
+
+if (!process.env.YOUTUBE_SERVICE_SECRET) {
+  console.warn('Warning: YOUTUBE_SERVICE_SECRET is not set — /extract will reject all requests');
+}
 
 const execFileAsync = util.promisify(execFile);
 const app = express();
