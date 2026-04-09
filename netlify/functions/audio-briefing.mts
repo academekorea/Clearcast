@@ -45,14 +45,14 @@ export default async (req: Request) => {
 
   let audioData: ArrayBuffer | null = null;
 
-  // Strategy 1: OpenAI TTS (English default)
-  if (!audioData && OPENAI_KEY()) {
-    audioData = await callOpenAI(trimmedScript, lang);
-  }
-
-  // Strategy 2: ElevenLabs (Korean or OpenAI fallback)
+  // Strategy 1: ElevenLabs (best quality — primary)
   if (!audioData && ELEVENLABS_KEY()) {
     audioData = await callElevenLabs(trimmedScript, lang);
+  }
+
+  // Strategy 2: OpenAI TTS (fallback if ElevenLabs fails or unavailable)
+  if (!audioData && OPENAI_KEY()) {
+    audioData = await callOpenAI(trimmedScript, lang);
   }
 
   if (!audioData) {
@@ -121,8 +121,8 @@ async function callElevenLabs(script: string, lang: string): Promise<ArrayBuffer
       },
       body: JSON.stringify({
         text: script,
-        model_id: lang === "ko" ? "eleven_multilingual_v2" : "eleven_turbo_v2_5",
-        voice_settings: { stability: 0.5, similarity_boost: 0.75, speed: 0.95 },
+        model_id: lang === "ko" ? "eleven_multilingual_v2" : "eleven_multilingual_v2",
+        voice_settings: { stability: 0.45, similarity_boost: 0.80, style: 0.35, use_speaker_boost: true },
       }),
       signal: AbortSignal.timeout(30000),
     });
