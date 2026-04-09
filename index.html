@@ -2459,7 +2459,7 @@ body.light-mode,[data-theme="light"]{
         <div class="hero-right-panel" id="hero-stats-panel">
           <div class="hero-preview-card">
             <div class="hpc-header">
-              <img class="hpc-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/300x300bb.jpg" alt="" onerror="this.style.display='none'">
+              <img class="hpc-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/300x300bb.jpg" alt="">
               <div class="hpc-meta">
                 <div class="hpc-show">The Daily &middot; NYT</div>
                 <div class="hpc-ep">How the Media Shapes What We Believe</div>
@@ -2725,7 +2725,6 @@ body.light-mode,[data-theme="light"]{
         <p>Connect your listening history to see what <em>you</em> actually listen to.</p>
       </div>
     </section>
- SECTION -->
 
 
     <!-- CATEGORY PILLS -->
@@ -2798,15 +2797,17 @@ body.light-mode,[data-theme="light"]{
 
 
 
-    <!-- TRENDING -->
-    <section class="trending-section">
-      <div class="section-eyebrow">This week</div>
-      <h2 class="section-h">Trending episodes</h2>
-      <p class="section-sub" style="margin-bottom:40px">Tap any episode to analyze it.</p>
-      <div class="trending-list" id="home-trending-list">
-        <div style="text-align:center;padding:32px;color:var(--text3);font-size:13px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading&hellip;</div>
+    <!-- TRENDING EPISODES — 6-col grid with fallback -->
+    <div class="trending-grid-section" style="padding-top:0">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div class="tg-eyebrow">This week</div>
+          <div class="tg-title" style="margin-bottom:0">Trending episodes</div>
+        </div>
+        <a href="#" onclick="showView('discover');return false" style="font-size:13px;color:var(--navy);text-decoration:none;font-weight:500">Browse all →</a>
       </div>
-    </section>
+      <div class="tg-grid" id="home-trending-list"></div>
+    </div>
 
     <!-- UNHEARD + COMPARE — 65/35 split -->
     <div class="uh-compare-section">
@@ -2850,26 +2851,16 @@ body.light-mode,[data-theme="light"]{
     </div>
 
 
-    <section class="free-tier-promise" id="free-promise">
-      <div class="free-promise-label">Free &mdash; Forever</div>
-      <h2>Start free. No credit card.</h2>
-      <p>4 analyses per month plus unlimited access to the Discover page, show profiles, your personal bias fingerprint, and weekly intelligence digest.</p>
-      <div class="free-promise-items">
-        <span>&#10003; 4 analyses/month</span>
-        <span>&#10003; Discover 1M+ shows</span>
-        <span>&#10003; Personal fingerprint</span>
-        <span>&#10003; Follow any show</span>
-        <span>&#10003; Weekly digest</span>
-        <span>&#10003; 1 Unheard Story/week</span>
-      </div>
-      <a href="#" onclick="openModal('signup');return false" class="btn-start-free">Get started free &rarr;</a>
-    </section>
-    <!-- FINGERPRINT / SIGNUP CTA BAND -->
+    <!-- UNIFIED CTA BAND -->
     <div class="fp-cta-section">
       <div class="fp-cta-inner">
-        <div class="fp-cta-title">Sign up free to track your bias over time</div>
-        <p class="fp-cta-sub">7 days of full access &mdash; no credit card required. See exactly how your listening leans, and what you might be missing.</p>
-        <button class="fp-cta-btn" onclick="openModal('signup')">Get started free &mdash; no credit card</button>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:12px">Free — Forever</div>
+        <div class="fp-cta-title">Start free. No credit card.</div>
+        <p class="fp-cta-sub">4 analyses per month · Discover 1M+ shows · Personal bias fingerprint · Follow any show · Weekly digest</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px">
+          <button class="fp-cta-btn" onclick="openModal('signup')">Get started free →</button>
+          <a href="/pricing.html" style="display:inline-block;padding:13px 28px;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.8);border-radius:8px;font-size:14px;font-weight:500;text-decoration:none;cursor:pointer">See all plans →</a>
+        </div>
       </div>
     </div>
 
@@ -4617,31 +4608,18 @@ async function loadHomeTrending() {
   if (!el) return;
   try {
     var data = await fetch('/api/stories?q=news').then(function(r){ return r.json(); });
-    var eps = (data.results || []).slice(0, 5);
-    if (!eps.length) {
-      // Fallback to curated shows when API returns nothing
-      _renderHomeTrendingFallback(el);
-      return;
-    }
-    el.innerHTML = eps.map(function(ep, i) {
+    var eps = (data.results || []).slice(0, 6);
+    if (!eps.length) { _renderHomeTrendingFallback(el); return; }
+    el.innerHTML = eps.map(function(ep) {
       var analyzeUrl = ep.feedUrl || ep.youtubeUrl || '';
-      var safeUrl = analyzeUrl.replace(/"/g,'&quot;');
-      var safeTitle = (ep.epTitle||'').replace(/"/g,'').replace(/'/g,'');
-      var safeShow = (ep.showName||'').replace(/"/g,'').replace(/'/g,'');
-      var art = ep.artwork
-        ? '<img class="trend-art" src="'+ep.artwork+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=trend-art-ph>&#127897;</div>\'">'
-        : '<div class="trend-art-ph">&#127897;</div>';
-      var bar = (ep.audioLean && ep.audioLean.leftPct !== undefined)
-        ? '<div class="bias-bar" style="height:5px;margin-top:6px"><div class="bias-bar-l" style="width:'+ep.audioLean.leftPct+'%"></div><div class="bias-bar-c" style="width:'+ep.audioLean.centerPct+'%"></div><div class="bias-bar-r" style="width:'+ep.audioLean.rightPct+'%"></div></div>'
-        : '';
-      var meta = [ep.duration, ep.releaseDate].filter(Boolean).join(' · ');
-      return '<div class="trend-row" onclick="analyzeEp(null,&quot;'+safeUrl+'&quot;,&quot;'+safeTitle+'&quot;,&quot;'+safeShow+'&quot;)">'
-        + '<div class="trend-num">'+(i+1)+'</div>'
-        + art
-        + '<div class="trend-body"><div class="trend-show">'+ep.showName+'</div>'
-        + '<div class="trend-title">'+ep.epTitle+'</div>'
-        + (meta ? '<div class="trend-meta">'+meta+'</div>' : '')
-        + bar + '</div></div>';
+      var safeUrl = analyzeUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+      var safeName = (ep.showName||'').replace(/"/g,'').replace(/'/g,'');
+      var safeEp = (ep.epTitle||'').replace(/"/g,'').replace(/'/g,'');
+      return '<div class="tg-card" onclick="analyzeEp(null,&quot;'+safeUrl+'&quot;,&quot;'+safeEp+'&quot;,&quot;'+safeName+'&quot;)">'
+        + '<div class="tg-art-wrap">' + (ep.artwork ? '<img class="tg-art" src="'+ep.artwork+'" alt="" loading="lazy" style="width:64px;height:64px;border-radius:6px;object-fit:cover">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'
+        + '<div class="tg-card-body"><div class="tg-card-name">'+(ep.epTitle||ep.showName||'')+'</div>'
+        + '<div class="tg-card-artist">'+(ep.showName||'')+'</div>'
+        + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
     }).join('');
   } catch(e) { _renderHomeTrendingFallback(el); }
 }
@@ -4649,25 +4627,20 @@ async function loadHomeTrending() {
 function _renderHomeTrendingFallback(el) {
   if (!el) return;
   var FALLBACK = [
-    { show:'The Joe Rogan Experience', ep:'#2254 — Elon Musk', dir:'right', url:'https://www.youtube.com/@joerogan' },
-    { show:'The Daily', ep:'How the Media Shapes What We Believe', dir:'left', url:'https://feeds.simplecast.com/54nAGcIl' },
-    { show:'Lex Fridman Podcast', ep:'Jensen Huang — NVIDIA & the AI Revolution', dir:'balanced', url:'https://www.youtube.com/watch?v=vif8NQcjVf0' },
-    { show:'Pod Save America', ep:'The Stakes This November', dir:'left', url:'https://feeds.megaphone.fm/pod-save-america' },
-    { show:'The Ben Shapiro Show', ep:'Daily News Briefing', dir:'right', url:'https://feeds.megaphone.fm/WWO3519750917' }
+    { name:'The Joe Rogan Experience', artist:'Joe Rogan', url:'https://www.youtube.com/@joerogan' },
+    { name:'The Daily',                artist:'The New York Times', url:'https://feeds.simplecast.com/54nAGcIl' },
+    { name:'Lex Fridman Podcast',       artist:'Lex Fridman', url:'https://www.youtube.com/watch?v=vif8NQcjVf0' },
+    { name:'Pod Save America',          artist:'Crooked Media', url:'https://feeds.megaphone.fm/pod-save-america' },
+    { name:'The Ben Shapiro Show',      artist:'Daily Wire', url:'https://feeds.megaphone.fm/WWO3519750917' },
+    { name:'Planet Money',              artist:'NPR', url:'https://feeds.npr.org/510289/podcast.xml' },
   ];
-  el.innerHTML = FALLBACK.map(function(f, i) {
-    var col = f.dir==='left' ? '#378ADD' : f.dir==='right' ? '#E24B4A' : '#22c55e';
-    var label = f.dir==='left' ? 'Lightly Left-Leaning' : f.dir==='right' ? 'Lightly Right-Leaning' : 'Mostly Balanced';
-    var safeUrl = f.url.replace(/"/g,'&quot;');
-    var safeEp = f.ep.replace(/"/g,'').replace(/'/g,'');
-    var safeShow = f.show.replace(/"/g,'').replace(/'/g,'');
-    return '<div class="trend-row" onclick="analyzeEp(null,&quot;'+safeUrl+'&quot;,&quot;'+safeEp+'&quot;,&quot;'+safeShow+'&quot;)">'
-      + '<div class="trend-num">'+(i+1)+'</div>'
-      + '<div class="trend-art-wrap"><div class="trend-art-ph" style="background:#1a3050;color:#fff;font-size:20px">🎙</div></div>'
-      + '<div class="trend-body"><div class="trend-show">'+f.show+'</div>'
-      + '<div class="trend-title">'+f.ep+'</div>'
-      + '<span style="font-size:11px;font-weight:600;color:'+col+';background:'+col+'1a;padding:2px 8px;border-radius:999px">'+label+'</span>'
-      + '</div></div>';
+  el.innerHTML = FALLBACK.map(function(f) {
+    var slug = f.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var safeUrl = f.url.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
+      + '<div class="tg-art-wrap"><div class="tg-art-ph">&#127897;</div></div>'
+      + '<div class="tg-card-body"><div class="tg-card-name">'+f.name+'</div><div class="tg-card-artist">'+f.artist+'</div>'
+      + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
   }).join('');
 }
 
