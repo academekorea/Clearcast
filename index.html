@@ -2007,6 +2007,46 @@ body.light-mode,[data-theme="light"]{
 
 /* Transcript section */
 .ar-transcript-body{padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7}
+.th-wrap{padding:16px}
+.th-bias-receipt{background:#fff;border:0.5px solid #e8e8e8;border-radius:8px;padding:12px 14px;margin-bottom:14px}
+.th-br-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.th-br-lbl{font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:.08em}
+.th-br-verdict{font-size:11px;font-weight:500;padding:3px 9px;border-radius:4px;background:#fde8e7;color:#b83228}
+.th-br-note{font-size:10px;color:#999;line-height:1.6;padding-top:8px;border-top:0.5px solid #f0f0f0}
+.th-br-note strong{color:#555;font-weight:500}
+.th-search-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.th-search{flex:1;padding:7px 11px;font-size:12px;border:0.5px solid #ddd;border-radius:6px;background:#fff;color:var(--text);outline:none;font-family:inherit}
+.th-search:focus{border-color:#bbb}
+.th-count{font-size:10px;color:#bbb;white-space:nowrap}
+.th-legend{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.th-leg{display:flex;align-items:center;gap:5px;font-size:10px;color:#999}
+.th-leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.th-sec-lbl{font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:.08em;margin:14px 0 8px 2px}
+.th-list{border:0.5px solid #e8e8e8;border-radius:8px;overflow:hidden;background:#fff;margin-bottom:8px}
+.th-hl{display:flex;border-bottom:0.5px solid #f0f0f0;cursor:default;transition:background .1s}
+.th-hl:last-child{border-bottom:none}
+.th-bar{width:3px;flex-shrink:0}
+.th-bar.left{background:#e0352b}
+.th-bar.right{background:#3a7fd4}
+.th-bar.neutral{background:#d1cfc9}
+.th-body{padding:10px 12px;flex:1;min-width:0}
+.th-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.th-time{font-size:10px;color:#bbb;font-weight:500}
+.th-weight{font-size:10px;color:#bbb}
+.th-weight.left{color:#c0392b}
+.th-weight.right{color:#2a6fba}
+.th-quote{font-size:12px;color:#444;line-height:1.6;font-style:italic;margin-bottom:5px}
+.th-reason{font-size:10px;color:#999;line-height:1.5;padding:6px 8px;border-radius:4px;border-left:2px solid #e0e0e0;background:#f9f9f7;margin-bottom:5px}
+.th-reason.left{border-left-color:#e0352b;background:#fdf5f5}
+.th-reason.right{border-left-color:#3a7fd4;background:#f4f8fd}
+.th-tag{display:inline-block;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:1px 6px;border-radius:3px}
+.th-tag.left{background:#fde8e7;color:#b83228}
+.th-tag.right{background:#e6f1fb;color:#185fa5}
+.th-tag.neutral{background:#f5f5f3;color:#888}
+.th-gate{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;background:#fafafa;border-top:0.5px solid #eee}
+.th-gate-txt{font-size:11px;color:#bbb}
+.th-gate-btn{font-size:11px;padding:4px 10px;background:none;border:0.5px solid #d0d0d0;border-radius:5px;color:#555;cursor:pointer;font-family:inherit}
+.th-blur{filter:blur(3px);pointer-events:none;user-select:none}
 
 /* Citation list */
 .ar-cite-list{padding:4px 0}
@@ -7064,10 +7104,10 @@ function setPreviewTier(tier) {
   _previewTier = tier;
   var u = plUser();
   if (!u) {
-    // Logged-out: always re-render the demo
     showDemoAnalysis();
   } else if (window._lastAnalysisResult) {
     renderResults(window._lastAnalysisResult);
+    renderTranscriptHighlights(window._lastAnalysisResult);
   }
 }
 
@@ -7082,6 +7122,7 @@ var DEMO_RESULT = {
   biasScore: -18,
   biasLabel: 'Slight left lean',
   factualityLabel: 'Mixed factuality',
+  biasReason: '4 moments used regulatory framing and government intervention language. 2 moments pushed back with free-market arguments. 6 moments were neutral factual claims or biographical context.',
   summary: '2-min overview of AI infrastructure framing, CUDA origins, and bias patterns detected in this episode.',
   hostTrustScore: 72,
   guest: {
@@ -7095,6 +7136,17 @@ var DEMO_RESULT = {
     wikipedia: 'https://en.wikipedia.org/wiki/Jensen_Huang',
     website: 'https://nvidia.com'
   },
+  highlights: [
+    { timestamp: '12:04', quote: 'We need governments to be active participants in shaping this technology — the market alone can\'t handle this.', lean: 'left', tag: 'Left-leaning', reason: 'Government intervention framing. Assumes market failure without evidence — a common left-leaning regulatory argument.' },
+    { timestamp: '38:47', quote: 'The free market has always self-corrected on technology — regulation just slows innovation without reducing risk.', lean: 'right', tag: 'Right-leaning', reason: 'Anti-regulation framing. Dismisses regulatory benefit without qualification — aligns with right-leaning market-freedom arguments.' },
+    { timestamp: '52:10', quote: 'The energy cost of training a single model is equivalent to hundreds of transatlantic flights.', lean: 'left', tag: 'Left-leaning', reason: 'Environmental cost framing. Emphasis on AI\'s carbon footprint without discussing offsets — aligns with progressive climate discourse.' },
+    { timestamp: '1:02:33', quote: 'Export controls on chips are ultimately self-defeating — they just accelerate China\'s domestic semiconductor development.', lean: 'right', tag: 'Right-leaning', reason: 'Anti-regulation trade argument. Frames US export controls as counterproductive — a right-leaning free-trade framing.' },
+    { timestamp: '1:18:20', quote: 'Big tech can\'t police itself — we\'ve seen that with social media. AI needs independent oversight now, before the damage is done.', lean: 'left', tag: 'Left-leaning', reason: 'Pre-emptive regulation framing. Draws on social media analogy to argue for government intervention.' },
+    { timestamp: '1:31:45', quote: 'Innovation has always outpaced regulation — and that\'s been good for humanity. We shouldn\'t change that now.', lean: 'right', tag: 'Right-leaning', reason: 'Anti-regulation historical argument. Frames regulatory lag as a net positive without acknowledging harms.' },
+    { timestamp: '44:22', quote: 'We supply over 80% of the AI training compute in the world today.', lean: 'neutral', tag: 'Unverified claim', reason: 'Independent estimates place this at 65–70%. Accepted without challenge but not directionally biased.' },
+    { timestamp: '18:32', quote: 'CUDA was developed over a decade of sustained investment before it found mainstream adoption.', lean: 'neutral', tag: 'Context', reason: 'Historical context. Factual background with no directional framing.' },
+    { timestamp: '1:14:08', quote: 'CUDA was obvious to me from day one. I never had a single doubt.', lean: 'neutral', tag: 'Disputed claim', reason: 'Contradicts documented internal resistance to CUDA investment during its early development.' }
+  ],
   flags: [
     { type: 'sponsor-note', title: 'Multiple sponsor integrations throughout', detail: 'Extended segments for Shopify, Element, and Fin at 12m, 58m, and 1h32m.', citations: [] },
     { type: 'framing',      title: 'Corporate decisions presented as visionary without exploring failures', detail: 'Strategic bets framed as consistently brilliant while omitting failed initiatives.', citations: [] },

@@ -10,6 +10,7 @@ Analyze the transcript and return a JSON object with this exact structure:
   "factualityLabel": <"Mostly factual" | "Mixed factuality" | "Unreliable">,
   "omissionRisk": <"Low" | "Med" | "High">,
   "summary": <2-3 sentence plain English summary of what this episode is about and how it leans>,
+  "biasReason": <1-2 sentences explaining exactly what language patterns drove the bias score — be specific about framing choices>,
   "guest": {
     "name": <full name of the main guest, or null if no clear guest>,
     "title": <their job title e.g. "CEO" or "Senator", or null>,
@@ -19,6 +20,15 @@ Analyze the transcript and return a JSON object with this exact structure:
     "twitter": <their Twitter/X handle without @, or null>,
     "website": <their official website URL, or null>
   },
+  "highlights": [
+    {
+      "timestamp": <timestamp string e.g. "12:04" or "1:14:08">,
+      "quote": <exact verbatim quote from the transcript, under 40 words>,
+      "lean": <"left" | "right" | "neutral">,
+      "tag": <"Left-leaning" | "Right-leaning" | "Unverified claim" | "Disputed claim" | "Context" | "Sponsor">,
+      "reason": <1 sentence explaining why this quote leans the way it does, or what makes it notable>
+    }
+  ],
   "flags": [
     {
       "type": <"fact-check" | "framing" | "omission" | "sponsor-note" | "context">,
@@ -29,11 +39,12 @@ Analyze the transcript and return a JSON object with this exact structure:
 }
 
 Rules:
+- highlights: extract 8-12 significant quotes. Include the moments that most directly drove the bias score. Always include both left-leaning AND right-leaning quotes if they exist. Neutral quotes should be factual claims or context-setting moments worth noting.
+- biasReason: plain English, no jargon — e.g. "4 quotes used regulatory framing and government intervention language. 2 quotes pushed back with free-market arguments."
 - Only flag things you are highly confident about
 - Every fact-check flag must be verifiable against known public information
-- Be specific, not vague
 - Maximum 6 flags
-- For guest fields: only populate if you are confident — use null if unsure
+- For guest fields: only populate if confident — use null if unsure
 - Return ONLY the JSON, no other text`;
 
 export default async (req: Request) => {

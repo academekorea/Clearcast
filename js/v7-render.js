@@ -329,6 +329,9 @@ function renderResults(data) {
   var emptyState = document.getElementById('empty-state');
   if (emptyState) emptyState.style.display = 'none';
 
+  // Populate transcript highlights tab
+  renderTranscriptHighlights(data);
+
   _arShowDock(data);
 
   if (data.url && /\.(mp3|m4a|ogg|wav|aac)/i.test(data.url)) {
@@ -463,4 +466,158 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
   if (audioUrl && /\.(mp3|m4a|ogg|wav|aac)/i.test(audioUrl)) {
     setTimeout(function() { _arInitNativeAudio(audioUrl, {}); }, 100);
   }
+}
+
+// ── TRANSCRIPT HIGHLIGHTS ─────────────────────────────────────────────────────
+function renderTranscriptHighlights(data) {
+  var el = document.getElementById('transcript-content');
+  if (!el) return;
+
+  var u = plUser();
+  var isAdmin = u && (u.email === 'academekorea@gmail.com' || u.isSuperAdmin);
+  var plan = u ? String(enforcePlanRules() || u.plan || 'free').toLowerCase() : (_previewTier || 'free');
+  var isOperator = isAdmin || plan === 'operator' || plan === 'studio';
+  var isCreator = isOperator || plan === 'creator' || plan === 'trial';
+
+  var highlights = data.highlights || [];
+  var segs = _biasSegs(data.biasScore);
+  var biasLabel = data.biasLabel || 'Center';
+  var biasReason = data.biasReason || '';
+
+  var leftCount   = highlights.filter(function(h){ return h.lean === 'left'; }).length;
+  var rightCount  = highlights.filter(function(h){ return h.lean === 'right'; }).length;
+  var neutralCount= highlights.filter(function(h){ return h.lean === 'neutral'; }).length;
+
+  // Verdict color
+  var verdictBg = '#fde8e7', verdictColor = '#b83228';
+  if (biasLabel.toLowerCase().indexOf('right') >= 0) { verdictBg = '#e6f1fb'; verdictColor = '#185fa5'; }
+  if (biasLabel.toLowerCase() === 'center') { verdictBg = '#f5f5f3'; verdictColor = '#555'; }
+
+  // Bias reason fallback
+  if (!biasReason && highlights.length) {
+    biasReason = leftCount + ' moment' + (leftCount!==1?'s':'') + ' pushed left, '
+      + rightCount + ' pushed right, '
+      + neutralCount + ' were neutral.';
+  }
+
+  // Split highlights: directional vs neutral
+  var directional = highlights.filter(function(h){ return h.lean !== 'neutral'; });
+  var neutral     = highlights.filter(function(h){ return h.lean === 'neutral'; });
+
+  // Gate: free sees 2, creator sees 8, operator sees all
+  var directionalLimit = isOperator ? directional.length : isCreator ? Math.min(6, directional.length) : Math.min(2, directional.length);
+  var neutralLimit     = isOperator ? neutral.length     : isCreator ? Math.min(3, neutral.length)     : 0;
+
+  function hlHTML(h, blurred) {
+    var leanCls = h.lean === 'left' ? 'left' : h.lean === 'right' ? 'right' : 'neutral';
+    var weightLabel = h.lean === 'left' ? '+left' : h.lean === 'right' ? '+right' : 'neutral';
+    var tagCls = h.lean === 'left' ? 'left' : h.lean === 'right' ? 'right' : 'neutral';
+    return '<div class="th-hl' + (blurred ? ' th-blur' : '') + '">'
+      + '<div class="th-bar ' + leanCls + '"></div>'
+      + '<div class="th-body">'
+      + '<div class="th-top"><span class="th-time">' + (h.timestamp||'') + '</span>'
+      + '<span class="th-weight ' + leanCls + '">' + weightLabel + '</span></div>'
+      + '<div class="th-quote">\u201c' + (h.quote||'') + '\u201d</div>'
+      + (h.reason ? '<div class="th-reason ' + leanCls + '">' + h.reason + '</div>' : '')
+      + '<span class="th-tag ' + tagCls + '">' + (h.tag||'') + '</span>'
+      + '</div></div>';
+  }
+
+  var html = '<div class="th-wrap">';
+
+  // Bias receipt
+  html += '<div class="th-bias-receipt">'
+    + '<div class="th-br-top">'
+    + '<span class="th-br-lbl">Why this episode leans the way it does</span>'
+    + '<span class="th-br-verdict" style="background:' + verdictBg + ';color:' + verdictColor + '">' + biasLabel + '</span>'
+    + '</div>'
+    + '<div style="position:relative"><div class="bias-bar-wrap">'
+    + '<div class="bias-seg-left" style="width:' + segs.lp + '%"></div>'
+    + '<div class="bias-seg-center" style="width:' + segs.cp + '%"></div>'
+    + '<div class="bias-seg-right" style="width:' + segs.rp + '%"></div>'
+    + '<div class="bias-marker" style="left:' + segs.lp + '%"></div>'
+    + '</div></div>'
+    + '<div class="bpcts" style="margin-bottom:8px">'
+    + '<span style="color:#e0352b">\u25cf ' + segs.lp + '% left</span>'
+    + '<span style="color:#999">\u25aa ' + segs.cp + '% center</span>'
+    + '<span style="color:#3a7fd4">\u25cf ' + segs.rp + '% right</span>'
+    + '</div>'
+    + '<div class="th-br-note">'
+    + (biasReason ? biasReason : '')
+    + '</div></div>';
+
+  if (!highlights.length) {
+    html += '<div style="font-size:12px;color:#bbb;padding:20px 0;text-align:center">Highlights available after analysis completes.</div>';
+    html += '</div>';
+    el.innerHTML = html;
+    return;
+  }
+
+  // Search + legend
+  html += '<div class="th-search-row">'
+    + '<input class="th-search" type="text" placeholder="Search transcript highlights\u2026" oninput="thSearch(this.value)" />'
+    + '<span class="th-count" id="th-count">' + highlights.length + ' highlights</span>'
+    + '</div>'
+    + '<div class="th-legend">'
+    + '<div class="th-leg"><div class="th-leg-dot" style="background:#e0352b"></div>Pushed left</div>'
+    + '<div class="th-leg"><div class="th-leg-dot" style="background:#3a7fd4"></div>Pushed right</div>'
+    + '<div class="th-leg"><div class="th-leg-dot" style="background:#d1cfc9"></div>Neutral / context</div>'
+    + '</div>';
+
+  // Directional highlights
+  if (directional.length) {
+    html += '<div class="th-sec-lbl">Moments that shaped the bias score</div>'
+      + '<div class="th-list" id="th-directional">';
+    directional.slice(0, directionalLimit).forEach(function(h) { html += hlHTML(h, false); });
+    // Blur locked ones
+    var lockedDirectional = directional.slice(directionalLimit);
+    lockedDirectional.forEach(function(h) { html += hlHTML(h, true); });
+    if (!isOperator && lockedDirectional.length) {
+      html += '<div class="th-gate">'
+        + '<span class="th-gate-txt">' + lockedDirectional.length + ' more highlight' + (lockedDirectional.length!==1?'s':'') + ' \u2014 ' + (isCreator ? 'Operator' : 'Creator') + ' plan</span>'
+        + '<button class="th-gate-btn" onclick="showUpgrade()">Upgrade \u2192</button>'
+        + '</div>';
+    }
+    html += '</div>';
+  }
+
+  // Neutral highlights
+  if (neutral.length && isCreator) {
+    html += '<div class="th-sec-lbl">Neutral context &amp; factual moments</div>'
+      + '<div class="th-list" id="th-neutral">';
+    neutral.slice(0, neutralLimit).forEach(function(h) { html += hlHTML(h, false); });
+    var lockedNeutral = neutral.slice(neutralLimit);
+    lockedNeutral.forEach(function(h) { html += hlHTML(h, true); });
+    if (!isOperator && lockedNeutral.length) {
+      html += '<div class="th-gate">'
+        + '<span class="th-gate-txt">' + lockedNeutral.length + ' more \u2014 Operator plan</span>'
+        + '<button class="th-gate-btn" onclick="showUpgrade()">Upgrade \u2192</button>'
+        + '</div>';
+    }
+    html += '</div>';
+  } else if (neutral.length && !isCreator) {
+    html += '<div class="th-sec-lbl">Neutral context &amp; factual moments</div>'
+      + '<div class="th-list">'
+      + '<div class="th-gate"><span class="th-gate-txt">Neutral moments \u2014 Creator plan</span>'
+      + '<button class="th-gate-btn" onclick="showUpgrade()">Upgrade \u2192</button></div>'
+      + '</div>';
+  }
+
+  html += '</div>'; // end th-wrap
+  el.innerHTML = html;
+}
+
+// Search filter
+function thSearch(val) {
+  var q = val.toLowerCase().trim();
+  var rows = document.querySelectorAll('.th-hl:not(.th-blur)');
+  var shown = 0;
+  rows.forEach(function(row) {
+    var text = row.textContent.toLowerCase();
+    var match = !q || text.indexOf(q) >= 0;
+    row.style.display = match ? '' : 'none';
+    if (match) shown++;
+  });
+  var countEl = document.getElementById('th-count');
+  if (countEl) countEl.textContent = shown + ' highlight' + (shown !== 1 ? 's' : '');
 }
