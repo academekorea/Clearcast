@@ -3,7 +3,7 @@ import { getStore } from "@netlify/blobs";
 
 const OPENAI_KEY = () => Netlify.env.get("OPENAI_API_KEY") || "";
 const ELEVENLABS_KEY = () => Netlify.env.get("ELEVENLABS_API_KEY") || "";
-const ELEVENLABS_VOICE_EN = "nPczCjzI2devNBz1zQrb"; // Rachel — clear English
+const ELEVENLABS_VOICE_EN = "pqHfZKP75CvOlQylNhV4"; // Bill — warm, clear, natural for narration
 const ELEVENLABS_VOICE_KO = "ThT5KcBeYPX3keUQqHPh"; // Dorothy — multilingual
 
 export default async (req: Request) => {
@@ -22,7 +22,7 @@ export default async (req: Request) => {
   }
 
   const store = getStore("podlens-audio-briefings");
-  const cacheKey = `briefing-${jobId}-${lang}`;
+  const cacheKey = `briefing-v2-${jobId}-${lang}`; // v2 = ElevenLabs primary
 
   // Check cache
   try {
