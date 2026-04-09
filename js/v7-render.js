@@ -228,8 +228,51 @@ function renderResults(data) {
     + '<a class="sl sl-podlens" href="#">&#127897; PodLens profile</a>'
     + '</div></div>';
 
-  // Audio briefing card — always playable using summary text via Web Speech API
-  var briefingScript = (data.summary || data.biasLabel || 'Analysis complete.').replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+  // Build a rich ~90 second audio briefing script from the full analysis
+  function buildBriefingScript(d) {
+    var parts = [];
+    var ep = d.episodeTitle || 'this episode';
+    var show = d.showName || 'this podcast';
+    var guest = d.guest && d.guest.name ? d.guest.name : null;
+
+    // Opening
+    parts.push('Before you listen — here\'s what you should know about ' + ep + (show ? ' from ' + show : '') + '.');
+
+    // Guest
+    if (guest) {
+      var role = [d.guest.title, d.guest.organization].filter(Boolean).join(' at ');
+      parts.push(guest + (role ? ', ' + role + ',' : '') + ' is the guest.');
+    }
+
+    // Summary
+    if (d.summary) parts.push(d.summary);
+
+    // Bias
+    if (d.biasLabel && d.audioLean) {
+      var lp = d.audioLean.leftPct, rp = d.audioLean.rightPct, cp = d.audioLean.centerPct;
+      parts.push('The episode ' + d.biasLabel.toLowerCase() + ' — ' + lp + '% of the framing leans left, ' + cp + '% is balanced, and ' + rp + '% leans right.');
+    }
+
+    // Bias reason
+    if (d.biasReason) parts.push(d.biasReason);
+
+    // Top flags
+    var flags = (d.flags || []).slice(0, 3);
+    if (flags.length) {
+      parts.push('A few things worth knowing: ' + flags.map(function(f) { return f.detail || f.title; }).join(' Also, '));
+    }
+
+    // Closing
+    parts.push('That\'s your briefing. Now you know what to listen for.');
+
+    return parts.join(' ').replace(/'/g, '\u2019').replace(/"/g, '');
+  }
+
+  var briefingScript = data.jobId === 'demo'
+    ? 'Before you listen — here\'s what you should know about this episode. Jensen Huang, CEO of NVIDIA, joins Lex Fridman for a two-hour conversation on AI infrastructure, CUDA, and the future of computing. The episode leans slightly left — about 38% of the framing uses progressive regulatory language, while 21% pushes back with free-market arguments. Four moments specifically push the bias left: Jensen frames government oversight as necessary for AI safety, emphasizes the environmental cost of model training, and argues that big tech cannot self-regulate. Two moments push right: he defends free-market innovation and argues that export controls are counterproductive. Worth knowing — the host rarely challenged Jensen\u2019s self-reported market share figures, and there is no mention of NVIDIA\u2019s ongoing antitrust scrutiny. Three sponsor segments are editorially integrated rather than clearly separated. On host trust, Jensen scores 7.2 out of 10. If you want balance, look for perspectives on AI regulation costs and NVIDIA\u2019s market dominance risks. That\u2019s your briefing. Now you know what to listen for.'
+    : buildBriefingScript(data);
+
+  briefingScript = briefingScript.replace(/'/g, '\u2019').replace(/"/g, '&quot;');
   html += '<div class="pl-card">'
     + '<div class="lbl">Audio briefing \u00b7 Before you listen</div>'
     + '<div class="bdesc">'+(data.summary ? data.summary.substring(0,120)+(data.summary.length>120?'\u2026':'') : 'AI-narrated overview of bias, framing, and sponsor patterns.')+'</div>'
