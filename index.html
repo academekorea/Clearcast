@@ -2340,13 +2340,13 @@ body.light-mode,[data-theme="light"]{
 </head>
 <body>
 
-<div id="founding-banner" style="display:none;position:relative;background:#FFF8E7;border-bottom:1px solid #F0C040;width:100%;z-index:9999">
-  <a href="/pricing.html" style="display:flex;align-items:center;justify-content:center;width:100%;padding:10px 24px;gap:10px;text-decoration:none">
+<div id="founding-banner" style="position:relative;background:#FFF8E7;border-bottom:1px solid #F0C040;width:100%;z-index:9999">
+  <a href="/pricing.html" style="display:flex;align-items:center;justify-content:center;width:100%;padding:10px 48px 10px 24px;gap:10px;text-decoration:none">
     <span style="font-size:16px">🎉</span>
     <span style="color:#92400E;font-size:13px;font-weight:600">Founding Member Pricing — 33% off forever</span>
-    <span style="color:#92400E;font-size:12px;opacity:.8">Only available during our launch period →</span>
+    <span style="color:#92400E;font-size:12px;opacity:.8;margin-left:4px">Only available during our launch period →</span>
   </a>
-  <button onclick="event.stopPropagation();document.getElementById('founding-banner').classList.remove('visible');try{localStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:#92400E;opacity:.6;padding:4px 8px" aria-label="Dismiss">&times;</button>
+  <button onclick="event.stopPropagation();document.getElementById('founding-banner').style.display='none';try{localStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:#92400E;opacity:.6;padding:4px 8px" aria-label="Dismiss">&times;</button>
 </div>
 
 <script>(function(){
@@ -4579,8 +4579,7 @@ function showView(name) {
   var foundingDismissed = false;
   try { foundingDismissed = localStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
   if (banner) {
-    var showBanner = !plUser() && !foundingDismissed && (name === 'home');
-    banner.classList.toggle('visible', showBanner);
+    banner.style.display = (!plUser() && !foundingDismissed && name === 'home') ? '' : 'none';
   }
 }
 
@@ -9187,14 +9186,16 @@ if (!handleUrlRouting()) {
   showHome();
 }
 
-// ── FOUNDING BANNER — always show to logged-out users on homepage ─────────────
-document.addEventListener('DOMContentLoaded', function() {
-  if (plUser()) return;
-  try { if (localStorage.getItem('pl-founding-dismissed') === '1') return; } catch(e) {}
+// ── FOUNDING BANNER — visible by default, hidden for logged-in or dismissed ──
+(function() {
   var banner = document.getElementById('founding-banner');
   if (!banner) return;
-  banner.classList.add('visible');
-});
+  var dismissed = false;
+  try { dismissed = localStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
+  if (dismissed || (typeof plUser === 'function' && plUser())) {
+    banner.style.display = 'none';
+  }
+})();
 
 // ── TASK 9: ENGAGEMENT NUDGE SYSTEM ──────────────────────────────────────────
 var _lockedClickCount = 0;
