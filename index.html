@@ -5199,6 +5199,15 @@ function startAnalysis(audioUrl, epTitle, showName) {
   var _displayUrl = _submittedFeedUrl || audioUrl;
   _submittedFeedUrl = null;
 
+  // Derive a display title from MP3 filename if no title supplied
+  if (!epTitle && /\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(audioUrl)) {
+    try {
+      var _fn = decodeURIComponent((audioUrl.split('?')[0].split('/').pop()||''));
+      _fn = _fn.replace(/\.(mp3|m4a|ogg|wav|aac)$/i,'').replace(/[-_+]+/g,' ').replace(/\s+/g,' ').trim();
+      if (_fn) epTitle = _fn.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    } catch(e) {}
+  }
+
   // Show the dashboard immediately — player is usable right away
   document.getElementById('atabs').classList.add('on');
   document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
@@ -5228,27 +5237,56 @@ function startAnalysis(audioUrl, epTitle, showName) {
   var resolvedTitle = (resolveResult && resolveResult.episodeTitle) ? resolveResult.episodeTitle : epTitle;
   var resolvedShow = (resolveResult && resolveResult.showName) ? resolveResult.showName : showName;
   var resolvedArtwork = (resolveResult && resolveResult.artwork) ? resolveResult.artwork : '';
-  if (resolveResult && resolveResult.selectedFromFeed && resolvedTitle) {
-    var ldTitle = document.getElementById('ld-title');
-    if (ldTitle) { ldTitle.style.display=''; ldTitle.textContent='Analyzing latest episode: ' + decodeHTMLEntities(resolvedTitle); }
-    // Update skeleton header with decoded title and show
-    var skelTitleEl = document.querySelector('#results .ar-ep-title');
-    if (skelTitleEl) skelTitleEl.textContent = decodeHTMLEntities(resolvedTitle);
-    var skelShowEl = document.querySelector('#results .ar-ep-show');
-    if (skelShowEl && resolvedShow) skelShowEl.textContent = decodeHTMLEntities(resolvedShow);
-    // Update dock
+  // Always update the dashboard header, dock, guest card, and artwork
+  // with whatever metadata resolve-redirect returned (or our filename-derived title).
+  {
+    var _dispTitle = decodeHTMLEntities(resolvedTitle);
+    var _dispShow  = decodeHTMLEntities(resolvedShow);
+    // Episode header (v7 classes)
+    var vt = document.querySelector('#results .v7-ep-title');
+    if (vt && _dispTitle) vt.textContent = _dispTitle;
+    var vs = document.querySelector('#results .v7-ep-show');
+    if (vs && _dispShow) vs.textContent = _dispShow;
+    else if (!vs && _dispShow && vt && vt.parentNode) {
+      var _showSpan = document.createElement('div');
+      _showSpan.className = 'v7-ep-show';
+      _showSpan.textContent = _dispShow;
+      vt.parentNode.insertBefore(_showSpan, vt.nextSibling);
+    }
+    // Dock title + show
     var dockTitleEl = document.getElementById('ar-dock-title');
-    var dockShowEl = document.getElementById('ar-dock-show');
-    if (dockTitleEl) dockTitleEl.textContent = decodeHTMLEntities(resolvedTitle);
-    if (dockShowEl && resolvedShow) dockShowEl.textContent = decodeHTMLEntities(resolvedShow);
-    // Update artwork if returned from feed
+    var dockShowEl  = document.getElementById('ar-dock-show');
+    if (dockTitleEl && _dispTitle) dockTitleEl.textContent = _dispTitle;
+    if (dockShowEl  && _dispShow)  dockShowEl.textContent  = _dispShow;
+    // Episode header artwork
     if (resolvedArtwork) {
       var skelArt = document.getElementById('ar-skel-art');
-      if (skelArt) skelArt.innerHTML = '<img src="'+resolvedArtwork+'" style="width:56px;height:56px;border-radius:6px;object-fit:cover" onerror="this.style.display=\'none\'">';
-      var mediaSlot = document.getElementById('ar-media-slot');
-      if (mediaSlot && !ytId(audioUrl)) {
-        mediaSlot.innerHTML = '<div class="ar-artwork-wrap"><img src="'+resolvedArtwork+'" alt="" onerror="this.style.display=\'none\'"></div>';
+      if (skelArt) skelArt.innerHTML = '<img src="'+resolvedArtwork+'" style="width:48px;height:48px;border-radius:6px;object-fit:cover" onerror="this.style.display=\'none\'">';
+    }
+    // Left-column artwork placeholder (non-YouTube only)
+    if (!ytId(audioUrl)) {
+      var v7LeftArt = document.getElementById('v7-artwork-left');
+      if (v7LeftArt) {
+        if (resolvedArtwork) {
+          v7LeftArt.innerHTML = '<img src="'+resolvedArtwork+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display=\'none\'">';
+        } else {
+          // Update the title text inside the placeholder
+          var v7artTitle = document.getElementById('v7-artwork-title');
+          if (v7artTitle && _dispTitle) v7artTitle.textContent = _dispTitle;
+        }
       }
+    }
+    // Guest card: update with real show name
+    var gcard = document.getElementById('v7-guest-card');
+    if (gcard && _dispShow) {
+      gcard.innerHTML = '<div class="v7-gtop">'
+        + '<div class="v7-gav" style="background:#1a3050;color:#fff;font-size:16px">\uD83C\uDFA7</div>'
+        + '<div><div class="v7-gname">'+_dispShow+'</div>'
+        + '<div class="v7-grole">Podcast host</div></div></div>';
+    }
+    if (resolveResult && resolveResult.selectedFromFeed && resolvedTitle) {
+      var ldTitle = document.getElementById('ld-title');
+      if (ldTitle) { ldTitle.style.display=''; ldTitle.textContent='Analyzing latest episode: ' + _dispTitle; }
     }
   }
   // Issue 5: init audio player immediately for RSS/podcast audio URLs
@@ -6068,7 +6106,10 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
       + ' allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>'
       + '</div>';
   } else {
-    left += '<div class="v7-artwork"><div class="v7-aicon">\uD83C\uDFA7</div></div>';
+    left += '<div class="v7-artwork" id="v7-artwork-left" style="flex-direction:column;gap:8px">'
+      + '<div class="v7-aicon">\uD83C\uDFA7</div>'
+      + (_cleanTitle ? '<div id="v7-artwork-title" style="font-size:10px;color:#aaa;text-align:center;padding:0 12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _cleanTitle + '</div>' : '<div id="v7-artwork-title" style="font-size:10px;color:#aaa"></div>')
+      + '</div>';
   }
   left += '<div class="v7-ctls">'
     + '<button class="v7-cb" onclick="arSkip(-30)">&#8634; 30s</button>'
@@ -6086,13 +6127,20 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
     + '<div class="v7-athumb" id="v7-athumb"></div>'
     + '</div></div>';
 
-  // Right col: skeleton cards
+  // Right col: guest card shows whatever we know now
   var right = '<div class="v7-rc">';
-  right += '<div class="v7-card">'
-    + '<div class="v7-gtop">'
-    + '<div class="v7-gav"><div class="ar-skel" style="width:38px;height:38px;border-radius:50%;margin:0"></div></div>'
-    + '<div><div class="ar-skel ar-skel-ln" style="width:110px;margin-bottom:6px"></div><div class="ar-skel ar-skel-ln" style="width:75px"></div></div>'
-    + '</div></div>';
+  right += '<div class="v7-card" id="v7-guest-card">';
+  if (_cleanShow) {
+    right += '<div class="v7-gtop">'
+      + '<div class="v7-gav" style="background:#1a3050;color:#fff;font-size:16px">\uD83C\uDFA7</div>'
+      + '<div><div class="v7-gname">' + _cleanShow + '</div>'
+      + '<div class="v7-grole">Podcast host</div></div></div>';
+  } else {
+    right += '<div class="v7-gtop">'
+      + '<div class="v7-gav" style="background:#e8e8e8;color:#bbb;font-size:16px">\uD83C\uDFA7</div>'
+      + '<div><div class="v7-gname" style="color:#bbb">Loading podcast info&hellip;</div></div></div>';
+  }
+  right += '</div>';
   right += '<div class="v7-card">'
     + '<div class="v7-lbl">Audio briefing &middot; Before you listen</div>'
     + '<div class="ar-skel ar-skel-ln" style="width:85%;margin-bottom:8px"></div>'
@@ -6303,7 +6351,11 @@ function renderResults(data) {
   } else if (data.artworkUrl) {
     left += '<div class="v7-artwork"><img src="' + data.artworkUrl + '" alt="" onerror="this.style.display=\'none\'"></div>';
   } else {
-    left += '<div class="v7-artwork"><div class="v7-aicon">\uD83C\uDFA7</div></div>';
+    var _epName = decodeHTMLEntities(data.episodeTitle) || '';
+    left += '<div class="v7-artwork" style="flex-direction:column;gap:8px">'
+      + '<div class="v7-aicon">\uD83C\uDFA7</div>'
+      + (_epName ? '<div style="font-size:10px;color:#aaa;text-align:center;padding:0 12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _epName + '</div>' : '')
+      + '</div>';
   }
   left += '<div class="v7-ctls">'
     + '<button class="v7-cb" onclick="arSkip(-30)">&#8634; 30s</button>'
