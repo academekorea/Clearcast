@@ -44,6 +44,17 @@ export default async (req: Request, context: Context) => {
     // Use context.waitUntil so Netlify keeps the function alive until Railway responds
     const railwayWork = (async () => {
       try {
+        if (!audioServiceUrl) {
+          console.error('[analyze] AUDIO_SERVICE_URL not set');
+          await store.setJSON(jobId, {
+            status: "error",
+            jobId,
+            error: "AUDIO_SERVICE_URL not set in environment",
+            audioServiceUrl: "NOT_SET",
+            timestamp: new Date().toISOString(),
+          });
+          return;
+        }
         console.log('[analyze] calling Railway at:', audioServiceUrl + '/extract');
         const extractRes = await fetch(`${audioServiceUrl}/extract`, {
           method: "POST",
@@ -107,7 +118,14 @@ export default async (req: Request, context: Context) => {
         }
       } catch (err: any) {
         console.error('[analyze] Railway fetch threw:', err.message, err.stack);
-        await store.setJSON(jobId, { status: "error", jobId, error: String(err) });
+        await store.setJSON(jobId, {
+          status: "error",
+          jobId,
+          error: String(err),
+          errorDetail: err.message || "",
+          audioServiceUrl: audioServiceUrl || "NOT_SET",
+          timestamp: new Date().toISOString(),
+        });
       }
     })();
 
