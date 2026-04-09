@@ -116,6 +116,8 @@ export default async (req: Request, context: Context) => {
               status: "error",
               jobId,
               error: extracted.error || "Railway returned no transcript or audio",
+              detail: extracted.detail || "",
+              code: extracted.code || "",
             });
           }
         } catch (err: any) {

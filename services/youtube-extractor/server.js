@@ -187,10 +187,12 @@ app.post('/extract', async (req, res) => {
     if (msg.includes('unavailable')) {
       return res.json({ success: false, error: 'This video is unavailable', code: 'VIDEO_UNAVAILABLE' });
     }
+    console.error('[extract] yt-dlp error:', msg);
     return res.json({
       success: false,
       error: 'Could not process this YouTube video',
       code: 'EXTRACTION_FAILED',
+      detail: msg.substring(0, 500),
     });
   }
 });
