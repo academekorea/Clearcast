@@ -182,14 +182,14 @@ function renderResults(data) {
   html += '<div>';
   if (vid) {
     html += '<div class="artwork" style="aspect-ratio:16/9;position:relative">'
-      + '<iframe src="https://www.youtube.com/embed/'+vid+'?rel=0&modestbranding=1&enablejsapi=1"'
+      + '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&modestbranding=1"'
       + ' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
       + ' allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:7px"></iframe></div>';
   } else {
-    html += '<div class="artwork" id="v7-artwork-left">'
-      + '<div style="display:flex;flex-direction:column;align-items:center;gap:6px">'
-      + '<div class="aicon">&#127897;</div>'
-      + '<div style="font-size:10px;color:#aaa">'+(epTitle||showName||'')+'</div></div>'
+    html += '<div class="artwork" id="v7-artwork-left" style="background:#1a3050;aspect-ratio:1/1">'
+      + '<div style="display:flex;flex-direction:column;align-items:center;gap:8px">'
+      + '<div class="aicon" style="background:rgba(255,255,255,.15)">&#127897;</div>'
+      + '<div style="font-size:10px;color:rgba(255,255,255,.6);text-align:center;padding:0 12px;max-width:100%">'+(epTitle||showName||'')+'</div></div>'
       + '<div class="pov"><button class="pbig" onclick="arPlayPause()">\u25b6</button></div></div>';
   }
   html += '<div class="pl-ctls">'
@@ -356,7 +356,9 @@ function renderResults(data) {
         // Update left artwork (non-YouTube only)
         var leftArt = document.getElementById('v7-artwork-left');
         if (leftArt && artUrl && !vid) {
-          leftArt.innerHTML = '<img src="'+artUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block">';
+          leftArt.style.background = 'none';
+          leftArt.style.padding = '0';
+          leftArt.innerHTML = '<img src="'+artUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:7px">';
         }
 
         // Update guest card if API returned no guest name
@@ -417,7 +419,7 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
   html += '<div class="trow"><div>';
   if (vid) {
     html += '<div class="artwork" style="aspect-ratio:16/9;position:relative">'
-      + '<iframe src="https://www.youtube.com/embed/'+vid+'?rel=0&modestbranding=1&enablejsapi=1"'
+      + '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&modestbranding=1"'
       + ' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
       + ' allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:7px"></iframe></div>';
   } else {
