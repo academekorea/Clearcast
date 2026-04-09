@@ -2416,18 +2416,55 @@ body.light-mode,[data-theme="light"]{
 })()</script>
 
 
-<!-- BRANDED SPLASH SCREEN -->
-<div class="pl-splash" id="pl-splash">
-  <div style="display:inline-flex;align-items:center;gap:16px">
-    <img src="/favicon.svg" alt="" width="56" height="56" style="border-radius:10px;opacity:.95;flex-shrink:0">
-    <span style="width:1px;height:56px;background:rgba(255,255,255,.2);flex-shrink:0"></span>
-    <span style="display:flex;flex-direction:column;gap:6px">
-      <span class="podlens-wordmark large"><span class="pod">POD</span><span class="lens">LENS</span></span>
-      <span class="pl-tagline">Know what you&rsquo;re actually listening to</span>
+<!-- PASSWORD GATE -->
+<div id="pl-splash" style="position:fixed;inset:0;background:#0f2027;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;padding:24px">
+  <div style="display:inline-flex;align-items:center;gap:16px;margin-bottom:40px">
+    <img src="/favicon.svg" alt="" width="48" height="48" style="border-radius:9px;opacity:.95;flex-shrink:0">
+    <span style="width:1px;height:48px;background:rgba(255,255,255,.2);flex-shrink:0"></span>
+    <span style="display:flex;flex-direction:column;gap:5px">
+      <span style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:.04em"><span style="font-weight:400">POD</span>LENS</span>
+      <span style="font-size:11px;color:rgba(255,255,255,.45)">Know what you&rsquo;re actually listening to</span>
     </span>
   </div>
-  <div class="pl-loader-bar"></div>
+  <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:28px 32px;width:100%;max-width:340px">
+    <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:4px;text-align:center">Private preview</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:20px;text-align:center">Enter the access password to continue</div>
+    <input type="password" id="site-pass-input" placeholder="Password" autocomplete="off"
+      style="width:100%;padding:11px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:14px;outline:none;font-family:inherit;margin-bottom:10px"
+      onkeydown="if(event.key==='Enter')checkSitePass()"/>
+    <div id="site-pass-err" style="font-size:12px;color:#ff8a80;margin-bottom:10px;min-height:16px;text-align:center"></div>
+    <button onclick="checkSitePass()" style="width:100%;padding:11px;background:#fff;color:#0f2027;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Enter →</button>
+  </div>
 </div>
+
+<script>
+(function() {
+  var PASS = 'podlens2026';
+  var KEY = 'pl_site_unlocked';
+  if (sessionStorage.getItem(KEY) === '1') {
+    var s = document.getElementById('pl-splash');
+    if (s) s.style.display = 'none';
+  } else {
+    document.getElementById('pl-splash').style.display = 'flex';
+  }
+  window.checkSitePass = function() {
+    var v = (document.getElementById('site-pass-input').value || '').trim();
+    if (v === PASS) {
+      sessionStorage.setItem(KEY, '1');
+      var s = document.getElementById('pl-splash');
+      s.style.opacity = '0';
+      s.style.transition = 'opacity .3s';
+      setTimeout(function() { s.style.display = 'none'; }, 300);
+    } else {
+      var err = document.getElementById('site-pass-err');
+      err.textContent = 'Incorrect password. Try again.';
+      document.getElementById('site-pass-input').value = '';
+      document.getElementById('site-pass-input').focus();
+      setTimeout(function() { err.textContent = ''; }, 3000);
+    }
+  };
+})();
+</script>
 
 
 <!-- NAV -->
@@ -7785,16 +7822,7 @@ function canAccess(feature) {
   return tiers[feature] ? tiers[feature].indexOf(plan) !== -1 : false;
 }
 
-// ── SPLASH SCREEN ──
-window.addEventListener('load', function() {
-  var s = document.getElementById('pl-splash');
-  if (!s) return;
-  // Hide after 800ms (enough to see the brand, not long enough to annoy)
-  setTimeout(function() {
-    s.style.opacity = '0';
-    setTimeout(function() { s.style.display = 'none'; }, 400);
-  }, 800);
-});
+// ── SPLASH / PASSWORD GATE — handled inline above ──
 
 // ── ROTATING INSIGHT CARDS ──
 var _icIdx = 0, _icTotal = 4, _icTimer = null;
