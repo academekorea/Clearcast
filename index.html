@@ -9213,33 +9213,15 @@ if (!handleUrlRouting()) {
   showHome();
 }
 
-// ── TASK 15: FOUNDING BANNER ──────────────────────────────────────────────────
-(function loadFoundingBanner() {
-  var CACHE_KEY = 'pl_founding_v1';
-  var CACHE_TTL = 60 * 60 * 1000; // 1hr
-  function renderBanner(data) {
-    if (!data || !data.foundingActive) return;
-    if (plUser()) return; // Never show to logged-in users
-    var activeView = document.querySelector('.view.on');
-    if (activeView && activeView.id !== 'view-home') return; // Only on home view
-    var banner = document.getElementById('founding-banner');
-    if (!banner) return;
-    var spotsEl = document.getElementById('founding-spots-text');
-    var fillEl = document.getElementById('founding-progress-fill');
-    var endsEl = document.getElementById('founding-ends-text');
-    if (spotsEl) spotsEl.style.display = 'none';
-    if (fillEl) fillEl.style.display = 'none';
-    if (endsEl) endsEl.style.display = 'none';
-    banner.style.display = '';
-  }
-  try {
-    var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-    if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL) { renderBanner(cached.data); return; }
-  } catch {}
-  fetch('/api/get-plan?action=founding').then(function(r){return r.json();}).then(function(d){
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),data:d})); } catch {}
-    renderBanner(d);
-  }).catch(function(){});
+// ── FOUNDING BANNER — always show to logged-out users on homepage ─────────────
+(function initFoundingBanner() {
+  if (plUser()) return;
+  try { if (localStorage.getItem('pl-founding-dismissed') === '1') return; } catch(e) {}
+  var banner = document.getElementById('founding-banner');
+  if (!banner) return;
+  var activeView = document.querySelector('.view.on');
+  if (activeView && activeView.id !== 'view-home') return;
+  banner.style.display = '';
 })();
 
 // ── TASK 9: ENGAGEMENT NUDGE SYSTEM ──────────────────────────────────────────
