@@ -2406,7 +2406,7 @@ body.light-mode,[data-theme="light"]{
     <span style="color:#92400E;font-size:13px;font-weight:600">Founding Member Pricing — 33% off forever</span>
     <span style="color:#92400E;font-size:12px;opacity:.8;margin-left:4px">Only available during our launch period →</span>
   </a>
-  <button onclick="event.stopPropagation();document.getElementById('founding-banner').style.display='none';try{localStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:#92400E;opacity:.6;padding:4px 8px" aria-label="Dismiss">&times;</button>
+  <button onclick="event.stopPropagation();document.getElementById('founding-banner').style.display='none';try{sessionStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:#92400E;opacity:.6;padding:4px 8px" aria-label="Dismiss">&times;</button>
 </div>
 
 <script>(function(){
@@ -4606,7 +4606,7 @@ function showView(name) {
   // Banner only shows on home when logged out and not dismissed
   var banner = document.getElementById('founding-banner');
   var foundingDismissed = false;
-  try { foundingDismissed = localStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
+  try { foundingDismissed = sessionStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
   if (banner) {
     banner.style.display = (!plUser() && !foundingDismissed && name === 'home') ? '' : 'none';
   }
@@ -9417,7 +9417,7 @@ if (!handleUrlRouting()) {
   var banner = document.getElementById('founding-banner');
   if (!banner) return;
   var dismissed = false;
-  try { dismissed = localStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
+  try { dismissed = sessionStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
   if (dismissed || (typeof plUser === 'function' && plUser())) {
     banner.style.display = 'none';
   }
