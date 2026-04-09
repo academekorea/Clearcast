@@ -23,6 +23,8 @@ app.use(rateLimit({ windowMs: 60000, max: 10 }));
 
 // ── Bind port immediately so Railway health check responds at once ──
 const PORT = process.env.PORT || 3000;
+console.log('[startup] PORT env var:', process.env.PORT);
+console.log('[startup] binding to port:', PORT);
 app.listen(PORT, () => {
   console.log('YouTube extractor running on port ' + PORT);
 });
@@ -79,7 +81,7 @@ function parseVTT(vttContent) {
 
 // ── Routes ──
 app.get('/health', (req, res) => {
-  res.json({ ok: true, ts: Date.now(), service: 'podlens-youtube-extractor' });
+  res.json({ ok: true, port: PORT, ts: Date.now(), service: 'podlens-youtube-extractor' });
 });
 
 app.post('/extract', async (req, res) => {
