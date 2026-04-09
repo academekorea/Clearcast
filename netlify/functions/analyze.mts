@@ -1,31 +1,56 @@
 import type { Config, Context } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
-async function fetchYouTubeCaptions(videoId: string): Promise<string|null> {
+interface YouTubeData {
+  captions: string | null;
+  title: string;
+  channelTitle: string;
+}
+
+async function fetchYouTubeData(videoId: string): Promise<YouTubeData> {
+  const empty: YouTubeData = { captions: null, title: "", channelTitle: "" };
   try {
     const apiKey = Netlify.env.get("YOUTUBE_API_KEY");
-    if (!apiKey) return null;
-    const tracksRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId=${videoId}&key=${apiKey}`,
-      { signal: AbortSignal.timeout(10000) }
-    );
-    const tracks = await tracksRes.json();
+    if (!apiKey) return empty;
+
+    // Fetch video metadata + captions list in parallel
+    const [videoRes, tracksRes] = await Promise.all([
+      fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`,
+        { signal: AbortSignal.timeout(10000) }
+      ),
+      fetch(
+        `https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId=${videoId}&key=${apiKey}`,
+        { signal: AbortSignal.timeout(10000) }
+      ),
+    ]);
+
+    const [videoData, tracks] = await Promise.all([videoRes.json(), tracksRes.json()]);
+
+    const snippet = videoData.items?.[0]?.snippet;
+    const title = snippet?.title || "";
+    const channelTitle = snippet?.channelTitle || "";
+
     const track = tracks.items?.find((t: any) =>
       t.snippet.language?.startsWith('en') &&
       t.snippet.trackKind !== 'forced'
     );
-    if (!track) return null;
+    if (!track) return { captions: null, title, channelTitle };
+
     const captionRes = await fetch(
       `https://www.googleapis.com/youtube/v3/captions/${track.id}?tfmt=srt&key=${apiKey}`,
       { signal: AbortSignal.timeout(15000) }
     );
-    if (!captionRes.ok) return null;
+    if (!captionRes.ok) return { captions: null, title, channelTitle };
+
     const srt = await captionRes.text();
-    return srt
+    const captions = srt
       .split('\n')
       .filter(l => l.trim() && !/^\d+$/.test(l.trim()) && !/^\d{2}:\d{2}/.test(l))
       .join(' ').trim() || null;
-  } catch { return null; }
+
+    return { captions, title, channelTitle };
+  } catch { return empty; }
 }
 
 export default async (req: Request, context: Context) => {
@@ -69,16 +94,16 @@ export default async (req: Request, context: Context) => {
       const videoId = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
       if (videoId) {
         console.log('[analyze] trying YouTube Data API for', videoId);
-        const captions = await fetchYouTubeCaptions(videoId);
-        if (captions && captions.length > 200) {
-          console.log('[analyze] captions found via Data API, length:', captions.length);
+        const ytData = await fetchYouTubeData(videoId);
+        if (ytData.captions && ytData.captions.length > 200) {
+          console.log('[analyze] captions found via Data API, length:', ytData.captions.length);
           await store.setJSON(jobId, {
             status: "transcribed",
             jobId,
             url,
-            episodeTitle: episodeTitle || "",
-            showName: showName || "",
-            transcript: captions,
+            episodeTitle: episodeTitle || ytData.title || "",
+            showName: showName || ytData.channelTitle || "",
+            transcript: ytData.captions,
           });
           return new Response(JSON.stringify({ jobId }), {
             status: 200,
