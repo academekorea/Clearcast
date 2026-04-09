@@ -389,7 +389,8 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
     html += '<div class="artwork" id="v7-artwork-left">'
       + '<div style="display:flex;flex-direction:column;align-items:center;gap:6px">'
       + '<div class="aicon">&#127897;</div>'
-      + '<div style="font-size:10px;color:#aaa">'+(_cleanTitle||'')+'</div></div>'
+      + (_cleanTitle && !/^(yt-|aai-|GLT|demo)/i.test(_cleanTitle) ? '<div style="font-size:10px;color:#aaa">'+_cleanTitle+'</div>' : '')
+      + '</div>'
       + '<div class="pov"><button class="pbig">\u25b6</button></div></div>';
   }
   html += '<div class="pl-ctls">'
@@ -409,8 +410,8 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
     + '<div><div class="gname" style="color:#bbb">'+(_cleanShow||'Loading\u2026')+'</div>'
     + '<div class="grole" style="color:#ddd">Host</div></div></div></div>'
     + '<div class="pl-card"><div class="lbl">Audio briefing \u00b7 Before you listen</div>'
-    + '<div class="bdesc" style="color:#bbb">Generates when analysis completes</div>'
-    + '<button class="bbtn" disabled style="opacity:.4;cursor:default;margin-top:8px">\u25b6 Play briefing</button></div>'
+    + '<div class="bdesc" style="color:#bbb">Ready when analysis completes \u2014 play while you wait</div>'
+    + '<button class="bbtn" style="margin-top:8px;opacity:.5;cursor:default" disabled>\u25b6 Play briefing</button></div>'
     + '<div class="pl-card"><div class="biasrow">'
     + '<div class="lbl" style="margin-bottom:0">Political lean \u2014 how this episode frames issues</div>'
     + '<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#d97706"><div class="pdot"></div>Calculating</div></div>'
