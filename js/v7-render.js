@@ -306,12 +306,13 @@ function renderResults(data) {
 
   var html = '<div class="v7-dash"><div class="v7-main">';
 
-  // Guest preview bar (logged-out only)
+  // Guest preview bar (logged-out only) — defaults to Free so visitor sees gated state first
   if (!u) {
+    var isDemo = data.jobId === 'demo';
     html += '<div class="v7-preview-bar">'
-      + '<span class="v7-prev-lbl">Previewing as:</span>'
-      + '<button class="v7-prev-pill' + (_previewTier === 'free' ? ' on-free' : '') + '" onclick="setPreviewTier(\'free\')">Free</button>'
-      + '<button class="v7-prev-pill' + (_previewTier === 'creator' ? ' on-creator' : '') + '" onclick="setPreviewTier(\'creator\')">Creator</button>'
+      + '<span class="v7-prev-lbl">PREVIEWING AS</span>'
+      + '<button class="v7-prev-pill' + (_previewTier === 'free'     ? ' on-free'     : '') + '" onclick="setPreviewTier(\'free\')">Free</button>'
+      + '<button class="v7-prev-pill' + (_previewTier === 'creator'  ? ' on-creator'  : '') + '" onclick="setPreviewTier(\'creator\')">Creator</button>'
       + '<button class="v7-prev-pill' + (_previewTier === 'operator' ? ' on-operator' : '') + '" onclick="setPreviewTier(\'operator\')">Operator</button>'
       + '<span class="v7-prev-cta"><a onclick="if(typeof openModal===\'function\')openModal(\'signup\')">Sign up free &rarr;</a></span>'
       + '</div>';
@@ -367,9 +368,10 @@ function renderResults(data) {
       + '<div class="v7-chip">High credibility</div>'
       + '</div>'
       + '<div class="v7-srow">'
-      + (guest.twitter ? '<a class="v7-sl" href="https://x.com/' + guest.twitter + '" target="_blank" rel="noopener">&#120143; @' + guest.twitter + '</a>' : '')
+      + (guest.twitter  ? '<a class="v7-sl" href="https://x.com/' + guest.twitter + '" target="_blank" rel="noopener">&#120143; @' + guest.twitter + '</a>' : '')
+      + (guest.instagram? '<a class="v7-sl" href="https://instagram.com/' + guest.instagram + '" target="_blank" rel="noopener">&#128247; @' + guest.instagram + '</a>' : '')
       + (guest.linkedin ? '<a class="v7-sl" href="' + guest.linkedin + '" target="_blank" rel="noopener">in LinkedIn</a>' : '')
-      + (guest.wikipedia ? '<a class="v7-sl" href="' + guest.wikipedia + '" target="_blank" rel="noopener">W Wikipedia</a>' : '')
+      + (guest.website  ? '<a class="v7-sl" href="' + guest.website + '" target="_blank" rel="noopener">&#127760; ' + (guest.website.replace(/^https?:\/\//,'').split('/')[0]) + '</a>' : '')
       + '<a class="v7-sl v7-sl-pl" href="#">&#127897; Podlens profile</a>'
       + '</div></div>';
   } else {

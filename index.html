@@ -2148,11 +2148,9 @@ body.light-mode,[data-theme="light"]{
 .v7-act-btn{font-size:11px;color:#999;border:0.5px solid #e0e0e0;background:none;border-radius:5px;padding:5px 10px;cursor:pointer;font-family:inherit}
 .v7-act-btn:hover{color:#555;border-color:#bbb}
 .v7-preview-bar{background:#fff;border-bottom:0.5px solid #eee;padding:9px 0 12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px}
-.v7-prev-lbl{font-size:11px;color:#bbb}
-.v7-prev-pill{background:transparent;border:0.5px solid #d0d0d0;color:#aaa;padding:4px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit}
-.v7-prev-pill.on-free{border-color:#333;color:#aaa}
-.v7-prev-pill.on-creator{border-color:#7a4500;color:#ef9f27}
-.v7-prev-pill.on-operator{border-color:#0c3a6a;color:#378add}
+.v7-prev-lbl{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.08em}
+.v7-prev-pill{background:transparent;border:0.5px solid #d0d0d0;color:#999;padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .12s}
+.v7-prev-pill.on-free,.v7-prev-pill.on-creator,.v7-prev-pill.on-operator{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
 .v7-prev-cta{font-size:11px;color:#999;margin-left:auto}
 .v7-prev-cta a{color:#378add;cursor:pointer;text-decoration:none}
 .v7-main{padding:16px}
@@ -4266,6 +4264,15 @@ function showView(name) {
   if (mb) mb.classList.add('on');
   if (name === 'discover' && !_feedInit) { initFeed(); }
   if (name === 'admin') { var _au = plUser(); if (_au && (_au.isSuperAdmin || _au.email === 'academekorea@gmail.com')) { adminLoad('overview'); } else { showView('home'); } }
+  // Show demo analysis for logged-out users visiting analyze view
+  if (name === 'analyze' && !plUser()) {
+    setTimeout(function() {
+      var resultsEl = document.getElementById('results');
+      if (resultsEl && !resultsEl.innerHTML.trim()) {
+        showDemoAnalysis();
+      }
+    }, 50);
+  }
   // Hide footer when in non-home views (except show)
   var footer = document.getElementById('site-footer');
   if (footer) footer.style.display = (name === 'home' || name === 'show') ? '' : 'none';
@@ -6934,7 +6941,70 @@ function _getEffectiveTierConfig() {
 
 function setPreviewTier(tier) {
   _previewTier = tier;
-  if (window._lastAnalysisResult) renderResults(window._lastAnalysisResult);
+  var u = plUser();
+  if (!u) {
+    // Logged-out: always re-render the demo
+    showDemoAnalysis();
+  } else if (window._lastAnalysisResult) {
+    renderResults(window._lastAnalysisResult);
+  }
+}
+
+// ── HARDCODED DEMO DATA (Jensen Huang / Lex Fridman) ─────────────────────
+var DEMO_RESULT = {
+  jobId: 'demo',
+  status: 'complete',
+  url: 'https://www.youtube.com/watch?v=eNliOm9NtCM',
+  episodeTitle: 'Jensen Huang: NVIDIA, AI, and the Future of Computing',
+  showName: 'Lex Fridman Podcast',
+  duration: '2h 18m',
+  biasScore: -18,
+  biasLabel: 'Slight left lean',
+  factualityLabel: 'Mixed factuality',
+  summary: '2-min overview of AI infrastructure framing, CUDA origins, and bias patterns detected in this episode.',
+  hostTrustScore: 72,
+  guest: {
+    name: 'Jensen Huang',
+    title: 'CEO, NVIDIA',
+    organization: 'Tech executive',
+    lean: 'Tech-optimist lean',
+    episodeCount: '15',
+    twitter: 'jensenhhuang',
+    linkedin: 'https://www.linkedin.com/in/jensenh/',
+    wikipedia: 'https://en.wikipedia.org/wiki/Jensen_Huang',
+    website: 'https://nvidia.com'
+  },
+  flags: [
+    { type: 'sponsor-note', title: 'Multiple sponsor integrations throughout', detail: 'Extended segments for Shopify, Element, and Fin at 12m, 58m, and 1h32m.', citations: [] },
+    { type: 'framing',      title: 'Corporate decisions presented as visionary without exploring failures', detail: 'Strategic bets framed as consistently brilliant while omitting failed initiatives.', citations: [] },
+    { type: 'fact-check',   title: "Host rarely challenged guest's self-reported statistics", detail: 'Key numerical claims accepted without pushback or source requests.', citations: [] },
+    { type: 'context',      title: 'Limited discussion of AI scaling concerns', detail: 'Scaling laws discussed with minimal exploration of energy concerns or diminishing returns.', citations: [] },
+    { type: 'omission',     title: 'No mention of regulatory or antitrust concerns', detail: "Ongoing regulatory scrutiny of NVIDIA's market dominance not raised.", citations: [] }
+  ],
+  keyFindings: [
+    { lean: 'left',    text: 'Left-leaning framing detected in 4 of 5 key claims about AI regulation', detail: 'Four of the five major claims about AI regulation use framing language associated with progressive regulatory perspectives.' },
+    { lean: 'right',   text: 'Conservative perspective absent from 3 major segments on government oversight', detail: 'Three full segments on government oversight conducted without any representation of conservative or libertarian policy positions.' },
+    { lean: 'left',    text: "Host rarely challenged guest's self-reported statistics", detail: 'Across the episode, Jensen Huang makes specific numerical claims. All figures accepted without pushback.' },
+    { lean: 'neutral', text: 'Episode opens with credibility-building narrative before contested claims', detail: 'The first 20 minutes establish Jensen Huang as a near-mythological figure before any substantive claims are made.' },
+    { lean: 'neutral', text: 'Sponsor segments follow topically related content sections', detail: "Each of the three sponsor reads is placed immediately after a segment whose topic directly relates to the sponsor's product." }
+  ]
+};
+
+function showDemoAnalysis() {
+  // Only for logged-out users
+  var u = plUser();
+  if (u) return;
+
+  // Show the analyze view
+  showView('analyze');
+
+  // Hide empty state, show results
+  var emptyState = document.getElementById('empty-state');
+  if (emptyState) emptyState.style.display = 'none';
+
+  // Render with current preview tier
+  window._lastAnalysisResult = null; // clear any real result
+  renderResults(DEMO_RESULT);
 }
 
 function canAccess(feature) {
