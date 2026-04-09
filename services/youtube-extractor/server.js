@@ -103,6 +103,10 @@ app.post('/extract', async (req, res) => {
       '--dump-json',
       '--no-warnings',
       '--skip-download',
+      '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      '--extractor-args', 'youtube:player_client=android,web',
+      '--no-check-certificates',
+      '--sleep-interval', '1',
       url
     ]);
     const info = JSON.parse(metaStdout);
@@ -127,6 +131,10 @@ app.post('/extract', async (req, res) => {
         '--sub-format', 'vtt',
         '--skip-download',
         '--no-warnings',
+        '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        '--extractor-args', 'youtube:player_client=android',
+        '--no-check-certificates',
+        '--sleep-interval', '1',
         '-o', path.join(tmpDir, '%(id)s.%(ext)s'),
         url
       ]);
@@ -149,6 +157,10 @@ app.post('/extract', async (req, res) => {
       '--audio-format', 'mp3',
       '--audio-quality', '0',
       '--no-warnings',
+      '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      '--extractor-args', 'youtube:player_client=android,web',
+      '--no-check-certificates',
+      '--sleep-interval', '1',
       '-o', path.join(tmpDir, '%(id)s.%(ext)s'),
       url
     ]);
