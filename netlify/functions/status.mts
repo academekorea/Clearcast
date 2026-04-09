@@ -10,6 +10,15 @@ Analyze the transcript and return a JSON object with this exact structure:
   "factualityLabel": <"Mostly factual" | "Mixed factuality" | "Unreliable">,
   "omissionRisk": <"Low" | "Med" | "High">,
   "summary": <2-3 sentence plain English summary of what this episode is about and how it leans>,
+  "guest": {
+    "name": <full name of the main guest, or null if no clear guest>,
+    "title": <their job title e.g. "CEO" or "Senator", or null>,
+    "organization": <their company/org e.g. "NVIDIA" or "US Senate", or null>,
+    "lean": <their perceived political/ideological lean in 3-4 words e.g. "Tech-optimist lean" or "Progressive lean", or null>,
+    "episodeCount": <estimated number of times this person has appeared on this show as a string e.g. "3", or null>,
+    "twitter": <their Twitter/X handle without @, or null>,
+    "website": <their official website URL, or null>
+  },
   "flags": [
     {
       "type": <"fact-check" | "framing" | "omission" | "sponsor-note" | "context">,
@@ -24,6 +33,7 @@ Rules:
 - Every fact-check flag must be verifiable against known public information
 - Be specific, not vague
 - Maximum 6 flags
+- For guest fields: only populate if you are confident — use null if unsure
 - Return ONLY the JSON, no other text`;
 
 export default async (req: Request) => {

@@ -89,7 +89,7 @@ function renderResults(data) {
   var vid = ytId(data.url || '');
   var guest = data.guest || {};
   var gIni = (guest.name || showName || '?').trim().split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
-  var gRole = [guest.title, guest.organization].filter(Boolean).join(' \u00b7') || 'Host';
+  var gRole = [guest.title, guest.organization].filter(Boolean).join(' \u00b7') || (showName ? showName : 'Host');
 
   var findings = (data.flags || []).map(function(flag) {
     return {
@@ -209,17 +209,18 @@ function renderResults(data) {
   // Right column
   html += '<div class="rc">';
 
-  // Guest card
-  html += '<div class="pl-card">'
-    + '<div class="gtop"><div class="gav">'+gIni+'</div>'
-    + '<div><div class="gname">'+(guest.name||showName||'Host')+'</div>'
-    + '<div class="grole">'+gRole+'</div></div></div>'
-    + '<div class="chips">'
+  // Guest card — id="pl-guest-card" so iTunes fetch can update artwork after render
+  html += '<div class="pl-card" id="pl-guest-card">'
+    + '<div class="gtop">'
+    + '<div class="gav" id="pl-guest-av">'+gIni+'</div>'
+    + '<div><div class="gname" id="pl-guest-name">'+(guest.name||showName||'Host')+'</div>'
+    + '<div class="grole" id="pl-guest-role">'+gRole+'</div></div></div>'
+    + '<div class="chips" id="pl-guest-chips">'
     + (guest.lean ? '<div class="lchip">'+guest.lean+'</div>' : '')
     + (guest.episodeCount ? '<div class="chip">'+guest.episodeCount+' prior episodes</div>' : '')
-    + '<div class="chip">High credibility</div>'
+    + (guest.name ? '<div class="chip">High credibility</div>' : '')
     + '</div>'
-    + '<div class="srow">'
+    + '<div class="srow" id="pl-guest-links">'
     + (guest.twitter   ? '<a class="sl" href="https://x.com/'+guest.twitter+'" target="_blank" rel="noopener">\uD835\uDD4F @'+guest.twitter+'</a>' : '')
     + (guest.instagram ? '<a class="sl" href="https://instagram.com/'+guest.instagram+'" target="_blank" rel="noopener">&#128247; @'+guest.instagram+'</a>' : '')
     + (guest.linkedin  ? '<a class="sl" href="'+guest.linkedin+'" target="_blank" rel="noopener">in LinkedIn</a>' : '')
@@ -334,20 +335,51 @@ function renderResults(data) {
     setTimeout(function() { _arInitNativeAudio(data.url, data); }, 100);
   }
 
-  // iTunes artwork fetch for non-demo, non-YouTube
-  if (!vid && data.jobId !== 'demo') {
-    var q = showName || epTitle;
-    if (q) {
-      fetch('https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=podcast&entity=podcast&limit=1', {signal:AbortSignal.timeout(5000)})
-        .then(function(r){return r.json();})
-        .then(function(d){
-          var p = d.results && d.results[0];
-          if (!p) return;
-          var artUrl = (p.artworkUrl100||'').replace('100x100bb','600x600bb');
-          var leftArt = document.getElementById('v7-artwork-left');
-          if (leftArt && artUrl) leftArt.innerHTML = '<img src="'+artUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block">';
-        }).catch(function(){});
-    }
+  // iTunes fetch — populates artwork AND guest card when API returns no guest data
+  var q = showName || epTitle;
+  if (q && data.jobId !== 'demo') {
+    fetch('https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=podcast&entity=podcast&limit=1', {signal:AbortSignal.timeout(5000)})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var p = d.results && d.results[0];
+        if (!p) return;
+        var artUrl = (p.artworkUrl100||'').replace('100x100bb','600x600bb');
+        var smallArtUrl = p.artworkUrl100 || '';
+        var hostName = p.artistName || showName || '';
+        var genre = p.primaryGenreName || 'Podcast';
+        var trackCount = p.trackCount ? p.trackCount + ' episodes' : '';
+        var appleUrl = p.artistViewUrl || p.collectionViewUrl || '';
+
+        // Update left artwork (non-YouTube only)
+        var leftArt = document.getElementById('v7-artwork-left');
+        if (leftArt && artUrl && !vid) {
+          leftArt.innerHTML = '<img src="'+artUrl+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block">';
+        }
+
+        // Update guest card if API returned no guest name
+        if (!guest.name) {
+          var ini = hostName.trim().split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase() || '?';
+          var avEl   = document.getElementById('pl-guest-av');
+          var nameEl = document.getElementById('pl-guest-name');
+          var roleEl = document.getElementById('pl-guest-role');
+          var chipsEl = document.getElementById('pl-guest-chips');
+          var linksEl = document.getElementById('pl-guest-links');
+          if (avEl) {
+            if (smallArtUrl) {
+              avEl.innerHTML = '<img src="'+smallArtUrl+'" style="width:38px;height:38px;border-radius:50%;object-fit:cover" onerror="this.parentNode.textContent=\''+ini+'\'">';
+              avEl.style.cssText = 'width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:none;padding:0';
+            } else {
+              avEl.textContent = ini;
+            }
+          }
+          if (nameEl) nameEl.textContent = hostName || showName || 'Host';
+          if (roleEl) roleEl.textContent = 'Host \u00b7 ' + genre;
+          if (chipsEl) chipsEl.innerHTML = trackCount ? '<div class="lchip">'+trackCount+'</div>' : '';
+          if (linksEl) linksEl.innerHTML =
+            (appleUrl ? '<a class="sl" href="'+appleUrl+'" target="_blank" rel="noopener">&#9654; Apple Podcasts</a>' : '')
+            + '<a class="sl sl-podlens" href="#">&#127897; PodLens profile</a>';
+        }
+      }).catch(function(){});
   }
 
   if (!isPartial) loadPlatformButtons(data);
