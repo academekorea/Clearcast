@@ -164,9 +164,10 @@ function _v7PostRender(vid, showName, epTitle) {
             + '<div><div class="v7-gname">' + decodeHTMLEntities(host) + '</div>'
             + '<div class="v7-grole">Host &middot; ' + genre + '</div></div></div>'
             + '<div class="v7-chips">'
-            + (epCount ? '<div class="v7-chip">' + epCount + '</div>' : '')
+            + (epCount ? '<div class="v7-lchip">' + epCount + '</div>' : '')
             + '</div>'
             + '<div class="v7-srow">'
+            + (p.artistViewUrl ? '<a class="v7-sl" href="' + p.artistViewUrl + '" target="_blank" rel="noopener">&#9654; Apple Podcasts</a>' : '')
             + '<a class="v7-sl v7-sl-pl" href="#">&#127897; Podlens profile</a>'
             + '</div>';
         }
