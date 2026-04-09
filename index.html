@@ -3403,6 +3403,10 @@ body.light-mode,[data-theme="light"]{
 <script>
 // ── THEME ──
 
+// ── PUBLIC CONFIG (load env-injected values early) ──
+window._plConfig = {};
+fetch('/api/public-config').then(function(r){ return r.json(); }).then(function(d){ window._plConfig = d; }).catch(function(){});
+
 // ── AUTH SYSTEM (localStorage) ──
 function plUser() {
   try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) { return null; }
@@ -8042,7 +8046,7 @@ function shareToKakao(data) {
 }
 
 // ── SOCIAL OAUTH ──
-var SPOTIFY_CLIENT_ID = '1eb72bc291654bfba6cd9ce1679c5774';
+var SPOTIFY_CLIENT_ID = window._plConfig && window._plConfig.spotifyClientId || '';
 var SPOTIFY_REDIRECT_URI = 'https://podlens.app/auth/spotify/callback';
 var GOOGLE_REDIRECT_URI = 'https://podlens.app/auth/google/callback';
 
@@ -9467,7 +9471,7 @@ function heroConnectSpotify() {
     return;
   }
   // Start Spotify OAuth
-  var clientId = '1eb72bc291654bfba6cd9ce1679c5774';
+  var clientId = window._plConfig && window._plConfig.spotifyClientId || '';
   var scopes = 'user-library-read user-read-recently-played user-top-read';
   var redirect = encodeURIComponent(window.location.origin + '/auth/spotify/callback');
   var state = crypto.randomUUID();
