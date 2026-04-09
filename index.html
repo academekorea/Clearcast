@@ -6310,6 +6310,14 @@ function handleUrlRouting() {
     return true;
   }
 
+  // Handle ?jobId= deep link (from Library View button)
+  var deepJobId = params.get('jobId');
+  if (deepJobId) {
+    history.replaceState({}, '', window.location.pathname);
+    viewAnalysis(deepJobId);
+    return true;
+  }
+
   // Handle show profiles
   var m=path.match(/^\/show\/([^/?]+)/);
   if (m) { var slug=decodeURIComponent(m[1]); var compareSlug=params.get('compare')||null; showView('show'); loadShowProfile(slug,compareSlug); return true; }
@@ -6830,7 +6838,7 @@ function trackAnalysis(data) {
     }
     var recent=getRecent();
     var al=data.audioLean||{};
-    recent.unshift({title:data.episodeTitle||'',biasLabel:data.biasLabel||'',url:data.url||'',showName:data.showName||'',leftPct:al.leftPct,centerPct:al.centerPct,rightPct:al.rightPct});
+    recent.unshift({title:data.episodeTitle||data.showName||'Episode',biasLabel:data.biasLabel||'',url:data.url||'',showName:data.showName||'',leftPct:al.leftPct,centerPct:al.centerPct,rightPct:al.rightPct});
     recent=recent.slice(0,10);
     localStorage.setItem('pl-recent',JSON.stringify(recent));
     renderRecentlyAnalyzed();
@@ -6845,7 +6853,7 @@ function trackAnalysis(data) {
       });
       analyzed.unshift({
         jobId: data.jobId || '',
-        episodeTitle: data.episodeTitle || '',
+        episodeTitle: data.episodeTitle || data.showName || '',
         showName: data.showName || '',
         artworkUrl: data.artworkUrl || '',
         biasLabel: data.biasLabel || '',
