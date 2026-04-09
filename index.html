@@ -1524,7 +1524,66 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .btn-apple{background:#FC3C44;color:white;border:none;border-radius:4px;padding:10px 20px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer}
 .btn-kakao{background:#FEE500;color:#1a1a1a;border:none;border-radius:4px;padding:10px 20px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer}
 
-/* ── SHARE ANALYSIS SECTION ── */
+/* ── DISCOVER PAGE ── */
+.disc-layout{max-width:1200px;margin:0 auto;padding:0 40px 80px}
+@media(max-width:1024px){.disc-layout{padding:0 24px 60px}}
+.disc-header{padding:28px 0 0;margin-bottom:0}
+.disc-header-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:16px;flex-wrap:wrap}
+.disc-title{font-family:var(--ffs);font-size:26px;font-weight:700;letter-spacing:-.01em;margin-bottom:2px}
+.disc-sub{font-size:13px;color:var(--text3)}
+.disc-search-wrap{display:flex;border:1px solid var(--border2);border-radius:8px;overflow:hidden;background:var(--bg2);flex-shrink:0;width:320px}
+@media(max-width:700px){.disc-search-wrap{width:100%}}
+.disc-search{flex:1;padding:10px 14px;font-size:13px;border:none;background:transparent;outline:none;color:var(--text);font-family:var(--ff)}
+.disc-search::placeholder{color:var(--text3)}
+.disc-search-btn{padding:10px 18px;background:var(--navy);color:#fff;border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--ff)}
+.disc-cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:16px 0;border-bottom:0.5px solid var(--border)}
+.disc-cats::-webkit-scrollbar{display:none}
+.disc-cat{padding:7px 16px;border:0.5px solid var(--border2);border-radius:20px;font-size:13px;color:var(--text2);cursor:pointer;white-space:nowrap;background:transparent;font-family:var(--ff);transition:all .12s;flex-shrink:0}
+.disc-cat.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.disc-body{display:grid;grid-template-columns:1fr 300px;gap:32px;padding-top:24px}
+@media(max-width:960px){.disc-body{grid-template-columns:1fr}}
+.disc-hero{background:var(--navy);border-radius:10px;overflow:hidden;margin-bottom:24px;cursor:pointer}
+.disc-hero-video{aspect-ratio:16/9;background:#1a3050;position:relative;overflow:hidden}
+.disc-hero-video iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.disc-hero-body{padding:14px 18px}
+.disc-hero-show{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px}
+.disc-hero-title{font-size:15px;font-weight:600;color:#fff;line-height:1.4;margin-bottom:10px}
+.disc-hero-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.disc-hero-dur{font-size:11px;color:rgba(255,255,255,.4)}
+.disc-hero-analyze{margin-left:auto;padding:6px 14px;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--ff)}
+.disc-hero-analyze:hover{background:rgba(255,255,255,.25)}
+.disc-tabs{display:flex;gap:0;border-bottom:0.5px solid var(--border);margin-bottom:16px}
+.disc-tab{padding:9px 16px;font-size:13px;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-0.5px;background:none;border-top:none;border-left:none;border-right:none;cursor:pointer;font-family:var(--ff);transition:color .1s}
+.disc-tab.on{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.disc-tab-pro{font-size:9px;font-weight:700;background:var(--bg3);color:var(--text3);padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle}
+.disc-ep-list{display:flex;flex-direction:column;border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
+.disc-ep{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .1s}
+.disc-ep:last-child{border-bottom:none}
+.disc-ep:hover{background:var(--bg3)}
+.disc-ep-num{font-size:13px;color:var(--text3);width:18px;text-align:right;flex-shrink:0}
+.disc-ep-art{width:44px;height:44px;border-radius:6px;background:var(--navy);object-fit:cover;flex-shrink:0}
+.disc-ep-body{flex:1;min-width:0}
+.disc-ep-show{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px}
+.disc-ep-title{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.disc-ep-meta{display:flex;align-items:center;gap:8px}
+.disc-ep-dur{font-size:10px;color:var(--text3)}
+.disc-ep-btn{padding:5px 12px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:var(--ff);flex-shrink:0}
+.disc-ep-btn:hover{background:var(--bg3)}
+.disc-sidebar{}
+.disc-sb-section{margin-bottom:28px}
+.disc-sb-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
+.disc-show-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.disc-show-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:border-color .1s}
+.disc-show-card:hover{border-color:var(--navy)}
+.disc-show-art{width:36px;height:36px;border-radius:5px;background:var(--navy);object-fit:cover;margin-bottom:7px;display:block}
+.disc-show-name{font-size:12px;font-weight:600;line-height:1.3;margin-bottom:2px;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.disc-show-sub{font-size:10px;color:var(--text3)}
+.disc-recent-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--border)}
+.disc-recent-row:last-child{border-bottom:none}
+.disc-recent-art{width:32px;height:32px;border-radius:4px;background:var(--navy);flex-shrink:0;object-fit:cover}
+.disc-recent-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.disc-recent-show{font-size:10px;color:var(--text3)}
+.disc-compare-inp{width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;outline:none;background:var(--bg);color:var(--text);font-family:var(--ff)}
 .share-analysis-section{background:#0f2027;border-radius:var(--r);padding:20px 24px;margin-bottom:16px;color:white}
 .share-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:12px}
 .share-btns{display:flex;gap:8px;flex-wrap:wrap}
@@ -2753,24 +2812,7 @@ body.light-mode,[data-theme="light"]{
 
 
     <!-- FEATURED PLAYER -->
-    <section class="featured-section" id="featured-section">
-      <div class="featured-inner">
-        <div class="featured-eyebrow">Currently trending</div>
-        <div class="featured-heading">Listen while you learn</div>
-        <div class="featured-main" id="featured-main">
-          <div class="featured-player-pane" id="featured-player-pane">
-            <div style="color:rgba(255,255,255,.4);font-size:13px"><div class="feed-spin" style="margin:0 auto 8px;border-color:rgba(255,255,255,.2);border-top-color:white"></div>Loading&hellip;</div>
-          </div>
-          <div class="featured-analysis-pane" id="featured-analysis-pane">
-            <div style="color:var(--text3);font-size:13px">Select a trending episode to see its analysis summary here.</div>
-          </div>
-        </div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">More trending episodes</div>
-        <div class="trending-cards" id="trending-cards">
-          <div style="color:var(--text3);font-size:13px"><div class="feed-spin" style="margin:0 auto 8px"></div></div>
-        </div>
-      </div>
-    </section>
+
 
 
 
@@ -3034,115 +3076,79 @@ body.light-mode,[data-theme="light"]{
 
 <!-- DISCOVER VIEW (replaces marketplace) -->
 <div class="view" id="view-discover">
-  <div class="mkt-layout">
-    <!-- Left sidebar -->
-    <div class="mkt-sidebar">
-      <div class="sb-section">
-        <div class="sb-lbl">Feeds</div>
-        <button class="sb-item on" id="sb-foryou" onclick="activeSb(this);showFeed('foryou')">For you</button>
-        <button class="sb-item" id="sb-browse" onclick="activeSb(this);showFeed('browse')">Browse shows</button>
-        <button class="sb-item" id="sb-unheard" onclick="activeSb(this);showFeed('unheard')"><span>Unheard</span><span class="sb-pro">Pro</span></button>
-        <button class="sb-item" id="sb-compare" onclick="activeSb(this);showFeed('compare')">Compare shows</button>
+  <div class="disc-layout">
+
+    <!-- Header -->
+    <div class="disc-header">
+      <div class="disc-header-inner">
+        <div>
+          <h2 class="disc-title">Discover</h2>
+          <p class="disc-sub">Trending episodes, curated shows, and what podcasting is talking about.</p>
+        </div>
+        <div class="disc-search-wrap">
+          <input type="text" id="disc-search-input" class="disc-search" placeholder="Search any show, episode, or topic…" onkeydown="if(event.key==='Enter')discSearch(this.value)" autocomplete="off"/>
+          <button class="disc-search-btn" onclick="discSearch(document.getElementById('disc-search-input').value)">Search</button>
+        </div>
       </div>
-      <div class="sb-section">
-        <div class="sb-lbl">Following</div>
-        <div id="sb-following-items"><div class="sb-follow-hint">Follow topics above</div></div>
+      <div class="disc-cats" id="disc-cats">
+        <button class="disc-cat on" onclick="discSetCat('all',this)">All</button>
+        <button class="disc-cat" onclick="discSetCat('news',this)">News &amp; Politics</button>
+        <button class="disc-cat" onclick="discSetCat('tech',this)">Technology</button>
+        <button class="disc-cat" onclick="discSetCat('business',this)">Business</button>
+        <button class="disc-cat" onclick="discSetCat('society',this)">Society</button>
+        <button class="disc-cat" onclick="discSetCat('crime',this)">True Crime</button>
+        <button class="disc-cat" onclick="discSetCat('comedy',this)">Comedy</button>
+        <button class="disc-cat" onclick="discSetCat('health',this)">Health</button>
+        <button class="disc-cat" onclick="discSetCat('sports',this)">Sports</button>
       </div>
     </div>
 
-    <!-- Main feed -->
-    <div class="mkt-main">
-      <!-- Topic strip -->
-      <div class="topic-strip" id="topic-strip"></div>
+    <!-- Main + Sidebar -->
+    <div class="disc-body">
+      <div class="disc-main">
 
-      <!-- Feed tabs -->
-      <div class="feed-tabs">
-        <button class="ft on" id="ft-foryou" onclick="showFeed('foryou')">For you</button>
-        <button class="ft" id="ft-browse" onclick="showFeed('browse')">Browse</button>
-        <button class="ft" id="ft-unheard" onclick="showFeed('unheard')">Unheard</button>
-        <button class="ft" id="ft-compare" onclick="showFeed('compare')">Compare</button>
-        <button class="ft" id="ft-search-tab" onclick="showFeed('search-tab')">Search</button>
-      </div>
-
-      <!-- For You panel -->
-      <div class="fp on" id="fp-foryou">
-        <div style="padding:12px 0">
-          <!-- Korean shows section (shown only for KR region) -->
-          <div id="kr-shows-section" style="display:none;margin-bottom:32px">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:14px">🇰🇷 한국 인기 팟캐스트 <span class="beta-pill">베타</span></div>
-            <div class="kr-shows-grid" id="kr-shows-grid"></div>
-          </div>
-          <!-- Podcast Spotlight -->
-          <div class="spotlight-section" id="spotlight-section">
-            <div class="spotlight-header">
-              <span class="spotlight-label">✦ Podcast Spotlight</span>
-              <button class="spotlight-refresh" onclick="rotateSpotlight()">Refresh ↻</button>
-            </div>
-            <div class="spotlight-grid" id="spotlight-grid"></div>
-          </div>
-          <div id="foryou-context" class="foryou-context" style="display:none"></div>
-          <div id="foryou-trending"></div>
-          <div id="hero-wrap"></div>
-          <div class="feed-loading" id="feed-loading"><div class="feed-spin"></div></div>
-          <div id="story-list"></div>
-          <div class="feed-empty" id="feed-empty">No results. Try another topic.</div>
+        <!-- Hero featured episode -->
+        <div class="disc-hero" id="disc-hero">
+          <div class="disc-hero-inner">Loading featured episode&hellip;</div>
         </div>
-      </div>
 
-      <!-- Browse panel -->
-      <div class="fp" id="fp-browse">
-        <div style="padding:12px 0">
-          <div class="cat-strip">
-            <button class="cat-chip on" onclick="loadBrowse('news',this)">News</button>
-            <button class="cat-chip" onclick="loadBrowse('tech',this)">Tech</button>
-            <button class="cat-chip" onclick="loadBrowse('business',this)">Business</button>
-            <button class="cat-chip" onclick="loadBrowse('society',this)">Society</button>
-            <button class="cat-chip" onclick="loadBrowse('true-crime',this)">True Crime</button>
-            <button class="cat-chip" onclick="loadBrowse('comedy',this)">Comedy</button>
-            <button class="cat-chip" onclick="loadBrowse('health',this)">Health</button>
-            <button class="cat-chip" onclick="loadBrowse('sports',this)">Sports</button>
+        <!-- Episode tabs -->
+        <div class="disc-tabs">
+          <button class="disc-tab on" id="disc-tab-trending" onclick="discSetTab('trending',this)">Trending episodes</button>
+          <button class="disc-tab" id="disc-tab-analyzed" onclick="discSetTab('analyzed',this)">Recently analyzed</button>
+          <button class="disc-tab" id="disc-tab-unheard" onclick="discSetTab('unheard',this)">Unheard <span class="disc-tab-pro">Pro</span></button>
+        </div>
+
+        <div id="disc-feed">
+          <div style="padding:40px;text-align:center;color:var(--text3);font-size:13px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading&hellip;</div>
+        </div>
+
+      </div>
+      <div class="disc-sidebar">
+
+        <div class="disc-sb-section">
+          <div class="disc-sb-title">Trending shows</div>
+          <div class="disc-show-grid" id="disc-show-grid">
+            <div class="feed-spin" style="margin:0 auto"></div>
           </div>
-          <div id="show-grid"></div>
-          <div id="browse-loading" style="display:flex;justify-content:center;padding:40px"><div class="feed-spin"></div></div>
         </div>
-      </div>
 
-      <!-- Unheard panel — populated by loadUnheard() which gates on Pro status -->
-      <div class="fp" id="fp-unheard"></div>
-
-      <!-- Compare panel -->
-      <div class="fp" id="fp-compare">
-        <div style="padding:20px 0">
-          <div style="font-family:var(--ffs);font-size:20px;font-weight:600;margin-bottom:8px">Compare Two Shows</div>
-          <p style="font-size:14px;color:var(--text2);margin-bottom:16px">Open any show profile and click &ldquo;Compare with another show&rdquo; to compare bias scores side by side.</p>
-          <div id="top-shows" class="top-shows-list"></div>
-        </div>
-      </div>
-
-      <!-- Search panel -->
-      <div class="fp" id="fp-search-tab">
-        <div class="search-wrap">
-          <div class="search-row">
-            <input type="text" class="search-input" id="story-q"
-              placeholder="Search podcasts or shows&hellip;"
-              autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-              onkeydown="if(event.key==='Enter')doSearch()"/>
-            <button class="search-btn" onclick="doSearch()">Search</button>
+        <div class="disc-sb-section">
+          <div class="disc-sb-title">Recently analyzed</div>
+          <div id="disc-recent-list">
+            <div style="font-size:12px;color:var(--text3)">No recent analyses yet.</div>
           </div>
-          <div id="search-tab-results"></div>
         </div>
-      </div>
-    </div>
 
-    <!-- Right sidebar -->
-    <div class="mkt-right">
-      <div class="rp-section">
-        <div class="rp-lbl">Top shows</div>
-        <div id="rp-top-shows" class="top-shows-list"></div>
-      </div>
-      <div class="rp-section">
-        <div class="rp-lbl">Recently analyzed</div>
-        <div id="rp-recent"></div>
+        <div class="disc-sb-section">
+          <div class="disc-sb-title">Compare two shows</div>
+          <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:14px">
+            <input type="text" id="disc-compare-a" class="disc-compare-inp" placeholder="Show or URL 1&hellip;" autocomplete="off"/>
+            <input type="text" id="disc-compare-b" class="disc-compare-inp" placeholder="Show or URL 2&hellip;" style="margin-top:8px" autocomplete="off"/>
+            <button onclick="handleDiscCompare()" style="width:100%;margin-top:10px;padding:9px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">Compare &rarr;</button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -4579,7 +4585,8 @@ function showView(name) {
     admin: 'Admin — Podlens'
   };
   document.title = titles[name] || 'Podlens';
-  if (name === 'discover' && !_feedInit) { initFeed(); }
+  if (name === 'discover' && !_feedInit) { _feedInit = true; initDiscover(); }
+  else if (name === 'discover') { discRenderFeed(); discRenderShows(); }
   if (name === 'admin') { var _au = plUser(); if (_au && (_au.isSuperAdmin || _au.email === 'academekorea@gmail.com')) { adminLoad('overview'); } else { showView('home'); } }
   // Show demo analysis for logged-out users visiting analyze view
   if (name === 'analyze' && !plUser()) {
@@ -4663,7 +4670,164 @@ function _renderHomeTrendingFallback(el) {
   }).join('');
 }
 
-// ── HERO ANALYZE ──
+// ── DISCOVER PAGE ─────────────────────────────────────────────────────────────
+var _discCat = 'all';
+var _discTab = 'trending';
+
+function initDiscover() {
+  discRenderHero();
+  discRenderFeed();
+  discRenderShows();
+  discRenderRecent();
+}
+
+function discSetCat(cat, btn) {
+  _discCat = cat;
+  document.querySelectorAll('.disc-cat').forEach(function(b){ b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  discRenderFeed();
+  discRenderShows();
+}
+
+function discSetTab(tab, btn) {
+  _discTab = tab;
+  document.querySelectorAll('.disc-tab').forEach(function(b){ b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  discRenderFeed();
+}
+
+function discSearch(q) {
+  if (!q || !q.trim()) return;
+  showView('show');
+  loadShowProfile(q.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-'), q.trim().startsWith('http') ? q.trim() : null);
+}
+
+function discRenderHero() {
+  var el = document.getElementById('disc-hero');
+  if (!el) return;
+  el.innerHTML = '<div class="disc-hero-video"><iframe src="https://www.youtube-nocookie.com/embed/vif8NQcjVf0?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>'
+    + '<div class="disc-hero-body"><div class="disc-hero-show">Lex Fridman Podcast</div>'
+    + '<div class="disc-hero-title">Jensen Huang — NVIDIA &amp; the AI Revolution</div>'
+    + '<div class="disc-hero-meta"><span class="disc-hero-dur">2h 18m &middot; Mar 24, 2026</span>'
+    + '<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;background:rgba(224,53,43,.18);color:#ff8a80">Slight left lean</span>'
+    + '<button class="disc-hero-analyze" onclick="analyzeEp(null,\'https://www.youtube.com/watch?v=vif8NQcjVf0\',\'Jensen Huang — NVIDIA & the AI Revolution\',\'Lex Fridman Podcast\')">Analyze &rarr;</button>'
+    + '</div></div>';
+}
+
+function discRenderFeed() {
+  var el = document.getElementById('disc-feed');
+  if (!el) return;
+  if (_discTab === 'analyzed') {
+    discRenderRecentFeed(el); return;
+  }
+  if (_discTab === 'unheard') {
+    el.innerHTML = '<div style="padding:32px 0;text-align:center"><div style="font-size:14px;font-weight:500;margin-bottom:6px">Unheard is a Pro feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:16px">Stories one side covers that the other ignores &mdash; updated weekly.</div><a href="/pricing.html" style="display:inline-block;padding:9px 20px;background:var(--navy);color:#fff;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none">Upgrade to Operator &rarr;</a></div>';
+    return;
+  }
+  // Trending — filter CURATED_SHOWS by category, show as episode rows
+  var shows = _discCat === 'all' ? CURATED_SHOWS : CURATED_SHOWS.filter(function(s){ return s.cat === _discCat; });
+  if (!shows.length) shows = CURATED_SHOWS;
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v2') || 'null'); } catch(e) {}
+  var artMap = {};
+  if (cached && cached.urls) CURATED_SHOWS.forEach(function(s,i){ if(cached.urls[i]) artMap[s.name]=cached.urls[i]; });
+
+  el.innerHTML = '<div class="disc-ep-list">' + shows.slice(0,8).map(function(s, i) {
+    var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var art = artMap[s.name] ? '<img class="disc-ep-art" src="'+artMap[s.name]+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-ep-art"></div>';
+    return '<div class="disc-ep" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
+      + '<div class="disc-ep-num">'+(i+1)+'</div>'
+      + art
+      + '<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'
+      + '<div class="disc-ep-title">'+s.name+'</div>'
+      + '<div class="disc-ep-meta"><span class="disc-ep-dur">Latest episode</span></div></div>'
+      + '<button class="disc-ep-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze &rarr;</button>'
+      + '</div>';
+  }).join('') + '</div>';
+
+  // Load missing artwork
+  shows.slice(0,8).forEach(function(s) {
+    if (artMap[s.name]) return;
+    fetch('https://itunes.apple.com/search?term='+encodeURIComponent(s.name)+'&media=podcast&limit=1')
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var url = d.results&&d.results[0]&&(d.results[0].artworkUrl600||d.results[0].artworkUrl100);
+        if (!url) return;
+        el.querySelectorAll('.disc-ep').forEach(function(row){
+          var titleEl = row.querySelector('.disc-ep-title');
+          if (titleEl && titleEl.textContent === s.name) {
+            var artEl = row.querySelector('.disc-ep-art');
+            if (artEl && artEl.tagName === 'DIV') {
+              var img = document.createElement('img');
+              img.className = 'disc-ep-art'; img.src = url; img.alt = s.name;
+              img.onerror = function(){ this.style.display='none'; };
+              artEl.parentNode.replaceChild(img, artEl);
+            }
+          }
+        });
+      }).catch(function(){});
+  });
+}
+
+function discRenderRecentFeed(el) {
+  var u = plUser();
+  if (!u) { el.innerHTML = '<div style="padding:32px 0;text-align:center;color:var(--text3);font-size:13px">Sign in to see your analysis history.</div>'; return; }
+  var history = [];
+  try { history = JSON.parse(localStorage.getItem('pl_analysis_history') || '[]'); } catch(e) {}
+  if (!history.length) { el.innerHTML = '<div style="padding:32px 0;text-align:center;color:var(--text3);font-size:13px">No analyses yet. Paste a URL to get started.</div>'; return; }
+  el.innerHTML = '<div class="disc-ep-list">' + history.slice(0,8).map(function(h,i){
+    return '<div class="disc-ep" onclick="viewAnalysis(\''+h.jobId+'\')"><div class="disc-ep-num">'+(i+1)+'</div>'
+      + '<div class="disc-ep-art"></div>'
+      + '<div class="disc-ep-body"><div class="disc-ep-show">'+(h.showName||'')+'</div>'
+      + '<div class="disc-ep-title">'+(h.title||h.episodeTitle||'Episode')+'</div></div>'
+      + '<button class="disc-ep-btn">View →</button></div>';
+  }).join('') + '</div>';
+}
+
+function discRenderShows() {
+  var el = document.getElementById('disc-show-grid');
+  if (!el) return;
+  var shows = _discCat === 'all' ? CURATED_SHOWS.slice(0,4) : CURATED_SHOWS.filter(function(s){return s.cat===_discCat;}).slice(0,4);
+  if (!shows.length) shows = CURATED_SHOWS.slice(0,4);
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v2') || 'null'); } catch(e) {}
+  var artMap = {};
+  if (cached && cached.urls) CURATED_SHOWS.forEach(function(s,i){ if(cached.urls[i]) artMap[s.name]=cached.urls[i]; });
+  el.innerHTML = shows.map(function(s) {
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var art = artMap[s.name] ? '<img class="disc-show-art" src="'+artMap[s.name]+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-show-art"></div>';
+    return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
+      + art + '<div class="disc-show-name">'+s.name+'</div>'
+      + '<div class="disc-show-sub">'+s.artist+'</div></div>';
+  }).join('');
+}
+
+function discRenderRecent() {
+  var el = document.getElementById('disc-recent-list');
+  if (!el) return;
+  var history = [];
+  try { history = JSON.parse(localStorage.getItem('pl_analysis_history') || '[]'); } catch(e) {}
+  if (!history.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3)">No recent analyses.</div>'; return; }
+  el.innerHTML = history.slice(0,4).map(function(h) {
+    return '<div class="disc-recent-row" onclick="viewAnalysis(\''+h.jobId+'\')" style="cursor:pointer">'
+      + '<div class="disc-recent-art"></div>'
+      + '<div style="min-width:0"><div class="disc-recent-title">'+(h.title||h.episodeTitle||'Episode')+'</div>'
+      + '<div class="disc-recent-show">'+(h.showName||'')+'</div></div></div>';
+  }).join('');
+}
+
+function handleDiscCompare() {
+  var a = (document.getElementById('disc-compare-a')||{}).value||'';
+  var b = (document.getElementById('disc-compare-b')||{}).value||'';
+  if (!a.trim() || !b.trim()) return;
+  var slugA = a.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  var slugB = b.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  showView('show');
+  loadShowProfile(slugA, a.trim().startsWith('http') ? a.trim() : null, slugB, b.trim().startsWith('http') ? b.trim() : null);
+}
 function handleHeroAnalyze() {
   var u = document.getElementById('hero-url-input').value.trim();
   if (!u) { document.getElementById('hero-url-input').focus(); return; }
