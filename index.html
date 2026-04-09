@@ -6080,11 +6080,12 @@ function toggleAudioSummary(jobId, script) {
   if (_audioBlobUrls[jobId]) { _playFromUrl(_audioBlobUrls[jobId]); return; }
 
   var lang = (_settings&&_settings.lang==='ko') ? 'ko' : 'en';
+  var voiceId = localStorage.getItem('pl_voice_id') || '';
   var decodedScript=script.replace(/&#39;/g,"'").replace(/&quot;/g,'"');
   fetch('/api/audio-briefing', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({jobId:jobId, script:decodedScript, lang:lang, userId:(cu&&cu.id||'')})
+    body:JSON.stringify({jobId:jobId, script:decodedScript, lang:lang, userId:(cu&&cu.id||''), voiceId:voiceId})
   }).then(function(r){
     if(!r.ok) throw new Error('TTS API ' + r.status);
     return r.blob();

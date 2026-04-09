@@ -13,7 +13,7 @@ export default async (req: Request) => {
 
   let body: any = {};
   try { body = await req.json(); } catch {}
-  const { jobId, script, lang = "en", userId } = body;
+  const { jobId, script, lang = "en", userId, voiceId: requestedVoiceId } = body;
 
   if (!jobId || !script) {
     return new Response(JSON.stringify({ error: "jobId and script required" }), {
@@ -22,7 +22,8 @@ export default async (req: Request) => {
   }
 
   const store = getStore("podlens-audio-briefings");
-  const cacheKey = `briefing-v2-${jobId}-${lang}`; // v2 = ElevenLabs primary
+  const effectiveVoiceId = requestedVoiceId || ELEVENLABS_VOICE_EN;
+  const cacheKey = `briefing-v2-${jobId}-${lang}-${effectiveVoiceId.slice(0, 8)}`;
 
   // Check cache
   try {
@@ -47,7 +48,7 @@ export default async (req: Request) => {
 
   // Strategy 1: ElevenLabs (best quality — primary)
   if (!audioData && ELEVENLABS_KEY()) {
-    audioData = await callElevenLabs(trimmedScript, lang);
+    audioData = await callElevenLabs(trimmedScript, lang, effectiveVoiceId);
   }
 
   // Strategy 2: OpenAI TTS (fallback if ElevenLabs fails or unavailable)
@@ -109,10 +110,10 @@ async function callOpenAI(script: string, lang: string): Promise<ArrayBuffer | n
   }
 }
 
-async function callElevenLabs(script: string, lang: string): Promise<ArrayBuffer | null> {
-  const voiceId = lang === "ko" ? ELEVENLABS_VOICE_KO : ELEVENLABS_VOICE_EN;
+async function callElevenLabs(script: string, lang: string, voiceId?: string): Promise<ArrayBuffer | null> {
+  const selectedVoice = voiceId || (lang === "ko" ? ELEVENLABS_VOICE_KO : ELEVENLABS_VOICE_EN);
   try {
-    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoice}`, {
       method: "POST",
       headers: {
         "xi-api-key": ELEVENLABS_KEY(),

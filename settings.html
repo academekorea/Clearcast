@@ -309,6 +309,27 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
         </div>
       </div>
 
+      <div class="settings-card" id="voice-settings-card">
+        <div class="card-head">
+          <h3>Audio briefing voice</h3>
+          <p>Choose the voice for your pre-listen briefings. Creator and above only.</p>
+        </div>
+        <div class="card-body">
+          <div id="voice-locked-msg" style="display:none;font-size:13px;color:var(--text3);padding:8px 0">
+            🔒 Voice selection is available on Creator and above. <a href="/pricing.html" style="color:var(--navy)">Upgrade →</a>
+          </div>
+          <div id="voice-selector-wrap">
+            <div class="field-lbl" style="margin-bottom:14px">Select a voice</div>
+            <div class="voice-options" id="voice-options" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px"></div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+              <button id="voice-preview-btn" onclick="previewSelectedVoice()" style="padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-family:inherit">▶ Preview voice</button>
+              <span id="voice-preview-status" style="font-size:12px;color:var(--text3)"></span>
+            </div>
+            <div class="field-hint" style="margin-top:10px">Your selected voice is used for all audio briefings. Changes take effect immediately.</div>
+          </div>
+        </div>
+      </div>
+
       <div class="settings-card">
         <div class="card-head"><h3>Preferred categories</h3><p>Used to personalize your feed and recommendations</p></div>
         <div class="card-body" id="pref-cats">
@@ -693,6 +714,8 @@ function showSettingsToast(msg) {
 function init() {
   var u = plUser();
   if (!u) { window.location.href = '/'; return; }
+
+  initVoiceSettings(u);
 
   // Pilot expiry warnings
   if (u.pilotMember && u.pilotExpiresAt) {
@@ -1152,9 +1175,86 @@ function recoverAccount() {
 
 function toggleMode(){var isNowLight=document.body.classList.toggle('light-mode');document.documentElement.setAttribute('data-theme',isNowLight?'light':'dark');document.querySelectorAll('.mode-toggle').forEach(function(btn){btn.textContent=isNowLight?'☀️':'🌙';});localStorage.setItem('podlens-mode',isNowLight?'light':'dark');localStorage.setItem('pl-theme',isNowLight?'light':'dark');}
 document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.body.classList.add('light-mode');document.documentElement.setAttribute('data-theme','light');document.querySelectorAll('.mode-toggle').forEach(function(b){b.textContent='☀️';});}});
-</script>
 
-<!-- Account deletion modal -->
+// ── AUDIO BRIEFING VOICE SETTINGS ─────────────────────────────────────────────
+var ELEVENLABS_VOICES = [
+  { id: 'pqHfZKP75CvOlQylNhV4', name: 'Bill',    desc: 'Warm & authoritative',  gender: 'M' },
+  { id: 'nPczCjzI2devNBz1zQrb', name: 'Rachel',  desc: 'Clear & professional',   gender: 'F' },
+  { id: '21m00Tcm4TlvDq8ikWAM', name: 'Adam',    desc: 'Deep & confident',       gender: 'M' },
+  { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Bella',   desc: 'Friendly & natural',     gender: 'F' },
+  { id: 'AZnzlk1XvdvUeBnXmlld', name: 'Domi',    desc: 'Energetic & expressive', gender: 'F' },
+  { id: 'GBv7mTt0atIp3Br8iCZE', name: 'Thomas',  desc: 'Calm & measured',        gender: 'M' },
+];
+var VOICE_PREF_KEY = 'pl_voice_id';
+var _previewAudio = null;
+
+function initVoiceSettings(u) {
+  var plan = String(u && u.plan || '').toLowerCase();
+  var canChoose = plan === 'creator' || plan === 'operator' || plan === 'studio';
+  var locked = document.getElementById('voice-locked-msg');
+  var wrap = document.getElementById('voice-selector-wrap');
+  if (!canChoose) {
+    if (locked) locked.style.display = '';
+    if (wrap) wrap.style.display = 'none';
+    return;
+  }
+  if (locked) locked.style.display = 'none';
+  if (wrap) wrap.style.display = '';
+  renderVoiceOptions();
+}
+
+function renderVoiceOptions() {
+  var el = document.getElementById('voice-options');
+  if (!el) return;
+  var saved = localStorage.getItem(VOICE_PREF_KEY) || 'pqHfZKP75CvOlQylNhV4';
+  el.innerHTML = ELEVENLABS_VOICES.map(function(v) {
+    var sel = v.id === saved;
+    return '<div onclick="selectVoice(\'' + v.id + '\',this)" '
+      + 'style="border:1px solid ' + (sel ? 'var(--navy)' : 'var(--border)') + ';'
+      + 'border-radius:8px;padding:12px 14px;cursor:pointer;background:' + (sel ? 'var(--bg3)' : 'var(--bg2)') + ';transition:all .12s">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">'
+      + '<span style="font-size:13px;font-weight:600;color:var(--text)">' + v.name + '</span>'
+      + '<span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--bg4);color:var(--text3)">' + v.gender + '</span>'
+      + '</div>'
+      + '<div style="font-size:11px;color:var(--text3)">' + v.desc + '</div>'
+      + (sel ? '<div style="font-size:10px;color:var(--navy);margin-top:4px;font-weight:500">✓ Active</div>' : '')
+      + '</div>';
+  }).join('');
+}
+
+function selectVoice(voiceId) {
+  localStorage.setItem(VOICE_PREF_KEY, voiceId);
+  renderVoiceOptions();
+  var status = document.getElementById('voice-preview-status');
+  if (status) { status.textContent = 'Voice saved'; setTimeout(function(){ status.textContent=''; }, 2000); }
+}
+
+function previewSelectedVoice() {
+  var voiceId = localStorage.getItem(VOICE_PREF_KEY) || 'pqHfZKP75CvOlQylNhV4';
+  var voice = ELEVENLABS_VOICES.find(function(v){ return v.id === voiceId; }) || ELEVENLABS_VOICES[0];
+  var btn = document.getElementById('voice-preview-btn');
+  var status = document.getElementById('voice-preview-status');
+  if (_previewAudio) { _previewAudio.pause(); _previewAudio = null; }
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Loading…'; }
+  if (status) status.textContent = 'Generating preview…';
+  fetch('/api/audio-briefing', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jobId: 'preview-' + voiceId, script: 'Hi, I\'m ' + voice.name + '. I\'ll brief you on podcast episodes before you listen — bias direction, key framing, and what to watch out for. This is what I sound like.', lang: 'en', voiceId: voiceId })
+  }).then(function(r){ if(!r.ok) throw new Error('error'); return r.blob(); })
+  .then(function(blob){
+    var url = URL.createObjectURL(blob);
+    _previewAudio = new Audio(url);
+    if (btn) { btn.disabled = false; btn.textContent = '⏸ Stop'; btn.onclick = function(){ if(_previewAudio){_previewAudio.pause();_previewAudio=null;} btn.textContent='▶ Preview voice'; btn.onclick=previewSelectedVoice; if(status)status.textContent=''; }; }
+    if (status) status.textContent = 'Playing ' + voice.name + '…';
+    _previewAudio.onended = function(){ if(btn){btn.disabled=false;btn.textContent='▶ Preview voice';btn.onclick=previewSelectedVoice;} if(status)status.textContent=''; };
+    _previewAudio.play();
+  }).catch(function(){
+    if(btn){btn.disabled=false;btn.textContent='▶ Preview voice';}
+    if(status)status.textContent='Preview unavailable';
+  });
+}
+</script>
 <div id="delete-modal" class="modal-overlay" style="display:none">
   <div class="modal-box">
     <div class="modal-icon">&#9888;&#65039;</div>
