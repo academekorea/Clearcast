@@ -2636,13 +2636,65 @@ body.light-mode,[data-theme="light"]{
           <div class="sec">
             <div class="seclbl">Worth knowing before you listen <span id="sia-findings-hint" style="display:none;font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap any finding to expand</span></div>
             <div class="findings-wrap">
-              <div class="fi"><div class="ftag fs">SPONSOR</div><div><div class="ftitle">Multiple sponsor integrations throughout</div><div class="fbody">Extended segments for Shopify, Element, and Fin at 12m, 58m, and 1h32m.</div></div><div class="farrow">&#8250;</div></div>
-              <div class="fi"><div class="ftag ff">FRAMING</div><div><div class="ftitle">Corporate decisions presented as visionary without exploring failures</div><div class="fbody">Strategic bets framed as consistently brilliant while omitting failed initiatives.</div></div><div class="farrow">&#8250;</div></div>
+              <div class="fi" onclick="siaToggle(this)"><div class="ftag fs">SPONSOR</div><div><div class="ftitle">Multiple sponsor integrations throughout</div><div class="fbody">Extended segments for Shopify, Element, and Fin at 12m, 58m, and 1h32m.</div></div><div class="farrow">&#8250;</div></div>
+              <div class="expand"><div class="exp-summary">Three sponsor segments appear editorially integrated rather than clearly separated from content. Each read follows a topically related segment, suggesting possible influence on adjacent framing.</div><div class="exp-lbl">Why it matters</div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Sponsor placement immediately after related content blurs editorial and commercial intent.</div></div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Host&rsquo;s tone continues unbroken into sponsor reads &mdash; no clear separation.</div></div><div class="exp-lbl" style="margin-top:10px">What balanced would look like</div><div class="exp-balanced"><div class="exp-bal-lbl">A more balanced approach</div><div class="exp-bal-text">Sponsor segments should be clearly marked and placed at natural content breaks, not immediately after topically related content.</div></div></div>
+              <div class="fi" onclick="siaToggle(this)"><div class="ftag ff">FRAMING</div><div><div class="ftitle">Corporate decisions presented as visionary without exploring failures</div><div class="fbody">Strategic bets framed as consistently brilliant while omitting failed initiatives.</div></div><div class="farrow">&#8250;</div></div>
+              <div class="expand"><div class="exp-summary">The episode constructs a narrative of NVIDIA as incapable of making wrong decisions. This omits documented setbacks including the abandoned $40B ARM acquisition.</div><div class="exp-lbl">Evidence from this episode</div><div class="exp-ev"><div class="exp-time">22:40</div><div class="exp-quote">&ldquo;Every bet we made, in retrospect, was the right one. We just needed the patience to see it through.&rdquo;</div><div class="exp-note">No follow-up question about bets that did not pay off.</div></div><div class="exp-lbl" style="margin-top:10px">Why it matters</div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Survivorship bias &mdash; only successful decisions discussed.</div></div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">ARM acquisition failure ($40B, abandoned under regulatory pressure) never mentioned.</div></div></div>
               <div id="sia-locked-findings">
                 <div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>
                 <div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>
                 <div class="blur-r" style="border-bottom:none"><div class="btext"></div><span class="lock">&#128274;</span></div>
                 <div class="upbar"><span class="uptxt">All findings unlock with Creator</span><button class="upbtn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Key findings -->
+          <div class="sec" id="sia-kf-section" style="display:none">
+            <div class="seclbl">Key findings <span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap any finding to expand</span></div>
+            <div class="findings-wrap">
+              <div class="kfi" onclick="siaToggleKF(this)"><div class="kfd" style="background:#e0352b"></div><div class="kft">Left-leaning framing detected in 4 of 5 key claims about AI regulation</div><div class="kfarrow">&#8250;</div></div>
+              <div class="expand" style="border-bottom:0.5px solid #f0f0f0"><div class="exp-summary">Four of the five major claims about AI regulation use framing language associated with progressive regulatory perspectives. Right-leaning perspectives emphasizing innovation freedom and market self-regulation are not represented.</div><div class="exp-lbl">Why it matters</div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Listeners receive a one-sided view of the AI regulation debate.</div></div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Regulatory cost arguments are entirely absent.</div></div><div class="exp-lbl" style="margin-top:10px">What balanced would look like</div><div class="exp-balanced"><div class="exp-bal-lbl">A more balanced approach</div><div class="exp-bal-text">A balanced segment would present both the case for stronger AI regulation and lighter-touch market approaches.</div></div></div>
+
+              <div class="kfi" onclick="siaToggleKF(this)"><div class="kfd" style="background:#3a7fd4"></div><div class="kft">Conservative perspective absent from 3 major segments on government oversight</div><div class="kfarrow">&#8250;</div></div>
+              <div class="expand" style="border-bottom:0.5px solid #f0f0f0"><div class="exp-summary">Three full segments on government oversight were conducted without any representation of conservative or libertarian policy positions. The framing assumes government intervention is beneficial.</div><div class="exp-ev"><div class="exp-time">38:00&ndash;52:00</div><div class="exp-quote">&ldquo;We need frameworks, guardrails, governments to be active participants in shaping this technology.&rdquo;</div><div class="exp-note">Host does not ask about the counterargument &mdash; that government involvement may slow beneficial AI development.</div></div></div>
+
+              <div class="kfi" onclick="siaToggleKF(this)"><div class="kfd" style="background:#e0352b"></div><div class="kft">Host rarely challenged guest&rsquo;s self-reported statistics</div><div class="kfarrow">&#8250;</div></div>
+              <div class="expand" style="border-bottom:0.5px solid #f0f0f0"><div class="exp-summary">Across the episode, Jensen Huang makes specific numerical claims about market share and compute demand. All figures were accepted without pushback, source requests, or noting that some are disputed.</div><div class="exp-ev"><div class="exp-time">44:22</div><div class="exp-quote">&ldquo;We supply over 80% of the AI training compute in the world today.&rdquo;</div><div class="exp-note">Independent estimates place this at 65&ndash;70%. The discrepancy is material but not raised.</div></div></div>
+
+              <div class="kfi" onclick="siaToggleKF(this)"><div class="kfd" style="background:#888"></div><div class="kft">Episode opens with credibility-building narrative before contested claims</div><div class="kfarrow">&#8250;</div></div>
+              <div class="expand" style="border-bottom:0.5px solid #f0f0f0"><div class="exp-summary">The first 20 minutes establish Jensen Huang as a near-mythological figure before any substantive claims are made, priming the audience to accept later assertions uncritically.</div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Audience emotionally primed to trust guest before any claims are made.</div></div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Critical evaluation of later statistics becomes psychologically harder.</div></div></div>
+
+              <div class="kfi" onclick="siaToggleKF(this)" style="border-bottom:none"><div class="kfd" style="background:#d97706"></div><div class="kft">Sponsor segments follow topically related content sections</div><div class="kfarrow">&#8250;</div></div>
+              <div class="expand"><div class="exp-summary">Each of the three sponsor reads is placed immediately after a segment whose topic directly relates to the sponsor&rsquo;s product, blurring editorial and advertising.</div><div class="exp-ev"><div class="exp-time">12:04</div><div class="exp-quote">Shopify read follows 10-minute segment on enterprise infrastructure.</div><div class="exp-note">Listener may not distinguish where editorial content ended and sponsorship began.</div></div></div>
+            </div>
+          </div>
+
+          <!-- Source citations -->
+          <div class="sec" id="sia-cits-section" style="display:none">
+            <div class="seclbl">Source citations</div>
+            <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;overflow:hidden">
+              <div class="cit"><div class="cnum">1</div><div><div class="ctitle2">NVIDIA CUDA development timeline</div><div class="csrc">developer.nvidia.com &middot; cited at 18:32</div></div></div>
+              <div class="cit"><div class="cnum">2</div><div><div class="ctitle2">AI infrastructure spending Q3 2024</div><div class="csrc">McKinsey Global Institute &middot; cited at 44:10</div></div></div>
+              <div class="cit"><div class="cnum">3</div><div><div class="ctitle2">Semiconductor export control documentation</div><div class="csrc">U.S. Dept of Commerce &middot; cited at 1:02:18</div></div></div>
+              <div class="cit"><div class="cnum">4</div><div><div class="ctitle2">GPU market share analysis 2023&ndash;2024</div><div class="csrc">Jon Peddie Research &middot; cited at 1:18:44</div></div></div>
+              <div class="cit" style="border-bottom:none"><div class="cnum">5</div><div><div class="ctitle2">Energy per AI training run estimates</div><div class="csrc">ML Energy Initiative &middot; cited at 1:45:09</div></div></div>
+            </div>
+          </div>
+
+          <!-- Deep Analysis Report -->
+          <div class="sec" id="sia-report-section">
+            <div class="drbar">
+              <div style="flex:1">
+                <div class="drtitle">&#128196; Deep Analysis Report</div>
+                <div class="drdesc" id="sia-report-desc">Full intelligence report available on Creator and Operator plans.</div>
+                <div id="sia-report-dl" style="display:none;margin-top:9px;padding-top:9px;border-top:0.5px solid #eee;display:none;align-items:center;justify-content:space-between">
+                  <span style="font-size:10px;color:#bbb">Your Creator Report is ready</span>
+                  <button class="drsec" style="font-size:10px;padding:4px 10px">Download</button>
+                </div>
+              </div>
+              <div style="display:flex;gap:7px;align-items:center;flex-shrink:0">
+                <div class="drlocked" id="sia-report-btn">&#128274; Creator or above</div>
               </div>
             </div>
           </div>
@@ -7253,7 +7305,21 @@ function _getEffectiveTierConfig() {
 }
 
 // ── SEE IT IN ACTION — homepage demo tier switcher ───────────────────────────
-function siaSwitchTab(name, el) {
+function siaToggle(row) {
+  var exp = row.nextElementSibling;
+  if (!exp || !exp.classList.contains('expand')) return;
+  var isOpen = row.classList.contains('open');
+  row.classList.toggle('open', !isOpen);
+  exp.classList.toggle('show', !isOpen);
+}
+
+function siaToggleKF(row) {
+  var exp = row.nextElementSibling;
+  if (!exp || !exp.classList.contains('expand')) return;
+  var isOpen = row.classList.contains('open');
+  row.classList.toggle('open', !isOpen);
+  exp.classList.toggle('show', !isOpen);
+}
   document.querySelectorAll('.sia-tab').forEach(function(t){t.classList.remove('on');});
   el.classList.add('on');
   document.querySelectorAll('.sia-panel').forEach(function(p){p.classList.remove('on');});
@@ -7267,26 +7333,57 @@ function siaSetTier(tier, btn) {
   var showFull = tier === 'creator' || tier === 'operator';
   var isOperator = tier === 'operator';
 
+  // Metrics
   var metrics = document.getElementById('sia-metrics');
   if (metrics) metrics.style.display = showFull ? '' : 'none';
 
+  // Findings hint
   var hint = document.getElementById('sia-findings-hint');
   if (hint) hint.style.display = showFull ? '' : 'none';
 
+  // Locked findings — expand with full accordion on creator+
   var locked = document.getElementById('sia-locked-findings');
   if (locked) {
     locked.innerHTML = showFull
-      ? '<div class="fi"><div class="ftag fc">FACT CHECK</div><div><div class="ftitle">Host rarely challenged guest\'s self-reported statistics</div><div class="fbody">Key numerical claims accepted without pushback or source requests.</div></div><div class="farrow">&#8250;</div></div>'
-        + '<div class="fi"><div class="ftag fo">OMISSION</div><div><div class="ftitle">No mention of regulatory or antitrust concerns</div><div class="fbody">Ongoing regulatory scrutiny of NVIDIA\'s market dominance not raised.</div></div><div class="farrow">&#8250;</div></div>'
+      ? '<div class="fi" onclick="siaToggle(this)"><div class="ftag fc">FACT CHECK</div><div><div class="ftitle">Host rarely challenged guest's self-reported statistics</div><div class="fbody">Key numerical claims accepted without pushback or source requests.</div></div><div class="farrow">&#8250;</div></div>'
+        + '<div class="expand"><div class="exp-summary">Jensen Huang makes specific numerical claims about market share and compute demand. All figures were accepted without pushback. Independent estimates place NVIDIA's market share at 65&ndash;70%, not the 80%+ claimed.</div><div class="exp-ev"><div class="exp-time">44:22</div><div class="exp-quote">&ldquo;We supply over 80% of the AI training compute in the world today.&rdquo;</div><div class="exp-note">Independent estimates place this at 65&ndash;70%. The discrepancy is material but not raised.</div></div></div>'
+        + '<div class="fi" onclick="siaToggle(this)" style="border-bottom:none"><div class="ftag fo">OMISSION</div><div><div class="ftitle">No mention of regulatory or antitrust concerns</div><div class="fbody">Ongoing regulatory scrutiny of NVIDIA's market dominance not raised.</div></div><div class="farrow">&#8250;</div></div>'
+        + '<div class="expand"><div class="exp-summary">At the time of recording, NVIDIA is under active antitrust scrutiny in the EU, US, and China. None of this is raised. Export restrictions affecting significant revenue are also not discussed.</div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Listeners unaware the company's dominance is under active regulatory review.</div></div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">CUDA lock-in discussed only as a moat, not a regulatory risk.</div></div></div>'
       : '<div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>'
         + '<div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>'
         + '<div class="blur-r" style="border-bottom:none"><div class="btext"></div><span class="lock">&#128274;</span></div>'
-        + '<div class="upbar"><span class="uptxt">All findings unlock with Creator</span><button class="upbtn" onclick="openModal(\'signup\')">Sign up free &#8594;</button></div>';
+        + '<div class="upbar"><span class="uptxt">All findings unlock with Creator</span><button class="upbtn" onclick="openModal('signup')">Sign up free &#8594;</button></div>';
   }
 
+  // Key findings section (creator+)
+  var kfSection = document.getElementById('sia-kf-section');
+  if (kfSection) kfSection.style.display = showFull ? '' : 'none';
+
+  // Citations section (operator only)
+  var citsSection = document.getElementById('sia-cits-section');
+  if (citsSection) citsSection.style.display = isOperator ? '' : 'none';
+
+  // Deep report bar
+  var reportDesc = document.getElementById('sia-report-desc');
+  var reportBtn = document.getElementById('sia-report-btn');
+  var reportDl = document.getElementById('sia-report-dl');
+  if (reportDesc) reportDesc.innerHTML = isOperator
+    ? 'Claim-by-claim breakdown &middot; Narrative arc &middot; Missing voices &middot; Comparative bias &middot; <span style="color:#999">Downloadable PDF</span>'
+    : showFull
+      ? 'Bias summary &middot; Top findings &middot; Host trust breakdown &middot; <span style="color:#999">Downloadable PDF &mdash; upgrade to Operator for the full deep report</span>'
+      : 'Full intelligence report available on Creator and Operator plans.';
+  if (reportBtn) reportBtn.innerHTML = isOperator
+    ? '<button class="drpri">Download full report</button>'
+    : showFull
+      ? '&#128274; Full report &mdash; Operator'
+      : '&#128274; Creator or above';
+  if (reportDl) reportDl.style.display = showFull && !isOperator ? 'flex' : 'none';
+
+  // Audio briefing label
   var bdur = document.getElementById('sia-bdur');
   if (bdur) bdur.textContent = showFull ? '~2 min' : '10 sec preview';
 
+  // Highlights blur
   var hlLocked = document.getElementById('sia-hl-locked');
   if (hlLocked) {
     hlLocked.querySelectorAll('.th-hl').forEach(function(h){
@@ -7294,7 +7391,6 @@ function siaSetTier(tier, btn) {
       h.style.pointerEvents = isOperator ? '' : 'none';
     });
   }
-
   var gate = document.getElementById('sia-hl-gate');
   if (gate) gate.style.display = isOperator ? 'none' : '';
   var gateTxt = document.getElementById('sia-hl-gate-txt');
@@ -7302,10 +7398,11 @@ function siaSetTier(tier, btn) {
     ? 'More highlights unlock with Creator'
     : 'Full transcript unlocks with Operator';
 
+  // CTA note
   var cta = document.getElementById('sia-cta-note');
   if (cta) {
-    if (tier === 'free') cta.textContent = 'You\u2019re seeing the Free tier \u2014 sign up to unlock all findings, citations, and the full report.';
-    if (tier === 'creator') cta.textContent = 'You\u2019re seeing the Creator tier \u2014 upgrade to Operator for citations, full transcript, and the deep report.';
+    if (tier === 'free') cta.textContent = 'You’re seeing the Free tier — sign up to unlock all findings, key insights, citations, and the full report.';
+    if (tier === 'creator') cta.textContent = 'You’re seeing the Creator tier — upgrade to Operator for citations, full transcript, and the deep report.';
     if (tier === 'operator') cta.textContent = 'This is the full Operator experience. Sign up to analyze any podcast you listen to.';
   }
 }
