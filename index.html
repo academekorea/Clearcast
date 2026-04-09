@@ -104,11 +104,6 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-size:16px;line-height:1.6}
 
-/* ── TOPBAR ── */
-.topbar{display:flex;align-items:center;padding:0 24px;height:36px;background:var(--navy);color:#fff;font-size:12px;font-family:var(--ff);gap:12px;position:sticky;top:0;z-index:300}
-.topbar-l{color:rgba(255,255,255,.7);text-decoration:none;flex-shrink:0;transition:color .15s}
-.topbar-l:hover{color:#fff}
-.topbar-r{color:rgba(255,255,255,.55);font-size:11px;flex-shrink:0;display:flex;align-items:center;gap:10px}
 /* Region selector */
 .region-sel{position:relative}
 .region-btn{background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:3px;color:rgba(255,255,255,.75);padding:3px 8px;font-size:11px;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;gap:4px;transition:all .1s;line-height:1.4}
@@ -4430,21 +4425,10 @@ function updateFollowingSidebar() {
 function fetchTopic(t) { showFeed('foryou'); fetchStories(t); var chip=document.querySelector('.t-chip[data-topic="'+t+'"]'); if(chip) setChip(chip); }
 
 // ── INIT ──
-function detectUserRegion() {
-  var saved = localStorage.getItem('podlens-region');
-  if (saved) return saved;
-  var lang = navigator.language || '';
-  if (lang.startsWith('ko')) {
-    localStorage.setItem('podlens-region', 'ko-KR');
-    return 'ko-KR';
-  }
-  return 'international';
-}
-
 function initFeed() {
   _feedInit = true;
   buildTopicStrip();
-  var region = detectUserRegion();
+  var region = localStorage.getItem('podlens-region') || 'international';
   var user = plUser();
   // Show personalization context
   var ctxEl = document.getElementById('foryou-context');
@@ -4759,7 +4743,7 @@ async function fetchStories(query, region, lang) {
   if(!loading||!list)return;
   loading.style.display='flex'; list.innerHTML=''; empty.style.display='none'; if(hero)hero.innerHTML='';
   try {
-    var r = region || detectUserRegion();
+    var r = region || localStorage.getItem('podlens-region') || 'international';
     var l = lang || (r === 'ko-KR' ? 'ko' : 'en');
     var data=await fetch('/api/stories?q='+encodeURIComponent(query)+'&region='+encodeURIComponent(r)+'&lang='+encodeURIComponent(l), { signal: AbortSignal.timeout(5000) }).then(function(r){return r.json();});
     loading.style.display='none';

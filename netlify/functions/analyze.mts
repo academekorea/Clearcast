@@ -1,6 +1,33 @@
 import type { Config, Context } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
+async function fetchYouTubeCaptions(videoId: string): Promise<string|null> {
+  try {
+    const apiKey = Netlify.env.get("YOUTUBE_API_KEY");
+    if (!apiKey) return null;
+    const tracksRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId=${videoId}&key=${apiKey}`,
+      { signal: AbortSignal.timeout(10000) }
+    );
+    const tracks = await tracksRes.json();
+    const track = tracks.items?.find((t: any) =>
+      t.snippet.language?.startsWith('en') &&
+      t.snippet.trackKind !== 'forced'
+    );
+    if (!track) return null;
+    const captionRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/captions/${track.id}?tfmt=srt&key=${apiKey}`,
+      { signal: AbortSignal.timeout(15000) }
+    );
+    if (!captionRes.ok) return null;
+    const srt = await captionRes.text();
+    return srt
+      .split('\n')
+      .filter(l => l.trim() && !/^\d+$/.test(l.trim()) && !/^\d{2}:\d{2}/.test(l))
+      .join(' ').trim() || null;
+  } catch { return null; }
+}
+
 export default async (req: Request, context: Context) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
@@ -38,6 +65,30 @@ export default async (req: Request, context: Context) => {
       });
       console.log('[analyze] blob saved');
 
+      // Layer 1: YouTube Data API captions (outer scope — fast path, no Railway needed)
+      const videoId = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
+      if (videoId) {
+        console.log('[analyze] trying YouTube Data API for', videoId);
+        const captions = await fetchYouTubeCaptions(videoId);
+        if (captions && captions.length > 200) {
+          console.log('[analyze] captions found via Data API, length:', captions.length);
+          await store.setJSON(jobId, {
+            status: "transcribed",
+            jobId,
+            url,
+            episodeTitle: episodeTitle || "",
+            showName: showName || "",
+            transcript: captions,
+          });
+          return new Response(JSON.stringify({ jobId }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        console.log('[analyze] no Data API captions, falling through to Railway');
+      }
+
+      // Layer 2+: Railway (yt-dlp captions → audio → AssemblyAI)
       const audioServiceUrl = Netlify.env.get("AUDIO_SERVICE_URL");
       const secret = Netlify.env.get("YOUTUBE_SERVICE_SECRET");
 
@@ -147,6 +198,19 @@ export default async (req: Request, context: Context) => {
         headers: { "Content-Type": "application/json" },
       });
     }
+  }
+
+  // RSS safety net — catch raw feed URLs that were never resolved
+  const looksLikeFeed = /\.(xml|rss)(\?|$)/i.test(url)
+    || url.includes('/feed') || url.includes('feeds.');
+  const looksLikeAudio = /\.(mp3|m4a|ogg|wav|aac|opus)(\?|$)/i.test(url)
+    || url.includes('podtrac') || url.includes('pdst.fm')
+    || url.includes('blubrry') || url.includes('audio');
+  if (looksLikeFeed && !looksLikeAudio) {
+    return new Response(JSON.stringify({
+      error: "Please paste a direct audio link — RSS feed URLs need to be resolved first.",
+      code: "RSS_NOT_RESOLVED",
+    }), { status: 400, headers: { "Content-Type": "application/json" } });
   }
 
   const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {

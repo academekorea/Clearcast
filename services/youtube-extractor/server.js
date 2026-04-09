@@ -29,6 +29,17 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log('YouTube extractor running on port ' + PORT);
 });
 
+if (process.env.YOUTUBE_COOKIES) {
+  try {
+    fs.writeFileSync('/app/cookies.txt', process.env.YOUTUBE_COOKIES);
+    console.log('[startup] YouTube cookies written');
+  } catch(e) {
+    console.error('[startup] cookie write failed:', e.message);
+  }
+}
+const cookieArgs = fs.existsSync('/app/cookies.txt')
+  ? ['--cookies', '/app/cookies.txt'] : [];
+
 // ── Non-blocking startup checks (after port is bound) ──
 exec('yt-dlp --version', (err, stdout) => {
   if (err) console.error('yt-dlp not found:', err.message);
@@ -99,8 +110,9 @@ app.post('/extract', async (req, res) => {
   const videoId = extractVideoId(url);
   const tmpDir = '/tmp';
 
+  // Step 1: Get metadata — isolated try/catch so bot-detection here does NOT abort captions/audio
+  let metadata = {};
   try {
-    // Step 1: Get metadata
     const { stdout: metaStdout } = await execFileAsync('yt-dlp', [
       '--dump-json',
       '--no-warnings',
@@ -109,11 +121,11 @@ app.post('/extract', async (req, res) => {
       '--extractor-args', 'youtube:player_client=android,web',
       '--no-check-certificates',
       '--sleep-interval', '1',
+      ...cookieArgs,
       url
     ]);
     const info = JSON.parse(metaStdout);
-
-    const metadata = {
+    metadata = {
       title: info.title,
       channel: info.uploader || info.channel,
       duration: info.duration,
@@ -121,7 +133,11 @@ app.post('/extract', async (req, res) => {
       published: info.upload_date,
       videoId,
     };
+  } catch(metaErr) {
+    console.warn('[extract] metadata failed, continuing:', metaErr.message?.substring(0, 200));
+  }
 
+  try {
     // Step 2: Try captions first
     try {
       const captionPath = path.join(tmpDir, `${videoId}.en.vtt`);
@@ -137,6 +153,7 @@ app.post('/extract', async (req, res) => {
         '--extractor-args', 'youtube:player_client=android',
         '--no-check-certificates',
         '--sleep-interval', '1',
+        ...cookieArgs,
         '-o', path.join(tmpDir, '%(id)s.%(ext)s'),
         url
       ]);
@@ -163,6 +180,7 @@ app.post('/extract', async (req, res) => {
       '--extractor-args', 'youtube:player_client=android,web',
       '--no-check-certificates',
       '--sleep-interval', '1',
+      ...cookieArgs,
       '-o', path.join(tmpDir, '%(id)s.%(ext)s'),
       url
     ]);

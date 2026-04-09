@@ -94,28 +94,34 @@ export default async (req: Request) => {
   const words = transcriptText.split(" ");
   const truncated = words.slice(0, 8000).join(" ");
 
-  const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": anthropicKey!,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1500,
-      messages: [
-        {
-          role: "user",
-          content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${truncated}`,
+  let claudeRes: Response | null = null;
+  let claudeErr: any = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": anthropicKey!,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
         },
-      ],
-    }),
-  });
-
-  if (!claudeRes.ok) {
-    const err = await claudeRes.text();
-    const updated = { ...job, status: "error", error: "Claude error: " + err };
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1500,
+          messages: [{ role: "user", content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${truncated}` }],
+        }),
+      });
+      if (claudeRes.ok) break;
+      throw new Error(`Claude HTTP ${claudeRes.status}`);
+    } catch (e) {
+      claudeErr = e;
+      console.error('[status] Claude attempt', attempt + 1, 'failed:', e);
+      if (attempt === 0) await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+  if (!claudeRes || !claudeRes.ok) {
+    const errMsg = claudeErr?.message || 'Claude failed after 2 attempts';
+    const updated = { ...job, status: "error", error: errMsg };
     await store.setJSON(jobId, updated);
     return new Response(JSON.stringify(updated), {
       status: 200,
@@ -163,5 +169,5 @@ export default async (req: Request) => {
 
 export const config: Config = {
   path: "/api/status/:jobId",
-  timeout: 30,
+  timeout: 300,
 };

@@ -6,12 +6,26 @@
   node_bundler = "esbuild"
   included_files = ["netlify/functions/lib/**"]
 
+  [functions.analyze]
+    timeout = 60
+  [functions.status]
+    timeout = 300
+  [functions.run-analysis]
+    timeout = 300
+
 
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
 
 [[headers]]
   for = "/site.webmanifest"
