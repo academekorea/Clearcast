@@ -15,6 +15,25 @@ function isYouTubeUrl(url: string): boolean {
   return /(?:youtube\.com\/(?:watch|shorts|embed|v\/)|youtu\.be\/|m\.youtube\.com\/watch)/.test(url);
 }
 
+// Podcast analytics redirect chains and direct audio files — never attempt RSS parsing on these
+function isDirectAudioUrl(url: string): boolean {
+  // Known podcast analytics/redirect CDN patterns
+  if (/dts\.podtrac\.com\/redirect\./i.test(url)) return true;
+  if (/podtrac\.com\/redirect\//i.test(url)) return true;
+  if (/pdst\.fm\/e\//i.test(url)) return true;
+  if (/pfx\.vpixl\.com/i.test(url)) return true;
+  if (/chtbl\.com\/track\//i.test(url)) return true;
+  if (/chrt\.fm\/track\//i.test(url)) return true;
+  if (/op3\.dev\/e\//i.test(url)) return true;
+  if (/mgln\.ai\/e\//i.test(url)) return true;
+  if (/arttrk\.com\/p\//i.test(url)) return true;
+  if (/prfx\.byspotify\.com\/e\//i.test(url)) return true;
+  // Direct audio file extensions (before any query string)
+  const path = url.split("?")[0];
+  if (/\.(mp3|m4a|ogg|wav|aac)$/i.test(path)) return true;
+  return false;
+}
+
 function isFeedUrl(url: string): boolean {
   return /(?:feeds?\.|\/rss|\/feed|\.xml|rss\.|anchor\.fm\/s\/.+\/podcast\/rss)/i.test(url);
 }
@@ -96,6 +115,24 @@ interface ResolveResult {
 async function resolveUrl(url: string): Promise<ResolveResult> {
   // YouTube: handled entirely by transcribe-background via POST /extract
   if (isYouTubeUrl(url)) return { resolved: url };
+
+  // Direct audio or known analytics redirect chain — skip RSS parsing entirely
+  if (isDirectAudioUrl(url)) {
+    // Still follow the HTTP redirect chain to get the final CDN URL
+    try {
+      const res = await fetch(url, {
+        method: "HEAD",
+        redirect: "follow",
+        signal: AbortSignal.timeout(8000),
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; PodcastIndexBot/1.0)",
+          "Accept": "audio/mpeg, audio/*, */*",
+        },
+      });
+      return { resolved: res.url || url };
+    } catch { /* HEAD failed — return original */ }
+    return { resolved: url };
+  }
 
   // RSS feed: parse and extract the latest episode enclosure URL
   if (isFeedUrl(url)) {
