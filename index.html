@@ -2343,9 +2343,8 @@ body.light-mode,[data-theme="light"]{
 
 <script>(function(){
   var s=localStorage.getItem('pl-theme')||localStorage.getItem('podlens-mode');
-  if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}
-  else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}
-  else if(s){document.documentElement.setAttribute('data-theme',s);}
+  if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}
+  else{document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}
 })()</script>
 
 
@@ -2385,6 +2384,7 @@ body.light-mode,[data-theme="light"]{
       <button class="nav-link" id="nav-discover-guest" onclick="showView('discover')">Discover</button>
       <a href="/how-it-works.html" class="nav-link" id="nav-hiw-guest">How it works</a>
       <a href="/pricing.html" class="nav-link" id="nav-pricing-guest">Pricing</a>
+      <button class="nav-theme-toggle mode-toggle" onclick="toggleMode()" id="mode-toggle-btn-guest" aria-label="Toggle dark/light mode">☀️</button>
       <button class="nav-btn-signin" id="nav-getstarted"
          onclick="openModal('login');return false">Sign in / up</button>
     </div>
@@ -2394,8 +2394,8 @@ body.light-mode,[data-theme="light"]{
       <button class="nav-link" id="nl-discover" onclick="showView('discover')">Discover</button>
       <button class="nav-link" id="nl-analyze" onclick="showView('analyze')">Analyze</button>
       <a class="nav-link" id="nl-library" href="/library.html">Library</a>
-      <button class="nav-theme-toggle" onclick="toggleMode()" id="mode-toggle-btn"
-              aria-label="Toggle dark/light mode">🌙</button>
+      <button class="nav-theme-toggle mode-toggle" onclick="toggleMode()" id="mode-toggle-btn"
+              aria-label="Toggle dark/light mode">☀️</button>
 <div id="nav-auth-area" style="display:contents"><!-- rendered by initNav() --></div>
     </div>
 
@@ -10048,21 +10048,29 @@ function _esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&l
 
 // ── MODE TOGGLE ──────────────────────────────────────────────────────────────
 function toggleMode() {
-  var isNowLight = document.body.classList.toggle('light-mode');
-  document.documentElement.setAttribute('data-theme', isNowLight ? 'light' : 'dark');
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  var goLight = isDark; // if currently dark, go light; if light, go dark
+  document.body.classList.toggle('light-mode', goLight);
+  document.documentElement.setAttribute('data-theme', goLight ? 'light' : 'dark');
   document.querySelectorAll('.mode-toggle').forEach(function(btn) {
-    btn.textContent = isNowLight ? '☀️' : '🌙';
+    btn.textContent = goLight ? '☀️' : '🌙';
   });
-  localStorage.setItem('podlens-mode', isNowLight ? 'light' : 'dark');
-  localStorage.setItem('pl-theme', isNowLight ? 'light' : 'dark');
+  localStorage.setItem('podlens-mode', goLight ? 'light' : 'dark');
+  localStorage.setItem('pl-theme', goLight ? 'light' : 'dark');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   var saved = localStorage.getItem('podlens-mode') || localStorage.getItem('pl-theme');
-  if (saved === 'light') {
-    document.body.classList.add('light-mode');
-    document.documentElement.setAttribute('data-theme', 'light');
-    document.querySelectorAll('.mode-toggle').forEach(function(btn) { btn.textContent = '☀️'; });
+  // Default to light mode for new visitors
+  var useDark = saved === 'dark';
+  document.body.classList.toggle('light-mode', !useDark);
+  document.documentElement.setAttribute('data-theme', useDark ? 'dark' : 'light');
+  document.querySelectorAll('.mode-toggle').forEach(function(btn) {
+    btn.textContent = useDark ? '🌙' : '☀️';
+  });
+  if (!saved) {
+    localStorage.setItem('podlens-mode', 'light');
+    localStorage.setItem('pl-theme', 'light');
   }
 
   // Load artwork for trending grid cards via iTunes
