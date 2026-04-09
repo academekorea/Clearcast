@@ -6640,6 +6640,18 @@ function handleUrlRouting() {
     return true;
   }
 
+  // Handle pathname-based routing (/discover, /analyze)
+  if (path === '/discover') {
+    history.replaceState({ view: 'discover' }, '', '/discover');
+    showView('discover');
+    return true;
+  }
+  if (path === '/analyze') {
+    history.replaceState({ view: 'analyze' }, '', '/analyze');
+    showView('analyze');
+    return true;
+  }
+
   // Handle show profiles
   var m=path.match(/^\/show\/([^/?]+)/);
   if (m) { var slug=decodeURIComponent(m[1]); var compareSlug=params.get('compare')||null; showView('show'); loadShowProfile(slug,compareSlug); return true; }
@@ -10112,7 +10124,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// ── URL ROUTING — handle browser back/forward and deep links ─────────────────
+// ── URL ROUTING — handle browser back/forward ─────────────────────────────────
 window.addEventListener('popstate', function(e) {
   var view = (e.state && e.state.view) || _viewFromPath(window.location.pathname);
   if (view === 'home') { showHome(); }
@@ -10124,17 +10136,6 @@ function _viewFromPath(path) {
   var map = { '/discover': 'discover', '/analyze': 'analyze', '/show': 'show', '/admin': 'admin' };
   return map[path] || map[path.replace(/\/$/, '')] || 'home';
 }
-
-// Handle deep links on initial load
-(function() {
-  var path = window.location.pathname;
-  var view = _viewFromPath(path);
-  if (view && view !== 'home') {
-    document.addEventListener('DOMContentLoaded', function() {
-      showView(view);
-    });
-  }
-})();
 function heroConnectSpotify() {
   var u = plUser();
   if (!u) { openModal('signup'); return; }
