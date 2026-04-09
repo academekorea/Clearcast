@@ -25,7 +25,7 @@ app.use(rateLimit({ windowMs: 60000, max: 10 }));
 const PORT = process.env.PORT || 3000;
 console.log('[startup] PORT env var:', process.env.PORT);
 console.log('[startup] binding to port:', PORT);
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log('YouTube extractor running on port ' + PORT);
 });
 
