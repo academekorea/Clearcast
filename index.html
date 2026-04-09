@@ -5580,6 +5580,32 @@ function startAnalysis(audioUrl, epTitle, showName) {
         else { showAnalyzeErr(friendlyError(d.error||'Analysis failed','start-analysis')); resetBtn(); }
         return;
       }
+      // ── Cache hit: return instant result with badge ──
+      if (d.fromCache && d.jobId) {
+        safeFetch('/api/status/' + encodeURIComponent(d.jobId))
+          .then(function(cached) {
+            if (cached && cached.status === 'complete') {
+              resetBtn();
+              cached.url = audioUrl;
+              _enrichWithAudioLean(cached);
+              renderResults(cached);
+              renderTranscriptHighlights(cached);
+              _arUpdateProgress(100);
+              plToast('\u26A1 From Podlens database \u2014 instant result');
+              var resultsEl = document.getElementById('results');
+              if (resultsEl) {
+                var badge = document.createElement('div');
+                badge.style.cssText = 'font-size:10px;color:#185fa5;background:#e6f1fb;border:0.5px solid #b5d4f4;border-radius:4px;padding:3px 8px;display:inline-flex;align-items:center;gap:4px;margin-bottom:12px';
+                badge.innerHTML = '\u26A1 Previously analyzed \u2014 from Podlens database';
+                resultsEl.insertBefore(badge, resultsEl.firstChild);
+              }
+              return;
+            }
+            pollStatus(d.jobId, audioUrl);
+          })
+          .catch(function() { pollStatus(d.jobId, audioUrl); });
+        return;
+      }
       pollStatus(d.jobId, audioUrl);
     })
     .catch(function(err){ showAnalyzeErr(friendlyError(err,'start-analysis')); resetBtn(); });
@@ -5615,34 +5641,102 @@ function lafCompleteStep(idx) {
 
 function pollStatus(jobId, audioUrl) {
   _currentJobId = jobId;
-  var si=0; var shownPartial=false;
+  var shownPartial = false;
+  var startTime = Date.now();
+  var lafIdx = 0;
+  var lastStatus = '';
   if (_poll) clearInterval(_poll);
-  _poll=setInterval(async function(){
+
+  // Kick off LAF step 0 immediately
+  lafAddStep(0, false);
+
+  _poll = setInterval(async function() {
     try {
+      var elapsed = Date.now() - startTime;
       var _statusPlan = String((plUser()||{}).plan||'free').toLowerCase();
-      var d=await safeFetch('/api/status/'+encodeURIComponent(jobId)+'?plan='+encodeURIComponent(_statusPlan));
-      if (d.status==='partial'&&!shownPartial) {
-        shownPartial=true;
-        _arUpdateProgress(50);
-        d.url=audioUrl; renderResults(_enrichWithAudioLean(d));
-      } else if (d.status==='complete') {
+      var d = await safeFetch('/api/status/' + encodeURIComponent(jobId) + '?plan=' + encodeURIComponent(_statusPlan));
+
+      if (d.status === 'complete') {
         clearInterval(_poll);
-        resetBtn(); d.url=audioUrl;
+        // Complete all LAF steps
+        for (var i = lafIdx; i < _lafSteps.length; i++) lafAddStep(i, true);
+        resetBtn();
+        d.url = audioUrl;
         _enrichWithAudioLean(d);
         if (!shownPartial) trackAnalysis(d);
         renderResults(d);
         renderTranscriptHighlights(d);
         _arUpdateProgress(100);
         plToast('\u2705 Analysis complete');
-      } else if (d.status==='error') {
-        clearInterval(_poll); showAnalyzeErr(friendlyError(d.error||'Analysis failed.','pollStatus')); resetBtn();
-      } else {
-        // still pending (transcribing / analyzing) — advance progress bar
-        si++;
-        _arUpdateProgress(Math.min(45, si * 8));
+        return;
       }
-    } catch(e){ console.error('[pollStatus]', e && e.message); /* keep polling on transient errors */ }
-  },4000);
+
+      if (d.status === 'error') {
+        clearInterval(_poll);
+        showAnalyzeErr(friendlyError(d.error || 'Analysis failed.', 'pollStatus'));
+        resetBtn();
+        return;
+      }
+
+      if (d.status === 'partial' && !shownPartial) {
+        shownPartial = true;
+        d.url = audioUrl;
+        renderResults(_enrichWithAudioLean(d));
+        _arUpdateProgress(60);
+        return;
+      }
+
+      // ── Realistic progress based on elapsed time + pipeline stage ──
+      // Stages:
+      //   0-15s:   pending/starting          → 5-15%
+      //   15-60s:  transcribing (AssemblyAI) → 15-50%
+      //   60-90s:  transcribed, calling Claude → 50-75%
+      //   90-180s: Claude analyzing           → 75-90%
+      //   180s+:   almost done               → 90-95%
+
+      var pct;
+      var status = d.status || 'pending';
+
+      if (status !== lastStatus) {
+        // Advance LAF step on status change
+        if (status === 'transcribing' && lafIdx < 1) { lafCompleteStep(0); lafAddStep(1, false); lafIdx = 1; }
+        if (status === 'transcribed'  && lafIdx < 2) { lafCompleteStep(lafIdx); lafAddStep(2, false); lafIdx = 2; }
+        lastStatus = status;
+      }
+
+      if (status === 'pending') {
+        pct = Math.min(14, Math.round(elapsed / 1000));
+      } else if (status === 'transcribing') {
+        // AssemblyAI typically takes 1-4 mins depending on audio length
+        // We don't know duration yet so use elapsed time with a soft cap
+        pct = Math.min(50, 15 + Math.round((elapsed - 15000) / 2000));
+        // Advance LAF steps during transcription
+        if (elapsed > 20000 && lafIdx < 2) { lafCompleteStep(1); lafAddStep(2, false); lafIdx = 2; }
+        if (elapsed > 45000 && lafIdx < 3) { lafCompleteStep(2); lafAddStep(3, false); lafIdx = 3; }
+      } else if (status === 'transcribed') {
+        // Transcript done, Claude is running — typically 15-60s
+        pct = Math.min(85, 55 + Math.round((elapsed - 60000) / 1500));
+        if (lafIdx < 4) { lafCompleteStep(lafIdx); lafAddStep(4, false); lafIdx = 4; }
+        if (elapsed > 90000 && lafIdx < 5) { lafCompleteStep(4); lafAddStep(5, false); lafIdx = 5; }
+      } else {
+        pct = Math.min(92, 15 + Math.round(elapsed / 2000));
+      }
+
+      // Update ETA banner
+      var etaPct = document.getElementById('ar-eta-pct');
+      if (etaPct) etaPct.textContent = pct + '% complete';
+      // Also update the v7 eta banner if visible
+      var lafEta = document.getElementById('laf-eta');
+      if (lafEta) {
+        var secLeft = status === 'transcribing' ? Math.max(0, Math.round(120 - elapsed/1000)) : Math.max(0, Math.round(60 - (elapsed-60000)/1000));
+        lafEta.textContent = pct < 95 ? 'About ' + (secLeft > 60 ? Math.ceil(secLeft/60) + ' min' : secLeft + 's') + ' remaining' : '\u00a0';
+      }
+
+      _arUpdateProgress(pct);
+    } catch(e) {
+      console.error('[pollStatus]', e && e.message);
+    }
+  }, 3000);
 }
 
 async function startTranscriptionFallback(youtubeUrl, epTitle, showName) {

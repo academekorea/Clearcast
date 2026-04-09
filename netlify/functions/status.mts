@@ -182,6 +182,14 @@ export default async (req: Request) => {
 
   await store.setJSON(jobId, result);
 
+  // Save URL → jobId cache so repeat requests return instantly
+  if (job.url) {
+    const cacheKey = "url-" + Buffer.from(job.url).toString("base64").replace(/[^a-zA-Z0-9]/g, "").slice(0, 80);
+    try {
+      await store.setJSON(cacheKey, { jobId, cachedAt: Date.now(), url: job.url });
+    } catch { /* non-critical */ }
+  }
+
   return new Response(JSON.stringify(result), {
     status: 200,
     headers: { "Content-Type": "application/json" },

@@ -172,7 +172,7 @@ function renderResults(data) {
     html += '<div class="sec"><div style="background:#fffbeb;border:0.5px solid #fde68a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
       + '<div><div style="font-size:12px;color:#92580a">Episode is '+(data.duration||'2h 18m')+' \u2014 full analysis ready in about 7 minutes</div>'
       + '<div style="font-size:10px;color:#b58a40;margin-top:2px">First findings appear in ~90 seconds \u00b7 Play while you wait</div></div>'
-      + '<div style="font-size:10px;color:#b58a40">42% complete</div></div></div>';
+      + '<div id="ar-eta-pct" style="font-size:10px;color:#b58a40">Analyzing…</div></div></div>';
   }
 
   // Two-column row
@@ -456,7 +456,7 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
   var html = '<div class="pl-results-wrap"><div class="pl-main">';
   html += '<div class="sec"><div style="background:#fffbeb;border:0.5px solid #fde68a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
     + '<div><div style="font-size:12px;color:#92580a">Analyzing \u2014 first findings appear in ~90 seconds</div>'
-    + '<div style="font-size:10px;color:#b58a40;margin-top:2px">Play while you wait</div></div>'
+    + '<div style="font-size:10px;color:#b58a40;margin-top:2px">Play while you wait \u00b7 <strong style="color:#92580a">\u26A1 Analyzed once? Loads instantly next time</strong></div></div>'
     + '<div id="ar-eta-pct" style="font-size:10px;color:#b58a40">0% complete</div></div></div>';
 
   html += '<div class="trow"><div>';

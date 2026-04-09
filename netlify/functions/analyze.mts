@@ -94,6 +94,19 @@ export default async (req: Request, context: Context) => {
 
   const store = getStore("podlens-jobs");
 
+  // ── Smart queue: check if this URL was already analyzed (cache 30 days) ──
+  const cacheKey = "url-" + Buffer.from(url).toString("base64").replace(/[^a-zA-Z0-9]/g, "").slice(0, 80);
+  try {
+    const cached = await store.get(cacheKey, { type: "json" }) as any;
+    if (cached && cached.jobId && cached.cachedAt && (Date.now() - cached.cachedAt) < 30 * 24 * 60 * 60 * 1000) {
+      console.log("[analyze] cache hit, jobId:", cached.jobId);
+      return new Response(JSON.stringify({ jobId: cached.jobId, fromCache: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  } catch { /* cache miss — continue */ }
+
   const isYouTube = /(?:youtube\.com\/(?:watch\?|shorts\/|embed\/|v\/)|youtu\.be\/|m\.youtube\.com\/watch)/.test(url);
 
   if (isYouTube) {
