@@ -54,31 +54,44 @@ export default async (req: Request) => {
     });
   }
 
-  const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
-  const aaiRes = await fetch(`https://api.assemblyai.com/v2/transcript/${job.transcriptId}`, {
-    headers: { authorization: assemblyKey! },
-  });
-  const transcript = await aaiRes.json();
+  let transcriptText: string;
+  let audioDuration: number | undefined;
 
-  if (transcript.status === "error") {
-    const updated = { ...job, status: "error", error: transcript.error };
-    await store.setJSON(jobId, updated);
-    return new Response(JSON.stringify(updated), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+  if (job.status === "transcribed") {
+    // YouTube captions path — transcript already in blob, skip AssemblyAI
+    transcriptText = job.transcript || "";
+    audioDuration = undefined;
+  } else {
+    // AssemblyAI polling path
+    const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
+    const aaiRes = await fetch(`https://api.assemblyai.com/v2/transcript/${job.transcriptId}`, {
+      headers: { authorization: assemblyKey! },
     });
-  }
+    const transcript = await aaiRes.json();
 
-  if (transcript.status !== "completed") {
-    return new Response(JSON.stringify({ status: "transcribing", jobId }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    if (transcript.status === "error") {
+      const updated = { ...job, status: "error", error: transcript.error };
+      await store.setJSON(jobId, updated);
+      return new Response(JSON.stringify(updated), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (transcript.status !== "completed") {
+      return new Response(JSON.stringify({ status: "transcribing", jobId }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    transcriptText = transcript.text || "";
+    audioDuration = transcript.audio_duration;
   }
 
   // Transcription done — run Claude inline
   const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
-  const words = (transcript.text || "").split(" ");
+  const words = transcriptText.split(" ");
   const truncated = words.slice(0, 8000).join(" ");
 
   const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -131,10 +144,10 @@ export default async (req: Request) => {
     status: "complete",
     jobId,
     url: job.url,
-    episodeTitle: job.episodeTitle || transcript.chapters?.[0]?.headline || "Podcast Episode",
+    episodeTitle: job.episodeTitle || "Podcast Episode",
     showName: job.showName || "",
-    duration: transcript.audio_duration
-      ? `${Math.round(transcript.audio_duration / 60)} min`
+    duration: audioDuration
+      ? `${Math.round(audioDuration / 60)} min`
       : "Unknown",
     ...analysis,
     guest: analysis.guest || null,
