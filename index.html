@@ -2374,7 +2374,7 @@ body.light-mode,[data-theme="light"]{
 
   <!-- LEFT: Logo only -->
   <a href="/" class="nav-logo"
-     onclick="if(typeof showHome==='function'){showHome();return false}"
+     onclick="if(typeof plUser==='function'&&plUser()){if(typeof showView==='function')showView('home');}else{if(typeof showHome==='function')showHome();}return false"
      aria-label="Go to homepage">
     <img src="/favicon-32x32.png"
          alt="Podlens"
@@ -4310,21 +4310,31 @@ function handleDashAnalyzeB() {
 async function loadDashTrending() {
   var el = document.getElementById('dash-trending-grid');
   if (!el) return;
-  el.innerHTML = [1,2,3].map(function(){ return '<div class="tg-card skel"><div class="tg-skel-art"></div><div class="tg-skel-line" style="width:80%;margin-bottom:8px"></div><div class="tg-skel-line" style="width:55%"></div></div>'; }).join('');
-  try {
-    var data = await fetch('/api/marketplace?genre=all', { signal: AbortSignal.timeout(8000) }).then(function(r){ return r.json(); });
-    var results = (data.podcasts || []).slice(0, 3);
-    if (!results.length) { el.innerHTML = ''; return; }
-    el.innerHTML = results.map(function(p) {
-      var art = p.artwork || ''; var name = p.name || ''; var artist = p.artist || ''; var feedUrl = p.feedUrl || '';
-      var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      var safeUrl = feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-      return '<div class="tg-card" onclick="' + (feedUrl ? 'showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')' : 'showView(\'analyze\')') + '">'
-        + '<div class="tg-art-wrap">' + (art ? '<img class="tg-art" src="' + art + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'&#127897;\'">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'
-        + '<div class="tg-card-body"><div class="tg-card-name">' + name + '</div><div class="tg-card-artist">' + artist + '</div>'
-        + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
-    }).join('');
-  } catch(e) { el.innerHTML = ''; }
+  // Use same curated shows as homepage tg-grid — consistent experience
+  el.innerHTML = CURATED_SHOWS.slice(0, 6).map(function(s, i) {
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    var safeUrl = s.feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    var artId = 'dash-tg-art-' + i;
+    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')">'
+      + '<div class="tg-art-wrap"><div class="tg-art-ph" id="' + artId + '">&#127897;</div></div>'
+      + '<div class="tg-card-body"><div class="tg-card-name">' + s.name + '</div><div class="tg-card-artist">' + s.artist + '</div>'
+      + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
+  }).join('');
+  // Load artwork from iTunes (same cache as homepage)
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v2') || 'null'); } catch(e) {}
+  if (cached && cached.urls && (Date.now() - cached.ts) < 48*60*60*1000) {
+    cached.urls.forEach(function(url, i) {
+      if (!url) return;
+      var el2 = document.getElementById('dash-tg-art-' + i);
+      if (!el2) return;
+      var img = document.createElement('img');
+      img.className = 'tg-art'; img.src = url; img.alt = CURATED_SHOWS[i].name;
+      img.style.cssText = 'width:64px;height:64px;border-radius:6px;object-fit:cover;display:block';
+      img.onerror = function() { this.parentNode.innerHTML = '<div class="tg-art-ph">&#127897;</div>'; };
+      el2.parentNode.replaceChild(img, el2);
+    });
+  }
 }
 
 function renderDashStats(u, recent) {

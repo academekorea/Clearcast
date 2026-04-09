@@ -63,7 +63,7 @@
 
   function _isActive(href, path) {
     if (href === '/discover') {
-      return path === '/' || path === '/discover' || path === '/index.html';
+      return path === '/discover' || path.startsWith('/discover');
     }
     return path === href || (href.length > 1 && path.includes(href.replace('.html', '')));
   }
@@ -100,8 +100,8 @@
       : '';
 
     navLinks.innerHTML =
-      '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '">Discover</a>'
-      + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '">Analyze</a>'
+      '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'discover\');return false}">Discover</a>'
+      + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'analyze\');return false}">Analyze</a>'
       + '<a href="/library.html" class="nav-link' + (_isActive('/library.html', path) ? ' active' : '') + '">Library</a>'
       + '<button class="nav-theme" id="nav-theme-btn" aria-label="Toggle theme">' + (isDark ? '🌙' : '☀️') + '</button>'
       + '<div class="nav-dd-wrap">'
@@ -159,8 +159,22 @@
     var u = plUser();
     var path = window.location.pathname;
 
-    var logo = document.querySelector('nav > a:first-child');
-    if (logo) logo.href = (u && u.id) ? '/dashboard.html' : '/';
+    var logo = document.querySelector('nav > a:first-child, .nav-logo');
+    if (logo) {
+      logo.href = '/';
+      logo.onclick = function(e) {
+        e.preventDefault();
+        if (u && u.id) {
+          // Logged in — go to home dashboard
+          if (typeof showView === 'function') { showView('home'); }
+          else { window.location.href = '/'; }
+        } else {
+          // Logged out — go to homepage
+          if (typeof showHome === 'function') { showHome(); }
+          else { window.location.href = '/'; }
+        }
+      };
+    }
 
     if (u && u.id) {
       _buildLoggedIn(navLinks, u, path);
