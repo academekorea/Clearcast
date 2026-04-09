@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const { execFile, execSync } = require('child_process');
-const util = require('util');
+const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const youtubedl = require('youtube-dl-exec');
 
 // ── Global error handlers — log crashes, never let Railway SIGTERM silently ──
 process.on('uncaughtException', (err) => {
@@ -14,26 +14,28 @@ process.on('unhandledRejection', (err) => {
   console.error('Unhandled rejection:', err);
 });
 
-// ── Startup checks ──
-try {
-  const v = execSync('yt-dlp --version').toString().trim();
-  console.log('yt-dlp version:', v);
-} catch (e) {
-  console.error('yt-dlp not found:', e.message);
-}
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(rateLimit({ windowMs: 60000, max: 10 }));
+
+// ── Bind port immediately so Railway health check responds at once ──
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log('YouTube extractor running on port ' + PORT);
+});
+
+// ── Non-blocking startup checks (after port is bound) ──
+exec('yt-dlp --version', (err, stdout) => {
+  if (err) console.error('yt-dlp not found:', err.message);
+  else console.log('yt-dlp version:', stdout.trim());
+});
 
 if (!process.env.YOUTUBE_SERVICE_SECRET) {
   console.warn('Warning: YOUTUBE_SERVICE_SECRET is not set — /extract will reject all requests');
 }
 
-const execFileAsync = util.promisify(execFile);
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-const limiter = rateLimit({ windowMs: 60000, max: 10 });
-app.use(limiter);
-
+// ── Helpers ──
 function extractVideoId(url) {
   const patterns = [
     /youtube\.com\/watch\?v=([^&]+)/,
@@ -73,38 +75,33 @@ function parseVTT(vttContent) {
   return textLines.join(' ');
 }
 
+// ── Routes ──
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'podlens-youtube-extractor' });
+  res.json({ ok: true, ts: Date.now(), service: 'podlens-youtube-extractor' });
 });
 
 app.post('/extract', async (req, res) => {
   const authHeader = req.headers.authorization;
   const secret = process.env.YOUTUBE_SERVICE_SECRET;
   if (!authHeader || authHeader !== `Bearer ${secret}`) {
-    return res.status(401).json({
-      success: false, error: 'Unauthorized'
-    });
+    return res.status(401).json({ success: false, error: 'Unauthorized' });
   }
 
   const { url } = req.body;
   if (!url || !isYouTubeUrl(url)) {
-    return res.status(400).json({
-      success: false, error: 'Not a valid YouTube URL'
-    });
+    return res.status(400).json({ success: false, error: 'Not a valid YouTube URL' });
   }
 
   const videoId = extractVideoId(url);
   const tmpDir = '/tmp';
 
   try {
-    // Get metadata
-    const { stdout: metaStdout } = await execFileAsync('yt-dlp', [
-      '--dump-json',
-      '--no-warnings',
-      '--skip-download',
-      url
-    ]);
-    const info = JSON.parse(metaStdout);
+    // Step 1: Get metadata via youtube-dl-exec
+    const info = await youtubedl(url, {
+      dumpSingleJson: true,
+      noWarnings: true,
+      skipDownload: true,
+    });
 
     const metadata = {
       title: info.title,
@@ -112,66 +109,54 @@ app.post('/extract', async (req, res) => {
       duration: info.duration,
       thumbnail: info.thumbnail,
       published: info.upload_date,
-      videoId
+      videoId,
     };
 
-    // Try captions first
+    // Step 2: Try captions first
     try {
       const captionPath = path.join(tmpDir, `${videoId}.en.vtt`);
 
-      await execFileAsync('yt-dlp', [
-        '--write-sub',
-        '--write-auto-sub',
-        '--sub-lang', 'en',
-        '--sub-format', 'vtt',
-        '--skip-download',
-        '--no-warnings',
-        '-o', path.join(tmpDir, '%(id)s.%(ext)s'),
-        url
-      ]);
+      await youtubedl(url, {
+        writeSub: true,
+        writeAutoSub: true,
+        subLang: 'en',
+        subFormat: 'vtt',
+        skipDownload: true,
+        noWarnings: true,
+        output: path.join(tmpDir, '%(id)s.%(ext)s'),
+      });
 
       if (fs.existsSync(captionPath)) {
         const vttContent = fs.readFileSync(captionPath, 'utf8');
         const transcript = parseVTT(vttContent);
         fs.unlinkSync(captionPath);
-        return res.json({
-          success: true,
-          method: 'captions',
-          transcript,
-          metadata
-        });
+        return res.json({ success: true, method: 'captions', transcript, metadata });
       }
     } catch (captionErr) {
-      // No captions — fall through to audio
+      // No captions — fall through to audio extraction
     }
 
-    // Fall back to audio extraction
+    // Step 3: Fall back to audio extraction
     const audioPath = path.join(tmpDir, `${videoId}.mp3`);
 
-    await execFileAsync('yt-dlp', [
-      '-x',
-      '--audio-format', 'mp3',
-      '--audio-quality', '0',
-      '--no-warnings',
-      '-o', path.join(tmpDir, '%(id)s.%(ext)s'),
-      url
-    ]);
+    await youtubedl(url, {
+      extractAudio: true,
+      audioFormat: 'mp3',
+      audioQuality: '0',
+      noWarnings: true,
+      output: path.join(tmpDir, '%(id)s.%(ext)s'),
+    });
 
     if (fs.existsSync(audioPath)) {
       const audioData = fs.readFileSync(audioPath).toString('base64');
       fs.unlinkSync(audioPath);
-      return res.json({
-        success: true,
-        method: 'audio',
-        audioData,
-        metadata
-      });
+      return res.json({ success: true, method: 'audio', audioData, metadata });
     }
 
     return res.json({
       success: false,
       error: 'Could not extract captions or audio',
-      code: 'EXTRACTION_FAILED'
+      code: 'EXTRACTION_FAILED',
     });
 
   } catch (err) {
@@ -185,12 +170,7 @@ app.post('/extract', async (req, res) => {
     return res.json({
       success: false,
       error: 'Could not process this YouTube video',
-      code: 'EXTRACTION_FAILED'
+      code: 'EXTRACTION_FAILED',
     });
   }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`YouTube extractor running on port ${PORT}`);
 });
