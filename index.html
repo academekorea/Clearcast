@@ -136,7 +136,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 @media(max-width:600px){.kr-shows-grid{grid-template-columns:repeat(2,1fr)}}
 
 /* ── NAV ── */
-.nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);position:sticky;top:36px;background:var(--bg);z-index:200;gap:8px}
+.nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);gap:8px}
 .logo{font-family:var(--ffs);font-size:20px;font-weight:700;color:var(--navy);text-decoration:none;letter-spacing:.02em;flex-shrink:0;margin-right:8px}
 [data-theme="dark"] .logo{color:var(--text)}
 .nav-links{display:flex;align-items:center;gap:2px;flex-shrink:0}
@@ -1784,7 +1784,7 @@ body.light-mode,[data-theme="light"]{
 [data-ko]{display:none}
 [data-ko-inline]{display:none}
 /* ── NAV BAR ── */
-.nav-bar{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;padding:0 24px!important;height:60px!important;background:var(--bg,#FAFAF8)!important;border-bottom:1px solid var(--border,#E5E7EB)!important;position:sticky!important;top:36px!important;z-index:200!important;width:100%!important;box-sizing:border-box!important}
+.sticky-header{position:sticky;top:0;z-index:200;width:100%}.nav-bar{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;padding:0 24px!important;height:60px!important;background:var(--bg,#FAFAF8)!important;border-bottom:1px solid var(--border,#E5E7EB)!important;width:100%!important;box-sizing:border-box!important}
 .nav-logo{display:flex!important;align-items:center!important;gap:8px!important;text-decoration:none!important;color:var(--navy,#0f2027)!important;font-family:var(--ffs,'Playfair Display',Georgia,serif)!important;font-weight:700!important;font-size:1rem!important;letter-spacing:0.08em!important;flex-shrink:0!important}
 [data-theme="dark"] .nav-logo{color:var(--text,#FAF9F6)!important}
 /* Right container — margin-left:auto pushes everything to the right edge */
@@ -2339,6 +2339,7 @@ body.light-mode,[data-theme="light"]{
 </head>
 <body>
 
+<div class="sticky-header">
 <div id="founding-banner" style="position:relative;background:#FFF8E7;border-bottom:1px solid #F0C040;width:100%;z-index:9999">
   <a href="/pricing.html" style="display:flex;align-items:center;justify-content:center;width:100%;padding:10px 48px 10px 24px;gap:10px;text-decoration:none">
     <span style="font-size:16px">🎉</span>
@@ -2408,6 +2409,7 @@ body.light-mode,[data-theme="light"]{
 
   </div>
 </nav>
+</div>
 
 <!-- VIEWS -->
 
@@ -4562,6 +4564,28 @@ function showView(name) {
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
   var mb = document.getElementById('mob-' + name);
   if (mb) mb.classList.add('on');
+
+  // ── Update URL to reflect current view ──
+  var viewUrls = {
+    home: '/',
+    discover: '/discover',
+    analyze: '/analyze',
+    show: '/show',
+    admin: '/admin'
+  };
+  var newUrl = viewUrls[name] || '/' + name;
+  if (window.location.pathname !== newUrl) {
+    history.pushState({ view: name }, '', newUrl);
+  }
+  // Update document title
+  var titles = {
+    home: 'Podlens — Know what you\'re actually listening to',
+    discover: 'Discover — Podlens',
+    analyze: 'Analyze — Podlens',
+    show: 'Show profile — Podlens',
+    admin: 'Admin — Podlens'
+  };
+  document.title = titles[name] || 'Podlens';
   if (name === 'discover' && !_feedInit) { initFeed(); }
   if (name === 'admin') { var _au = plUser(); if (_au && (_au.isSuperAdmin || _au.email === 'academekorea@gmail.com')) { adminLoad('overview'); } else { showView('home'); } }
   // Show demo analysis for logged-out users visiting analyze view
@@ -4599,6 +4623,8 @@ function showHome() {
   var footer = document.getElementById('site-footer');
   if (footer) footer.style.display = '';
   if (!_homeTrendingLoaded) { loadHomeTrending(); }
+  if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
+  document.title = 'Podlens — Know what you\'re actually listening to';
 }
 
 var _homeTrendingLoaded = false;
@@ -10083,7 +10109,29 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// ── HERO PLATFORM CONNECT ────────────────────────────────────────────────────
+// ── URL ROUTING — handle browser back/forward and deep links ─────────────────
+window.addEventListener('popstate', function(e) {
+  var view = (e.state && e.state.view) || _viewFromPath(window.location.pathname);
+  if (view === 'home') { showHome(); }
+  else { showView(view); }
+});
+
+function _viewFromPath(path) {
+  if (!path || path === '/') return 'home';
+  var map = { '/discover': 'discover', '/analyze': 'analyze', '/show': 'show', '/admin': 'admin' };
+  return map[path] || map[path.replace(/\/$/, '')] || 'home';
+}
+
+// Handle deep links on initial load
+(function() {
+  var path = window.location.pathname;
+  var view = _viewFromPath(path);
+  if (view && view !== 'home') {
+    document.addEventListener('DOMContentLoaded', function() {
+      showView(view);
+    });
+  }
+})();
 function heroConnectSpotify() {
   var u = plUser();
   if (!u) { openModal('signup'); return; }
