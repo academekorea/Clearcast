@@ -1,7 +1,7 @@
-import type { Config } from "@netlify/functions";
+import type { Config, Context } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
-export default async (req: Request) => {
+export default async (req: Request, context: Context) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
@@ -34,14 +34,17 @@ export default async (req: Request) => {
       showName: showName || "",
     });
 
-    console.log('[analyze] YouTube detected, calling Railway directly for jobId:', jobId);
+    console.log('[analyze] YouTube detected, jobId:', jobId);
 
     const audioServiceUrl = Netlify.env.get("AUDIO_SERVICE_URL");
     const secret = Netlify.env.get("YOUTUBE_SERVICE_SECRET");
 
-    // Call Railway directly in background — no self-HTTP
-    (async () => {
+    console.log('[analyze] AUDIO_SERVICE_URL:', audioServiceUrl);
+
+    // Use context.waitUntil so Netlify keeps the function alive until Railway responds
+    const railwayWork = (async () => {
       try {
+        console.log('[analyze] calling Railway at:', audioServiceUrl + '/extract');
         const extractRes = await fetch(`${audioServiceUrl}/extract`, {
           method: "POST",
           headers: {
@@ -51,6 +54,7 @@ export default async (req: Request) => {
           body: JSON.stringify({ url }),
           signal: AbortSignal.timeout(300000),
         });
+        console.log('[analyze] Railway status:', extractRes.status);
         const extracted = await extractRes.json();
         console.log('[analyze] Railway response:', extracted.success, extracted.method);
 
@@ -91,14 +95,23 @@ export default async (req: Request) => {
             url,
             episodeTitle: episodeTitle || extracted.metadata?.title || "",
             showName: showName || "",
-            assemblyJobId: transcriptId,
+            transcriptId,
+          });
+        } else {
+          console.error('[analyze] Railway returned no usable data:', JSON.stringify(extracted));
+          await store.setJSON(jobId, {
+            status: "error",
+            jobId,
+            error: extracted.error || "Railway returned no transcript or audio",
           });
         }
-      } catch (err) {
-        console.error('[analyze] Railway call failed:', err);
+      } catch (err: any) {
+        console.error('[analyze] Railway fetch threw:', err.message, err.stack);
         await store.setJSON(jobId, { status: "error", jobId, error: String(err) });
       }
     })();
+
+    context.waitUntil(railwayWork);
 
     return new Response(JSON.stringify({ jobId }), {
       status: 200,
