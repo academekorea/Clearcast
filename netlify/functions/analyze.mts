@@ -31,6 +31,26 @@ async function fetchYouTubeData(videoId: string): Promise<YouTubeData> {
     const title = snippet?.title || "";
     const channelTitle = snippet?.channelTitle || "";
 
+    // Try unofficial timedtext endpoint (no OAuth required, works for most videos)
+    // This covers auto-generated captions that the Data API SRT endpoint blocks without OAuth
+    const timedtextRes = await fetch(
+      `https://www.youtube.com/api/timedtext?lang=en&v=${videoId}&fmt=srv3`,
+      { signal: AbortSignal.timeout(15000) }
+    );
+    if (timedtextRes.ok) {
+      const xml = await timedtextRes.text();
+      if (xml && xml.length > 200) {
+        // Parse <text> nodes from srv3 XML
+        const captions = (xml.match(/<text[^>]*>([^<]*)<\/text>/g) || [])
+          .map(t => t.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").trim())
+          .filter(Boolean)
+          .join(' ')
+          .trim() || null;
+        if (captions && captions.length > 200) return { captions, title, channelTitle };
+      }
+    }
+
+    // Fall back to Data API SRT (requires OAuth for most tracks — usually fails, worth trying)
     const track = tracks.items?.find((t: any) =>
       t.snippet.language?.startsWith('en') &&
       t.snippet.trackKind !== 'forced'
