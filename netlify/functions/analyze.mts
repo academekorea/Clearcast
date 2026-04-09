@@ -34,11 +34,13 @@ export default async (req: Request) => {
       showName: showName || "",
     });
     // Fire transcribe-background async — do not await
-    fetch(`${process.env.URL}/.netlify/functions/transcribe-background`, {
+    console.log('[analyze] YouTube detected, firing transcribe-background for jobId:', jobId);
+    const siteUrl = process.env.URL || 'https://podlens.app';
+    fetch(`${siteUrl}/.netlify/functions/transcribe-background`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ jobId, youtubeUrl: url }),
-    }).catch(() => {});
+    }).catch((err) => { console.error('[analyze] transcribe-background fire failed:', err.message); });
     return new Response(JSON.stringify({ jobId }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
