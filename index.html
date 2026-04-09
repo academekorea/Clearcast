@@ -7414,6 +7414,8 @@ function siaToggleKF(row) {
   row.classList.toggle('open', !isOpen);
   exp.classList.toggle('show', !isOpen);
 }
+
+function siaSwitchTab(name, el) {
   document.querySelectorAll('.sia-tab').forEach(function(t){t.classList.remove('on');});
   el.classList.add('on');
   document.querySelectorAll('.sia-panel').forEach(function(p){p.classList.remove('on');});
@@ -7439,14 +7441,14 @@ function siaSetTier(tier, btn) {
   var locked = document.getElementById('sia-locked-findings');
   if (locked) {
     locked.innerHTML = showFull
-      ? '<div class="fi" onclick="siaToggle(this)"><div class="ftag fc">FACT CHECK</div><div><div class="ftitle">Host rarely challenged guest's self-reported statistics</div><div class="fbody">Key numerical claims accepted without pushback or source requests.</div></div><div class="farrow">&#8250;</div></div>'
-        + '<div class="expand"><div class="exp-summary">Jensen Huang makes specific numerical claims about market share and compute demand. All figures were accepted without pushback. Independent estimates place NVIDIA's market share at 65&ndash;70%, not the 80%+ claimed.</div><div class="exp-ev"><div class="exp-time">44:22</div><div class="exp-quote">&ldquo;We supply over 80% of the AI training compute in the world today.&rdquo;</div><div class="exp-note">Independent estimates place this at 65&ndash;70%. The discrepancy is material but not raised.</div></div></div>'
-        + '<div class="fi" onclick="siaToggle(this)" style="border-bottom:none"><div class="ftag fo">OMISSION</div><div><div class="ftitle">No mention of regulatory or antitrust concerns</div><div class="fbody">Ongoing regulatory scrutiny of NVIDIA's market dominance not raised.</div></div><div class="farrow">&#8250;</div></div>'
-        + '<div class="expand"><div class="exp-summary">At the time of recording, NVIDIA is under active antitrust scrutiny in the EU, US, and China. None of this is raised. Export restrictions affecting significant revenue are also not discussed.</div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Listeners unaware the company's dominance is under active regulatory review.</div></div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">CUDA lock-in discussed only as a moat, not a regulatory risk.</div></div></div>'
+      ? '<div class="fi" onclick="siaToggle(this)"><div class="ftag fc">FACT CHECK</div><div><div class="ftitle">Host rarely challenged guest&rsquo;s self-reported statistics</div><div class="fbody">Key numerical claims accepted without pushback or source requests.</div></div><div class="farrow">&#8250;</div></div>'
+        + '<div class="expand"><div class="exp-summary">Jensen Huang makes specific numerical claims about market share and compute demand. All figures were accepted without pushback. Independent estimates place NVIDIA’s market share at 65&ndash;70%, not the 80%+ claimed.</div><div class="exp-ev"><div class="exp-time">44:22</div><div class="exp-quote">&ldquo;We supply over 80% of the AI training compute in the world today.&rdquo;</div><div class="exp-note">Independent estimates place this at 65&ndash;70%. The discrepancy is material but not raised.</div></div></div>'
+        + '<div class="fi" onclick="siaToggle(this)" style="border-bottom:none"><div class="ftag fo">OMISSION</div><div><div class="ftitle">No mention of regulatory or antitrust concerns</div><div class="fbody">Ongoing regulatory scrutiny of NVIDIA’s market dominance not raised.</div></div><div class="farrow">&#8250;</div></div>'
+        + '<div class="expand"><div class="exp-summary">At the time of recording, NVIDIA is under active antitrust scrutiny in the EU, US, and China. None of this is raised. Export restrictions affecting significant revenue are also not discussed.</div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Listeners unaware the company’s dominance is under active regulatory review.</div></div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">CUDA lock-in discussed only as a moat, not a regulatory risk.</div></div></div>'
       : '<div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>'
         + '<div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>'
         + '<div class="blur-r" style="border-bottom:none"><div class="btext"></div><span class="lock">&#128274;</span></div>'
-        + '<div class="upbar"><span class="uptxt">All findings unlock with Creator</span><button class="upbtn" onclick="openModal('signup')">Sign up free &#8594;</button></div>';
+        + '<div class="upbar"><span class="uptxt">All findings unlock with Creator</span><button class="upbtn" onclick="openModal(&apos;signup&apos;)">Sign up free &#8594;</button></div>';
   }
 
   // Key findings section (creator+)
