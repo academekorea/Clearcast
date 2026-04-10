@@ -9812,6 +9812,12 @@ updateRegionUI();
 applyTranslations(_settings.lang);
 applyKoreanMode();
 initUpgradeTriggers();
+if (!handleUrlRouting()) {
+  showHome();
+  renderHomeState();
+  var _hl = document.getElementById('home-loggedout');
+  if (plUser() && _hl) _hl.style.display = 'none';
+}
 initFreeAccessPanel();
 // Pass store to startAnalysis for regional iTunes
 var _origStartAnalysis = startAnalysis;
@@ -9820,9 +9826,6 @@ var _origStartAnalysis = startAnalysis;
   var origFetch = window.fetch;
   // We patch the analyze POST to add store param in startAnalysis
 })();
-if (!handleUrlRouting()) {
-  showHome();  // showHome handles both auth states and calls renderHomeState
-}
 
 // ── FOUNDING BANNER — visible by default, hidden for logged-in or dismissed ──
 (function() {
