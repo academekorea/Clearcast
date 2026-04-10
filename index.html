@@ -3175,20 +3175,30 @@ body.light-mode,[data-theme="light"]{
         </div>
         <button onclick="discSearch(document.getElementById('disc-search-input').value.trim())" style="padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap">Search</button>
       </div>
-      <div class="disc-hero">
+      <div class="disc-hero" id="disc-hero-card">
         <div class="disc-hero-l">
           <div>
-            <div class="disc-hero-eye">Featured episode</div>
-            <div class="disc-hero-title">Jensen Huang &mdash; NVIDIA &amp; the AI Revolution</div>
-            <div class="disc-hero-host">Lex Fridman Podcast &middot; 2h 18m</div>
+            <div class="disc-hero-eye" id="disc-hero-eye">For you</div>
+            <div class="disc-hero-title" id="disc-hero-title">Jensen Huang &mdash; NVIDIA &amp; the AI Revolution</div>
+            <div class="disc-hero-host" id="disc-hero-host">Lex Fridman Podcast &middot; 2h 18m</div>
           </div>
           <div class="disc-hero-btns">
-            <button class="disc-hero-play" onclick="discHeroPlay()">&#9654; Play</button>
-            <button class="disc-hero-analyze" onclick="analyzeEp(null,'https://www.youtube.com/watch?v=vif8NQcjVf0','Jensen Huang — NVIDIA & the AI Revolution','Lex Fridman Podcast')">Analyze &rarr;</button>
+            <button class="disc-hero-play" id="disc-hero-play-btn" onclick="discHeroPlay()">&#9654; Play</button>
+            <button class="disc-hero-analyze" id="disc-hero-analyze-btn" onclick="analyzeEp(null,'https://www.youtube.com/watch?v=vif8NQcjVf0','Jensen Huang — NVIDIA & the AI Revolution','Lex Fridman Podcast')">Analyze &rarr;</button>
           </div>
         </div>
-        <div class="disc-hero-r">
+        <div class="disc-hero-r" id="disc-hero-video">
           <iframe src="https://www.youtube-nocookie.com/embed/vif8NQcjVf0?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+      <!-- Related episodes — shown when a topic pill is clicked -->
+      <div id="disc-related-shelf" style="display:none">
+        <div class="disc-shelf">
+          <div class="disc-shelf-hd">
+            <div class="disc-shelf-ttl" id="disc-related-title">Related episodes</div>
+            <button onclick="discResetHero()" style="background:none;border:none;font-size:12px;color:var(--text3);cursor:pointer;font-family:var(--ff)">← Back to For you</button>
+          </div>
+          <div id="disc-related-list" class="disc-ep-row"></div>
         </div>
       </div>
       <div class="disc-shelf">
@@ -4407,7 +4417,7 @@ function _resendVerification() {
 function _maybeShowVerifyBanner() {
   var u = plUser();
   if (!u) return;
-  // Only show for email/password signups that aren't verified
+  // Only show for email/password signups that are not verified
   if (!u.emailVerified && u.password && !document.getElementById('verify-email-banner')) {
     _showVerifyEmailBanner(u.email);
   }
@@ -4889,7 +4899,7 @@ function showView(name) {
     name = 'discover';
   }
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); v.style.display = 'none'; });
-  // Also hide home sub-divs so any async renderHomeState callbacks don't bleed through
+  // Also hide home sub-divs so any async renderHomeState callbacks do not bleed through
   var _hli = document.getElementById('home-loggedin');
   var _hlo = document.getElementById('home-loggedout');
   if (_hli) _hli.style.display = 'none';
@@ -5517,7 +5527,7 @@ function loadDiscTrendingNews() {
     + '</div>'
     + topics.map(function(topic) {
         var safe = topic.replace(/'/g, "\'");
-        return '<button onclick="discSearch(\''+safe+'\')" '
+        return '<button onclick="discTopicHero(\''+safe+'\')" '
           + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
           + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
           + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
@@ -5528,6 +5538,131 @@ function loadDiscTrendingNews() {
       }).join('');
 }
 
+
+
+// ── TOPIC HERO DATA ───────────────────────────────────────────────────────────
+var TOPIC_HEROES = {
+  'Artificial Intelligence': { title:'Sam Altman on AI & the Future', show:'Lex Fridman Podcast', url:'https://www.youtube.com/watch?v=jvqFAi7vkBc', ytId:'jvqFAi7vkBc', duration:'2h 45m', cat:'tech' },
+  'Trump Administration':    { title:'Trump 2.0 — What Happened in 100 Days', show:'Pod Save America', url:'https://feeds.megaphone.fm/pod-save-america', ytId:null, duration:'1h 12m', cat:'news' },
+  'Federal Reserve':         { title:'Inside the Fed Rate Decision', show:'Planet Money', url:'https://feeds.npr.org/510289/podcast.xml', ytId:null, duration:'28m', cat:'business' },
+  'Gaza Ceasefire':          { title:'The Gaza War — What Comes Next', show:'The Daily', url:'https://feeds.simplecast.com/54nAGcIl', ytId:null, duration:'32m', cat:'news' },
+  'Climate Policy':          { title:'How Climate Policy Is Failing Us', show:'The Ezra Klein Show', url:'https://feeds.simplecast.com/82FI35Px', ytId:null, duration:'1h 8m', cat:'news' },
+  'Big Tech Regulation':     { title:'Breaking Up Big Tech', show:'Hard Fork', url:'https://feeds.simplecast.com/l2i9YnTd', ytId:null, duration:'58m', cat:'tech' },
+  'Immigration':             { title:'The Border Crisis Explained', show:'NPR Politics Podcast', url:'https://feeds.npr.org/510310/podcast.xml', ytId:null, duration:'44m', cat:'news' },
+  'World Cup 2026':          { title:'World Cup 2026 — The Host City Battle', show:'The Bill Simmons Podcast', url:'https://feeds.megaphone.fm/billsimmons', ytId:null, duration:'1h 15m', cat:'sports' },
+  'Healthcare Costs':        { title:'Why American Healthcare Costs So Much', show:'Maintenance Phase', url:'https://feeds.megaphone.fm/maintenancephase', ytId:null, duration:'1h 22m', cat:'health' },
+  'Elon Musk':               { title:'Elon Musk — DOGE, X, and Tesla', show:'All-In Podcast', url:'https://feeds.megaphone.fm/allin', ytId:null, duration:'1h 34m', cat:'business' },
+  'Ukraine War':             { title:'Ukraine — Two Years In', show:'The Daily', url:'https://feeds.simplecast.com/54nAGcIl', ytId:null, duration:'36m', cat:'news' },
+  'Stock Market':            { title:'Markets in Chaos — What Is Actually Happening', show:'Planet Money', url:'https://feeds.npr.org/510289/podcast.xml', ytId:null, duration:'29m', cat:'business' },
+  'Supreme Court':           { title:'The Supreme Courts Most Consequential Term', show:'NPR Politics Podcast', url:'https://feeds.npr.org/510310/podcast.xml', ytId:null, duration:'48m', cat:'news' },
+  'Social Media':            { title:'How Social Media Rewired Politics', show:'The Ezra Klein Show', url:'https://feeds.simplecast.com/82FI35Px', ytId:null, duration:'1h 18m', cat:'news' },
+  'Nuclear Energy':          { title:'Nuclear Power Second Chance', show:'How I Built This', url:'https://feeds.npr.org/510313/podcast.xml', ytId:null, duration:'55m', cat:'business' },
+  'Cryptocurrency':          { title:'Crypto in 2026 — Boom or Bust', show:'All-In Podcast', url:'https://feeds.megaphone.fm/allin', ytId:null, duration:'1h 5m', cat:'business' },
+  'China Trade War':         { title:'Inside the China Trade War', show:'NPR Politics Podcast', url:'https://feeds.npr.org/510310/podcast.xml', ytId:null, duration:'41m', cat:'news' },
+  'NATO':                    { title:'NATO at 75 — Still Relevant?', show:'The Daily', url:'https://feeds.simplecast.com/54nAGcIl', ytId:null, duration:'27m', cat:'news' },
+};
+
+var _discDefaultHero = {
+  eye:'For you', title:'Jensen Huang &mdash; NVIDIA &amp; the AI Revolution',
+  host:'Lex Fridman Podcast &middot; 2h 18m',
+  url:'https://www.youtube.com/watch?v=vif8NQcjVf0', ytId:'vif8NQcjVf0'
+};
+
+function discTopicHero(topic) {
+  var hero = TOPIC_HEROES[topic];
+  var eyeEl = document.getElementById('disc-hero-eye');
+  var titleEl = document.getElementById('disc-hero-title');
+  var hostEl = document.getElementById('disc-hero-host');
+  var videoEl = document.getElementById('disc-hero-video');
+  var playBtn = document.getElementById('disc-hero-play-btn');
+  var analyzeBtn = document.getElementById('disc-hero-analyze-btn');
+  var relatedShelf = document.getElementById('disc-related-shelf');
+  var relatedTitle = document.getElementById('disc-related-title');
+  var relatedList = document.getElementById('disc-related-list');
+
+  if (eyeEl) eyeEl.textContent = topic;
+
+  if (!hero) {
+    // No specific hero — just filter shows and show related
+    if (titleEl) titleEl.innerHTML = 'Top podcasts on: ' + topic;
+    if (hostEl) hostEl.textContent = 'Browse episodes below';
+    discSearch(topic);
+    if (relatedShelf) relatedShelf.style.display = '';
+    if (relatedTitle) relatedTitle.textContent = 'Podcasts covering: ' + topic;
+    _buildRelatedEpisodes(relatedList, topic, null);
+    return;
+  }
+
+  // Update hero text
+  if (titleEl) titleEl.textContent = hero.title;
+  if (hostEl) hostEl.textContent = hero.show + ' · ' + hero.duration;
+
+  // Update video — use YouTube embed if ytId, otherwise show show artwork
+  if (videoEl) {
+    if (hero.ytId) {
+      videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
+    } else {
+      // Find show artwork from CURATED_SHOWS
+      var show = CURATED_SHOWS.find(function(s){ return s.feedUrl === hero.url || s.name === hero.show; });
+      var art = (show && show.artwork) || '';
+      videoEl.innerHTML = art
+        ? '<img src="'+art+'" style="width:100%;height:100%;object-fit:cover" alt="">'
+        : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(255,255,255,.2)">&#9654;</div>';
+    }
+  }
+
+  // Update buttons
+  if (playBtn) { playBtn.onclick = function(){ var inp=document.getElementById('url-input');if(inp)inp.value=hero.url;showView('analyze');setTimeout(function(){startAnalysis(hero.url);},300); }; }
+  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,hero.url,hero.title,hero.show); }; }
+
+  // Show related episodes shelf
+  if (relatedShelf) relatedShelf.style.display = '';
+  if (relatedTitle) relatedTitle.textContent = 'More on: ' + topic;
+  _buildRelatedEpisodes(relatedList, topic, hero.url);
+}
+
+function _buildRelatedEpisodes(el, topic, excludeUrl) {
+  if (!el) return;
+  var lower = topic.toLowerCase();
+  var related = CURATED_SHOWS.filter(function(s){
+    return (s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || s.cat.toLowerCase().includes(lower))
+      && s.feedUrl !== excludeUrl;
+  });
+  if (!related.length) related = CURATED_SHOWS.filter(function(s){ return s.feedUrl !== excludeUrl; }).slice(0,3);
+  var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
+  el.innerHTML = related.slice(0,3).map(function(s, i) {
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+    var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
+    var artHtml = s.artwork ? '<img src="'+s.artwork+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">' : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+s.name.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
+    var biasPill = s.bias ? '<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);margin-left:6px">'+s.bias.label+'</span>' : '';
+    return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
+      +'<div class="disc-ep-art" style="background:'+bgs[i%3]+'">'+artHtml+'</div>'
+      +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div><div class="disc-ep-title">'+s.name+'</div><div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
+      +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button></div></div>';
+  }).join('');
+}
+
+function discResetHero() {
+  var d = _discDefaultHero;
+  var eyeEl = document.getElementById('disc-hero-eye');
+  var titleEl = document.getElementById('disc-hero-title');
+  var hostEl = document.getElementById('disc-hero-host');
+  var videoEl = document.getElementById('disc-hero-video');
+  var playBtn = document.getElementById('disc-hero-play-btn');
+  var analyzeBtn = document.getElementById('disc-hero-analyze-btn');
+  var relatedShelf = document.getElementById('disc-related-shelf');
+  if (eyeEl) eyeEl.textContent = d.eye;
+  if (titleEl) titleEl.innerHTML = d.title;
+  if (hostEl) hostEl.textContent = d.host;
+  if (videoEl) videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+d.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
+  if (playBtn) playBtn.onclick = discHeroPlay;
+  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,'https://www.youtube.com/watch?v=vif8NQcjVf0','Jensen Huang — NVIDIA & the AI Revolution','Lex Fridman Podcast'); }; }
+  if (relatedShelf) relatedShelf.style.display = 'none';
+  // Reset shows/episodes
+  discRenderShows();
+  discRenderEpisodes();
+}
 
 function discHeroPlay() {
   // Auto-fill the analyze input with the featured episode URL and start analysis
@@ -6693,7 +6828,7 @@ function pollStatus(jobId, audioUrl) {
         pct = Math.min(14, Math.round(elapsed / 1000));
       } else if (status === 'transcribing') {
         // AssemblyAI typically takes 1-4 mins depending on audio length
-        // We don't know duration yet so use elapsed time with a soft cap
+        // We do not know duration yet so use elapsed time with a soft cap
         pct = Math.min(50, 15 + Math.round((elapsed - 15000) / 2000));
         // Advance LAF steps during transcription
         if (elapsed > 20000 && lafIdx < 2) { lafCompleteStep(1); lafAddStep(2, false); lafIdx = 2; }
@@ -7943,7 +8078,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     }
 
     // Intelligence overview card
-    mainHtml += '<div class="sp-3col-card"><div class="sp-3col-sec-lbl">Intelligence overview</div>';
+    mainHtml += '<div class="sp-3col-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div class="sp-3col-sec-lbl" style="margin-bottom:0">Intelligence overview</div>' + _metricQ('bias') + '</div>';
     mainHtml += '<div class="sp-intel-grid">';
     mainHtml += spMetric('Bias label',m.biasLabel||'&mdash;','Based on analyzed episodes',m.biasLabel?60:0,'var(--center-bar)');
     mainHtml += spMetric('Host trust',m.avgTrustScore!=null?m.avgTrustScore:'&mdash;','Parasocial language score',m.avgTrustScore!=null?m.avgTrustScore:0,m.avgTrustScore>60?'var(--left-bar)':m.avgTrustScore>30?'var(--amber)':'var(--center-bar)');
@@ -7987,6 +8122,8 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     var sideHtml = '<div class="sp-3col-sidebar">';
 
     // Section 1: Latest episodes to analyze (from RSS)
+    // Add ? to sidebar sections
+    var _bq = _metricQ('bias');
     sideHtml += '<div style="margin-bottom:20px;padding-bottom:20px;border-bottom:0.5px solid var(--border)">';
     sideHtml += '<div class="sp-3col-sec-lbl">Latest episodes</div>';
     if (rssEpisodes.length) {
@@ -8055,7 +8192,10 @@ function formatDuration(d) {
   return h>0?h+'h '+m+'m':m+'m';
 }
 function spMetric(label,val,sub,barPct,barColor) {
-  return '<div class="sp-metric"><div class="sp-metric-lbl">'+label+'</div><div class="sp-metric-val">'+val+'</div><div class="sp-metric-sub">'+sub+'</div><div class="sp-metric-bar"><div class="sp-metric-fill" style="width:'+Math.min(100,Math.max(0,barPct))+'%;background:'+barColor+'"></div></div></div>';
+  var mkeys={'Bias label':'bias','Host trust':'trust','Consistency':'consistency','Factual rate':'factual','Sponsor rate':'sponsor','Episodes analyzed':null};
+  var qk=mkeys[label]!==undefined?mkeys[label]:null;
+  var qb=qk?'<button onclick="event.stopPropagation();showMetricExplainer(\''+qk+'\')" style="width:14px;height:14px;border-radius:50%;border:1px solid var(--border2);background:none;cursor:pointer;font-size:9px;font-weight:700;color:var(--text3);font-family:var(--ff);display:inline-flex;align-items:center;justify-content:center;padding:0;vertical-align:middle;margin-left:4px">?</button>':'';
+  return '<div class="sp-metric"><div class="sp-metric-lbl">'+label+qb+'</div><div class="sp-metric-val">'+val+'</div><div class="sp-metric-sub">'+sub+'</div><div class="sp-metric-bar"><div class="sp-metric-fill" style="width:'+Math.min(100,Math.max(0,barPct))+'%;background:'+barColor+'"></div></div></div>';
 }
 function buildDriftSvg(driftData) {
   var W=600,H=80,pad=10;
@@ -8191,7 +8331,7 @@ function getRecent() { try{ return JSON.parse(localStorage.getItem('pl-recent')|
 // Called on every completed/partial analysis result before rendering.
 function _enrichWithAudioLean(data) {
   if (!data) return data;
-  // Already has valid audioLean — don't overwrite
+  // Already has valid audioLean — do not overwrite
   if (data.audioLean && typeof data.audioLean.leftPct === 'number') return data;
 
   var bs = typeof data.biasScore === 'number' ? Math.max(-100, Math.min(100, data.biasScore)) : 0;
@@ -8646,7 +8786,7 @@ var DEMO_RESULT = {
     { lean: 'right',   text: 'Conservative perspective absent from 3 major segments on government oversight', detail: 'Three full segments on government oversight conducted without any representation of conservative or libertarian policy positions.' },
     { lean: 'left',    text: "Host rarely challenged guest's self-reported statistics", detail: 'Across the episode, Jensen Huang makes specific numerical claims. All figures accepted without pushback.' },
     { lean: 'neutral', text: 'Episode opens with credibility-building narrative before contested claims', detail: 'The first 20 minutes establish Jensen Huang as a near-mythological figure before any substantive claims are made.' },
-    { lean: 'neutral', text: 'Sponsor segments follow topically related content sections', detail: "Each of the three sponsor reads is placed immediately after a segment whose topic directly relates to the sponsor's product." }
+    { lean: 'neutral', text: 'Sponsor segments follow topically related content sections', detail: "Each of the three sponsor reads is placed immediately after a segment whose topic directly relates to the sponsors product." }
   ]
 };
 
@@ -9368,7 +9508,7 @@ var i18n = {
     analyzeBar: "Paste any podcast or YouTube URL\u2026",
     getProBtn: "Get Pro", loginBtn: "Log in", signupBtn: "Sign up",
     biasLabel: "Political Lean \u2014 how this episode frames issues",
-    biasFootnote: "Based on language patterns and framing choices \u2014 not the host's personal politics",
+    biasFootnote: "Based on language patterns and framing choices \u2014 not the hosts personal politics",
     leanLeft: "Lean left", center: "Center", leanRight: "Lean right",
     mostlyBalanced: "Mostly balanced", lightlyOneSided: "Lightly one-sided",
     moderatelyBiased: "Moderately biased", heavilyOneSided: "Heavily one-sided",
@@ -10337,6 +10477,39 @@ function _setPlaylists(arr) { localStorage.setItem(PL_PLAYLISTS_KEY, JSON.string
 function _epId(ep) { return (ep.jobId||ep.url||ep.feedUrl||ep.title||'').replace(/[^a-z0-9]/gi,'').slice(0,40); }
 
 
+
+var METRIC_EXPLAINERS = {
+  'bias':       { title:'Bias score', what:'Measures how consistently a show frames stories from a left, center, or right perspective based on language patterns, source selection, and framing choices.', how:'Each analyzed episode receives a score from -100 (far left) to +100 (far right). The show score is the weighted average across all episodes, weighted by recency.' },
+  'trust':      { title:'Host trust score', what:'Measures how much the host uses parasocial language, creating a sense of personal relationship with the listener. High scores can indicate emotional manipulation.', how:'Our AI flags phrases like "we", "you know", "trust me", "they do not want you to know" and weighs their frequency and emotional intensity in each episode.' },
+  'consistency':{ title:'Consistency score', what:'How stable the show bias is from episode to episode. A high score means the bias rarely changes; a low score means it swings around depending on topic or guest.', how:'Calculated as the inverse of standard deviation across episode bias scores. 100 = perfectly consistent, 0 = inconsistent.' },
+  'factual':    { title:'Factual rate', what:'The percentage of episodes rated "Mostly factual" — meaning claims are grounded in verifiable evidence without significant distortion.', how:'Each episodes factual score is determined by checking key claims against known facts, looking for logical fallacies, and evaluating source quality.' },
+  'sponsor':    { title:'Sponsor influence rate', what:'The percentage of episodes where sponsor messaging appears to influence editorial content — not just ad reads, but actual topic avoidance or favorable framing.', how:'Detected by cross-referencing sponsor categories with episode topics, and flagging when sponsored industries receive unusually positive framing.' },
+  'fingerprint':{ title:'Bias fingerprint', what:'Your personal media diet score. It reflects the aggregate political lean of every podcast episode you have analyzed on Podlens.', how:'Each episode you analyze adds its bias score (weighted by episode length) to your fingerprint. The bar shows the combined left/center/right distribution across all your analyses.' },
+};
+
+function showMetricExplainer(metricKey) {
+  var m = METRIC_EXPLAINERS[metricKey];
+  if (!m) return;
+  var existing = document.getElementById('modal-metric-explainer');
+  if (existing) existing.remove();
+  var html = '<div id="modal-metric-explainer" class="modal-overlay" onclick="if(event.target===this)this.remove()" style="display:flex">'
+    + '<div class="modal-box" style="max-width:440px">'
+    + '<div style="font-size:17px;font-weight:700;margin-bottom:8px;font-family:var(--ffs)">'+m.title+'</div>'
+    + '<div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">What it means</div>'
+    + '<div style="font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:16px">'+m.what+'</div>'
+    + '<div style="background:var(--bg3);border-radius:8px;padding:14px 16px;margin-bottom:20px">'
+    + '<div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">How it is calculated</div>'
+    + '<div style="font-size:13px;color:var(--text2);line-height:1.6">'+m.how+'</div>'
+    + '</div>'
+    + '<button onclick="this.closest(\'#modal-metric-explainer\').remove()" style="width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Got it</button>'
+    + '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function _metricQ(key) {
+  return '<button onclick="event.stopPropagation();showMetricExplainer(\''+key+'\')" style="width:16px;height:16px;border-radius:50%;border:1px solid var(--border2);background:none;cursor:pointer;font-size:10px;font-weight:700;color:var(--text3);font-family:var(--ff);display:inline-flex;align-items:center;justify-content:center;padding:0;line-height:1;flex-shrink:0;vertical-align:middle;margin-left:6px" title="What is this?">?</button>';
+}
+
 function showBiasExplainer() {
   var existing = document.getElementById('modal-bias-explainer');
   if (existing) { existing.style.display = 'flex'; return; }
@@ -10350,7 +10523,7 @@ function showBiasExplainer() {
     + '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:20px"><span>Left</span><span>Center</span><span>Right</span></div>'
     + '<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">'
     + _biasExplainerRow("&#127968;", "Left leaning", "Episodes that use progressive framing, favour institutional voices on the left, or consistently omit conservative perspectives.")
-    + _biasExplainerRow("&#9878;&#65039;", "Center", "Episodes that present multiple viewpoints, avoid loaded framing, and don't consistently favour either side.")
+    + _biasExplainerRow("&#9878;&#65039;", "Center", "Episodes that present multiple viewpoints, avoid loaded framing, and do not consistently favour either side.")
     + _biasExplainerRow("&#128308;", "Right leaning", "Episodes that use conservative framing, favour traditional or right-leaning sources, or consistently omit progressive perspectives.")
     + '</div>'
     + '<div style="background:var(--bg3);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:20px">'
