@@ -3854,7 +3854,24 @@ window.initLangSwitch = async function() {
   }
 };
 
-document.addEventListener('DOMContentLoaded', function() { window.initLangSwitch(); });
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle email verification redirect
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('verify_success')) {
+    var verifiedEmail = params.get('email') || '';
+    var u = plUser();
+    if (u && (!verifiedEmail || u.email === verifiedEmail)) {
+      u.emailVerified = true;
+      setPlUser(u);
+    }
+    showToast('✓ Email verified — your account is now active');
+    history.replaceState({}, '', '/');
+  }
+  if (params.get('verify_error')) {
+    var errs = { missing_token: 'Verification link is invalid.', invalid: 'Verification link not found.', used: 'This link has already been used.', expired: 'Verification link has expired — please request a new one.' };
+    showToast((errs[params.get('verify_error')] || 'Verification failed.'), 'error');
+    history.replaceState({}, '', '/');
+  } window.initLangSwitch(); });
 
 function initNav() {
   var u = plUser();
@@ -4112,10 +4129,19 @@ function doSignup() {
   var u = { id: uid, name: name, email: email, plan: 'trial',
     signupDate: acc.signupDate, trialEndsAt: trialEndsAt,
     analysesThisWeek: 0, weekResetDate: weekResetDate, joinedAt: now };
+  u.emailVerified = false;
   setPlUser(u);
   closeModal('signup');
   errEl.classList.remove('on');
   renderNavAuth();
+  // Send verification email in background
+  fetch('/api/send-verification', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, name: name, userId: uid })
+  }).catch(function(){});
+  // Show verify banner
+  _showVerifyEmailBanner(email);
 
   if (_pendingAnalyze) {
     var pa = _pendingAnalyze;
@@ -4324,6 +4350,48 @@ function showTrialExpiryRecap(u) {
 // ── CITATIONS GATE ──
 
 // ── HOME STATE ──
+
+function _showVerifyEmailBanner(email) {
+  if (document.getElementById('verify-email-banner')) return;
+  var b = document.createElement('div');
+  b.id = 'verify-email-banner';
+  b.style.cssText = 'background:#fffbeb;border-bottom:1px solid #fde68a;padding:11px 20px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-size:13px;color:#92580a;font-family:Inter,sans-serif;position:sticky;top:60px;z-index:900';
+  b.innerHTML = '<span>📧 Check your inbox — we sent a verification link to <strong>' + _escHtml(email) + '</strong></span>'
+    + '<button onclick="_resendVerification()" style="padding:5px 12px;background:#0f2027;color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Resend</button>'
+    + '<button onclick="document.getElementById('verify-email-banner').remove()" style="background:none;border:none;color:#b58a40;cursor:pointer;font-size:18px;line-height:1;padding:0 4px">×</button>';
+  var nav = document.querySelector('nav') || document.body.firstElementChild;
+  if (nav && nav.parentNode) nav.parentNode.insertBefore(b, nav.nextSibling);
+  else document.body.insertBefore(b, document.body.firstChild);
+}
+
+function _resendVerification() {
+  var u = plUser();
+  if (!u) return;
+  var btn = document.querySelector('#verify-email-banner button');
+  if (btn) { btn.textContent = 'Sending…'; btn.disabled = true; }
+  fetch('/api/send-verification', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: u.email, name: u.name, userId: u.id })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.success) showToast('Verification email sent — check your inbox');
+    else showToast(d.error || 'Failed to send email', 'error');
+    if (btn) { btn.textContent = 'Resend'; btn.disabled = false; }
+  }).catch(function() {
+    if (btn) { btn.textContent = 'Resend'; btn.disabled = false; }
+    showToast('Failed to send email', 'error');
+  });
+}
+
+function _maybeShowVerifyBanner() {
+  var u = plUser();
+  if (!u) return;
+  // Only show for email/password signups that aren't verified
+  if (!u.emailVerified && u.password && !document.getElementById('verify-email-banner')) {
+    _showVerifyEmailBanner(u.email);
+  }
+}
+
 function renderHomeState() {
   var u = plUser();
   if (u) u = enforcePlanRules() || u;
@@ -9238,6 +9306,7 @@ function handleSocialLogin(userData) {
   history.replaceState({}, '', cleanUrl);
   renderNavAuth();
   renderHomeState();
+  _maybeShowVerifyBanner();
   syncPlanFromStripe(u);
   if (userData.isNewUser) {
     if (u.foundingMember) {

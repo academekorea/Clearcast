@@ -114,8 +114,8 @@
       + '<div class="nav-dd-email">' + _esc(u.email || '') + '</div>'
       + '</div>'
       + adminRow
-      + '<a href="/account.html" class="nav-dd-item">Account settings</a>'
-      + '<a href="/account?tab=billing" class="nav-dd-item">Billing &amp; subscription</a>'
+      + '<a href="/profile.html" class="nav-dd-item">Profile settings</a>'
+      + '<a href="/account.html" class="nav-dd-item">Account &amp; billing</a>'
       + '<div class="nav-dd-div"></div>'
       + '<button onclick="localStorage.removeItem(\'pl-user\');window.location.href=\'/\'" class="nav-dd-item">Sign out</button>'
       + '</div>'
