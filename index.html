@@ -1589,6 +1589,8 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-nav-cat.on{background:rgba(255,255,255,.13) !important;font-weight:600}
 .disc-nav-cdot{width:9px;height:9px;border-radius:3px;flex-shrink:0;display:inline-block}
 .disc-main{background:var(--bg);padding:0 0 80px;overflow-y:auto;min-width:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#disc-trending-news::-webkit-scrollbar{display:none}
 .disc-greeting{padding:24px 32px 2px;font-family:var(--ffs);font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.01em}
 .disc-subline{padding:0 32px 18px;font-size:12px;color:var(--text3)}
 .disc-hero{margin:0 32px 32px;background:var(--navy);border-radius:16px;display:grid;grid-template-columns:1fr 2.2fr;overflow:hidden;min-height:340px}
@@ -3159,6 +3161,9 @@ body.light-mode,[data-theme="light"]{
     <div class="disc-main">
       <div class="disc-greeting" id="disc-greeting">Explore podcasts</div>
       <div class="disc-subline" id="disc-subline">Browse freely. Analyze any episode free.</div>
+      <div id="disc-trending-news-shelf" style="margin:0 0 20px">
+        <div id="disc-trending-news" style="overflow-x:auto;display:flex;gap:10px;padding:8px 32px;scrollbar-width:none;-webkit-overflow-scrolling:touch"></div>
+      </div>
       <div style="margin:0 32px 24px;display:flex;gap:10px;align-items:center">
         <div style="flex:1;position:relative">
           <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3)" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -3190,11 +3195,6 @@ body.light-mode,[data-theme="light"]{
       <div class="disc-shelf">
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Trending episodes this week</div><button class="disc-shelf-more">See all &rarr;</button></div>
         <div class="disc-ep-row" id="disc-ep-row"></div>
-      </div>
-
-      <div class="disc-shelf" id="disc-trending-news-shelf">
-        <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Trending topics in podcasts</div></div>
-        <div id="disc-trending-news" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding-top:4px"></div>
       </div>
 
       <div class="disc-shelf">
@@ -5435,34 +5435,54 @@ function discLiveSearch(q) {
 async function loadDiscTrendingNews() {
   var el = document.getElementById('disc-trending-news');
   if (!el) return;
-  // Fetch trending stories from the stories API
+
+  // Show loading pills
+  el.innerHTML = [1,2,3,4,5,6].map(function() {
+    return '<div style="height:38px;min-width:140px;background:var(--bg3);border-radius:20px;flex-shrink:0;animation:pulse 1.4s ease infinite"></div>';
+  }).join('');
+
+  var topics = null;
+
+  // Try fetching from stories API
   try {
-    var data = await fetch('/api/stories?q=trending&limit=6', { signal: AbortSignal.timeout(5000) }).then(function(r){ return r.json(); });
-    var items = (data.results || data.stories || data || []).slice(0,6);
-    if (items.length) {
-      el.innerHTML = items.map(function(item) {
-        var title = item.title || item.headline || '';
-        var source = item.source || item.showName || '';
-        var url = item.youtubeUrl || item.feedUrl || item.url || '';
-        var safeUrl = url.replace(/"/g,'&quot;');
-        var topic = item.topic || item.category || '';
-        var clickHandler = safeUrl ? 'showView(\'analyze\');setTimeout(function(){document.getElementById(\'url-input\').value=\''+safeUrl+'\';},50)' : '';
-        return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer" onclick="'+clickHandler+'"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">'+source+(topic?' &middot; '+topic:'')+'</div><div style="font-size:14px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:8px">'+title+'</div><div style="font-size:11px;color:var(--navy);font-weight:600">Analyze episode &rarr;</div></div>';
-      }).join('');
-      return;
+    var data = await fetch('/api/stories?q=news&limit=10', { signal: AbortSignal.timeout(5000) }).then(function(r){ return r.json(); });
+    var items = (data.results || data.stories || []).slice(0,10);
+    if (items.length >= 3) {
+      topics = items.map(function(item) {
+        return {
+          label: item.title || item.headline || '',
+          source: item.source || item.showName || '',
+          url: item.youtubeUrl || item.feedUrl || item.url || '',
+          cat: item.topic || item.category || 'news'
+        };
+      });
     }
   } catch(e) {}
-  // Fallback: show curated trending topics
-  var topics = [
-    {title:'AI and the future of work — what podcasts are saying', source:'Technology', cat:'tech'},
-    {title:'Election 2026: how left and right are framing the race', source:'News & Politics', cat:'news'},
-    {title:'Interest rates, inflation and the podcast economy', source:'Business', cat:'business'},
-    {title:'Climate narratives: who is covering what', source:'Society', cat:'society'},
-    {title:'True crime: new episodes generating debate', source:'True Crime', cat:'crime'},
-    {title:'Health misinformation — what shows are amplifying', source:'Health', cat:'health'},
-  ];
+
+  // Fallback: curated trending topics
+  if (!topics) {
+    topics = [
+      { label: 'AI & the economy', source: 'Trending now', url: '', cat: 'tech' },
+      { label: 'US election 2026', source: 'News & Politics', url: '', cat: 'news' },
+      { label: 'Federal Reserve rates', source: 'Business', url: '', cat: 'business' },
+      { label: 'Gaza & Middle East', source: 'World news', url: '', cat: 'news' },
+      { label: 'Climate policy', source: 'Society', url: '', cat: 'society' },
+      { label: 'Big Tech regulation', source: 'Technology', url: '', cat: 'tech' },
+      { label: 'Healthcare costs', source: 'Health', url: '', cat: 'health' },
+      { label: 'True crime this week', source: 'Crime', url: '', cat: 'crime' },
+      { label: 'Immigration debate', source: 'Politics', url: '', cat: 'news' },
+    ];
+  }
+
   el.innerHTML = topics.map(function(t) {
-    return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer" onclick="discNavCat(\''+t.cat+'\',null)"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">'+t.source+'</div><div style="font-size:14px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:8px">'+t.title+'</div><div style="font-size:11px;color:var(--navy);font-weight:600">Browse episodes &rarr;</div></div>';
+    var safeUrl = (t.url||'').replace(/"/g,'&quot;');
+    var action = safeUrl
+      ? 'showView(\'analyze\');setTimeout(function(){document.getElementById(\'url-input\').value=\''+safeUrl+'\';},50)'
+      : 'discNavCat(\''+t.cat+'\',null)';
+    return '<button onclick="'+action+'" style="display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;flex-shrink:0;padding:8px 14px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;cursor:pointer;font-family:var(--ff);transition:border-color .15s;white-space:nowrap">'
+      + '<span style="font-size:12px;font-weight:600;color:var(--text)">'+t.label+'</span>'
+      + '<span style="font-size:10px;color:var(--text3)">'+t.source+'</span>'
+      + '</button>';
   }).join('');
 }
 
