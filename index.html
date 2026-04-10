@@ -4645,43 +4645,40 @@ async function loadHomeTrending() {
   _homeTrendingLoaded = true;
   var el = document.getElementById('home-trending-list');
   if (!el) return;
+  // Render immediately from CURATED_SHOWS with artwork — no API wait
+  _renderHomeTrendingFallback(el);
+  // Try API in background; update if it returns real results
   try {
-    var data = await fetch('/api/stories?q=news').then(function(r){ return r.json(); });
+    var data = await fetch('/api/stories?q=news', { signal: AbortSignal.timeout(4000) }).then(function(r){ return r.json(); });
     var eps = (data.results || []).slice(0, 6);
-    if (!eps.length) { _renderHomeTrendingFallback(el); return; }
+    if (!eps.length) return;
     el.innerHTML = eps.map(function(ep) {
       var analyzeUrl = ep.feedUrl || ep.youtubeUrl || '';
       var safeUrl = analyzeUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
       var safeName = (ep.showName||'').replace(/"/g,'').replace(/'/g,'');
       var safeEp = (ep.epTitle||'').replace(/"/g,'').replace(/'/g,'');
-      return '<div class="tg-card" onclick="analyzeEp(null,&quot;'+safeUrl+'&quot;,&quot;'+safeEp+'&quot;,&quot;'+safeName+'&quot;)">'
-        + '<div class="tg-art-wrap">' + (ep.artwork ? '<img class="tg-art" src="'+ep.artwork+'" alt="" loading="lazy" style="width:64px;height:64px;border-radius:6px;object-fit:cover">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'
-        + '<div class="tg-card-body"><div class="tg-card-name">'+(ep.epTitle||ep.showName||'')+'</div>'
-        + '<div class="tg-card-artist">'+(ep.showName||'')+'</div>'
-        + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
+      return '<div class="tg-card" onclick="analyzeEp(null,&quot;'+safeUrl+'&quot;,&quot;'+safeEp+'&quot;,&quot;'+safeName+'&quot;)">'        + '<div class="tg-art-wrap">' + (ep.artwork ? '<img class="tg-art" src="'+ep.artwork+'" alt="" loading="lazy" style="width:64px;height:64px;border-radius:6px;object-fit:cover">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'        + '<div class="tg-card-body"><div class="tg-card-name">'+(ep.epTitle||ep.showName||'')+'</div>'        + '<div class="tg-card-artist">'+(ep.showName||'')+'</div>'        + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
     }).join('');
-  } catch(e) { _renderHomeTrendingFallback(el); }
+  } catch(e) { /* keep curated fallback */ }
 }
+
 
 function _renderHomeTrendingFallback(el) {
   if (!el) return;
-  var FALLBACK = [
-    { name:'The Joe Rogan Experience', artist:'Joe Rogan', url:'https://www.youtube.com/@joerogan' },
-    { name:'The Daily',                artist:'The New York Times', url:'https://feeds.simplecast.com/54nAGcIl' },
-    { name:'Lex Fridman Podcast',       artist:'Lex Fridman', url:'https://www.youtube.com/watch?v=vif8NQcjVf0' },
-    { name:'Pod Save America',          artist:'Crooked Media', url:'https://feeds.megaphone.fm/pod-save-america' },
-    { name:'The Ben Shapiro Show',      artist:'Daily Wire', url:'https://feeds.megaphone.fm/WWO3519750917' },
-    { name:'Planet Money',              artist:'NPR', url:'https://feeds.npr.org/510289/podcast.xml' },
-  ];
-  el.innerHTML = FALLBACK.map(function(f) {
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v3') || 'null'); } catch(e) {}
+  var artMap = {};
+  if (cached && cached.urls && (Date.now() - cached.ts) < 48*60*60*1000) {
+    CURATED_SHOWS.forEach(function(s, i){ if (cached.urls[i]) artMap[s.name] = cached.urls[i]; });
+  }
+  el.innerHTML = CURATED_SHOWS.slice(0, 6).map(function(f) {
     var slug = f.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    var safeUrl = f.url.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
-      + '<div class="tg-art-wrap"><div class="tg-art-ph">&#127897;</div></div>'
-      + '<div class="tg-card-body"><div class="tg-card-name">'+f.name+'</div><div class="tg-card-artist">'+f.artist+'</div>'
-      + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
+    var safeUrl = f.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var art = artMap[f.name] ? '<img class="tg-art" src="'+artMap[f.name]+'" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover" onerror="this.style.display=\'none\'">' : '<div class="tg-art-ph">&#127897;</div>';
+    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'      + '<div class="tg-art-wrap">'+art+'</div>'      + '<div class="tg-card-body"><div class="tg-card-name">'+f.name+'</div><div class="tg-card-artist">'+f.artist+'</div>'      + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
   }).join('');
 }
+
 
 // ── DISCOVER PAGE ─────────────────────────────────────────────────────────────
 var _discCat = 'all';
