@@ -272,6 +272,7 @@ body:not(.authenticated) .show-logged-in { display: none !important; }
 /* Founding banner */
 #founding-banner{position:relative;background:#FFF8E7;border-bottom:1px solid #F0C040;width:100%;z-index:9999}
 body.authenticated #founding-banner{display:none!important}
+body.authenticated #home-loggedout{display:none!important}
 #founding-banner:hover{opacity:.95}
 .founding-banner-inner{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;max-width:800px;color:#92400E}
 .founding-emoji{font-size:16px;flex-shrink:0}
@@ -5034,6 +5035,9 @@ function _renderCategoryBiasContext(cat) {
 
 // ── VIEWS ──
 function showView(name) {
+  // Sync auth class so home-loggedout CSS rule fires correctly
+  var _u = plUser();
+  document.body.classList.toggle('authenticated', !!(_u && _u.id));
   // Library is auth-gated — guests redirect to Discover
   if (name === 'library' && !plUser()) {
     showToast('Sign in to access your Library', 3000);
