@@ -4,6 +4,14 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Podlens — Know what you're actually listening to</title>
+<!-- AUTH STATE: runs before body renders — signed-in users never see marketing page -->
+<style>
+  html.pl-signed-in #home-loggedout { display:none!important; visibility:hidden!important; }
+  html.pl-signed-in #home-loggedin  { display:block!important; }
+  html:not(.pl-signed-in) #home-loggedout { display:block; }
+  html:not(.pl-signed-in) #home-loggedin  { display:none!important; }
+</style>
+<script>(function(){try{var u=JSON.parse(localStorage.getItem('pl-user')||'null');if(u&&u.id){document.documentElement.classList.add('pl-signed-in');}}catch(e){}})()</script>
 <meta name="description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
 <meta property="og:title" content="Podlens — Know what you're actually listening to">
 <meta property="og:description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
@@ -2565,17 +2573,6 @@ body.light-mode,[data-theme="light"]{
     var u = JSON.parse(localStorage.getItem("pl-user")||"null");
     var isAuth = !!(u && u.id);
     if (isAuth) document.body.classList.add("authenticated");
-    // Immediately enforce visibility before any HTML renders
-    // Uses cssText with !important so nothing can override it
-    document.addEventListener('DOMContentLoaded', function() {
-      var elOut = document.getElementById('home-loggedout');
-      var elIn  = document.getElementById('home-loggedin');
-      if (!elOut || !elIn) return;
-      var fresh = JSON.parse(localStorage.getItem("pl-user")||"null");
-      var auth = !!(fresh && fresh.id);
-      elOut.style.cssText = auth ? 'display:none!important' : 'display:block';
-      elIn.style.cssText  = auth ? 'display:block'          : 'display:none!important';
-    });
   } catch(e) {}
 })()</script>
 <!-- BRANDED SPLASH SCREEN -->
@@ -3825,7 +3822,9 @@ function plUser() {
   try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) { return null; }
 }
 function setPlUser(obj) {
-  document.body.classList.toggle('authenticated', !!obj);
+  var isAuth = !!(obj && obj.id);
+  document.body.classList.toggle('authenticated', isAuth);
+  document.documentElement.classList.toggle('pl-signed-in', isAuth);
   if (obj) {
     localStorage.setItem('pl-user', JSON.stringify(obj));
     var banner = document.getElementById('founding-banner');
