@@ -4233,7 +4233,7 @@ function renderHomeState() {
   if (!u) {
     loadHeroStats();
     loadTrendingGrid('all');
-    if (!document.getElementById('featured-player-pane').querySelector('iframe')) { loadFeaturedPlayer(); }
+    loadHomeTrending();
     return;
   }
   var hr = new Date().getHours();
