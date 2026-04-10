@@ -4652,13 +4652,6 @@ function showView(name) {
     setTimeout(function(){ _showAnalysisAuthGate('', '', ''); }, 300);
     return;
   }
-    setTimeout(function() {
-      var resultsEl = document.getElementById('results');
-      if (resultsEl && !resultsEl.innerHTML.trim()) {
-        showDemoAnalysis();
-      }
-    }, 50);
-  }
   // Hide footer when in non-home views (except show)
   var footer = document.getElementById('site-footer');
   if (footer) footer.style.display = (name === 'home' || name === 'show') ? '' : 'none';
