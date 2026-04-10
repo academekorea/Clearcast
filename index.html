@@ -3119,8 +3119,11 @@ body.light-mode,[data-theme="light"]{
           <div id="sb-follow-list"><div style="font-size:12px;color:var(--text3)">No shows followed yet.</div></div>
         </div>
         <div class="sidebar-card">
-          <div class="sidebar-card-title">Unheard preview</div>
-          <div id="sb-unheard-preview"><div style="font-size:12px;color:var(--text3)">Analyze more to unlock.</div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="sidebar-card-title" style="margin-bottom:0">Unheard</div>
+            <span style="font-size:9px;font-weight:700;background:var(--purple-bg,rgba(139,92,246,.1));color:var(--purple,#7c3aed);padding:2px 6px;border-radius:3px">Pro</span>
+          </div>
+          <div id="sb-unheard-preview"><div style="font-size:12px;color:var(--text3)">Stories one side covers that the other ignores. Analyze 3+ episodes to unlock.</div></div>
         </div>
       </div>
 
@@ -3156,11 +3159,12 @@ body.light-mode,[data-theme="light"]{
     <div class="disc-main">
       <div class="disc-greeting" id="disc-greeting">Explore podcasts</div>
       <div class="disc-subline" id="disc-subline">Browse freely. Analyze any episode free.</div>
-      <div class="disc-tabs" id="disc-tabs" style="display:none">
-        <button class="disc-tab on" id="disc-tab-foryou" onclick="discSetTab('foryou',this)">For you</button>
-        <button class="disc-tab" id="disc-tab-trending" onclick="discSetTab('trending',this)">Trending</button>
-        <button class="disc-tab" id="disc-tab-following" onclick="discSetTab('following',this)">Following</button>
-        <button class="disc-tab" id="disc-tab-unheard" onclick="discSetTab('unheard',this)">Unheard <span class="disc-tab-pro">Pro</span></button>
+      <div style="margin:0 32px 24px;display:flex;gap:10px;align-items:center">
+        <div style="flex:1;position:relative">
+          <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3)" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="disc-search-input" type="text" placeholder="Search shows, episodes, topics..." style="width:100%;padding:10px 14px 10px 36px;border:0.5px solid var(--border2);border-radius:8px;font-size:14px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none" oninput="discLiveSearch(this.value)" onkeydown="if(event.key==='Enter')discSearch(this.value.trim())"/>
+        </div>
+        <button onclick="discSearch(document.getElementById('disc-search-input').value.trim())" style="padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap">Search</button>
       </div>
       <div class="disc-hero">
         <div class="disc-hero-l">
@@ -3170,7 +3174,7 @@ body.light-mode,[data-theme="light"]{
             <div class="disc-hero-host">Lex Fridman Podcast &middot; 2h 18m</div>
           </div>
           <div class="disc-hero-btns">
-            <button class="disc-hero-play">&#9654; Play</button>
+            <button class="disc-hero-play" onclick="discHeroPlay()">&#9654; Play</button>
             <button class="disc-hero-analyze" onclick="analyzeEp(null,'https://www.youtube.com/watch?v=vif8NQcjVf0','Jensen Huang — NVIDIA & the AI Revolution','Lex Fridman Podcast')">Analyze &rarr;</button>
           </div>
         </div>
@@ -3187,14 +3191,12 @@ body.light-mode,[data-theme="light"]{
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Trending episodes this week</div><button class="disc-shelf-more">See all &rarr;</button></div>
         <div class="disc-ep-row" id="disc-ep-row"></div>
       </div>
-      <div class="disc-shelf" id="disc-unheard-teaser" style="display:none">
-        <div class="disc-unheard-box">
-          <div class="disc-unheard-eye">Unheard &middot; Pro feature</div>
-          <h4>Stories one side isn&rsquo;t covering</h4>
-          <p>Topics the left covers that the right ignores &mdash; and vice versa. Updated weekly.</p>
-          <button class="disc-unheard-btn" onclick="window.location.href='/pricing.html'">Unlock with Pro Lens &rarr;</button>
-        </div>
+
+      <div class="disc-shelf" id="disc-trending-news-shelf">
+        <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Trending topics in podcasts</div></div>
+        <div id="disc-trending-news" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding-top:4px"></div>
       </div>
+
       <div class="disc-shelf">
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Explore by bias profile</div></div>
         <div class="disc-mood-grid">
@@ -4980,6 +4982,7 @@ function initDiscover() {
   }
   discRenderShows();
   discRenderEpisodes();
+  loadDiscTrendingNews();
   _renderCategoryBiasContext(_discCat);
 }
 
@@ -5408,6 +5411,69 @@ function discRenderRecentFeed(el) {
       + '<div class="disc-ep-title">'+(h.title||h.episodeTitle||'Episode')+'</div></div>'
       + '<button class="disc-ep-btn">View →</button></div>';
   }).join('') + '</div>';
+}
+
+
+
+function discLiveSearch(q) {
+  if (!q || q.length < 2) return;
+  // Lightweight live preview — filter CURATED_SHOWS and show results
+  var el = document.getElementById('disc-shows-row');
+  if (!el) return;
+  var results = CURATED_SHOWS.filter(function(s){
+    return s.name.toLowerCase().includes(q.toLowerCase()) || s.artist.toLowerCase().includes(q.toLowerCase());
+  });
+  if (!results.length) return;
+  el.innerHTML = results.slice(0,4).map(function(s) {
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+    var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
+    return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'</div>';
+  }).join('');
+}
+
+async function loadDiscTrendingNews() {
+  var el = document.getElementById('disc-trending-news');
+  if (!el) return;
+  // Fetch trending stories from the stories API
+  try {
+    var data = await fetch('/api/stories?q=trending&limit=6', { signal: AbortSignal.timeout(5000) }).then(function(r){ return r.json(); });
+    var items = (data.results || data.stories || data || []).slice(0,6);
+    if (items.length) {
+      el.innerHTML = items.map(function(item) {
+        var title = item.title || item.headline || '';
+        var source = item.source || item.showName || '';
+        var url = item.youtubeUrl || item.feedUrl || item.url || '';
+        var safeUrl = url.replace(/"/g,'&quot;');
+        var topic = item.topic || item.category || '';
+        var clickHandler = safeUrl ? 'showView(\'analyze\');setTimeout(function(){document.getElementById(\'url-input\').value=\''+safeUrl+'\';},50)' : '';
+        return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer" onclick="'+clickHandler+'"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">'+source+(topic?' &middot; '+topic:'')+'</div><div style="font-size:14px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:8px">'+title+'</div><div style="font-size:11px;color:var(--navy);font-weight:600">Analyze episode &rarr;</div></div>';
+      }).join('');
+      return;
+    }
+  } catch(e) {}
+  // Fallback: show curated trending topics
+  var topics = [
+    {title:'AI and the future of work — what podcasts are saying', source:'Technology', cat:'tech'},
+    {title:'Election 2026: how left and right are framing the race', source:'News & Politics', cat:'news'},
+    {title:'Interest rates, inflation and the podcast economy', source:'Business', cat:'business'},
+    {title:'Climate narratives: who is covering what', source:'Society', cat:'society'},
+    {title:'True crime: new episodes generating debate', source:'True Crime', cat:'crime'},
+    {title:'Health misinformation — what shows are amplifying', source:'Health', cat:'health'},
+  ];
+  el.innerHTML = topics.map(function(t) {
+    return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer" onclick="discNavCat(\''+t.cat+'\',null)"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">'+t.source+'</div><div style="font-size:14px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:8px">'+t.title+'</div><div style="font-size:11px;color:var(--navy);font-weight:600">Browse episodes &rarr;</div></div>';
+  }).join('');
+}
+
+function discHeroPlay() {
+  // Auto-fill the analyze input with the featured episode URL and start analysis
+  var url = 'https://www.youtube.com/watch?v=vif8NQcjVf0';
+  var inp = document.getElementById('url-input');
+  if (inp) inp.value = url;
+  showView('analyze');
+  // Small delay so the view transitions first
+  setTimeout(function() { startAnalysis(url); }, 300);
 }
 
 function discRenderShows() {
