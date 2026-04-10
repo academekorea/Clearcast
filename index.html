@@ -199,14 +199,19 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 
 /* ── VIEWS ── */
 .view{display:none}.view.on{display:block}
-/* ── AUTH-STATE CSS ENFORCEMENT (never trust JS timing alone) ── */
-body.authenticated #home-loggedout { display: none !important; }
-body:not(.authenticated) #home-loggedin { display: none !important; }
+/* ── AUTH-STATE CSS — single source of truth, no JS timing dependency ── */
+/* Both hidden by default — CSS controls based on body.authenticated class   */
+#home-loggedout { display: none; }
+#home-loggedin  { display: none; }
+/* Logged OUT: show marketing, hide dashboard */
+body:not(.authenticated) #home-loggedout { display: block !important; }
+body:not(.authenticated) #home-loggedin  { display: none  !important; }
+/* Logged IN: hide marketing, show dashboard */
+body.authenticated #home-loggedout { display: none  !important; }
+body.authenticated #home-loggedin  { display: block !important; }
+/* Utility classes */
 body.authenticated .show-logged-out { display: none !important; }
 body:not(.authenticated) .show-logged-in { display: none !important; }
-
-.authenticated #home-loggedout{display:none!important}
-body:not(.authenticated) #home-loggedin{display:none!important}
 
 /* ── HOME HERO — 60/40 GRID ── */
 .home-hero{padding:0;margin:0;border-bottom:1px solid var(--border)}
@@ -2623,7 +2628,7 @@ body.light-mode,[data-theme="light"]{
 <div class="view on" id="view-home">
 
   <!-- STATE A: Logged out -->
-  <div id="home-loggedout" style="display:none">
+  <div id="home-loggedout">
 
 
 
@@ -3032,7 +3037,7 @@ body.light-mode,[data-theme="light"]{
   </div><!-- /home-loggedout -->
 
   <!-- STATE B: Logged in -->
-  <div id="home-loggedin" style="display:none">
+  <div id="home-loggedin">
     <div id="trial-day6-banner" style="display:none"></div>
     <div class="dash-3col">
 
@@ -4445,13 +4450,11 @@ function renderHomeState() {
   var u = plUser();
   if (u) u = enforcePlanRules() || u;
 
-  var elOut = document.getElementById('home-loggedout');
-  var elIn  = document.getElementById('home-loggedin');
+  // CSS controls home-loggedout / home-loggedin visibility via body.authenticated.
+  // We just make sure the class is set correctly, then populate content.
+  document.body.classList.toggle('authenticated', !!(u && u.id));
 
   if (u) {
-    // Logged-in: show personalized dashboard
-    if (elOut) elOut.style.display = 'none';
-    if (elIn)  elIn.style.display  = 'block';
     var hr = new Date().getHours();
     var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
     var first = (u.name || '').split(' ')[0];
@@ -4491,9 +4494,7 @@ function renderHomeState() {
     return;
   }
 
-  // Logged-out: show marketing homepage
-  if (elOut) elOut.style.display = 'block';
-  if (elIn)  elIn.style.display  = 'none';
+  // Logged-out: CSS shows home-loggedout automatically via body:not(.authenticated)
   loadHeroStats();
   loadTrendingGrid('all');
   loadHomeTrending();
@@ -5179,11 +5180,7 @@ function showHome() {
     return;
   }
 
-  // Logged-out: marketing homepage
-  var elOut = document.getElementById('home-loggedout');
-  var elIn  = document.getElementById('home-loggedin');
-  if (elOut) elOut.style.display = 'block';
-  if (elIn)  elIn.style.display  = 'none';
+  // Logged-out: CSS shows home-loggedout via body:not(.authenticated)
   var footer = document.getElementById('site-footer');
   if (footer) footer.style.display = '';
   if (!_homeTrendingLoaded) { loadHomeTrending(); }
