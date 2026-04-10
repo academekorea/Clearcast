@@ -4837,9 +4837,9 @@ function showView(name) {
     showToast('Sign in to access your Library', 3000);
     name = 'discover';
   }
-  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); v.style.display = 'none'; });
   var el = document.getElementById('view-' + name);
-  if (el) el.classList.add('on');
+  if (el) { el.classList.add('on'); el.style.display = 'block'; }
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
   var nl = document.getElementById('nl-' + name);
   if (nl) nl.classList.add('on');
@@ -5111,15 +5111,18 @@ function handleDiscCompare() {
 function showHome() {
   var u = plUser();
 
-  // Show the home view
-  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
-  document.getElementById('view-home').classList.add('on');
+  // Hard-switch views with inline styles — not just class toggling.
+  // This overrides anything that may have set display:block on other views.
+  document.querySelectorAll('.view').forEach(function(v) {
+    v.classList.remove('on');
+    v.style.display = 'none';
+  });
+  var vh = document.getElementById('view-home');
+  if (vh) { vh.classList.add('on'); vh.style.display = 'block'; }
+
   document.querySelectorAll('.nl, .nav-link').forEach(function(b){ b.classList.remove('on', 'active'); });
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
   var mb = document.getElementById('mob-home'); if (mb) mb.classList.add('on');
-  // Mark the logo/home nav link as active
-  var nlHome = document.getElementById('nl-home');
-  if (nlHome) nlHome.classList.add('active');
 
   document.body.classList.toggle('authenticated', !!(u && u.id));
   document.documentElement.classList.toggle('pl-signed-in', !!(u && u.id));
@@ -5128,7 +5131,6 @@ function showHome() {
     var footer = document.getElementById('site-footer');
     if (footer) footer.style.display = 'none';
     document.body.classList.remove('app-page');
-    // URL: /dashboard for logged-in users so browser reflects the app state
     var target = '/dashboard';
     if (window.location.pathname !== target) history.pushState({ view: 'home' }, '', target);
     document.title = 'Dashboard — Podlens';
