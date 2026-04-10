@@ -3115,7 +3115,6 @@ body.light-mode,[data-theme="light"]{
       <button class="disc-nav-btn" onclick="showHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
       <button class="disc-nav-btn on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
       <button class="disc-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
-      <button class="disc-nav-btn" id="disc-nav-library" onclick="showView('library')" style="display:none"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Library</button>
 
       <!-- LIBRARY SECTION — logged-in only -->
       <div id="disc-nav-lib-section" style="display:none">
@@ -4676,7 +4675,6 @@ function initDiscover() {
   var greet = document.getElementById('disc-greeting');
   var sub = document.getElementById('disc-subline');
   var tabs = document.getElementById('disc-tabs');
-  var libBtn = document.getElementById('disc-nav-library');
   var unheardTeaser = document.getElementById('disc-unheard-teaser');
   var navLibSection = document.getElementById('disc-nav-lib-section');
   var navCatSection = document.getElementById('disc-nav-cat-section');
@@ -4687,7 +4685,6 @@ function initDiscover() {
     if (greet) greet.textContent = tod + (first ? ', ' + first : '');
     if (sub) sub.textContent = 'Your personalized feed';
     if (tabs) tabs.style.display = 'flex';
-    if (libBtn) libBtn.style.display = '';
     if (unheardTeaser) unheardTeaser.style.display = '';
     // Show library sidebar, hide categories
     if (navLibSection) navLibSection.style.display = '';
@@ -4697,7 +4694,6 @@ function initDiscover() {
     if (greet) greet.textContent = 'Explore podcasts';
     if (sub) sub.textContent = 'Browse freely. Analyze any episode free.';
     if (tabs) tabs.style.display = 'none';
-    if (libBtn) libBtn.style.display = 'none';
     if (unheardTeaser) unheardTeaser.style.display = 'none';
     // Show categories sidebar, hide library
     if (navLibSection) navLibSection.style.display = 'none';
