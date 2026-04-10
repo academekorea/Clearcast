@@ -8956,13 +8956,7 @@ function _renderKoreanFallback(grid) {
     var initial = show.name.charAt(0);
     var krSlug = show.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var krUrl = (show.feedUrl||'').replace(/'/g,"\\'");
-    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+krSlug+'\',\''+krUrl+'\')">'\
-      + '<div class="tg-art-wrap"><div class="tg-art-ph">' + initial + '</div></div>'\
-      + '<div class="tg-card-body">'\
-      + '<div class="tg-card-name">' + show.name + '</div>'\
-      + '<div class="tg-card-artist">' + show.category + '</div>'\
-      + '<button class="tg-analyze-btn">\ubd84\uc11d\ud558\uae30 &rarr;</button>'\
-      + '</div></div>';
+    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+krSlug+'\',\''+krUrl+'\')"><div class="tg-art-wrap"><div class="tg-art-ph">' + initial + '</div></div><div class="tg-card-body"><div class="tg-card-name">' + show.name + '</div><div class="tg-card-artist">' + show.category + '</div><button class="tg-analyze-btn">\ubd84\uc11d\ud558\uae30 &rarr;</button></div></div>';
   }).join('');
 }
 
