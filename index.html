@@ -5266,8 +5266,50 @@ function discSetTab(tab, btn) {
 
 function discSearch(q) {
   if (!q || !q.trim()) return;
-  showView('show');
-  loadShowProfile(q.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-'), q.trim().startsWith('http') ? q.trim() : null);
+  q = q.trim();
+  // If it looks like a URL, open show profile
+  if (q.startsWith('http')) { showView('show'); loadShowProfile(q.toLowerCase().replace(/[^a-z0-9]+/g,'-'), q); return; }
+  // Otherwise: update search input and filter discover content
+  var inp = document.getElementById('disc-search-input');
+  if (inp) inp.value = q;
+  // Filter shows by keyword
+  var el = document.getElementById('disc-shows-row');
+  var epEl = document.getElementById('disc-ep-row');
+  var lower = q.toLowerCase();
+  var matches = CURATED_SHOWS.filter(function(s){
+    return s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || s.cat.toLowerCase().includes(lower);
+  });
+  if (matches.length === 0) matches = CURATED_SHOWS.slice(0,4);
+  if (el) {
+    el.innerHTML = matches.slice(0,4).map(function(s) {
+      var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+      var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
+      var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
+      return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="margin-top:10px;width:100%;padding:6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button></div>';
+    }).join('');
+  }
+  if (epEl) {
+    var epMatches = CURATED_SHOWS.filter(function(s){
+      return s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || s.cat.toLowerCase().includes(lower);
+    });
+    if (!epMatches.length) epMatches = CURATED_SHOWS;
+    epEl.innerHTML = epMatches.slice(0,3).map(function(s,i) {
+      var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+      var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
+      var bgs=['#1a3050','#0d1f2d','#1e0a3c'];
+      var artHtml = s.artwork ? '<img src="'+s.artwork+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">' : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+s.name.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
+      var biasPill = s.bias ? '<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);margin-left:6px">'+s.bias.label+'</span>' : '';
+      return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
+        +'<div class="disc-ep-art" style="background:'+bgs[i%3]+'">'+artHtml+'</div>'
+        +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div><div class="disc-ep-title">'+s.name+'</div><div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
+        +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button>'
+        +'<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="padding:5px 10px;background:none;border:0.5px solid var(--border2);border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
+        +'<button class="ep-like-btn" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 8px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:var(--text3)">♡</button>'
+        +'</div></div>';
+    }).join('');
+  }
 }
 
 function discRenderHero() {
@@ -5437,55 +5479,46 @@ async function loadDiscTrendingNews() {
   var el = document.getElementById('disc-trending-news');
   if (!el) return;
 
-  // Show loading pills
-  el.innerHTML = [1,2,3,4,5,6].map(function() {
-    return '<div style="height:38px;min-width:140px;background:var(--bg3);border-radius:20px;flex-shrink:0;animation:pulse 1.4s ease infinite"></div>';
-  }).join('');
+  // Curated trending topics — always show these instantly, no API dependency
+  var topics = [
+    'Artificial Intelligence', 'Trump Administration', 'Federal Reserve',
+    'Gaza & Ceasefire', 'Climate Policy', 'Big Tech Regulation',
+    'Immigration', 'World Cup 2026', 'Healthcare Costs', 'Elon Musk',
+    'Ukraine War', 'Stock Market', 'Supreme Court', 'Social Media',
+    'Nuclear Energy'
+  ];
 
-  var topics = null;
-
-  // Try fetching from stories API
+  // Try to supplement with live topics from stories API
   try {
-    var data = await fetch('/api/stories?q=news&limit=10', { signal: AbortSignal.timeout(5000) }).then(function(r){ return r.json(); });
-    var items = (data.results || data.stories || []).slice(0,10);
+    var data = await fetch('/api/stories?q=trending&limit=12', { signal: AbortSignal.timeout(4000) }).then(function(r){ return r.json(); });
+    var items = (data.results || data.stories || []).slice(0,12);
     if (items.length >= 3) {
-      topics = items.map(function(item) {
-        return {
-          label: item.title || item.headline || '',
-          source: item.source || item.showName || '',
-          url: item.youtubeUrl || item.feedUrl || item.url || '',
-          cat: item.topic || item.category || 'news'
-        };
-      });
+      var liveTopics = items.map(function(item) {
+        return item.topic || item.title || item.headline || '';
+      }).filter(Boolean);
+      // Merge live topics at front, keep curated as fallback
+      topics = liveTopics.concat(topics.filter(function(t){
+        return !liveTopics.some(function(l){ return l.toLowerCase().includes(t.toLowerCase().slice(0,8)); });
+      })).slice(0,16);
     }
   } catch(e) {}
 
-  // Fallback: curated trending topics
-  if (!topics) {
-    topics = [
-      { label: 'AI & the economy', source: 'Trending now', url: '', cat: 'tech' },
-      { label: 'US election 2026', source: 'News & Politics', url: '', cat: 'news' },
-      { label: 'Federal Reserve rates', source: 'Business', url: '', cat: 'business' },
-      { label: 'Gaza & Middle East', source: 'World news', url: '', cat: 'news' },
-      { label: 'Climate policy', source: 'Society', url: '', cat: 'society' },
-      { label: 'Big Tech regulation', source: 'Technology', url: '', cat: 'tech' },
-      { label: 'Healthcare costs', source: 'Health', url: '', cat: 'health' },
-      { label: 'True crime this week', source: 'Crime', url: '', cat: 'crime' },
-      { label: 'Immigration debate', source: 'Politics', url: '', cat: 'news' },
-    ];
-  }
-
-  el.innerHTML = topics.map(function(t) {
-    var safeUrl = (t.url||'').replace(/"/g,'&quot;');
-    var action = safeUrl
-      ? 'showView(\'analyze\');setTimeout(function(){document.getElementById(\'url-input\').value=\''+safeUrl+'\';},50)'
-      : 'discNavCat(\''+t.cat+'\',null)';
-    return '<button onclick="'+action+'" style="display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;flex-shrink:0;padding:8px 14px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;cursor:pointer;font-family:var(--ff);transition:border-color .15s;white-space:nowrap">'
-      + '<span style="font-size:12px;font-weight:600;color:var(--text)">'+t.label+'</span>'
-      + '<span style="font-size:10px;color:var(--text3)">'+t.source+'</span>'
-      + '</button>';
-  }).join('');
+  el.innerHTML = '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3)">'
+    + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
+    + '</div>'
+    + topics.map(function(topic) {
+      var searchTerm = encodeURIComponent(topic);
+      return '<button onclick="discSearch(\''+topic+'\''+')" '
+        + 'style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:6px 12px;'
+        + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
+        + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
+        + 'white-space:nowrap;transition:background .12s,border-color .12s">'
+        + topic
+        + '<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">+</span>'
+        + '</button>';
+    }).join('');
 }
+
 
 function discHeroPlay() {
   // Auto-fill the analyze input with the featured episode URL and start analysis
