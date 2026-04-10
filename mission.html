@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Our Mission — Podlens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="description" content="Podlens is a force of clarity in the age of noise — providing intelligence, not judgment, to podcast listeners worldwide.">
+<meta property="og:title" content="Our Mission — Podlens">
+<meta property="og:description" content="We're building the intelligence layer that holds long-form audio to a higher standard.">
+<meta property="og:image" content="https://podlens.app/og-image.png">
+<meta property="og:url" content="https://podlens.app/mission">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0f2027">
+<link rel="canonical" href="https://podlens.app/mission">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--text:#1a1a1a;--text2:#555;--text3:#999;--navy:#0f2027;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);--ff:'DM Sans',-apple-system,sans-serif;--ffs:'Playfair Display',Georgia,serif;--r:4px}
+@media(prefers-color-scheme:dark){:root{--bg:#0D0D0D;--bg2:#161616;--bg3:#1a1a1a;--text:#F5F4F1;--text2:#999;--text3:#555;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12)}}
+[data-theme="dark"]{--bg:#0D0D0D;--bg2:#161616;--bg3:#1a1a1a;--text:#F5F4F1;--text2:#999;--text3:#555;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12)}
+[data-theme="light"]{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--text:#1a1a1a;--text2:#555;--text3:#999;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14)}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.7}
+a{color:var(--navy)}[data-theme="dark"] a{color:inherit}
+
+nav{display:flex;align-items:center;padding:0 32px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+.nav-logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;margin-right:auto}
+.nav-logo img{width:28px;height:28px;border-radius:6px}
+.nav-logo-name{font-family:var(--ffs);font-size:18px;color:var(--navy);font-weight:700}
+[data-theme="dark"] .nav-logo-name{color:var(--text)}
+.nav-link{padding:8px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:4px;transition:background .15s,color .15s;font-weight:400}
+.nav-link:hover{background:var(--bg3);color:var(--text)}
+.nav-cta{padding:8px 18px;background:var(--navy);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--ff);text-decoration:none;transition:opacity .15s}
+.nav-cta:hover{opacity:.88}
+
+main{max-width:800px;margin:0 auto;padding:80px 32px 100px}
+
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:20px}
+.headline{font-family:var(--ffs);font-size:clamp(36px,5.5vw,58px);font-weight:700;color:var(--text);line-height:1.12;margin-bottom:10px}
+.headline em{font-style:italic;font-weight:400}
+.rule{width:48px;height:2.5px;background:var(--text);opacity:.25;margin:28px 0 32px;border-radius:2px}
+.lead{font-size:19px;font-weight:300;color:var(--text2);line-height:1.8;max-width:640px;margin-bottom:64px}
+
+.pillars{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:0.5px solid var(--border2);border-radius:12px;overflow:hidden;margin-bottom:64px}
+.pillar{background:var(--bg2);padding:28px 24px}
+.pillar-num{font-family:var(--ffs);font-size:36px;font-weight:700;color:var(--border2);line-height:1;margin-bottom:14px}
+.pillar-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:10px}
+.pillar-body{font-size:14px;color:var(--text2);line-height:1.75}
+
+.manifesto{border-left:3px solid var(--text);padding:24px 32px;background:var(--bg3);border-radius:0 8px 8px 0;margin-bottom:64px}
+.manifesto-text{font-family:var(--ffs);font-size:22px;font-style:italic;font-weight:400;color:var(--text);line-height:1.65}
+
+.values-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:64px}
+.value{display:flex;gap:14px;align-items:flex-start;padding:20px 22px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg2)}
+.value-icon{width:34px;height:34px;flex-shrink:0;border:0.5px solid var(--border2);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.value-icon svg{width:16px;height:16px;stroke:var(--text);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.value-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:5px}
+.value-desc{font-size:13px;color:var(--text2);line-height:1.7}
+
+.closing{border-top:0.5px solid var(--border2);padding-top:32px}
+.closing p{font-size:16px;color:var(--text2);line-height:1.8;margin-bottom:16px}
+.closing p:last-child{margin-bottom:0}
+.closing strong{color:var(--text);font-weight:500}
+
+.cta-bar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:48px;padding-top:32px;border-top:0.5px solid var(--border2)}
+.cta-primary{display:inline-block;padding:12px 26px;background:var(--navy);color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:500;text-decoration:none;font-family:var(--ff);transition:opacity .15s}
+.cta-primary:hover{opacity:.88}
+.cta-secondary{font-size:14px;color:var(--text2);text-decoration:none}
+.cta-secondary:hover{color:var(--text)}
+
+footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:13px;color:var(--text3)}
+footer a{color:var(--text3);text-decoration:none;margin:0 10px}
+footer a:hover{color:var(--text)}
+
+@media(max-width:640px){
+  .pillars{grid-template-columns:1fr}
+  .values-grid{grid-template-columns:1fr}
+  main{padding:56px 20px 80px}
+  nav{padding:0 20px}
+}
+</style>
+<script>(function(){var s=localStorage.getItem('pl-theme');if(s==='dark')document.documentElement.setAttribute('data-theme','dark');else if(s==='light')document.documentElement.setAttribute('data-theme','light');})()</script>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="/">
+    <img src="/favicon.svg" alt="Podlens">
+    <span class="nav-logo-name">PODLENS</span>
+  </a>
+  <a href="/how-it-works.html" class="nav-link">How it works</a>
+  <a href="/pricing.html" class="nav-link">Pricing</a>
+  <a href="/" class="nav-cta">Launch app</a>
+</nav>
+
+<main>
+  <div class="eyebrow">Our mission</div>
+  <h1 class="headline">A force of clarity<br>in <em>the age of noise.</em></h1>
+  <div class="rule"></div>
+  <p class="lead">We built Podlens because long-form audio deserves the same rigour we apply to written journalism. Podcasters reach millions, shape opinions, and influence how people understand the world — and they deserve better feedback than a comment section. We&rsquo;re building the intelligence layer that holds that conversation to a higher standard.</p>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="pillar-num">01</div>
+      <div class="pillar-title">Accountability without sides</div>
+      <div class="pillar-body">We apply the same analytical standards to every show regardless of political lean, platform, or audience size. Our job is to report what the transcript says — not to tell you what to think.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">02</div>
+      <div class="pillar-title">Intelligence, not judgment</div>
+      <div class="pillar-body">Every finding is grounded in evidence — specific words, framing choices, and structural patterns from the episode itself. We surface what&rsquo;s there. You draw your own conclusions.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">03</div>
+      <div class="pillar-title">Better podcasters</div>
+      <div class="pillar-body">When creators know their framing is being analysed, they fact-check more, diversify their sources, and think harder about the language they use. We believe that makes the whole medium better.</div>
+    </div>
+  </div>
+
+  <div class="manifesto">
+    <div class="manifesto-text">&ldquo;We are not arbiters of truth. We are providers of context &mdash; transparent, consistent, and built for an era where mass information demands critical thinking as a survival skill.&rdquo;</div>
+  </div>
+
+  <div class="values-grid">
+    <div class="value">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div>
+        <div class="value-title">Radical transparency</div>
+        <div class="value-desc">Every score is explained. Every flag is tied to a timestamp. We publish our methodology and welcome scrutiny from anyone who disagrees with a result.</div>
+      </div>
+    </div>
+    <div class="value">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <div>
+        <div class="value-title">Informed listening</div>
+        <div class="value-desc">We give listeners the context they need before they press play — so engagement with any podcast becomes active and critical, not passive and unquestioning.</div>
+      </div>
+    </div>
+    <div class="value">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </div>
+      <div>
+        <div class="value-title">Consistency across the spectrum</div>
+        <div class="value-desc">The same methodology that flags left-leaning framing flags right-leaning framing. Political symmetry is not optional — it is the entire foundation of our credibility.</div>
+      </div>
+    </div>
+    <div class="value">
+      <div class="value-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div>
+        <div class="value-title">Long-term thinking</div>
+        <div class="value-desc">Every episode analyzed contributes to a growing community dataset. The more data, the sharper the intelligence — for every listener, and for the platform as a whole.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="closing">
+    <p><strong>Podlens is not anti-podcast. We are pro-listener.</strong> We believe the best podcasters will welcome this scrutiny — because it gives their audiences reason to trust them more deeply. A podcaster who fact-checks because they know their work will be analyzed is a better podcaster. A listener who comes to an episode already understanding its framing is a more empowered one.</p>
+    <p>In an era of extreme accessibility and mass information, clarity is the rarest and most valuable thing we can offer. That is what we are here to build.</p>
+  </div>
+
+  <div class="cta-bar">
+    <a href="/" class="cta-primary">Try Podlens free &rarr;</a>
+    <a href="/how-it-works.html" class="cta-secondary">See how it works</a>
+  </div>
+</main>
+
+<footer>
+  <a href="/">Home</a>
+  <a href="/how-it-works.html">How it works</a>
+  <a href="/pricing.html">Pricing</a>
+  <a href="/faq.html">FAQ</a>
+  <a href="/privacy.html">Privacy</a>
+  <a href="/terms.html">Terms</a>
+  <p style="margin-top:16px">&copy; 2026 Podlens. All rights reserved.</p>
+</footer>
+</body>
+</html>
