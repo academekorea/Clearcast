@@ -274,6 +274,32 @@ export default async (req: Request) => {
     return new Response(JSON.stringify(updated), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
+  // ── Compute plain-English bias label from score (CLAUDE.md spec) ────────────
+  // Claude returns directional labels ("Lean left") — we override with severity
+  // labels that match the spec and are shown to users everywhere.
+  function plainBiasLabel(score: number): string {
+    const bs = Math.max(-100, Math.min(100, score));
+    // Derive left/right percentages using same formula as _biasSegs on frontend
+    let lp: number, rp: number;
+    if (bs < -5) {
+      lp = Math.round(30 + Math.abs(bs) * 0.45);
+      rp = Math.max(5, Math.round(20 - Math.abs(bs) * 0.15));
+    } else if (bs > 5) {
+      rp = Math.round(30 + bs * 0.45);
+      lp = Math.max(5, Math.round(20 - bs * 0.15));
+    } else { lp = 20; rp = 20; }
+    const diff = Math.abs(lp - rp);
+    if (diff < 20) return "Mostly balanced";
+    if (diff < 40) return "Lightly one-sided";
+    if (diff < 60) return "Moderately biased";
+    if (diff < 80) return "Heavily one-sided";
+    return "Extremely one-sided";
+  }
+
+  // Keep Claude's directional label as biasDirection, override biasLabel with spec label
+  analysis.biasDirection = analysis.biasLabel || "";
+  analysis.biasLabel = plainBiasLabel(analysis.biasScore);
+
   const result = {
     status: "complete",
     jobId,
@@ -283,6 +309,8 @@ export default async (req: Request) => {
     showName: job.showName || "",
     duration: audioDuration ? `${Math.round(audioDuration / 60)} min` : "Unknown",
     ...analysis,
+    biasLabel:     analysis.biasLabel,      // plain-English severity: "Mostly balanced" etc
+    biasDirection: analysis.biasDirection,  // directional: "Lean left" etc
     dimensions: analysis.dimensions || null,
     guest: analysis.guest || null,
     // Word-level timestamps stored compactly for transcript seek

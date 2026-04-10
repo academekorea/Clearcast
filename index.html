@@ -7869,25 +7869,23 @@ function viewAnalysis(jobId) {
   showView('analyze');
   document.getElementById('url-input').value='';
   document.getElementById('empty-state').style.display='none';
-  // Show results panel immediately with a spinner — no old loading div
   document.getElementById('atabs').classList.add('on');
   document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
   document.getElementById('apanel-results').classList.add('on');
   document.getElementById('results').innerHTML='<div style="padding:48px;text-align:center;color:var(--text3);font-size:13px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading analysis&hellip;</div>';
   var _rePlan = String((plUser()||{}).plan||'free').toLowerCase();
-  fetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_rePlan))
-    .then(function(r){return r.json();})
+  safeFetch('/api/status/'+jobId+'?plan='+encodeURIComponent(_rePlan))
     .then(function(d){
       if (d.status==='complete') {
         _enrichWithAudioLean(d);
         renderResults(d);
         renderTranscriptHighlights(d);
       } else {
-        document.getElementById('results').innerHTML='<div style="padding:48px;text-align:center;color:var(--text3);font-size:13px">Analysis not yet complete.</div>';
+        document.getElementById('results').innerHTML='<div style="padding:48px;text-align:center;color:var(--text3);font-size:13px">Analysis not yet complete. <a href="#" onclick="pollStatus(\''+jobId+'\',\'\');return false" style="color:var(--navy)">Check again →</a></div>';
       }
     })
     .catch(function(){
-      document.getElementById('results').innerHTML='<div style="padding:48px;text-align:center;color:var(--text3);font-size:13px">Could not load analysis.</div>';
+      document.getElementById('results').innerHTML='<div style="padding:48px;text-align:center;color:var(--text3);font-size:13px">Could not load analysis. <a href="#" onclick="viewAnalysis(\''+jobId+'\');return false" style="color:var(--navy)">Retry →</a></div>';
     });
 }
 
@@ -7985,6 +7983,48 @@ function wrapText(ctx,text,x,y,maxW,lineH){var words=(text||'').split(' ');var l
 
 // ── RECENTLY ANALYZED (localStorage) ──
 function getRecent() { try{ return JSON.parse(localStorage.getItem('pl-recent')||'[]'); }catch(e){return[];} }
+// ── _enrichWithAudioLean ─────────────────────────────────────────────────────
+// Converts biasScore (-100 to +100) into the audioLean object used throughout
+// the UI: leftPct, centerPct, rightPct, plainEnglishLabel.
+// Called on every completed/partial analysis result before rendering.
+function _enrichWithAudioLean(data) {
+  if (!data) return data;
+  // Already has valid audioLean — don't overwrite
+  if (data.audioLean && typeof data.audioLean.leftPct === 'number') return data;
+
+  var bs = typeof data.biasScore === 'number' ? Math.max(-100, Math.min(100, data.biasScore)) : 0;
+  var lp, cp, rp;
+  if (bs < -5) {
+    lp = Math.round(30 + Math.abs(bs) * 0.45);
+    rp = Math.max(5, Math.round(20 - Math.abs(bs) * 0.15));
+    cp = Math.max(5, 100 - lp - rp);
+  } else if (bs > 5) {
+    rp = Math.round(30 + bs * 0.45);
+    lp = Math.max(5, Math.round(20 - bs * 0.15));
+    cp = Math.max(5, 100 - lp - rp);
+  } else {
+    lp = 20; cp = 60; rp = 20;
+  }
+
+  var diff = Math.abs(lp - rp);
+  var plainLabel;
+  if (diff < 20)      plainLabel = 'Mostly balanced';
+  else if (diff < 40) plainLabel = 'Lightly one-sided';
+  else if (diff < 60) plainLabel = 'Moderately biased';
+  else if (diff < 80) plainLabel = 'Heavily one-sided';
+  else                plainLabel = 'Extremely one-sided';
+
+  data.audioLean = {
+    leftPct:          lp,
+    centerPct:        cp,
+    rightPct:         rp,
+    plainEnglishLabel: plainLabel,
+    // Keep the directional label from Claude as a secondary label
+    directionLabel:   data.biasLabel || '',
+  };
+  return data;
+}
+
 function trackAnalysis(data) {
   try {
     // Increment monthly count for free users

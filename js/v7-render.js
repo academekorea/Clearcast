@@ -298,7 +298,9 @@ function renderResults(data) {
     + '<span style="color:#999">\u25aa '+segs.cp+'% center</span>'
     + '<span style="color:#378ADD">\u25cf '+segs.rp+'% right</span>'
     + '</div>'
-    + '<div class="bverdict">'+(data.biasLabel||'Slight left lean')+'</div>'
+    + '<div class="bverdict">'+(data.biasLabel||'Mostly balanced')
+    + (data.biasDirection ? '<span style="font-size:10px;font-weight:400;opacity:.65;margin-left:6px">('+data.biasDirection+')</span>' : '')
+    + '</div>'
     + (isPartial||data.jobId==='demo' ? '<div class="enote">Based on first 30 min \u00b7 updating as analysis continues</div>' : '')
     + '</div>';
 
@@ -568,17 +570,18 @@ function renderTranscriptHighlights(data) {
 
   var highlights = data.highlights || [];
   var segs = _biasSegs(data.biasScore);
-  var biasLabel = data.biasLabel || 'Center';
+  var biasLabel = data.biasLabel || 'Mostly balanced';
+  var biasDirection = data.biasDirection || data.biasLabel || '';
   var biasReason = data.biasReason || '';
 
   var leftCount   = highlights.filter(function(h){ return h.lean === 'left'; }).length;
   var rightCount  = highlights.filter(function(h){ return h.lean === 'right'; }).length;
   var neutralCount= highlights.filter(function(h){ return h.lean === 'neutral'; }).length;
 
-  // Verdict color
+  // Verdict color — use directional label for color, plain label for text
   var verdictBg = '#fde8e7', verdictColor = '#b83228';
-  if (biasLabel.toLowerCase().indexOf('right') >= 0) { verdictBg = '#e6f1fb'; verdictColor = '#185fa5'; }
-  if (biasLabel.toLowerCase() === 'center') { verdictBg = '#f5f5f3'; verdictColor = '#555'; }
+  if (biasDirection.toLowerCase().indexOf('right') >= 0) { verdictBg = '#e6f1fb'; verdictColor = '#185fa5'; }
+  if (biasDirection.toLowerCase() === 'center' || biasLabel === 'Mostly balanced') { verdictBg = '#f0fdf4'; verdictColor = '#15803d'; }
 
   // Bias reason fallback
   if (!biasReason && highlights.length) {
