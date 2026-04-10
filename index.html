@@ -4503,31 +4503,44 @@ function handleDashAnalyzeB() {
 async function loadDashTrending() {
   var el = document.getElementById('dash-trending-grid');
   if (!el) return;
-  // Use same curated shows as homepage tg-grid — consistent experience
-  el.innerHTML = CURATED_SHOWS.slice(0, 6).map(function(s, i) {
-    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    var safeUrl = s.feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    var artId = 'dash-tg-art-' + i;
-    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')">'
-      + '<div class="tg-art-wrap"><div class="tg-art-ph" id="' + artId + '">&#127897;</div></div>'
-      + '<div class="tg-card-body"><div class="tg-card-name">' + s.name + '</div><div class="tg-card-artist">' + s.artist + '</div>'
-      + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
-  }).join('');
-  // Load artwork from iTunes (same cache as homepage)
+
+  // Build artwork map from cache
+  var artMap = {};
   var cached = null;
   try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v3') || 'null'); } catch(e) {}
   if (cached && cached.urls && (Date.now() - cached.ts) < 48*60*60*1000) {
-    cached.urls.forEach(function(url, i) {
-      if (!url) return;
-      var el2 = document.getElementById('dash-tg-art-' + i);
-      if (!el2) return;
-      var img = document.createElement('img');
-      img.className = 'tg-art'; img.src = url; img.alt = CURATED_SHOWS[i].name;
-      img.style.cssText = 'width:64px;height:64px;border-radius:6px;object-fit:cover;display:block';
-      img.onerror = function() { this.parentNode.innerHTML = '<div class="tg-art-ph">&#127897;</div>'; };
-      el2.parentNode.replaceChild(img, el2);
-    });
+    CURATED_SHOWS.forEach(function(s, i) { if (cached.urls[i]) artMap[s.name] = cached.urls[i]; });
   }
+
+  var shows = CURATED_SHOWS.slice(0, 6);
+  el.innerHTML = shows.map(function(s) {
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    var safeUrl = s.feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    var art = artMap[s.name]
+      ? '<img class="tg-art" src="' + artMap[s.name] + '" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\'<div class=tg-art-ph>&#127897;</div>\'">'
+      : '<div class="tg-art-ph">&#127897;</div>';
+    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')">'
+      + '<div class="tg-art-wrap">' + art + '</div>'
+      + '<div class="tg-card-body"><div class="tg-card-name">' + s.name + '</div>'
+      + '<div class="tg-card-artist">' + s.artist + '</div>'
+      + _biasMini(s.bias)
+      + '</div></div>';
+  }).join('');
+
+  // Fetch missing artwork from iTunes and update live
+  shows.forEach(function(s) {
+    if (artMap[s.name]) return;
+    _itunesArtwork(s.name).then(function(url) {
+      if (!url) return;
+      var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      el.querySelectorAll('.tg-card').forEach(function(card) {
+        var nameEl = card.querySelector('.tg-card-name');
+        if (!nameEl || nameEl.textContent !== s.name) return;
+        var wrap = card.querySelector('.tg-art-wrap');
+        if (wrap) wrap.innerHTML = '<img class="tg-art" src="' + url + '" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\'<div class=tg-art-ph>&#127897;</div>\'">';
+      });
+    });
+  });
 }
 
 function renderDashStats(u, recent) {
@@ -9803,29 +9816,34 @@ function filterTrendingGrid(category, btn) {
   if (cached && cached.urls && (Date.now() - cached.ts) < 48*60*60*1000) {
     CURATED_SHOWS.forEach(function(s, i){ if (cached.urls[i]) artworkMap[s.name] = cached.urls[i]; });
   }
-  el.innerHTML = shows.slice(0, 6).map(function(s, i) {
+  el.innerHTML = shows.slice(0, 6).map(function(s) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
-    var artId = 'tg-art-cat-' + i;
     var art = artworkMap[s.name];
     return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')">'
-      + '<div class="tg-art-wrap">' + (art ? '<img class="tg-art" src="'+art+'" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover" onerror="this.style.display=\'none\'">' : '<div class="tg-art-ph" id="'+artId+'">&#127897;</div>') + '</div>'
-      + '<div class="tg-card-body"><div class="tg-card-name">'+s.name+'</div><div class="tg-card-artist">'+s.artist+'</div>'
-      + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
+      + '<div class="tg-art-wrap">'
+      + (art ? '<img class="tg-art" src="'+art+'" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover" onerror="this.parentNode.innerHTML=\'<div class=tg-art-ph>&#127897;</div>\'">'
+             : '<div class="tg-art-ph">&#127897;</div>')
+      + '</div>'
+      + '<div class="tg-card-body"><div class="tg-card-name">'+s.name+'</div>'
+      + '<div class="tg-card-artist">'+s.artist+'</div>'
+      + _biasMini(s.bias)
+      + '</div></div>';
   }).join('');
-  // Load missing artwork via iTunes
-  shows.slice(0, 6).forEach(function(s, i) {
+  // Load missing artwork via iTunes and inject live
+  shows.slice(0, 6).forEach(function(s) {
     if (artworkMap[s.name]) return;
-    var artEl = document.getElementById('tg-art-cat-' + i);
-    if (!artEl) return;
     _itunesArtwork(s.name).then(function(url){
-        if (!url || !artEl.parentNode) return;
-        var img = document.createElement('img');
-        img.style.cssText = 'width:64px;height:64px;border-radius:6px;object-fit:cover';
-        img.src = url; img.alt = s.name;
-        img.onerror = function(){ this.style.display='none'; };
-        artEl.parentNode.replaceChild(img, artEl);
-      }).catch(function(){});
+      if (!url) return;
+      el.querySelectorAll('.tg-card').forEach(function(card) {
+        var nameEl = card.querySelector('.tg-card-name');
+        if (!nameEl || nameEl.textContent !== s.name) return;
+        var wrap = card.querySelector('.tg-art-wrap');
+        if (wrap && wrap.querySelector('.tg-art-ph')) {
+          wrap.innerHTML = '<img class="tg-art" src="'+url+'" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover" onerror="this.parentNode.innerHTML=\'<div class=tg-art-ph>&#127897;</div>\'">';
+        }
+      });
+    }).catch(function(){});
   });
 }
 
