@@ -4810,7 +4810,7 @@ function discRenderEpisodes() {
     var artHtml = artMap[s.name]
       ? '<img src="'+artMap[s.name]+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\'">'
       : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+s.name.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
-    return '<div class="disc-ep-card" onclick="analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">'      +'<div class="disc-ep-art" style="background:'+bgs[i]+'">'+artHtml+'</div>'      +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'      +'<div class="disc-ep-title">'+s.name+'</div>'      +'<div class="disc-ep-dur">Latest episode</div></div>'      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button></div>';
+    return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'      +'<div class="disc-ep-art" style="background:'+bgs[i]+'">'+artHtml+'</div>'      +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'      +'<div class="disc-ep-title">'+s.name+'</div>'      +'<div class="disc-ep-dur">Latest episode</div></div>'      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button></div>';
   }).join('');
 }
 
@@ -4863,7 +4863,7 @@ async function loadHomeTrending() {
       var safeUrl = analyzeUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
       var safeName = (ep.showName||'').replace(/"/g,'').replace(/'/g,'');
       var safeEp = (ep.epTitle||'').replace(/"/g,'').replace(/'/g,'');
-      return '<div class="tg-card" onclick="analyzeEp(null,&quot;'+safeUrl+'&quot;,&quot;'+safeEp+'&quot;,&quot;'+safeName+'&quot;)">'        + '<div class="tg-art-wrap">' + (ep.artwork ? '<img class="tg-art" src="'+ep.artwork+'" alt="" loading="lazy" style="width:64px;height:64px;border-radius:6px;object-fit:cover">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'        + '<div class="tg-card-body"><div class="tg-card-name">'+(ep.epTitle||ep.showName||'')+'</div>'        + '<div class="tg-card-artist">'+(ep.showName||'')+'</div>'        + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
+      var tSlug=(ep.showName||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+tSlug+'\',\''+safeUrl+'\')">'        + '<div class="tg-art-wrap">' + (ep.artwork ? '<img class="tg-art" src="'+ep.artwork+'" alt="" loading="lazy" style="width:64px;height:64px;border-radius:6px;object-fit:cover">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'        + '<div class="tg-card-body"><div class="tg-card-name">'+(ep.epTitle||ep.showName||'')+'</div>'        + '<div class="tg-card-artist">'+(ep.showName||'')+'</div>'        + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
     }).join('');
   } catch(e) { /* keep curated fallback */ }
 }
@@ -8954,12 +8954,14 @@ async function renderKoreanShows() {
 function _renderKoreanFallback(grid) {
   grid.innerHTML = KR_SHOWS.slice(0, 6).map(function(show) {
     var initial = show.name.charAt(0);
-    return '<div class="tg-card" onclick="document.getElementById(\'url-input\').value=' + JSON.stringify(show.name) + ';showView(\'analyze\')">'
-      + '<div class="tg-art-wrap"><div class="tg-art-ph">' + initial + '</div></div>'
-      + '<div class="tg-card-body">'
-      + '<div class="tg-card-name">' + show.name + '</div>'
-      + '<div class="tg-card-artist">' + show.category + '</div>'
-      + '<button class="tg-analyze-btn">\ubd84\uc11d\ud558\uae30 &rarr;</button>'
+    var krSlug = show.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var krUrl = (show.feedUrl||'').replace(/'/g,"\\'");
+    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+krSlug+'\',\''+krUrl+'\')">'\
+      + '<div class="tg-art-wrap"><div class="tg-art-ph">' + initial + '</div></div>'\
+      + '<div class="tg-card-body">'\
+      + '<div class="tg-card-name">' + show.name + '</div>'\
+      + '<div class="tg-card-artist">' + show.category + '</div>'\
+      + '<button class="tg-analyze-btn">\ubd84\uc11d\ud558\uae30 &rarr;</button>'\
       + '</div></div>';
   }).join('');
 }
