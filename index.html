@@ -2563,9 +2563,6 @@ body.light-mode,[data-theme="light"]{
   else{document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}
 })()</script>
 <script>(function(){try{var u=JSON.parse(localStorage.getItem("pl-user")||"null");if(u&&u.id)document.body.classList.add("authenticated");}catch(e){}})()</script>
-
-
-<script>(function(){var u=null;try{u=JSON.parse(localStorage.getItem('pl-user')||'null');}catch(e){}if(u&&u.id){document.body.classList.add('authenticated');}})();</script>
 <!-- BRANDED SPLASH SCREEN -->
 <div class="pl-splash" id="pl-splash">
   <div style="display:inline-flex;align-items:center;gap:16px">
@@ -4124,15 +4121,23 @@ function doLogin() {
   try {
     var acc = JSON.parse(stored);
     if (acc.password !== pass) { errEl.textContent = 'Incorrect password.'; errEl.classList.add('on'); return; }
-    var loginUser = { id: acc.id || ('u-'+Date.now()), name: acc.name, email: acc.email,
-      plan: acc.plan || 'listener', joinedAt: acc.joinedAt,
+    // Normalise plan — 'listener' is the old name for 'free'
+    var plan = acc.plan || 'free';
+    if (plan === 'listener') plan = 'free';
+    var loginUser = {
+      id: acc.id || ('u-'+Date.now()), name: acc.name, email: acc.email,
+      plan: plan, joinedAt: acc.joinedAt,
       signupDate: acc.signupDate, trialEndsAt: acc.trialEndsAt,
-      analysesThisWeek: acc.analysesThisWeek || 0, weekResetDate: acc.weekResetDate };
-    setPlUser(loginUser);
+      analysesThisWeek: acc.analysesThisWeek || 0,
+      analysesThisMonth: acc.analysesThisMonth || 0,
+      weekResetDate: acc.weekResetDate,
+      monthResetDate: acc.monthResetDate,
+    };
+    setPlUser(loginUser);  // sets body.authenticated synchronously
     closeModal('login');
     errEl.classList.remove('on');
     renderNavAuth();
-    renderHomeState();
+    showHome();            // navigates to home view AND calls renderHomeState()
     syncPlanFromStripe(loginUser);
   } catch(e) { errEl.textContent = 'Login failed. Try again.'; errEl.classList.add('on'); }
 }
@@ -4194,45 +4199,43 @@ function doSignup() {
       else { startAnalysis(pa.url, pa.epTitle || '', pa.showName || ''); }
     }, 400);
   } else {
-    openModal('onboarding');
-    showOnbStep(1);
+    showHome(); // Navigate to dashboard first, then show onboarding
+    setTimeout(function() { openModal('onboarding'); showOnbStep(1); }, 200);
   }
 }
 
 function doLogout() {
   setPlUser(null);
   renderNavAuth();
-  renderHomeState();
+  showHome(); // showHome handles both logged-in and logged-out state correctly
 }
 
-// ── ONBOARDING ──
+function finishOnboarding() {
+  closeModal('onboarding');
+  showHome();
+}
+
+// ── ONBOARDING HELPERS ──
 var _onbCats = [];
 function toggleOnbCat(el) {
   var cat = el.dataset.cat;
   var idx = _onbCats.indexOf(cat);
-  if (idx !== -1) { _onbCats.splice(idx,1); el.classList.remove('on'); }
+  if (idx !== -1) { _onbCats.splice(idx, 1); el.classList.remove('on'); }
   else { _onbCats.push(cat); el.classList.add('on'); }
 }
 function showOnbStep(n) {
-  document.querySelectorAll('.onb-step').forEach(function(s,i){ s.classList.toggle('on', i+1 === n); });
-  var dots = document.querySelectorAll('.onb-dot');
-  dots.forEach(function(d,i){ d.classList.toggle('on', i < n); });
+  document.querySelectorAll('.onb-step').forEach(function(s, i) { s.classList.toggle('on', i + 1 === n); });
+  document.querySelectorAll('.onb-dot').forEach(function(d, i) { d.classList.toggle('on', i < n); });
 }
 function onbNext(step) {
   if (step === 1) {
-    var u = plUser();
-    if (u) { u.categories = _onbCats; setPlUser(u); }
+    var u = plUser(); if (u) { u.categories = _onbCats; setPlUser(u); }
     showOnbStep(2);
   } else if (step === 2) {
     var podUrl = (document.getElementById('onb-podcast-url').value || '').trim();
-    var u = plUser();
-    if (u && podUrl) { u.podcastUrl = podUrl; setPlUser(u); }
+    var u = plUser(); if (u && podUrl) { u.podcastUrl = podUrl; setPlUser(u); }
     showOnbStep(3);
   }
-}
-function finishOnboarding() {
-  closeModal('onboarding');
-  renderHomeState();
 }
 
 // ── SIGNUP GATE ──
@@ -9618,7 +9621,7 @@ function handleSocialLogin(userData) {
   var cleanUrl = window.location.pathname;
   history.replaceState({}, '', cleanUrl);
   renderNavAuth();
-  renderHomeState();
+  showHome();  // navigates to home view AND populates dashboard — was renderHomeState() which didn't switch view
   _maybeShowVerifyBanner();
   // Always hide founding banner for logged-in users
   if (plUser()) { var _fb = document.getElementById('founding-banner'); if (_fb) _fb.style.display = 'none'; }
