@@ -199,16 +199,9 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 
 /* ── VIEWS ── */
 .view{display:none}.view.on{display:block}
-/* ── AUTH-STATE CSS — single source of truth, no JS timing dependency ── */
-/* Both hidden by default */
+/* ── AUTH-STATE — JS controls this, CSS just sets defaults ── */
 #home-loggedout { display: none; }
 #home-loggedin  { display: none; }
-/* Logged OUT on home view: show marketing page */
-body:not(.authenticated) #view-home.on #home-loggedout { display: block !important; }
-body:not(.authenticated) #view-home.on #home-loggedin  { display: none  !important; }
-/* Logged IN on home view: show dashboard */
-body.authenticated #view-home.on #home-loggedout { display: none  !important; }
-body.authenticated #view-home.on #home-loggedin  { display: block !important; }
 /* Utility classes */
 body.authenticated .show-logged-out { display: none !important; }
 body:not(.authenticated) .show-logged-in { display: none !important; }
@@ -2567,7 +2560,24 @@ body.light-mode,[data-theme="light"]{
   if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}
   else{document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}
 })()</script>
-<script>(function(){try{var u=JSON.parse(localStorage.getItem("pl-user")||"null");if(u&&u.id)document.body.classList.add("authenticated");}catch(e){}})()</script>
+<script>(function(){
+  try {
+    var u = JSON.parse(localStorage.getItem("pl-user")||"null");
+    var isAuth = !!(u && u.id);
+    if (isAuth) document.body.classList.add("authenticated");
+    // Immediately enforce visibility before any HTML renders
+    // Uses cssText with !important so nothing can override it
+    document.addEventListener('DOMContentLoaded', function() {
+      var elOut = document.getElementById('home-loggedout');
+      var elIn  = document.getElementById('home-loggedin');
+      if (!elOut || !elIn) return;
+      var fresh = JSON.parse(localStorage.getItem("pl-user")||"null");
+      var auth = !!(fresh && fresh.id);
+      elOut.style.cssText = auth ? 'display:none!important' : 'display:block';
+      elIn.style.cssText  = auth ? 'display:block'          : 'display:none!important';
+    });
+  } catch(e) {}
+})()</script>
 <!-- BRANDED SPLASH SCREEN -->
 <div class="pl-splash" id="pl-splash">
   <div style="display:inline-flex;align-items:center;gap:16px">
@@ -4446,20 +4456,27 @@ function _maybeShowVerifyBanner() {
   }
 }
 
+// ── HOME VISIBILITY — single function, called everywhere ─────────────────────
+// This is the ONLY place that sets display on home-loggedout / home-loggedin.
+// Never set these inline anywhere else.
+function _syncHomeVisibility() {
+  var u = plUser();
+  var isAuth = !!(u && u.id);
+  document.body.classList.toggle('authenticated', isAuth);
+  var elOut = document.getElementById('home-loggedout');
+  var elIn  = document.getElementById('home-loggedin');
+  if (!elOut || !elIn) return;
+  elOut.style.cssText = isAuth ? 'display:none!important' : 'display:block';
+  elIn.style.cssText  = isAuth ? 'display:block'          : 'display:none!important';
+}
+
 function renderHomeState() {
   var u = plUser();
   if (u) u = enforcePlanRules() || u;
 
-  // Set auth class — CSS uses this to show/hide home states
-  document.body.classList.toggle('authenticated', !!(u && u.id));
+  _syncHomeVisibility(); // single source of truth for show/hide
 
-  // Belt-and-suspenders: also set display explicitly so CSS timing never matters
-  var elOut = document.getElementById('home-loggedout');
-  var elIn  = document.getElementById('home-loggedin');
-
-  if (u) {
-    if (elOut) elOut.style.display = 'none';
-    if (elIn)  elIn.style.display  = 'block';
+  if (u && u.id) {
     var hr = new Date().getHours();
     var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
     var first = (u.name || '').split(' ')[0];
@@ -4499,9 +4516,7 @@ function renderHomeState() {
     return;
   }
 
-  // Logged-out: show marketing homepage (CSS also handles this, but be explicit)
-  if (elOut) elOut.style.display = 'block';
-  if (elIn)  elIn.style.display  = 'none';
+  // Logged-out: _syncHomeVisibility already showed home-loggedout above
   loadHeroStats();
   loadTrendingGrid('all');
   loadHomeTrending();
@@ -5172,25 +5187,20 @@ function handleDiscCompare() {
 }
 
 function showHome() {
-  // Always sync auth state before touching visibility
   var u = plUser();
-  document.body.classList.toggle('authenticated', !!(u && u.id));
 
   // Show the home view
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
   document.getElementById('view-home').classList.add('on');
-  // Clear all nav active states — logo is the home button, no nav link should be active on home
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
   document.querySelectorAll('.nav-link').forEach(function(b){ b.classList.remove('active'); });
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
   var mb = document.getElementById('mob-home'); if (mb) mb.classList.add('on');
 
-  if (u) {
-    // Logged-in: show dashboard explicitly — belt-and-suspenders with CSS
-    var _elOut = document.getElementById('home-loggedout');
-    var _elIn  = document.getElementById('home-loggedin');
-    if (_elOut) _elOut.style.display = 'none';
-    if (_elIn)  _elIn.style.display  = 'block';
+  // Single call controls all visibility
+  _syncHomeVisibility();
+
+  if (u && u.id) {
     var footer = document.getElementById('site-footer');
     if (footer) footer.style.display = 'none';
     if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
@@ -5200,13 +5210,9 @@ function showHome() {
     return;
   }
 
-  // Logged-out: show marketing homepage
-  var elOut2 = document.getElementById('home-loggedout');
-  var elIn2  = document.getElementById('home-loggedin');
-  if (elOut2) elOut2.style.display = 'block';
-  if (elIn2)  elIn2.style.display  = 'none';
-  var footer = document.getElementById('site-footer');
-  if (footer) footer.style.display = '';
+  // Logged-out
+  var footer2 = document.getElementById('site-footer');
+  if (footer2) footer2.style.display = '';
   if (!_homeTrendingLoaded) { loadHomeTrending(); }
   if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
   document.title = 'Podlens — Know what you\'re actually listening to';
