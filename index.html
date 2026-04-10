@@ -5026,7 +5026,7 @@ function discRenderEpisodes() {
       +'<div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
       +'<div style="display:flex;gap:6px">'
       +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button>'
-      +'<button onclick="event.stopPropagation();toggleLike({title:\''+safeName+'\',showName:\''+s.artist.replace(/\'/g,\'\\\\\'\')+'\'\',artwork:\''+s.artwork+'\',url:\''+safeUrl+'\'\'},this)" style="padding:6px 10px;background:none;border:1px solid var(--border2);border-radius:6px;cursor:pointer;font-size:14px;color:'+(isLiked({url:s.feedUrl})?'#e24b4a':'var(--text3)')+'">'+( isLiked({url:s.feedUrl}) ? '♥' : '♡' )+'</button>'
+      +'<button class="ep-like-btn" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 10px;background:none;border:1px solid var(--border2);border-radius:6px;cursor:pointer;font-size:14px;color:'+(isLiked({url:s.feedUrl})?'#e24b4a':'var(--text3)')+'">'+(isLiked({url:s.feedUrl})?'♥':'♡')+'</button>'
       +'</div></div>';
   }).join('');
 }
@@ -10214,6 +10214,11 @@ function _getPlaylists() { try { return JSON.parse(localStorage.getItem(PL_PLAYL
 function _setPlaylists(arr) { localStorage.setItem(PL_PLAYLISTS_KEY, JSON.stringify(arr)); }
 
 function _epId(ep) { return (ep.jobId||ep.url||ep.feedUrl||ep.title||'').replace(/[^a-z0-9]/gi,'').slice(0,40); }
+
+function _likeFromBtn(btn) {
+  var ep = { url: btn.dataset.url, title: btn.dataset.title, showName: btn.dataset.artist, artwork: btn.dataset.art };
+  toggleLike(ep, btn);
+}
 
 function isLiked(ep) {
   var id = _epId(ep);
