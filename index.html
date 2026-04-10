@@ -4221,8 +4221,9 @@ function doSignup() {
 
 function doLogout() {
   setPlUser(null);
-  renderNavAuth();
-  showHome(); // showHome handles both logged-in and logged-out state correctly
+  // Reload the page — home-loggedout was removed from DOM on login,
+  // a fresh load is the cleanest way to restore the marketing homepage
+  window.location.href = '/';
 }
 
 function finishOnboarding() {
@@ -4474,7 +4475,7 @@ function renderHomeState() {
   var u = plUser();
   if (u) u = enforcePlanRules() || u;
 
-  _syncHomeVisibility(); // single source of truth for show/hide
+  document.body.classList.toggle('authenticated', !!(u && u.id));
 
   if (u && u.id) {
     var hr = new Date().getHours();
@@ -5197,8 +5198,8 @@ function showHome() {
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
   var mb = document.getElementById('mob-home'); if (mb) mb.classList.add('on');
 
-  // Single call controls all visibility
-  _syncHomeVisibility();
+  // Single source: home-loggedout was removed from DOM on init if user is signed in
+  document.body.classList.toggle('authenticated', !!(u && u.id));
 
   if (u && u.id) {
     var footer = document.getElementById('site-footer');
@@ -10162,6 +10163,17 @@ function renderProfileEmptyState(el) {
 }
 
 // ── AUTO INIT ──
+// If user is signed in, delete the marketing page from the DOM immediately.
+// You cannot show something that doesn't exist.
+(function() {
+  var _u = null;
+  try { _u = JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) {}
+  if (_u && _u.id) {
+    var _elOut = document.getElementById('home-loggedout');
+    if (_elOut) _elOut.parentNode.removeChild(_elOut);
+  }
+})();
+
 // Set auth state FIRST before anything else runs
 if (plUser()) { document.body.classList.add('authenticated'); } else { document.body.classList.remove('authenticated'); }
 enforcePlanRules();
