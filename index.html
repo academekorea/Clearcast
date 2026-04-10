@@ -200,15 +200,15 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 /* ── VIEWS ── */
 .view{display:none}.view.on{display:block}
 /* ── AUTH-STATE CSS — single source of truth, no JS timing dependency ── */
-/* Both hidden by default — CSS controls based on body.authenticated class   */
+/* Both hidden by default */
 #home-loggedout { display: none; }
 #home-loggedin  { display: none; }
-/* Logged OUT: show marketing, hide dashboard */
-body:not(.authenticated) #home-loggedout { display: block !important; }
-body:not(.authenticated) #home-loggedin  { display: none  !important; }
-/* Logged IN: hide marketing, show dashboard */
-body.authenticated #home-loggedout { display: none  !important; }
-body.authenticated #home-loggedin  { display: block !important; }
+/* Logged OUT on home view: show marketing page */
+body:not(.authenticated) #view-home.on #home-loggedout { display: block !important; }
+body:not(.authenticated) #view-home.on #home-loggedin  { display: none  !important; }
+/* Logged IN on home view: show dashboard */
+body.authenticated #view-home.on #home-loggedout { display: none  !important; }
+body.authenticated #view-home.on #home-loggedin  { display: block !important; }
 /* Utility classes */
 body.authenticated .show-logged-out { display: none !important; }
 body:not(.authenticated) .show-logged-in { display: none !important; }
