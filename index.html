@@ -4295,7 +4295,7 @@ async function loadDashTrending() {
   }).join('');
   // Load artwork from iTunes (same cache as homepage)
   var cached = null;
-  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v2') || 'null'); } catch(e) {}
+  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v3') || 'null'); } catch(e) {}
   if (cached && cached.urls && (Date.now() - cached.ts) < 48*60*60*1000) {
     cached.urls.forEach(function(url, i) {
       if (!url) return;
@@ -4490,6 +4490,26 @@ var _submittedFeedUrl = null; // original URL submitted by user — used for dis
 
 var TOPICS = ['Israel-Gaza','Iran war','Fed rates','AI regulation','Trump tariffs','Ukraine','Climate','Supreme Court','Immigration','Economy'];
 
+
+// ── ITUNES ARTWORK HELPER — picks best match, not just first result ──────────
+function _itunesArtwork(showName) {
+  return fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(showName) + '&media=podcast&entity=podcast&limit=5')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var results = d.results || [];
+      if (!results.length) return null;
+      var nameLower = showName.toLowerCase();
+      // Prefer exact or close match
+      var best = results.find(function(r) {
+        return r.collectionName && r.collectionName.toLowerCase() === nameLower;
+      }) || results.find(function(r) {
+        return r.collectionName && r.collectionName.toLowerCase().includes(nameLower);
+      }) || results[0];
+      return (best && (best.artworkUrl600 || best.artworkUrl100)) || null;
+    })
+    .catch(function() { return null; });
+}
+
 var CURATED_SHOWS = [
   {name:'The Daily',artist:'The New York Times',feedUrl:'https://feeds.simplecast.com/54nAGcIl',cat:'news'},
   {name:'Pod Save America',artist:'Crooked Media',feedUrl:'https://feeds.megaphone.fm/pod-save-america',cat:'news'},
@@ -4521,7 +4541,7 @@ var CURATED_SHOWS = [
 // Checks artwork URLs on page load; refreshes stale ones from iTunes.
 // Results cached in localStorage for 24 hours to avoid hammering the API.
 (function refreshCuratedArtwork() {
-  var CACHE_KEY = 'pl_curated_artwork_v1';
+  var CACHE_KEY = 'pl_curated_artwork_v2';
   var TTL = 24 * 60 * 60 * 1000;
   try {
     var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
@@ -4532,13 +4552,7 @@ var CURATED_SHOWS = [
   } catch(e) {}
   // Asynchronously fetch fresh artwork from iTunes for each show
   var promises = CURATED_SHOWS.map(function(s) {
-    return fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(s.name) + '&media=podcast&limit=1')
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        var r = d.results && d.results[0];
-        return (r && (r.artworkUrl600 || r.artworkUrl100)) || s.artwork;
-      })
-      .catch(function() { return s.artwork; });
+    return _itunesArtwork(s.name).then(function(u){ return u || s.artwork; });
   });
   Promise.all(promises).then(function(urls) {
     urls.forEach(function(url, i) { if (url) CURATED_SHOWS[i].artwork = url; });
@@ -4727,7 +4741,7 @@ function discRenderFeed() {
   var shows = _discCat === 'all' ? CURATED_SHOWS : CURATED_SHOWS.filter(function(s){ return s.cat === _discCat; });
   if (!shows.length) shows = CURATED_SHOWS;
   var cached = null;
-  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v2') || 'null'); } catch(e) {}
+  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v3') || 'null'); } catch(e) {}
   var artMap = {};
   if (cached && cached.urls) CURATED_SHOWS.forEach(function(s,i){ if(cached.urls[i]) artMap[s.name]=cached.urls[i]; });
 
@@ -4749,10 +4763,7 @@ function discRenderFeed() {
   // Load missing artwork
   shows.slice(0,8).forEach(function(s) {
     if (artMap[s.name]) return;
-    fetch('https://itunes.apple.com/search?term='+encodeURIComponent(s.name)+'&media=podcast&limit=1')
-      .then(function(r){return r.json();})
-      .then(function(d){
-        var url = d.results&&d.results[0]&&(d.results[0].artworkUrl600||d.results[0].artworkUrl100);
+    _itunesArtwork(s.name).then(function(url){
         if (!url) return;
         el.querySelectorAll('.disc-ep').forEach(function(row){
           var titleEl = row.querySelector('.disc-ep-title');
@@ -4791,7 +4802,7 @@ function discRenderShows() {
   var shows = _discCat === 'all' ? CURATED_SHOWS.slice(0,4) : CURATED_SHOWS.filter(function(s){return s.cat===_discCat;}).slice(0,4);
   if (!shows.length) shows = CURATED_SHOWS.slice(0,4);
   var cached = null;
-  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v2') || 'null'); } catch(e) {}
+  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v3') || 'null'); } catch(e) {}
   var artMap = {};
   if (cached && cached.urls) CURATED_SHOWS.forEach(function(s,i){ if(cached.urls[i]) artMap[s.name]=cached.urls[i]; });
   el.innerHTML = shows.map(function(s) {
@@ -9234,7 +9245,7 @@ function filterTrendingGrid(category, btn) {
     : CURATED_SHOWS.filter(function(s){ return s.cat === category; });
   if (!shows.length) shows = CURATED_SHOWS;
   var cached = null;
-  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v2') || 'null'); } catch(e) {}
+  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v3') || 'null'); } catch(e) {}
   var artworkMap = {};
   if (cached && cached.urls && (Date.now() - cached.ts) < 48*60*60*1000) {
     CURATED_SHOWS.forEach(function(s, i){ if (cached.urls[i]) artworkMap[s.name] = cached.urls[i]; });
@@ -9254,10 +9265,7 @@ function filterTrendingGrid(category, btn) {
     if (artworkMap[s.name]) return;
     var artEl = document.getElementById('tg-art-cat-' + i);
     if (!artEl) return;
-    fetch('https://itunes.apple.com/search?term='+encodeURIComponent(s.name)+'&media=podcast&limit=1')
-      .then(function(r){return r.json();})
-      .then(function(d){
-        var url = d.results && d.results[0] && (d.results[0].artworkUrl600 || d.results[0].artworkUrl100);
+    _itunesArtwork(s.name).then(function(url){
         if (!url || !artEl.parentNode) return;
         var img = document.createElement('img');
         img.style.cssText = 'width:64px;height:64px;border-radius:6px;object-fit:cover';
