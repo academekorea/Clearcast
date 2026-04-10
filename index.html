@@ -4723,7 +4723,7 @@ function discRenderRightCol(isLoggedIn, user) {
     if (midEl) {
       midEl.innerHTML = '<div class="disc-rc-title">Recently analyzed</div>'
         + (history.length ? history.slice(0,4).map(function(h){
-            return '<div class="disc-rc-row" onclick="viewAnalysis('"+h.jobId+"')">'
+            return '<div class="disc-rc-row" style="cursor:pointer" onclick="showView(\'analyze\');if(h.jobId)viewAnalysis(h.jobId)">'
               + '<div class="disc-rc-art"></div>'
               + '<div style="min-width:0"><div class="disc-rc-name">'+(h.title||h.episodeTitle||'Episode')+'</div>'
               + '<div class="disc-rc-sub">'+(h.showName||'')+'</div></div></div>';
