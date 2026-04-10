@@ -5475,48 +5475,32 @@ function discLiveSearch(q) {
   }).join('');
 }
 
-async function loadDiscTrendingNews() {
+function loadDiscTrendingNews() {
   var el = document.getElementById('disc-trending-news');
   if (!el) return;
 
-  // Curated trending topics — always show these instantly, no API dependency
   var topics = [
     'Artificial Intelligence', 'Trump Administration', 'Federal Reserve',
-    'Gaza & Ceasefire', 'Climate Policy', 'Big Tech Regulation',
+    'Gaza Ceasefire', 'Climate Policy', 'Big Tech Regulation',
     'Immigration', 'World Cup 2026', 'Healthcare Costs', 'Elon Musk',
     'Ukraine War', 'Stock Market', 'Supreme Court', 'Social Media',
-    'Nuclear Energy'
+    'Nuclear Energy', 'Cryptocurrency', 'China Trade War', 'NATO',
   ];
 
-  // Try to supplement with live topics from stories API
-  try {
-    var data = await fetch('/api/stories?q=trending&limit=12', { signal: AbortSignal.timeout(4000) }).then(function(r){ return r.json(); });
-    var items = (data.results || data.stories || []).slice(0,12);
-    if (items.length >= 3) {
-      var liveTopics = items.map(function(item) {
-        return item.topic || item.title || item.headline || '';
-      }).filter(Boolean);
-      // Merge live topics at front, keep curated as fallback
-      topics = liveTopics.concat(topics.filter(function(t){
-        return !liveTopics.some(function(l){ return l.toLowerCase().includes(t.toLowerCase().slice(0,8)); });
-      })).slice(0,16);
-    }
-  } catch(e) {}
-
-  el.innerHTML = '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3)">'
+  el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3);padding:6px 0">'
     + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
     + '</div>'
     + topics.map(function(topic) {
-      var searchTerm = encodeURIComponent(topic);
-      return '<button onclick="discSearch(\''+topic+'\''+')" '
-        + 'style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:6px 12px;'
-        + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
-        + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
-        + 'white-space:nowrap;transition:background .12s,border-color .12s">'
-        + topic
-        + '<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">+</span>'
-        + '</button>';
-    }).join('');
+        var safe = topic.replace(/'/g, "\'");
+        return '<button onclick="discSearch(\''+safe+'\')" '
+          + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
+          + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
+          + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
+          + 'white-space:nowrap">'
+          + topic
+          + ' <span style="color:var(--text3);font-size:11px">+</span>'
+          + '</button>';
+      }).join('');
 }
 
 
@@ -10439,6 +10423,7 @@ if (!handleUrlRouting()) {
   showHome(); // showHome now calls renderHomeState internally — covers both logged-in and logged-out
 }
 initFreeAccessPanel();
+loadDiscTrendingNews(); // pre-render pills so they're ready when discover opens
 // Pass store to startAnalysis for regional iTunes
 var _origStartAnalysis = startAnalysis;
 // Patch handleAnalyze to include store in body (TASK 6)
