@@ -164,7 +164,6 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
 
   return empty;
 }
-}
 
 // ── YOUTUBE CAPTIONS — TIMEDTEXT (no auth) ───────────────────────────────────
 async function fetchYouTubeCaptionsNoAuth(videoId: string): Promise<string | null> {

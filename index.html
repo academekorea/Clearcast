@@ -872,6 +872,8 @@ body.player-on .lap{bottom:72px}
 
 /* ── ANALYZE VIEW ── */
 .analyze-wrap{max-width:900px;margin:0 auto;padding:32px 32px}
+.analyze-nav-hidden .analyze-wrap{max-width:100%;padding:0}
+.analyze-nav-hidden .analyze-2col-nav{display:none!important}
 .analyze-url-row{display:flex;gap:8px;margin-bottom:16px}
 .url-input{flex:1;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);font-size:14px;color:var(--text);font-family:var(--ff);outline:none;transition:border-color .15s}
 .url-input:focus{border-color:var(--text)}
@@ -3267,9 +3269,9 @@ body.light-mode,[data-theme="light"]{
 
 <!-- ANALYZE VIEW -->
 <div class="view" id="view-analyze">
-  <div style="display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px);align-items:start">
+  <div class="analyze-2col-grid" style="display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px);align-items:start">
     <!-- Left nav - same as dashboard -->
-    <div style="background:#0a1a20;display:flex;flex-direction:column;min-height:calc(100vh - 60px);position:sticky;top:60px">
+    <div class="analyze-2col-nav" style="background:#0a1a20;display:flex;flex-direction:column;min-height:calc(100vh - 60px);position:sticky;top:60px">
       <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;padding:16px 20px 8px;color:#fff">Menu</div>
       <button onclick="showHome()" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
       <button onclick="showView(\'discover\')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
@@ -4325,6 +4327,16 @@ function checkAnalysisLimit() {
 function showAnalysisLimitBanner(u, monthLimit) {
   showView('analyze');
   document.getElementById('loading').classList.remove('on');
+  // Collapse left nav to give results full width
+  var _analyzeView = document.getElementById('view-analyze');
+  if (_analyzeView) {
+    var _aGrid = _analyzeView.querySelector('.analyze-2col-grid');
+    if (_aGrid) {
+      _aGrid.style.gridTemplateColumns = '0 1fr';
+      var _aNav = _analyzeView.querySelector('.analyze-2col-nav');
+      if (_aNav) _aNav.style.display = 'none';
+    }
+  }
   document.getElementById('atabs').classList.add('on');
   document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');});
   document.querySelectorAll('.atab')[0].classList.add('on');
@@ -5080,6 +5092,16 @@ function showView(name) {
     // Reset analyze page to hero state
     var _ah = document.getElementById('analyze-hero');
     if (_ah) _ah.style.display = '';
+    // Restore left nav when returning to input
+    (function() {
+      var _avR = document.getElementById('view-analyze');
+      if (_avR) {
+        var _gR = _avR.querySelector('.analyze-2col-grid');
+        if (_gR) { _gR.style.gridTemplateColumns = '220px 1fr'; }
+        var _nR = _avR.querySelector('.analyze-2col-nav');
+        if (_nR) { _nR.style.display = ''; }
+      }
+    })();
     var _atabs = document.getElementById('atabs');
     if (_atabs) _atabs.classList.remove('on');
     var _es = document.getElementById('empty-state');
@@ -6877,12 +6899,21 @@ function pollStatus(jobId, audioUrl) {
   var startTime = Date.now();
   var lafIdx = 0;
   var lastStatus = '';
+  var networkErrors = 0;
+  var MAX_POLL_MS = 12 * 60 * 1000; // 12-minute hard timeout
   if (_poll) clearInterval(_poll);
 
   // Kick off LAF step 0 immediately
   lafAddStep(0, false);
 
   _poll = setInterval(async function() {
+    // Hard timeout — job is stuck
+    if (Date.now() - startTime > MAX_POLL_MS) {
+      clearInterval(_poll);
+      showAnalyzeErr('Analysis timed out. This episode may be too long or the service is under load. Please try again.');
+      resetBtn();
+      return;
+    }
     try {
       var elapsed = Date.now() - startTime;
       var _statusPlan = String((plUser()||{}).plan||'free').toLowerCase();
@@ -6983,8 +7014,18 @@ function pollStatus(jobId, audioUrl) {
 
       _arUpdateProgress(pct);
     } catch(e) {
-      console.error('[pollStatus]', e && e.message);
+      networkErrors++;
+      console.error('[pollStatus] attempt', networkErrors, e && e.message);
+      // After 5 consecutive network errors, show error
+      if (networkErrors >= 5) {
+        clearInterval(_poll);
+        showAnalyzeErr('Lost connection to analysis service. Please check your connection and try again.');
+        resetBtn();
+      }
+      return;
     }
+    // Reset error counter on success
+    networkErrors = 0;
   }, 3000);
 }
 
