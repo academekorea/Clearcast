@@ -5384,6 +5384,11 @@ function showHome() {
   // Logged-out marketing page
   var footer2 = document.getElementById('site-footer');
   if (footer2) footer2.style.display = '';
+  // Show the marketing home — must call renderHomeState so home-loggedout becomes visible
+  var _elOut = document.getElementById('home-loggedout');
+  var _elIn  = document.getElementById('home-loggedin');
+  if (_elOut) _elOut.style.display = 'block';
+  if (_elIn)  _elIn.style.display  = 'none';
   if (!_homeTrendingLoaded) { loadHomeTrending(); }
   if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
   document.title = 'Podlens — Know what you\'re actually listening to';
