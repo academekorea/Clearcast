@@ -40,7 +40,7 @@ function detectUrlType(url: string): "youtube" | "spotify" | "apple" | "rss" | "
   if (/spotify\.com/.test(url)) return "spotify";
   if (/podcasts\.apple\.com/.test(url)) return "apple";
   if (/\.(mp3|m4a|ogg|wav|aac|opus)(\?|$)/i.test(url) || /podtrac|pdst\.fm|blubrry|audio/.test(url)) return "audio";
-  if (/\.(xml|rss)(\?|$)/i.test(url) || /feeds\.|\/feed|\/rss/.test(url)) return "rss";
+  if (/\.(xml|rss)(\?|$)/i.test(url) || /feeds\.|\/feed|\/rss|rss\.|podcast\.rss|\/podcast$|anchor\.fm.*\/rss|podbean\.com.*\/feed|buzzsprout\.com\/.*\/podcast|omnycontent\.com|art19\.com|simplecast\.com|megaphone\.fm|podtrac\.com\/pts\/redirect/.test(url)) return "rss";
   return "unknown";
 }
 
@@ -76,38 +76,94 @@ async function resolveApplePodcastsUrl(url: string): Promise<{ audioUrl: string 
 }
 
 // ── RSS FEED → AUDIO RESOLVER ─────────────────────────────────────────────────
+function extractAttr(tag: string, attr: string): string | null {
+  const re = new RegExp(`\\b${attr}\\s*=\\s*(?:"([^"]*?)"|'([^']*?)'|([^\\s>]+))`, "i");
+  const m = tag.match(re);
+  const val = m?.[1] ?? m?.[2] ?? m?.[3] ?? null;
+  return val ? val.replace(/&amp;/g, "&").replace(/<!\[CDATA\[(.+?)\]\]>/, "$1").trim() : null;
+}
+
+function extractText(block: string, tag: string): string {
+  const re = new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?([^<\\]]+?)(?:\\]\\]>)?<\/${tag}>`, "i");
+  const m = block.match(re);
+  return m?.[1]?.trim() || "";
+}
+
 async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: string | null; episodeTitle: string; showName: string }> {
   const empty = { audioUrl: null, episodeTitle: "", showName: "" };
-  try {
-    const res = await fetch(feedUrl, {
-      signal: AbortSignal.timeout(10000),
-      headers: { "User-Agent": "Podlens/1.0 (podcast analysis; +https://podlens.app)" },
-    });
-    if (!res.ok) return empty;
-    const xml = await res.text();
+  const userAgents = [
+    "Mozilla/5.0 (compatible; Podlens/1.0; +https://podlens.app)",
+    "Podlens/1.0 (podcast analysis bot)",
+    "iTunes/12.0",
+  ];
 
-    // Extract show name
-    const showName = xml.match(/<title>([^<]+)<\/title>/)?.[1]?.trim() || "";
+  let xml = "";
+  let currentUrl = feedUrl;
+  for (const ua of userAgents) {
+    try {
+      const res = await fetch(currentUrl, {
+        signal: AbortSignal.timeout(12000),
+        headers: { "User-Agent": ua, "Accept": "application/rss+xml, application/xml, text/xml, */*" },
+        redirect: "follow",
+      });
+      if (res.ok) { xml = await res.text(); break; }
+    } catch { continue; }
+  }
+  if (!xml) return empty;
 
-    // Find latest episode enclosure (audio URL)
-    const items = xml.split(/<item[\s>]/i);
-    for (let i = 1; i < Math.min(items.length, 5); i++) {
-      const item = items[i];
-      // Try <enclosure> tag first
-      const enclosure = item.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*(type=["']audio[^"']*["'])?/i);
-      if (enclosure?.[1]) {
-        const epTitle = item.match(/<title>([^<]+)<\/title>/)?.[1]?.trim() || "";
-        return { audioUrl: enclosure[1], episodeTitle: epTitle, showName };
-      }
-      // Try media:content
-      const media = item.match(/<media:content[^>]+url=["']([^"']+\.(?:mp3|m4a|ogg|wav))/i);
-      if (media?.[1]) {
-        const epTitle = item.match(/<title>([^<]+)<\/title>/)?.[1]?.trim() || "";
-        return { audioUrl: media[1], episodeTitle: epTitle, showName };
+  // Show name
+  const channelMatch = xml.match(/<channel[^>]*>([\s\S]*?)<\/channel>/i);
+  const channelXml = channelMatch?.[1] || xml;
+  const showName = extractText(channelXml.slice(0, 2000), "title") || extractText(xml.slice(0, 500), "title") || "";
+
+  function extractAudioFromBlock(block: string): { audioUrl: string | null; epTitle: string } {
+    const epTitle = extractText(block, "title");
+    // 1. <enclosure>
+    const encTags = block.match(/<enclosure[^>]+>/gi) || [];
+    for (const tag of encTags) {
+      const url = extractAttr(tag, "url");
+      if (url) return { audioUrl: url, epTitle };
+    }
+    // 2. <media:content>
+    const mediaTags = block.match(/<media:content[^>]+>/gi) || [];
+    for (const tag of mediaTags) {
+      const url = extractAttr(tag, "url");
+      const medium = extractAttr(tag, "medium");
+      const type = extractAttr(tag, "type");
+      if (url && (medium === "audio" || (type && /audio/i.test(type)) || /\.(mp3|m4a|ogg|wav|aac|opus)(\?|$)/i.test(url))) {
+        return { audioUrl: url, epTitle };
       }
     }
-    return { audioUrl: null, episodeTitle: "", showName };
-  } catch { return empty; }
+    // 3. Any bare audio URL in the block
+    const anyAudio = block.match(/https?:\/\/[^\s"'<>]+\.(?:mp3|m4a|ogg|wav|aac|opus)(?:\?[^\s"'<>]*)?/i);
+    if (anyAudio) return { audioUrl: anyAudio[0], epTitle };
+    // 4. Atom <link type="audio/...">
+    const linkTags = block.match(/<link[^>]+>/gi) || [];
+    for (const tag of linkTags) {
+      const type = extractAttr(tag, "type");
+      if (type && /audio/i.test(type)) {
+        const href = extractAttr(tag, "href");
+        if (href) return { audioUrl: href, epTitle };
+      }
+    }
+    return { audioUrl: null, epTitle };
+  }
+
+  // Split on RSS <item> or Atom <entry>
+  const rssItems = xml.split(/<item[\s>]/i);
+  const atomItems = xml.split(/<entry[\s>]/i);
+  const segments = rssItems.length >= atomItems.length ? rssItems : atomItems;
+  for (let i = 1; i < Math.min(segments.length, 8); i++) {
+    const { audioUrl, epTitle } = extractAudioFromBlock(segments[i]);
+    if (audioUrl) return { audioUrl, episodeTitle: epTitle, showName };
+  }
+
+  // Last resort: any audio URL in the whole feed
+  const fallback = xml.match(/https?:\/\/[^\s"'<>]+\.(?:mp3|m4a|ogg|wav|aac|opus)(?:\?[^\s"'<>]*)?/i);
+  if (fallback) return { audioUrl: fallback[0], episodeTitle: "", showName };
+
+  return empty;
+}
 }
 
 // ── YOUTUBE CAPTIONS — TIMEDTEXT (no auth) ───────────────────────────────────
