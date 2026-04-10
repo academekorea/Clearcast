@@ -4314,39 +4314,6 @@ function renderHomeState() {
   loadTrendingGrid('all');
   loadHomeTrending();
 }
-  var hr = new Date().getHours();
-  var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
-  var first = (u.name || '').split(' ')[0];
-  var greetText = greeting + (first ? ', <em>' + first + '</em>' : '') + '.';
-
-  var recent = getRecent();
-  var isNewUser = recent.length === 0;
-
-  var stateA = document.getElementById('dash-state-a');
-  var stateB = document.getElementById('dash-state-b');
-  if (stateA) stateA.style.display = isNewUser ? 'block' : 'none';
-  if (stateB) stateB.style.display = isNewUser ? 'none' : 'block';
-
-  if (isNewUser) {
-    var ga = document.getElementById('dash-greeting-a');
-    if (ga) ga.innerHTML = greetText;
-  } else {
-    var gb = document.getElementById('dash-greeting');
-    if (gb) gb.innerHTML = greetText;
-    renderDashRecent();
-    renderBiasFingerprint();
-    renderDashUnheardPreview(u);
-    renderDashFollowedShows(u);
-    loadDashTrending();
-    renderDashStats(u, recent);
-    loadSqWidget();
-  }
-  // Trial day-6 banner
-  if (u.plan === 'trial' && u.trialEndsAt) {
-    var remaining = new Date(u.trialEndsAt).getTime() - Date.now();
-    if (remaining > 0 && remaining <= 24*60*60*1000) showTrialDay6Banner(u);
-  }
-}
 
 function handleDashAnalyzeB() {
   var inp = document.getElementById('dash-url-input-b');
