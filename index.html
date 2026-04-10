@@ -5091,10 +5091,19 @@ function showDashSection(section) {
   });
   // Populate section content on demand
   var u = plUser();
-  if (section === 'analyzed') _renderDashAnalyzedSection();
-  if (section === 'following') _renderDashFollowingSection(u);
+  if (section === 'home') {
+    // Re-render home content so clicking Home always shows fresh data
+    renderDashRecent();
+    loadDashTrending();
+    renderDashStats(u, getRecent());
+    renderBiasFingerprint();
+    renderDashFollowedShows(u);
+    loadSqWidget();
+  }
+  if (section === 'analyzed')    _renderDashAnalyzedSection();
+  if (section === 'following')   _renderDashFollowingSection(u);
   if (section === 'fingerprint') _renderDashFingerprintSection();
-  if (section === 'queue') _renderDashQueueSection(u);
+  if (section === 'queue')       _renderDashQueueSection(u);
 }
 
 function _renderDashAnalyzedSection() {
