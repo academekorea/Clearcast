@@ -3148,7 +3148,7 @@ body.light-mode,[data-theme="light"]{
             <a href="/mission.html" style="font-size:12px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:7px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Our mission</a>
             <a href="/faq.html" style="font-size:12px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:7px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Help &amp; FAQ</a>
             <a href="mailto:hello@podlens.app" style="font-size:12px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:7px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact support</a>
-            <a href="/tos.html" style="font-size:12px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:7px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Terms of service</a>
+            <a href="/terms.html" style="font-size:12px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:7px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Terms of service</a>
             <a href="/privacy.html" style="font-size:12px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:7px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Privacy policy</a>
           </div>
         </div>
@@ -3534,7 +3534,7 @@ body.light-mode,[data-theme="light"]{
         <hr class="tcard-divider">
         <div class="tcard-feats">
           <div class="tf"><span class="tf-y">✓</span>Browse pre-analyzed episodes with bias bars</div>
-          <div class="tf"><span class="tf-y">✓</span>4 analyses per month</div>
+          <div class="tf"><span class="tf-y">✓</span>3 analyses per month</div>
           <div class="tf"><span class="tf-y">✓</span>Basic bias label &amp; lean bar</div>
           <div class="tf"><span class="tf-y">✓</span>Follow shows (read-only feed)</div>
           <div class="tf"><span class="tf-y">✓</span>Profile stays forever</div>
@@ -4248,9 +4248,9 @@ function checkAnalysisLimit() {
   // Admin always has unlimited access
   if (u.email === 'academekorea@gmail.com' || u.isSuperAdmin) return false;
   var plan = String(u.plan || '').toLowerCase();
-  // Free tier: 4/month, Starter Lens (creator): 25/month, Pro+/Operator+/Studio: unlimited
+  // Free tier: 3/month, Starter Lens (creator): 25/month, Pro+/Operator+/Studio: unlimited
   var monthLimit = 0;
-  if (plan === 'free') monthLimit = 4;
+  if (plan === 'free') monthLimit = 3;
   else if (plan === 'creator' || plan === 'starter') monthLimit = 25;
   else return false; // operator, studio, trial: unlimited
   // Reset monthly counter if needed
@@ -4342,7 +4342,7 @@ function showTrialExpiryRecap(u) {
     + (leanLabel ? '<div class="recap-stat"><span>Your listening leans</span><span class="recap-stat-val">' + leanLabel + '</span></div>' : '')
     + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:16px 0 8px">What stays free</div>'
     + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> Your profile, history &amp; bias fingerprint</div>'
-    + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> 4 analyses per month</div>'
+    + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> 3 analyses per month</div>'
     + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> Browse trending shows and episodes</div>'
     + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:16px 0 8px">What\'s now locked</div>'
     + '<div class="recap-change-row"><span class="recap-lose">\u2193</span> Unlimited analyses</div>'
@@ -5156,7 +5156,7 @@ function discRenderRightCol(isLoggedIn, user) {
     }
   } else {
     topEl.innerHTML = '<div class="disc-cta-box"><h4>A force of clarity in the age of noise</h4>'
-      + '<p>4 free analyses/month &mdash; no credit card needed.</p>'
+      + '<p>3 free analyses/month &mdash; no credit card needed.</p>'
       + '<button onclick="openModal(&quot;signup&quot;)">Start free &rarr;</button></div>';
   }
 }
@@ -6618,7 +6618,7 @@ function _showAnalysisAuthGate(url, epTitle, showName) {
     + '<div style="background:var(--bg3,#f5f5f3);border-radius:8px;padding:12px 16px;margin-bottom:20px;text-align:left">'
     + '<div style="font-size:12px;font-weight:600;color:var(--text2,#555);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Free account includes</div>'
     + '<div style="font-size:13px;color:var(--text,#1a1a1a);line-height:1.9">'
-    + '✓ &nbsp;4 analyses per month<br>'
+    + '✓ &nbsp;3 analyses per month<br>'
     + '✓ &nbsp;Full bias report &amp; key findings<br>'
     + '✓ &nbsp;Personal bias fingerprint<br>'
     + '✓ &nbsp;Follow shows &amp; get alerts'
