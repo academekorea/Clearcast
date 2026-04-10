@@ -6,17 +6,7 @@
 <title>Podlens — Know what you're actually listening to</title>
 <!-- AUTH STATE: runs before body renders — signed-in users never see marketing page -->
 <style>
-  /* Auth visibility — belt-and-suspenders, zero flash */
-  /* Pre-render (html.pl-signed-in set in <head> script before body paints) */
-  html.pl-signed-in    #home-loggedout { display:none  !important; visibility:hidden !important; }
-  html.pl-signed-in    #home-loggedin  { display:block !important; }
-  html:not(.pl-signed-in) #home-loggedin  { display:none  !important; }
-  html:not(.pl-signed-in) #home-loggedout { display:block !important; }
-  /* Post-JS (body.authenticated set by IIFE, overrides any inline styles) */
-  body.authenticated       #home-loggedout { display:none  !important; visibility:hidden !important; }
-  body.authenticated       #home-loggedin  { display:block !important; }
-  body:not(.authenticated) #home-loggedin  { display:none  !important; }
-  body:not(.authenticated) #home-loggedout { display:block !important; }
+  /* Auth visibility handled by HTML default style="display:none" + JS */
 </style>
 <script>(function(){try{var u=JSON.parse(localStorage.getItem('pl-user')||'null');if(u&&u.id){document.documentElement.classList.add('pl-signed-in');}}catch(e){}})()</script>
 <meta name="description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
@@ -214,9 +204,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 
 /* ── VIEWS ── */
 .view{display:none}.view.on{display:block}
-/* ── AUTH-STATE — JS controls this, CSS just sets defaults ── */
-#home-loggedout { display: none; }
-#home-loggedin  { display: none; }
+/* ── AUTH-STATE — controlled by HTML default style + JS only ── */
 /* Utility classes */
 body.authenticated .show-logged-out { display: none !important; }
 body:not(.authenticated) .show-logged-in { display: none !important; }
@@ -2643,7 +2631,7 @@ body.light-mode,[data-theme="light"]{
 <div class="view on" id="view-home">
 
   <!-- STATE A: Logged out -->
-  <div id="home-loggedout">
+  <div id="home-loggedout" style="display:none">
 
 
 
@@ -3052,7 +3040,7 @@ body.light-mode,[data-theme="light"]{
   </div><!-- /home-loggedout -->
 
   <!-- STATE B: Logged in -->
-  <div id="home-loggedin">
+  <div id="home-loggedin" style="display:none">
     <div id="trial-day6-banner" style="display:none"></div>
     <div class="dash-3col">
 
@@ -4534,7 +4522,11 @@ function renderHomeState() {
     return;
   }
 
-  // Logged-out: _syncHomeVisibility already showed home-loggedout above
+  // Logged-out: show marketing page
+  var _elOutGuest = document.getElementById('home-loggedout');
+  var _elInGuest  = document.getElementById('home-loggedin');
+  if (_elOutGuest) _elOutGuest.style.display = 'block';
+  if (_elInGuest)  _elInGuest.style.display  = 'none';
   loadHeroStats();
   loadTrendingGrid('all');
   loadHomeTrending();
