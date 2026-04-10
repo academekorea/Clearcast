@@ -5565,6 +5565,7 @@ function discRenderShows() {
   el.innerHTML = shows.map(function(s) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var safeName = s.name.replace(/"/g,"").replace(/'/g,"");
     // Use artwork directly from CURATED_SHOWS — no cache lookup needed
     var art = s.artwork
       ? '<img class="disc-show-art" src="'+s.artwork+'" alt="" onerror="this.parentElement.innerHTML=\'<div class=disc-show-art></div>\'">'
