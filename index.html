@@ -4450,11 +4450,16 @@ function renderHomeState() {
   var u = plUser();
   if (u) u = enforcePlanRules() || u;
 
-  // CSS controls home-loggedout / home-loggedin visibility via body.authenticated.
-  // We just make sure the class is set correctly, then populate content.
+  // Set auth class — CSS uses this to show/hide home states
   document.body.classList.toggle('authenticated', !!(u && u.id));
 
+  // Belt-and-suspenders: also set display explicitly so CSS timing never matters
+  var elOut = document.getElementById('home-loggedout');
+  var elIn  = document.getElementById('home-loggedin');
+
   if (u) {
+    if (elOut) elOut.style.display = 'none';
+    if (elIn)  elIn.style.display  = 'block';
     var hr = new Date().getHours();
     var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
     var first = (u.name || '').split(' ')[0];
@@ -4494,7 +4499,9 @@ function renderHomeState() {
     return;
   }
 
-  // Logged-out: CSS shows home-loggedout automatically via body:not(.authenticated)
+  // Logged-out: show marketing homepage (CSS also handles this, but be explicit)
+  if (elOut) elOut.style.display = 'block';
+  if (elIn)  elIn.style.display  = 'none';
   loadHeroStats();
   loadTrendingGrid('all');
   loadHomeTrending();
@@ -5170,7 +5177,11 @@ function showHome() {
   var mb = document.getElementById('mob-home'); if (mb) mb.classList.add('on');
 
   if (u) {
-    // Logged-in: dashboard
+    // Logged-in: show dashboard explicitly — belt-and-suspenders with CSS
+    var _elOut = document.getElementById('home-loggedout');
+    var _elIn  = document.getElementById('home-loggedin');
+    if (_elOut) _elOut.style.display = 'none';
+    if (_elIn)  _elIn.style.display  = 'block';
     var footer = document.getElementById('site-footer');
     if (footer) footer.style.display = 'none';
     if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
@@ -5180,7 +5191,11 @@ function showHome() {
     return;
   }
 
-  // Logged-out: CSS shows home-loggedout via body:not(.authenticated)
+  // Logged-out: show marketing homepage
+  var elOut2 = document.getElementById('home-loggedout');
+  var elIn2  = document.getElementById('home-loggedin');
+  if (elOut2) elOut2.style.display = 'block';
+  if (elIn2)  elIn2.style.display  = 'none';
   var footer = document.getElementById('site-footer');
   if (footer) footer.style.display = '';
   if (!_homeTrendingLoaded) { loadHomeTrending(); }
