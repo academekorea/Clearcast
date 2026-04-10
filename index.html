@@ -1064,11 +1064,33 @@ body.player-on .lap{bottom:72px}
 .link-btn{border:none;background:none;color:var(--right);cursor:pointer;font-size:12px;font-family:var(--ff);text-decoration:underline;padding:0}
 
 /* ── SHOW PROFILE ── */
-.sp-content{max-width:1100px;margin:0 auto;padding:32px 24px}
+.sp-content{max-width:100%;padding:0}
 .sp-header{display:flex;gap:20px;margin-bottom:28px;align-items:flex-start}
 .sp-2col{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:flex-start;margin-top:28px}
 .sp-col-left,.sp-col-right{min-width:0}
 @media(max-width:960px){.sp-2col{grid-template-columns:1fr}}
+/* 3-col show profile */
+.sp-3col{display:grid;grid-template-columns:220px 1fr 300px;min-height:calc(100vh - 60px);align-items:start}
+.sp-3col-nav{background:#0a1a20;display:flex;flex-direction:column;justify-content:space-between;min-height:calc(100vh - 60px);position:sticky;top:60px}
+.sp-3col-nav *{color:#fff}
+.sp-3col-nav-lbl{padding:16px 20px 8px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4}
+.sp-3col-nav-btn{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)}
+.sp-3col-nav-btn:hover{background:rgba(255,255,255,.07)}
+.sp-3col-nav-btn.on{background:rgba(255,255,255,.13)}
+.sp-3col-nav-div{height:0.5px;background:rgba(255,255,255,.1);margin:4px 20px}
+.sp-3col-main{padding:28px 28px 80px;min-width:0}
+.sp-3col-sidebar{border-left:0.5px solid var(--border);padding:20px 18px 80px;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px)}
+.sp-3col-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:20px 22px;margin-bottom:16px}
+.sp-3col-sec-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
+.sp-3col-hdr{display:flex;gap:20px;align-items:flex-start;margin-bottom:20px}
+.sp-3col-ep-row{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border)}
+.sp-3col-ep-row:last-child{border-bottom:none;padding-bottom:0}
+.sp-3col-ep-art{width:36px;height:36px;border-radius:6px;flex-shrink:0;background:var(--bg3)}
+.sp-3col-nav-art{width:36px;height:36px;border-radius:6px;flex-shrink:0;object-fit:cover}
+.sp-3col-analyze-btn{padding:4px 9px;font-size:11px;font-weight:600;background:var(--navy);color:#fff;border:none;border-radius:5px;cursor:pointer;flex-shrink:0;white-space:nowrap;font-family:var(--ff)}
+.sp-3col-view-btn{padding:4px 9px;font-size:11px;background:none;border:0.5px solid var(--border2);border-radius:5px;cursor:pointer;color:var(--text2);flex-shrink:0;white-space:nowrap;font-family:var(--ff)}
+@media(max-width:1100px){.sp-3col{grid-template-columns:220px 1fr}.sp-3col-sidebar{display:none}}
+@media(max-width:768px){.sp-3col{grid-template-columns:1fr}.sp-3col-nav{display:none}}
 .sp-art{width:100px;height:100px;border-radius:var(--r);object-fit:cover;flex-shrink:0}
 .sp-art-ph{width:100px;height:100px;border-radius:var(--r);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
 .sp-header-body{flex:1}
@@ -3298,11 +3320,8 @@ body.light-mode,[data-theme="light"]{
 
 <!-- SHOW VIEW -->
 <div class="view" id="view-show">
-  <div class="sp-content">
-    <button class="sp-back-btn" onclick="goBack()">&larr; Back</button>
-    <div id="sp-content"></div>
-    <canvas id="sp-canvas" style="display:none"></canvas>
-  </div>
+  <div class="sp-content" id="sp-content"></div>
+  <canvas id="sp-canvas" style="display:none"></canvas>
 </div><!-- /view-show -->
 
 <!-- ADMIN VIEW -->
@@ -7680,248 +7699,188 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       html+='</div></div>';
     }
   } else {
-    // Standard podcast layout
-    var artHtml=artwork?'<img class="sp-art" src="'+artwork+'" alt="" onerror="this.className=\'sp-art-ph\';this.textContent=\'🎙\'">':"<div class='sp-art-ph'>&#127897;</div>";
-    html+='<div class="sp-header">'+artHtml+'<div class="sp-header-body">';
-    html+='<div class="sp-show-label">Podcast'+(itunes&&itunes.category?' &middot; '+itunes.category:'')+(countryFlag?' &middot; '+countryFlag:'')+'</div>';
-    html+='<div class="sp-name">'+displayName+'</div>';
-    if (hostName) html+='<div style="font-size:14px;color:var(--text2);margin-bottom:6px;font-weight:500">by '+hostName+'</div>';
-    if (totalEpisodes) html+='<div style="font-size:12px;color:var(--text3);margin-bottom:8px">'+totalEpisodes.toLocaleString()+' episodes</div>';
-    // Social handles extracted from description
-    if (description && typeof extractSocialHandles === 'function') {
-      var handles = extractSocialHandles(description);
-      var socialIcons = [];
-      if (handles.twitter) socialIcons.push('<a href="'+handles.twitter+'" target="_blank" rel="noopener" style="color:var(--text3);text-decoration:none;display:inline-flex;align-items:center" title="X/Twitter"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>');
-      if (handles.instagram) socialIcons.push('<a href="'+handles.instagram+'" target="_blank" rel="noopener" style="color:var(--text3);text-decoration:none;display:inline-flex;align-items:center" title="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0 2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>');
-      if (handles.tiktok) socialIcons.push('<a href="'+handles.tiktok+'" target="_blank" rel="noopener" style="color:var(--text3);text-decoration:none;display:inline-flex;align-items:center" title="TikTok"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.15a8.16 8.16 0 004.77 1.52V7.24a4.85 4.85 0 01-1-.55z"/></svg></a>');
-      if (handles.website) socialIcons.push('<a href="'+handles.website+'" target="_blank" rel="noopener" style="color:var(--text3);text-decoration:none;display:inline-flex;align-items:center" title="Website"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>');
-      if (socialIcons.length) html += '<div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">'+socialIcons.join('')+'</div>';
-    }
-    html+='<div class="sp-badges">'+biasBadge;
-    if (data.episodeCount>0) html+='<span class="bpill" style="background:var(--bg3);border-color:var(--border2);color:var(--text2)">'+data.episodeCount+' analyzed on Podlens</span>';
-    html+='</div>';
-    html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">';
-    html+='<a href="https://open.spotify.com/search/'+eName+'/podcasts" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Spotify</a>';
-    if (itunes&&itunes.itunesUrl) html+='<a href="'+itunes.itunesUrl+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Apple Podcasts</a>';
-    html+='<a href="https://youtube.com/results?search_query='+eName+'+podcast" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; YouTube</a>';
-    html+='</div>';
-    html+='<div class="sp-actions"><button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
-    if (data.episodeCount>0) html+='<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share card &#8599;</button>';
-    html+='<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+ '\',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\',\''+(artwork||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_isFollowingShow(displayName)+'</button>';
-    html+='</div></div></div>';
-  }
+    // ── 3-COLUMN SHOW PROFILE LAYOUT ─────────────────────────────────────────
+    var artHtml = artwork
+      ? '<img src="'+artwork+'" alt="" style="width:90px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.display=\'none\'">'
+      : '<div style="width:90px;height:90px;border-radius:10px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">&#127897;</div>';
 
-  // ── TWO-COLUMN LAYOUT ─────────────────────────────────────────────────────
-  // Header above is full-width. Below: left=about/host/episodes, right=bias/intel
-  html += '<div class="sp-2col"><div class="sp-col-left">';
+    var artNavHtml = artwork
+      ? '<img class="sp-3col-nav-art" src="'+artwork+'" alt="" onerror="this.style.display=\'none\'">'
+      : '<div class="sp-3col-nav-art" style="background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:14px">&#127897;</div>';
 
-  // ABOUT THIS SHOW goes in LEFT col — moved here from below
-  if (description) {
-    var cleanedDescInline = (typeof cleanDescription === 'function') ? cleanDescription(description) : description;
-    if (cleanedDescInline && cleanedDescInline !== 'No description available.') {
-      html+='<div class="sp-section"><div class="sp-section-lbl">About this show</div>';
-      html+='<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(cleanedDescInline.slice(0,300))+(cleanedDescInline.length>300?'…':'')+'</div>';
-      html+='</div>';
-    }
-  }
+    // ── LEFT NAV ──────────────────────────────────────────────────────────────
+    var navHtml = '<div class="sp-3col-nav">'
+      + '<div>'
+      + '<div class="sp-3col-nav-lbl">Menu</div>'
+      + '<button class="sp-3col-nav-btn" onclick="showHome()"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>'
+      + '<button class="sp-3col-nav-btn" onclick="showView(\'discover\')"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>'
+      + '<button class="sp-3col-nav-btn" onclick="showView(\'analyze\')"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>'
+      + '</div>'
+      + '<div>'
+      + '<div class="sp-3col-nav-div"></div>'
+      + '<div class="sp-3col-nav-lbl">This show</div>'
+      + '<div class="sp-3col-nav-btn on" style="gap:12px">'
+      + artNavHtml
+      + '<div style="min-width:0"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+displayName+'</div>'
+      + (hostName ? '<div style="font-size:10px;opacity:.5;margin-top:2px">'+hostName+'</div>' : '')
+      + '</div></div>'
+      + '<div class="sp-3col-nav-div"></div>'
+      + '<button class="sp-3col-nav-btn on" style="background:rgba(255,255,255,.13)" onclick=""><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Overview</button>'
+      + '<button class="sp-3col-nav-btn" onclick=""><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Episodes</button>'
+      + '<button class="sp-3col-nav-btn" onclick=""><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Bias history</button>'
+      + '<button class="sp-3col-nav-btn" onclick=""><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Host profile</button>'
+      + '<div class="sp-3col-nav-div"></div>'
+      + '<button class="sp-3col-nav-btn" onclick="goBack()" style="opacity:.6"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>'
+      + '</div>'
+      + '</div>';
 
-  // HOST goes in LEFT col
-  if (hostName) {
-    var hostInitialL = (hostName.charAt(0)||'?').toUpperCase();
-    var hostBioL = data.episodeCount > 0
-      ? 'Host of '+displayName+'. Based on '+data.episodeCount+' analyzed episode'+(data.episodeCount!==1?'s':'')+' on Podlens.'
-      : 'Host of '+displayName+'. Analyze episodes to build an intelligence profile.';
-    html += '<div class="sp-section"><div class="sp-section-lbl">Host</div>';
-    html += '<div class="sp-host-card"><div class="sp-host-avatar">'+hostInitialL+'</div>';
-    html += '<div><div class="sp-host-name">'+_escHtml(hostName)+'</div>';
-    html += '<div class="sp-host-bio">'+_escHtml(hostBioL)+'</div></div></div></div>';
-  }
+    // ── MAIN CONTENT ──────────────────────────────────────────────────────────
+    var followBtn = '<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+'\''+',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\''+',\''+(artwork||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_isFollowingShow(displayName)+'</button>';
 
-  html += '</div><div class="sp-col-right">';
+    var mainHtml = '<div class="sp-3col-main">';
 
-  // OVERALL BIAS BAR — shown at top of intelligence section
-  if (data && data.bias) {
-    var b = data.bias;
-    var lp = Math.round(b.leftPct||0), cp = Math.round(b.centerPct||0), rp = Math.round(b.rightPct||0);
-    var bcolor = lp>rp+20?'var(--left)':rp>lp+20?'var(--right)':'var(--center)';
-    html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:20px">';
-    html += '<div style="font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Overall Bias Profile</div>';
-    html += '<div style="display:flex;height:10px;border-radius:6px;overflow:hidden;margin-bottom:12px">';
-    html += '<div style="width:'+lp+'%;background:var(--left)"></div>';
-    html += '<div style="width:'+cp+'%;background:var(--center)"></div>';
-    html += '<div style="width:'+rp+'%;background:var(--right)"></div>';
-    html += '</div>';
-    html += '<div style="display:flex;justify-content:space-between;font-size:12px">';
-    html += '<span style="color:var(--left);font-weight:600">'+lp+'% Left</span>';
-    html += '<span style="color:var(--text3)">'+cp+'% Center</span>';
-    html += '<span style="color:var(--right);font-weight:600">'+rp+'% Right</span>';
-    html += '</div>';
-    if (b.label) html += '<div style="margin-top:10px;font-size:13px;font-weight:600;color:'+bcolor+'">'+b.label+'</div>';
-    html += '</div>';
-  } else if (data && data.episodeCount > 0) {
-    html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:20px;color:var(--text3);font-size:13px">Bias profile builds as more episodes are analyzed.</div>';
-  }
+    // Header
+    mainHtml += '<div class="sp-3col-hdr">';
+    mainHtml += artHtml;
+    mainHtml += '<div style="flex:1;min-width:0">';
+    mainHtml += '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Podcast'+(itunes&&itunes.category?' &middot; '+itunes.category:'')+'</div>';
+    mainHtml += '<div style="font-family:var(--ffs);font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text)">'+displayName+'</div>';
+    if (hostName) mainHtml += '<div style="font-size:14px;color:var(--text2);margin-bottom:4px">by '+hostName+'</div>';
+    if (totalEpisodes) mainHtml += '<div style="font-size:12px;color:var(--text3);margin-bottom:12px">'+totalEpisodes.toLocaleString()+' episodes</div>';
+    // Platform links
+    mainHtml += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">';
+    mainHtml += '<a href="https://open.spotify.com/search/'+eName+'/podcasts" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:0.5px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Spotify</a>';
+    if (itunes&&itunes.itunesUrl) mainHtml += '<a href="'+itunes.itunesUrl+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:0.5px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Apple Podcasts</a>';
+    mainHtml += '<a href="https://youtube.com/results?search_query='+eName+'+podcast" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:0.5px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; YouTube</a>';
+    mainHtml += '</div>';
+    // Actions
+    mainHtml += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
+    mainHtml += '<button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
+    mainHtml += followBtn;
+    if (data.episodeCount>0) mainHtml += '<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share &#8599;</button>';
+    mainHtml += '</div></div></div>';
 
-  html += '</div></div>'; // close sp-col-right and sp-2col
-
-  // ABOUT THIS SHOW — already rendered inline in left col above, skip duplicate
-  if (false && description) {
-    var cleanedDesc = (typeof cleanDescription === 'function') ? cleanDescription(description) : description;
-    if (cleanedDesc && cleanedDesc !== 'No description available.') {
-      var needsMore = description.length > 180;
-      html+='<div class="sp-section">';
-      html+='<div class="sp-section-lbl">About this show</div>';
-      html+='<div id="sp-desc-short" style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(cleanedDesc)+'</div>';
-      if (needsMore) {
-        var fullCleaned = description.replace(/https?:\/\/[^\s]+/g,'').replace(/@[A-Za-z0-9_.]+/g,'').replace(/\+?1?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g,'').replace(/\b(Don'?t miss|Follow us|Subscribe|Support this show|Visit our website|Interested in trying|Fan club|Contact us)[^.!?]*/gi,'').replace(/\s{2,}/g,' ').trim().slice(0,600);
-        html+='<div id="sp-desc-full" style="font-size:14px;line-height:1.65;color:var(--text2);display:none">'+_esc(fullCleaned)+'</div>';
-        html+='<button id="sp-desc-toggle" onclick="(function(){var s=document.getElementById(\'sp-desc-short\'),f=document.getElementById(\'sp-desc-full\'),b=document.getElementById(\'sp-desc-toggle\');var shown=f.style.display!==\'none\';s.style.display=shown?\'block\':\'none\';f.style.display=shown?\'none\':\'block\';b.textContent=shown?\'Read more\':\'Show less\';})()" style="margin-top:8px;background:none;border:none;color:var(--navy);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);padding:0">Read more</button>';
+    // About card
+    if (description) {
+      var cleanedD = (typeof cleanDescription === 'function') ? cleanDescription(description) : description;
+      if (cleanedD && cleanedD !== 'No description available.') {
+        mainHtml += '<div class="sp-3col-card"><div class="sp-3col-sec-lbl">About</div>';
+        mainHtml += '<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(cleanedD.slice(0,400))+(cleanedD.length>400?'&hellip;':'')+'</div>';
+        mainHtml += '</div>';
       }
-      html+='</div>';
     }
-  }
 
-  // HOST SECTION — already rendered inline in left col above, skip duplicate
-  if (false && hostName) {
-    var hostInitial = (hostName.charAt(0) || '?').toUpperCase();
-    var hostBio = data.episodeCount > 0
-      ? 'Host of ' + displayName + '. Based on ' + data.episodeCount + ' analyzed episode' + (data.episodeCount !== 1 ? 's' : '') + ' on Podlens.'
-      : 'Host of ' + displayName + '. Analyze episodes to build an intelligence profile of ' + hostName + '\u2019s hosting style, bias patterns, and trust score.';
-    html += '<div class="sp-section">';
-    html += '<div class="sp-section-lbl">Host</div>';
-    html += '<div class="sp-host-card">';
-    html += '<div class="sp-host-avatar">' + hostInitial + '</div>';
-    html += '<div><div class="sp-host-name">' + _escHtml(hostName) + '</div>';
-    html += '<div class="sp-host-bio">' + _escHtml(hostBio) + '</div></div>';
-    html += '</div></div>';
-  }
-
-  if (data.episodeCount===0 && !yt) {
-    html+='<div class="sp-empty">';
-    html+='<h3>Nothing analyzed from this show yet</h3>';
-    html+='<p style="margin-bottom:20px">You\'d be the first to find out what '+(displayName)+' actually sounds like.</p>';
-    if (feedUrl) {
-      html+='<button class="sp-analyze-btn" style="font-size:15px;padding:12px 28px" onclick="goAnalyze(&quot;'+feedUrl.replace(/"/g,'&quot;')+'&quot;)">Analyze an episode &rarr;</button>';
-    } else {
-      html+='<button class="sp-analyze-btn" style="font-size:15px;padding:12px 28px" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
+    // Host card
+    if (hostName) {
+      var hInit = (hostName.charAt(0)||'?').toUpperCase();
+      var hBio = data.episodeCount > 0
+        ? 'Host of '+displayName+'. Based on '+data.episodeCount+' analyzed episode'+(data.episodeCount!==1?'s':'')+' on Podlens.'
+        : 'Host of '+displayName+'. Analyze episodes to build an intelligence profile of their hosting style, bias patterns, and trust score.';
+      mainHtml += '<div class="sp-3col-card"><div class="sp-3col-sec-lbl">Host</div>';
+      mainHtml += '<div style="display:flex;gap:12px;align-items:flex-start">';
+      mainHtml += '<div style="width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0">'+hInit+'</div>';
+      mainHtml += '<div><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px">'+_escHtml(hostName)+'</div>';
+      mainHtml += '<div style="font-size:12px;color:var(--text2);line-height:1.5">'+_escHtml(hBio)+'</div></div></div></div>';
     }
-    html+='</div>';
-    // Show latest RSS episodes even for unanalyzed shows
+
+    // Intelligence overview card
+    mainHtml += '<div class="sp-3col-card"><div class="sp-3col-sec-lbl">Intelligence overview</div>';
+    mainHtml += '<div class="sp-intel-grid">';
+    mainHtml += spMetric('Bias label',m.biasLabel||'&mdash;','Based on analyzed episodes',m.biasLabel?60:0,'var(--center-bar)');
+    mainHtml += spMetric('Host trust',m.avgTrustScore!=null?m.avgTrustScore:'&mdash;','Parasocial language score',m.avgTrustScore!=null?m.avgTrustScore:0,m.avgTrustScore>60?'var(--left-bar)':m.avgTrustScore>30?'var(--amber)':'var(--center-bar)');
+    mainHtml += spMetric('Consistency',m.consistencyScore!=null?m.consistencyScore:'&mdash;','Stability episode to episode',m.consistencyScore!=null?m.consistencyScore:0,'var(--center-bar)');
+    mainHtml += spMetric('Factual rate',m.factualPct!=null?m.factualPct+'%':'&mdash;','Episodes rated mostly factual',m.factualPct!=null?m.factualPct:0,'var(--center-bar)');
+    mainHtml += spMetric('Sponsor rate',m.sponsorRate!=null?m.sponsorRate+'%':'&mdash;','Episodes with sponsor influence',m.sponsorRate!=null?m.sponsorRate:0,m.sponsorRate>50?'var(--amber)':'var(--center-bar)');
+    mainHtml += spMetric('Episodes analyzed',data.episodeCount||0,'Analyzed by Podlens users',100,'var(--border2)');
+    mainHtml += '</div></div>';
+
+    // Recently analyzed card (episodes from DB)
+    if (episodes.length) {
+      mainHtml += '<div class="sp-3col-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+      mainHtml += '<div class="sp-3col-sec-lbl" style="margin-bottom:0">Recently analyzed</div>';
+      mainHtml += '<span style="font-size:11px;color:var(--text3)">'+episodes.length+' total</span></div>';
+      episodes.slice(0,5).forEach(function(ep){
+        var bpCls = {['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[ep.biasLabel]||'bp-center';
+        var dateStr = ep.createdAt ? new Date(ep.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+        mainHtml += '<div class="sp-3col-ep-row" style="cursor:pointer" onclick="viewAnalysis(\''+ep.jobId+'\')"><div class="sp-3col-ep-art"></div>';
+        mainHtml += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px">'+(ep.episodeTitle||'Untitled')+'</div>';
+        mainHtml += '<div style="font-size:11px;color:var(--text3)">'+dateStr+'</div></div>';
+        if (ep.biasLabel) mainHtml += '<span class="bpill '+bpCls+'" style="font-size:10px;padding:2px 7px;flex-shrink:0">'+ep.biasLabel+'</span>';
+        mainHtml += '<button class="sp-3col-view-btn" onclick="event.stopPropagation();viewAnalysis(\''+ep.jobId+'\')">View &rarr;</button></div>';
+      });
+      mainHtml += '</div>';
+    }
+
+    // Topic map
+    if (m.topicMap&&m.topicMap.length) {
+      mainHtml += '<div class="sp-3col-card"><div class="sp-3col-sec-lbl">Topics covered</div>';
+      var maxC = m.topicMap[0].count||1;
+      m.topicMap.forEach(function(t){
+        var col = t.lean==='left'?'var(--left-bar)':t.lean==='right'?'var(--right-bar)':'var(--center-bar)';
+        mainHtml += '<div class="sp-topic-row"><div class="sp-topic-name">'+t.topic+'</div><div class="sp-topic-track"><div class="sp-topic-fill" style="width:'+Math.round((t.count/maxC)*100)+'%;background:'+col+'"></div></div><div class="sp-topic-count">'+t.count+'</div></div>';
+      });
+      mainHtml += '</div>';
+    }
+
+    mainHtml += '</div>'; // close sp-3col-main
+
+    // ── RIGHT SIDEBAR ─────────────────────────────────────────────────────────
+    var sideHtml = '<div class="sp-3col-sidebar">';
+
+    // Section 1: Latest episodes to analyze (from RSS)
+    sideHtml += '<div style="margin-bottom:20px;padding-bottom:20px;border-bottom:0.5px solid var(--border)">';
+    sideHtml += '<div class="sp-3col-sec-lbl">Latest episodes</div>';
     if (rssEpisodes.length) {
-      html+='<div class="sp-section"><div class="sp-section-lbl">Latest episodes — pick one to analyze</div>';
-      rssEpisodes.forEach(function(ep){
-        var safeUrl=(ep.url||'').replace(/"/g,'&quot;');
-        var dateStr='';
-        if (ep.pubDate) { try { dateStr=new Date(ep.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){} }
-        var dur=ep.duration?formatDuration(ep.duration):'';
-        var meta=[dateStr,dur].filter(Boolean).join(' · ');
-        html+='<div class="sp-ep-row" style="cursor:pointer" onclick="'+(safeUrl?'goAnalyze(&quot;'+safeUrl+'&quot;)':'showView(\'analyze\')')+'">';
-        html+='<div class="sp-ep-title">'+ep.title+'</div>';
-        if (meta) html+='<div class="sp-ep-date">'+meta+'</div>';
-        html+='<div style="margin-top:6px">';
-        if (safeUrl) html+='<button onclick="event.stopPropagation();goAnalyze(&quot;'+safeUrl+'&quot;)" style="font-size:11px;padding:4px 10px;background:var(--navy);color:#fff;border:none;border-radius:3px;cursor:pointer;font-family:var(--ff);font-weight:600">Analyze &rarr;</button>';
-        html+='</div></div>';
+      rssEpisodes.slice(0,6).forEach(function(ep){
+        var safeUrl = (ep.url||'').replace(/"/g,'&quot;');
+        var dateStr = '';
+        if (ep.pubDate) { try { dateStr = new Date(ep.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch(e){} }
+        var dur = ep.duration ? formatDuration(ep.duration) : '';
+        var meta = [dateStr,dur].filter(Boolean).join(' · ');
+        sideHtml += '<div class="sp-3col-ep-row">';
+        sideHtml += '<div class="sp-3col-ep-art"></div>';
+        sideHtml += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+ep.title+'</div>';
+        sideHtml += '<div style="font-size:11px;color:var(--text3)">'+meta+'</div></div>';
+        if (safeUrl) sideHtml += '<button class="sp-3col-analyze-btn" onclick="goAnalyze(&quot;'+safeUrl+'&quot;)">Analyze</button>';
+        sideHtml += '</div>';
       });
-      html+='</div>';
+    } else {
+      sideHtml += '<div style="font-size:13px;color:var(--text3);padding:8px 0">No episodes found yet.</div>';
     }
-    if (similar.length) {
-      html+='<div class="sp-section"><div class="sp-section-lbl">Similar shows</div>';
-      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">';
-      similar.forEach(function(s){
-        var sSlug=s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-        html+='<div style="display:flex;gap:10px;align-items:center;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer" onclick="showView(\'show\');loadShowProfile(\''+sSlug+'\',null)">';
-        html+=(s.artwork?'<img src="'+artworkProxy(s.artwork)+'" style="width:40px;height:40px;border-radius:6px;object-fit:cover;flex-shrink:0" alt="" onerror="this.style.display=\'none\'">':'<div style="width:40px;height:40px;border-radius:6px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center">&#127897;</div>');
-        html+='<div style="min-width:0"><div style="font-size:12px;font-weight:600;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+s.name+'</div>';
-        html+='<div style="font-size:11px;color:var(--text3)">'+s.artist+'</div></div></div>';
+    sideHtml += '</div>';
+
+    // Section 2: Your analyses of this show (from local history)
+    var localAnalyses = getRecent ? getRecent().filter(function(r){ return (r.showName||'').toLowerCase() === displayName.toLowerCase(); }) : [];
+    sideHtml += '<div style="margin-bottom:20px;padding-bottom:20px;border-bottom:0.5px solid var(--border)">';
+    sideHtml += '<div class="sp-3col-sec-lbl">Your analyses of this show</div>';
+    if (localAnalyses.length) {
+      localAnalyses.slice(0,4).forEach(function(r){
+        var bpCls = {['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[r.biasLabel]||'bp-center';
+        sideHtml += '<div class="sp-3col-ep-row" style="cursor:pointer" onclick="viewAnalysis(\''+r.jobId+'\')"><div class="sp-3col-ep-art"></div>';
+        sideHtml += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+(r.episodeTitle||r.title||'Episode')+'</div>';
+        if (r.biasLabel) sideHtml += '<span class="bpill '+bpCls+'" style="font-size:10px;padding:1px 6px">'+r.biasLabel+'</span>';
+        sideHtml += '</div><button class="sp-3col-view-btn" onclick="event.stopPropagation();viewAnalysis(\''+r.jobId+'\')">View</button></div>';
       });
-      html+='</div></div>';
+      if (localAnalyses.length > 4) sideHtml += '<div style="font-size:11px;color:var(--text3);padding:8px 0 0">+' + (localAnalyses.length-4) + ' more &rarr;</div>';
+    } else {
+      sideHtml += '<div style="font-size:13px;color:var(--text3);padding:8px 0">You have not analyzed any episodes from this show yet.</div>';
     }
-    html+=buildCompareTrigger(slug,null);
-    el.innerHTML=html;
-    // Store enriched feedUrl for goAnalyzeShow()
-    if (!show.feedUrl && feedUrl) { if (!_spData.show) _spData.show={}; _spData.show.feedUrl=feedUrl; }
-    return;
+    sideHtml += '</div>';
+
+    // Section 3: Compare with another show
+    sideHtml += '<div>';
+    sideHtml += '<div class="sp-3col-sec-lbl">Compare with another show</div>';
+    sideHtml += '<div style="font-size:12px;font-weight:600;color:var(--text2);padding:8px 12px;border:0.5px solid var(--border2);border-radius:6px;margin-bottom:8px;background:var(--bg3)">'+displayName+'</div>';
+    sideHtml += '<input id="sp-compare-input" type="text" placeholder="Add a show to compare..." style="width:100%;padding:8px 12px;border:0.5px solid var(--border2);border-radius:6px;font-size:13px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:8px">';
+    sideHtml += '<button onclick="(function(){var v=document.getElementById(\'sp-compare-input\').value.trim();if(!v)return;var cSlug=v.toLowerCase().replace(/[^a-z0-9]+/g,\'-\').replace(/^-|-$/g,\'\');loadShowProfile(\''+_spSlug||slug+'\',cSlug);})()" style="width:100%;padding:9px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Compare &rarr;</button>';
+    sideHtml += '</div>';
+
+    sideHtml += '</div>'; // close sp-3col-sidebar
+
+    // ── ASSEMBLE ──────────────────────────────────────────────────────────────
+    html = '<div class="sp-3col">' + navHtml + mainHtml + sideHtml + '</div>';
   }
 
-  // FIX 3: Use != null (catches both null and undefined) to avoid rendering "undefined"
-  html+='<div class="sp-section"><div class="sp-section-lbl">Intelligence overview</div>';
-  html+='<div class="sp-intel-grid">';
-  html+=spMetric('Bias label',m.biasLabel||'&mdash;','based on analyzed episodes',m.biasLabel?60:0,'var(--center-bar)');
-  html+=spMetric('Host trust',m.avgTrustScore!=null?m.avgTrustScore:'&mdash;','How much parasocial language the host uses',m.avgTrustScore!=null?m.avgTrustScore:0,m.avgTrustScore>60?'var(--left-bar)':m.avgTrustScore>30?'var(--amber)':'var(--center-bar)');
-  html+=spMetric('Consistency',m.consistencyScore!=null?m.consistencyScore:'&mdash;','How stable the bias is episode to episode',m.consistencyScore!=null?m.consistencyScore:0,'var(--center-bar)');
-  html+=spMetric('Factual rate',m.factualPct!=null?m.factualPct+'%':'&mdash;','Episodes rated Mostly factual',m.factualPct!=null?m.factualPct:0,'var(--center-bar)');
-  html+=spMetric('Sponsor rate',m.sponsorRate!=null?m.sponsorRate+'%':'&mdash;','Episodes with detected sponsor influence',m.sponsorRate!=null?m.sponsorRate:0,m.sponsorRate>50?'var(--amber)':'var(--center-bar)');
-  html+=spMetric('Episodes analyzed',data.episodeCount||0,'Analyzed by Podlens users',100,'var(--border2)');
-  html+='</div>';
-  if (m.avgAudioLean) {
-    var al=m.avgAudioLean;
-    html+='<div class="sp-section-lbl" style="margin-top:16px">Aggregate political lean &mdash; language &amp; framing across all episodes</div>';
-    html+='<div class="al-track" style="height:10px;border-radius:2px;margin-bottom:6px">';
-    if (al.leftPct) html+='<div class="al-l" style="width:'+al.leftPct+'%;border-radius:2px 0 0 2px"></div>';
-    if (al.centerPct) html+='<div class="al-c" style="width:'+al.centerPct+'%"></div>';
-    if (al.rightPct) html+='<div class="al-r" style="width:'+al.rightPct+'%;border-radius:0 2px 2px 0"></div>';
-    html+='</div><div class="al-labels"><span>Left</span><span>Center</span><span>Right</span></div>';
-    html+='<div class="al-counts" style="margin-top:6px">';
-    if (al.leftPct) html+='<span class="alc"><span class="alcd" style="background:var(--left-bar)"></span>'+al.leftPct+'% left</span>';
-    if (al.centerPct) html+='<span class="alc"><span class="alcd" style="background:var(--center-bar)"></span>'+al.centerPct+'% center</span>';
-    if (al.rightPct) html+='<span class="alc"><span class="alcd" style="background:var(--right-bar)"></span>'+al.rightPct+'% right</span>';
-    html+='</div>';
-  }
-  html+='</div>';
-  if (m.topicMap&&m.topicMap.length) {
-    html+='<div class="sp-section"><div class="sp-section-lbl">Topics covered &mdash; frequency across analyzed episodes</div>';
-    var maxCount=m.topicMap[0].count||1;
-    m.topicMap.forEach(function(t){ var col=t.lean==='left'?'var(--left-bar)':t.lean==='right'?'var(--right-bar)':'var(--center-bar)'; html+='<div class="sp-topic-row"><div class="sp-topic-name">'+t.topic+'</div><div class="sp-topic-track"><div class="sp-topic-fill" style="width:'+Math.round((t.count/maxCount)*100)+'%;background:'+col+'"></div></div><div class="sp-topic-count">'+t.count+'</div></div>'; });
-    html+='</div>';
-  }
-  if (driftData.length>=3) { html+='<div class="sp-section"><div class="sp-section-lbl">Bias drift &mdash; score over time</div>'+buildDriftSvg(driftData)+'</div>'; }
-  if (episodes.length) {
-    html+='<div class="sp-section"><div class="sp-section-lbl">Analyzed on Podlens ('+episodes.length+')</div>';
-    episodes.forEach(function(ep){
-      var bpCls={['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[ep.biasLabel]||'bp-center';
-      var dateStr=ep.createdAt?new Date(ep.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
-      var lean=ep.audioLean;
-      var leanBar=lean?'<div class="sp-ep-lean">'+(lean.leftPct?'<div style="background:var(--left-bar);width:'+lean.leftPct+'%"></div>':'')+(lean.centerPct?'<div style="background:var(--center-bar);width:'+lean.centerPct+'%"></div>':'')+(lean.rightPct?'<div style="background:var(--right-bar);width:'+lean.rightPct+'%"></div>':'')+'</div>':'';
-      html+='<div class="sp-ep-row" onclick="viewAnalysis(&quot;'+ep.jobId+'&quot;)"><div class="sp-ep-title">'+(ep.episodeTitle||'Untitled')+'</div>'+leanBar+(ep.biasLabel?'<span class="bpill '+bpCls+'" style="font-size:9px;padding:1px 6px">'+ep.biasLabel+'</span>':'')+'<div class="sp-ep-date">'+dateStr+'</div></div>';
-    });
-    html+='</div>';
-  }
-
-  // LATEST EPISODES from RSS feed
-  if (rssEpisodes.length) {
-    html+='<div class="sp-section"><div class="sp-section-lbl">Latest episodes</div>';
-    rssEpisodes.forEach(function(ep){
-      var safeUrl=(ep.url||'').replace(/"/g,'&quot;');
-      var dateStr='';
-      if (ep.pubDate) { try { dateStr=new Date(ep.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){} }
-      var dur=ep.duration?formatDuration(ep.duration):'';
-      var meta=[dateStr,dur].filter(Boolean).join(' · ');
-      html+='<div class="sp-ep-row" style="cursor:pointer" onclick="'+( safeUrl ? 'goAnalyze(&quot;'+safeUrl+'&quot;)' : 'showView(\'analyze\')')+'">';
-      html+='<div class="sp-ep-title">'+ep.title+'</div>';
-      if (meta) html+='<div class="sp-ep-date">'+meta+'</div>';
-      html+='<div style="display:flex;gap:6px;margin-top:6px">';
-      if (safeUrl) html+='<button onclick="event.stopPropagation();goAnalyze(&quot;'+safeUrl+'&quot;)" style="font-size:11px;padding:4px 10px;background:var(--navy);color:#fff;border:none;border-radius:3px;cursor:pointer;font-family:var(--ff);font-weight:600">Analyze &rarr;</button>';
-      html+='</div></div>';
-    });
-    html+='</div>';
-  }
-
-  // SIMILAR SHOWS
-  if (similar.length) {
-    html+='<div class="sp-section"><div class="sp-section-lbl">Similar shows</div>';
-    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">';
-    similar.forEach(function(s){
-      var sSlug=s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-      var safeUrl=(s.feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      html+='<div style="display:flex;gap:10px;align-items:center;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer" onclick="showView(\'show\');loadShowProfile(\''+sSlug+'\',null)">';
-      html+=(s.artwork?'<img src="'+artworkProxy(s.artwork)+'" style="width:40px;height:40px;border-radius:6px;object-fit:cover;flex-shrink:0" alt="" onerror="this.style.display=\'none\'">':'<div style="width:40px;height:40px;border-radius:6px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center">&#127897;</div>');
-      html+='<div style="min-width:0"><div style="font-size:12px;font-weight:600;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+s.name+'</div>';
-      html+='<div style="font-size:11px;color:var(--text3)">'+s.artist+'</div></div></div>';
-    });
-    html+='</div></div>';
-  }
-
-  html+='<div id="sp-compare-wrap">'+buildCompareTrigger(_spSlug,compareSlug)+'</div>';
   el.innerHTML=html;
   if (compareSlug&&_spCompareData) renderComparePanel(data,_spCompareData);
 }
