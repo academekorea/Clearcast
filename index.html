@@ -3116,29 +3116,7 @@ body.light-mode,[data-theme="light"]{
       <button class="disc-nav-btn on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
       <button class="disc-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
 
-      <!-- LIBRARY SECTION — logged-in only -->
-      <div id="disc-nav-lib-section" style="display:none">
-        <div class="disc-nav-div"></div>
-        <div class="disc-nav-lbl">My library</div>
-        <button class="disc-nav-btn" onclick="showView('analyze')">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
-          Smart queue
-        </button>
-        <button class="disc-nav-btn" onclick="discShowFollowing()">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          Following
-        </button>
-        <button class="disc-nav-btn" onclick="showView('library')">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Analyzed
-        </button>
-        <button class="disc-nav-btn" onclick="discShowFingerprint()">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          My fingerprint
-        </button>
-      </div>
-
-      <!-- CATEGORY SECTION — logged-out only -->
+      <!-- CATEGORY SECTION — always shown on Discover -->
       <div id="disc-nav-cat-section">
         <div class="disc-nav-div"></div>
         <div class="disc-nav-lbl">Categories</div>
@@ -4301,8 +4279,37 @@ function renderHomeState() {
   if (u) u = enforcePlanRules() || u;
 
   if (u) {
-    // Logged-in: homepage IS the dashboard (discover view)
-    showView('discover');
+    // Logged-in: show personalized dashboard inside view-home
+    document.getElementById('home-loggedout').style.display = 'none';
+    document.getElementById('home-loggedin').style.display = 'block';
+    var hr = new Date().getHours();
+    var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+    var first = (u.name || '').split(' ')[0];
+    var greetText = greeting + (first ? ', <em>' + first + '</em>' : '') + '.';
+    var recent = getRecent();
+    var isNewUser = recent.length === 0;
+    var stateA = document.getElementById('dash-state-a');
+    var stateB = document.getElementById('dash-state-b');
+    if (stateA) stateA.style.display = isNewUser ? 'block' : 'none';
+    if (stateB) stateB.style.display = isNewUser ? 'none' : 'block';
+    if (isNewUser) {
+      var ga = document.getElementById('dash-greeting-a');
+      if (ga) ga.innerHTML = greetText;
+    } else {
+      var gb = document.getElementById('dash-greeting');
+      if (gb) gb.innerHTML = greetText;
+      renderDashRecent();
+      renderBiasFingerprint();
+      renderDashUnheardPreview(u);
+      renderDashFollowedShows(u);
+      loadDashTrending();
+      renderDashStats(u, recent);
+      loadSqWidget();
+    }
+    if (u.plan === 'trial' && u.trialEndsAt) {
+      var remaining = new Date(u.trialEndsAt).getTime() - Date.now();
+      if (remaining > 0 && remaining <= 24*60*60*1000) showTrialDay6Banner(u);
+    }
     return;
   }
 
@@ -4671,7 +4678,6 @@ var _discTab = 'foryou';
 
 function initDiscover() {
   var u = plUser();
-  var hr = new Date().getHours();
   var greet = document.getElementById('disc-greeting');
   var sub = document.getElementById('disc-subline');
   var tabs = document.getElementById('disc-tabs');
@@ -4679,16 +4685,16 @@ function initDiscover() {
   var navLibSection = document.getElementById('disc-nav-lib-section');
   var navCatSection = document.getElementById('disc-nav-cat-section');
 
+  // Discover is always exploration — categories always show in sidebar
+  if (navCatSection) navCatSection.style.display = '';
+  if (navLibSection) navLibSection.style.display = 'none';
+
   if (u) {
-    var first = (u.name||'').split(' ')[0];
-    var tod = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
-    if (greet) greet.textContent = tod + (first ? ', ' + first : '');
-    if (sub) sub.textContent = 'Your personalized feed';
+    if (greet) greet.textContent = 'Discover';
+    if (sub) sub.textContent = 'Trending shows, new episodes, and what the podcasting world is talking about.';
     if (tabs) tabs.style.display = 'flex';
     if (unheardTeaser) unheardTeaser.style.display = '';
-    // Show library sidebar, hide categories
-    if (navLibSection) navLibSection.style.display = '';
-    if (navCatSection) navCatSection.style.display = 'none';
+    discRenderRightCol(true, u);
     discRenderRightCol(true, u);
   } else {
     if (greet) greet.textContent = 'Explore podcasts';
@@ -4818,9 +4824,15 @@ function handleDiscCompare() {
 }
 
 function showHome() {
-  // Logged-in users: home = dashboard (discover view)
   if (plUser()) {
-    showView('discover');
+    // Logged-in: show home dashboard (view-home with home-loggedin)
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
+    document.getElementById('view-home').classList.add('on');
+    document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
+    var _nlHome = document.getElementById('nl-home'); if (_nlHome) _nlHome.classList.add('on');
+    if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
+    document.title = 'Podlens — Dashboard';
+    renderHomeState();
     return;
   }
   // Logged-out: marketing homepage
@@ -4829,8 +4841,7 @@ function showHome() {
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
   var _nlHome = document.getElementById('nl-home'); if (_nlHome) _nlHome.classList.add('on');
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
-  var mb = document.getElementById('mob-home');
-  if (mb) mb.classList.add('on');
+  var mb = document.getElementById('mob-home'); if (mb) mb.classList.add('on');
   var footer = document.getElementById('site-footer');
   if (footer) footer.style.display = '';
   if (!_homeTrendingLoaded) { loadHomeTrending(); }

@@ -101,7 +101,7 @@
 
     navLinks.innerHTML =
       '<a href="/" class="nav-link' + (_isActive('/', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'discover\');return false}">Home</a>'
-      + '<a href="/" class="nav-link" onclick="if(typeof showView===\'function\'){showView(\'discover\');return false}">Home</a>'
+      + '<a href="/" class="nav-link" onclick="if(typeof showHome===\'function\'){showHome();return false}">Home</a>'
       + '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'discover\');return false}">Discover</a>'
       + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'analyze\');return false}">Analyze</a>'
       + '<a href="/library.html" class="nav-link' + (_isActive('/library.html', path) ? ' active' : '') + '">Library</a>'
@@ -168,7 +168,7 @@
         e.preventDefault();
         if (u && u.id) {
           // Logged in — go to home dashboard
-          if (typeof showView === 'function') { showView('discover'); }
+          if (typeof showHome === 'function') { showHome(); }
           else { window.location.href = '/'; }
         } else {
           // Logged out — go to homepage
