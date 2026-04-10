@@ -596,14 +596,14 @@ body.player-on .lap{bottom:72px}
 .sb-follow-art{width:28px;height:28px;border-radius:3px;background:var(--bg4);object-fit:cover;flex-shrink:0}
 
 /* ── DASHBOARD v2 LAYOUT ── */
-.dashboard-container{max-width:1400px;margin:0 auto;padding:32px 32px 80px;width:100%;box-sizing:border-box}
+.dashboard-container{width:100%;box-sizing:border-box}
 @media(max-width:768px){.dashboard-container{padding:20px 16px 60px}}
 .dashboard-header{margin-bottom:28px}
 .dashboard-greeting{font-family:var(--ffs);font-size:clamp(1.8rem,4vw,3rem);font-weight:800;line-height:1.1;margin-bottom:6px}
 .dashboard-greeting em{font-style:italic;color:var(--text3)}
 .dashboard-subline{font-size:15px;color:var(--text2)}
-.dashboard-grid{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start}
-@media(max-width:1024px){.dashboard-grid{grid-template-columns:1fr}}
+.dashboard-grid{display:grid;grid-template-columns:220px 1fr 340px;min-height:calc(100vh - 60px);gap:0;align-items:start}
+@media(max-width:1100px){.dashboard-grid{grid-template-columns:1fr 300px}}@media(max-width:768px){.dashboard-grid{grid-template-columns:1fr}}
 .dashboard-main{}
 .dashboard-sidebar{}
 /* Analyze bar */
@@ -1625,6 +1625,19 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 [data-theme="dark"] .disc-fp-track > div:nth-child(2){background:rgba(255,255,255,.12)}
 [data-theme="dark"] .disc-topic-row{border-bottom-color:var(--border)}
 [data-theme="dark"] .disc-rc-row{border-bottom-color:var(--border)}
+
+/* ── DASHBOARD LEFT NAV ── */
+.dash-nav{background:#0a1a20;display:flex;flex-direction:column;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07)}
+.dash-nav *{color:#fff !important}
+.dash-nav-lbl{padding:16px 20px 8px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4}
+.dash-nav-btn{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;border:none;background:transparent !important;width:100%;text-align:left;font-family:var(--ff);cursor:pointer;transition:background .1s}
+.dash-nav-btn svg{width:15px;height:15px;flex-shrink:0}
+.dash-nav-btn:hover{background:rgba(255,255,255,.07) !important}
+.dash-nav-btn.on{background:rgba(255,255,255,.13) !important}
+.dash-nav-div{height:1px;background:rgba(255,255,255,.1);margin:6px 20px}
+.dashboard-main{padding:28px 28px 80px;overflow:hidden}
+.dashboard-sidebar{border-left:0.5px solid var(--border);padding:20px 20px 80px;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px)}
+@media(max-width:1100px){.dash-nav{display:none}}
 
 /* ── DOWNLOAD REPORT BTN ── */
 .download-report-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;font-family:var(--ff);transition:all .15s;white-space:nowrap}
@@ -2926,6 +2939,22 @@ body.light-mode,[data-theme="light"]{
     <!-- STATE A: New user (0 analyses) -->
     <div id="dash-state-a" style="display:none">
       <div class="dashboard-container">
+        <div class="dashboard-grid">
+        <!-- Left nav -->
+        <div class="dash-nav">
+          <div class="dash-nav-lbl">Dashboard</div>
+          <button class="dash-nav-btn on"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
+          <button class="dash-nav-btn" onclick="showView('discover')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
+          <button class="dash-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
+          <div class="dash-nav-div"></div>
+          <div class="dash-nav-lbl">My library</div>
+          <button class="dash-nav-btn" onclick="discShowSmartQueue()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
+          <button class="dash-nav-btn" onclick="discShowFollowing()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Following</button>
+          <button class="dash-nav-btn" onclick="discShowAnalyzed()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
+          <button class="dash-nav-btn" onclick="discShowFingerprint()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
+        </div>
+        <!-- Main content -->
+        <div>
         <div class="dashboard-header">
           <div class="dashboard-greeting" id="dash-greeting-a">Good morning.</div>
           <div class="dashboard-subline">Connect your podcasts to get started — we&rsquo;ll take it from there.</div>
@@ -3035,6 +3064,22 @@ body.light-mode,[data-theme="light"]{
     <!-- STATE B: Returning user (1+ analyses) -->
     <div id="dash-state-b" style="display:none">
       <div class="dashboard-container">
+        <div class="dashboard-grid">
+        <!-- Left nav -->
+        <div class="dash-nav">
+          <div class="dash-nav-lbl">Dashboard</div>
+          <button class="dash-nav-btn on"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
+          <button class="dash-nav-btn" onclick="showView('discover')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
+          <button class="dash-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
+          <div class="dash-nav-div"></div>
+          <div class="dash-nav-lbl">My library</div>
+          <button class="dash-nav-btn" onclick="discShowSmartQueue()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
+          <button class="dash-nav-btn" onclick="discShowFollowing()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Following</button>
+          <button class="dash-nav-btn" onclick="discShowAnalyzed()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
+          <button class="dash-nav-btn" onclick="discShowFingerprint()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
+        </div>
+        <!-- Main content -->
+        <div>
         <div class="dashboard-header">
           <div class="dashboard-greeting" id="dash-greeting">Good morning</div>
         </div>
@@ -3102,6 +3147,9 @@ body.light-mode,[data-theme="light"]{
           </div>
         </div>
       </div>
+        </div><!-- /dashboard-main -->
+        </div><!-- /dashboard-grid-inner -->
+        </div><!-- /dashboard-grid -->
     </div><!-- /dash-state-b -->
   </div><!-- /home-loggedin -->
 
@@ -4177,6 +4225,8 @@ function enforcePlanRules() {
 function checkAnalysisLimit() {
   var u = plUser();
   if (!u) return false;
+  // Admin always has unlimited access
+  if (u.email === 'academekorea@gmail.com' || u.isSuperAdmin) return false;
   var plan = String(u.plan || '').toLowerCase();
   if (plan === 'free') {
     // Free tier: 4 analyses/month (FREE_TIER_MONTHLY_ANALYSES=4)
@@ -4403,7 +4453,8 @@ function loadSqWidget() {
   var u = plUser();
   if (!u || !u.id) return;
   var plan = String(u.plan || 'free').toLowerCase();
-  var eligible = plan === 'creator' || plan === 'operator' || plan === 'studio';
+  var isAdmin = u.email === 'academekorea@gmail.com' || u.isSuperAdmin;
+  var eligible = isAdmin || plan === 'creator' || plan === 'operator' || plan === 'studio' || plan === 'trial';
   var widget = document.getElementById('sq-widget');
   if (!widget) return;
 
@@ -4812,8 +4863,38 @@ function discRenderEpisodes() {
   }).join('');
 }
 
-function discShowFollowing() { showView('library'); }
-function discShowFingerprint() { var fp=document.getElementById('disc-rc-top'); if(fp)fp.scrollIntoView({behavior:'smooth'}); }
+function discShowFollowing() {
+  // Go to home dashboard and scroll to following section
+  showHome();
+  setTimeout(function() {
+    var el = document.getElementById('sb-follow-list');
+    if (el) el.closest('.sidebar-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 400);
+}
+function discShowFingerprint() {
+  // Go to home dashboard and scroll to fingerprint
+  showHome();
+  setTimeout(function() {
+    var el = document.getElementById('dash-fp-track');
+    if (el) el.closest('.fingerprint-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 400);
+}
+function discShowAnalyzed() {
+  // Go to home dashboard and scroll to recent list
+  showHome();
+  setTimeout(function() {
+    var el = document.getElementById('dash-recent-list');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 400);
+}
+function discShowSmartQueue() {
+  // Go to home dashboard and scroll to smart queue
+  showHome();
+  setTimeout(function() {
+    var el = document.getElementById('sq-widget');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 400);
+}
 
 function handleDiscCompare() {
   var a = (document.getElementById('disc-compare-a')||{}).value||'';
