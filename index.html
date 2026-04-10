@@ -858,7 +858,7 @@ body.player-on .lap{bottom:72px}
 .search-btn:hover{background:var(--bg3)}
 
 /* ── ANALYZE VIEW ── */
-.analyze-wrap{max-width:960px;margin:0 auto;padding:40px 40px}
+.analyze-wrap{max-width:900px;margin:0 auto;padding:32px 32px}
 .analyze-url-row{display:flex;gap:8px;margin-bottom:16px}
 .url-input{flex:1;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg2);font-size:14px;color:var(--text);font-family:var(--ff);outline:none;transition:border-color .15s}
 .url-input:focus{border-color:var(--text)}
@@ -2342,7 +2342,7 @@ body.light-mode,[data-theme="light"]{
 .v7-prev-cta a{color:#378add;cursor:pointer;text-decoration:none}
 .v7-main{padding:16px}
 /* ── EXACT MOCKUP CSS — do not prefix these ── */
-.pl-results-wrap{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;color:var(--text);font-size:13px;max-width:860px;margin:0 auto}
+.pl-results-wrap{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;color:var(--text);font-size:13px}
 .demo{background:#fff;padding:9px 16px;display:flex;align-items:center;gap:7px;border-bottom:0.5px solid #e0e0e0;flex-wrap:wrap}
 .dlbl{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.08em}
 .tier-pill{background:transparent;border:none;color:var(--text3);padding:7px 20px;border-radius:20px;font-size:13px;font-weight:400;cursor:pointer;font-family:inherit;transition:all .15s}
@@ -6118,7 +6118,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
         else if (code==='IS_LIVESTREAM') { showAnalyzeErr('Live streams can\u2019t be analyzed while they\u2019re live \u2014 try the replay after it ends.'); resetBtn(); }
         else if (code==='WRONG_CONTENT_TYPE') { showAnalyzeErr(d.error); resetBtn(); }
         else if (code==='CAPTIONS_UNAVAILABLE') { _currentChannelTitle=d.channelTitle||''; startTranscriptionFallback(audioUrl,epTitle,showName); }
-        else { showAnalyzeErr(friendlyError(d.error||'Analysis failed','start-analysis')); resetBtn(); }
+        else { showAnalyzeErr(friendlyError(d.error||'Analysis failed','start-analysis'), d.suggestion); resetBtn(); }
         return;
       }
       // ── Cache hit: return instant result with badge ──
@@ -6214,7 +6214,12 @@ function pollStatus(jobId, audioUrl) {
 
       if (d.status === 'error') {
         clearInterval(_poll);
-        showAnalyzeErr(friendlyError(d.error || 'Analysis failed.', 'pollStatus'));
+        var errMsg = d.error || 'Analysis failed.';
+        // Map railway error codes to friendly messages
+        if (d.code === 'PRIVATE_VIDEO') errMsg = 'This video is private or unavailable.';
+        else if (d.code === 'AGE_RESTRICTED') errMsg = 'This video is age-restricted. Connect your Google account to analyze it.';
+        else if (d.code === 'BOT_DETECTED') errMsg = 'YouTube is blocking automated access. Try connecting your Google account for reliable analysis.';
+        showAnalyzeErr(errMsg, d.suggestion);
         resetBtn();
         return;
       }
@@ -6434,12 +6439,22 @@ function tryAdvUrl(inputId) {
   document.getElementById('url-input').value=url;
   startAnalysis(url);
 }
-function showAnalyzeErr(msg) {
+function showAnalyzeErr(msg, suggestion) {
   document.getElementById('loading').classList.remove('on');
   document.getElementById('atabs').classList.add('on');
   document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
   document.getElementById('apanel-results').classList.add('on');
-  document.getElementById('results').innerHTML='<div class="err-card">'+msg+'</div>';
+  var extra = '';
+  if (suggestion === 'connect_google') {
+    var u = plUser();
+    var userId = u ? u.id : '';
+    extra = '<div style="margin-top:14px;padding:14px;background:var(--bg3);border-radius:8px;border:0.5px solid var(--border2)">'
+      + '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">&#128279; Connect Google for better YouTube analysis</div>'
+      + '<div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5">Connecting your Google account bypasses YouTube bot detection and gives instant access to captions for any video.</div>'
+      + '<a href="/api/connect-youtube?userId='+userId+'" style="display:inline-block;padding:8px 16px;background:var(--navy);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">Connect Google &#8594;</a>'
+      + '</div>';
+  }
+  document.getElementById('results').innerHTML='<div class="err-card">'+msg+'</div>'+extra;
 }
 // FIX 1: Try to find a matching RSS feed on iTunes before showing recovery panel.
 // If found with high confidence (>= 0.6 word overlap), redirect to episode picker.
