@@ -1066,8 +1066,9 @@ body.player-on .lap{bottom:72px}
 /* ── SHOW PROFILE ── */
 .sp-content{max-width:1100px;margin:0 auto;padding:32px 24px}
 .sp-header{display:flex;gap:20px;margin-bottom:28px;align-items:flex-start}
-.sp-2col{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:flex-start}
-@media(max-width:900px){.sp-2col{grid-template-columns:1fr}}
+.sp-2col{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:flex-start;margin-top:28px}
+.sp-col-left,.sp-col-right{min-width:0}
+@media(max-width:960px){.sp-2col{grid-template-columns:1fr}}
 .sp-art{width:100px;height:100px;border-radius:var(--r);object-fit:cover;flex-shrink:0}
 .sp-art-ph{width:100px;height:100px;border-radius:var(--r);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
 .sp-header-body{flex:1}
@@ -7679,7 +7680,6 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
   } else {
     // Standard podcast layout
     var artHtml=artwork?'<img class="sp-art" src="'+artwork+'" alt="" onerror="this.className=\'sp-art-ph\';this.textContent=\'🎙\'">':"<div class='sp-art-ph'>&#127897;</div>";
-    html+='<div class="sp-2col"><div>';
     html+='<div class="sp-header">'+artHtml+'<div class="sp-header-body">';
     html+='<div class="sp-show-label">Podcast'+(itunes&&itunes.category?' &middot; '+itunes.category:'')+(countryFlag?' &middot; '+countryFlag:'')+'</div>';
     html+='<div class="sp-name">'+displayName+'</div>';
@@ -7709,8 +7709,34 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     html+='</div></div></div>';
   }
 
-  // Close left col, open right col for intel sections
-  html += '</div><div>';
+  // ── TWO-COLUMN LAYOUT ─────────────────────────────────────────────────────
+  // Header above is full-width. Below: left=about/host/episodes, right=bias/intel
+  html += '<div class="sp-2col"><div class="sp-col-left">';
+
+  // ABOUT THIS SHOW goes in LEFT col — moved here from below
+  if (description) {
+    var cleanedDescInline = (typeof cleanDescription === 'function') ? cleanDescription(description) : description;
+    if (cleanedDescInline && cleanedDescInline !== 'No description available.') {
+      html+='<div class="sp-section"><div class="sp-section-lbl">About this show</div>';
+      html+='<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(cleanedDescInline.slice(0,300))+(cleanedDescInline.length>300?'…':'')+'</div>';
+      html+='</div>';
+    }
+  }
+
+  // HOST goes in LEFT col
+  if (hostName) {
+    var hostInitialL = (hostName.charAt(0)||'?').toUpperCase();
+    var hostBioL = data.episodeCount > 0
+      ? 'Host of '+displayName+'. Based on '+data.episodeCount+' analyzed episode'+(data.episodeCount!==1?'s':'')+' on Podlens.'
+      : 'Host of '+displayName+'. Analyze episodes to build an intelligence profile.';
+    html += '<div class="sp-section"><div class="sp-section-lbl">Host</div>';
+    html += '<div class="sp-host-card"><div class="sp-host-avatar">'+hostInitialL+'</div>';
+    html += '<div><div class="sp-host-name">'+_escHtml(hostName)+'</div>';
+    html += '<div class="sp-host-bio">'+_escHtml(hostBioL)+'</div></div></div></div>';
+  }
+
+  html += '</div><div class="sp-col-right">';
+
   // OVERALL BIAS BAR — shown at top of intelligence section
   if (data && data.bias) {
     var b = data.bias;
@@ -7734,9 +7760,10 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:20px;color:var(--text3);font-size:13px">Bias profile builds as more episodes are analyzed.</div>';
   }
 
-  html += '</div></div>'; // close right col and 2-col grid
-  // ABOUT THIS SHOW — description from iTunes or RSS (cleaned)
-  if (description) {
+  html += '</div></div>'; // close sp-col-right and sp-2col
+
+  // ABOUT THIS SHOW — already rendered inline in left col above, skip duplicate
+  if (false && description) {
     var cleanedDesc = (typeof cleanDescription === 'function') ? cleanDescription(description) : description;
     if (cleanedDesc && cleanedDesc !== 'No description available.') {
       var needsMore = description.length > 180;
@@ -7752,8 +7779,8 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     }
   }
 
-  // HOST SECTION
-  if (hostName) {
+  // HOST SECTION — already rendered inline in left col above, skip duplicate
+  if (false && hostName) {
     var hostInitial = (hostName.charAt(0) || '?').toUpperCase();
     var hostBio = data.episodeCount > 0
       ? 'Host of ' + displayName + '. Based on ' + data.episodeCount + ' analyzed episode' + (data.episodeCount !== 1 ? 's' : '') + ' on Podlens.'
