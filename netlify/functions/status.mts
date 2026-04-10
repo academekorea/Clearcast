@@ -1,51 +1,84 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { createClient } from "@supabase/supabase-js";
 
-const ANALYSIS_PROMPT = `You are a media literacy expert analyzing a podcast transcript for bias, factual accuracy, and framing patterns.
+const ANALYSIS_PROMPT = `You are a media literacy expert analyzing a podcast transcript across six intelligence dimensions.
 
-Analyze the transcript and return a JSON object with this exact structure:
+Analyze the transcript and return a JSON object with this EXACT structure — no extra keys, no markdown:
 {
-  "biasScore": <number from -100 (far left) to +100 (far right)>,
+  "biasScore": <number -100 (far left) to +100 (far right)>,
   "biasLabel": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
   "factualityLabel": <"Mostly factual" | "Mixed factuality" | "Unreliable">,
   "omissionRisk": <"Low" | "Med" | "High">,
-  "summary": <2-3 sentence plain English summary of what this episode is about and how it leans>,
-  "biasReason": <1-2 sentences explaining exactly what language patterns drove the bias score — be specific about framing choices>,
+  "summary": <2-3 sentence plain English summary of the episode and how it leans>,
+  "biasReason": <1-2 sentences on specific language/framing choices that drove the score>,
+  "dimensions": {
+    "politicalLean": {
+      "score": <-100 to +100>,
+      "label": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
+      "note": <1 sentence: what specific framing drove this score>
+    },
+    "factualDensity": {
+      "score": <0 to 100, where 100 = every claim sourced>,
+      "label": <"High" | "Medium" | "Low">,
+      "note": <1 sentence: estimated ratio of sourced vs unsourced claims>
+    },
+    "sourceDiversity": {
+      "score": <0 to 100, where 100 = many distinct perspectives>,
+      "label": <"High" | "Medium" | "Low">,
+      "note": <1 sentence: how many distinct viewpoints or sources were cited>
+    },
+    "framingPatterns": {
+      "score": <0 to 100, where 100 = heavy loaded language>,
+      "label": <"Heavy" | "Moderate" | "Neutral">,
+      "note": <1 sentence: specific loaded words or rhetorical patterns found>
+    },
+    "hostCredibility": {
+      "score": <0 to 100, where 100 = highly credible — cites sources, corrects errors>,
+      "label": <"High" | "Medium" | "Low">,
+      "note": <1 sentence: evidence of citation quality or lack of corrections>
+    },
+    "omissionRisk": {
+      "score": <0 to 100, where 100 = high risk — major angles missing>,
+      "label": <"High" | "Medium" | "Low">,
+      "note": <1 sentence: what important perspective or fact was absent vs comparable coverage>
+    }
+  },
   "guest": {
-    "name": <full name of the main guest, or null if no clear guest>,
-    "title": <their job title e.g. "CEO" or "Senator", or null>,
-    "organization": <their company/org e.g. "NVIDIA" or "US Senate", or null>,
-    "lean": <their perceived political/ideological lean in 3-4 words e.g. "Tech-optimist lean" or "Progressive lean", or null>,
-    "episodeCount": <estimated number of times this person has appeared on this show as a string e.g. "3", or null>,
-    "twitter": <their Twitter/X handle without @, or null>,
-    "website": <their official website URL, or null>
+    "name": <full name of the main guest, or null>,
+    "title": <job title e.g. "CEO", or null>,
+    "organization": <company/org e.g. "NVIDIA", or null>,
+    "lean": <perceived lean in 3-4 words e.g. "Tech-optimist lean", or null>,
+    "episodeCount": <estimated appearances on this show as string e.g. "3", or null>,
+    "twitter": <Twitter/X handle without @, or null>,
+    "website": <official website URL, or null>
   },
   "highlights": [
     {
       "timestamp": <timestamp string e.g. "12:04" or "1:14:08">,
-      "quote": <exact verbatim quote from the transcript, under 40 words>,
+      "quote": <exact verbatim quote from transcript, under 40 words>,
       "lean": <"left" | "right" | "neutral">,
       "tag": <"Left-leaning" | "Right-leaning" | "Unverified claim" | "Disputed claim" | "Context" | "Sponsor">,
-      "reason": <1 sentence explaining why this quote leans the way it does, or what makes it notable>
+      "reason": <1 sentence explaining why this quote matters>
     }
   ],
   "flags": [
     {
       "type": <"fact-check" | "framing" | "omission" | "sponsor-note" | "context">,
       "title": <short description under 15 words>,
-      "detail": <explanation 1-2 sentences, grounded in fact>
+      "detail": <1-2 sentences grounded in verifiable fact>
     }
   ]
 }
 
 Rules:
-- highlights: extract 8-12 significant quotes. Include the moments that most directly drove the bias score. Always include both left-leaning AND right-leaning quotes if they exist. Neutral quotes should be factual claims or context-setting moments worth noting.
+- highlights: 8-12 quotes. Always include both left-leaning AND right-leaning quotes if they exist.
 - biasReason: plain English, no jargon
-- Only flag things you are highly confident about
-- Every fact-check flag must be verifiable against known public information
+- dimensions: score every dimension — never null
+- Only flag things you are highly confident about. Every fact-check must be verifiable.
 - Maximum 6 flags
-- For guest fields: only populate if confident — use null if unsure
-- Return ONLY the JSON, no other text`;
+- guest fields: null if unsure
+- Return ONLY valid JSON, nothing else`;
 
 // ── SMART TRANSCRIPT SAMPLING ─────────────────────────────────────────────────
 // For long episodes, sample beginning + middle + end instead of just truncating.
@@ -212,6 +245,7 @@ export default async (req: Request) => {
     showName: job.showName || "",
     duration: audioDuration ? `${Math.round(audioDuration / 60)} min` : "Unknown",
     ...analysis,
+    dimensions: analysis.dimensions || null,
     guest: analysis.guest || null,
     analyzeCount: 1,
     firstAnalyzedAt: Date.now(),
@@ -244,6 +278,63 @@ export default async (req: Request) => {
     canonicalKey: job.canonicalKey || jobId,
     url: job.url,
   });
+
+  // ── Supabase dual-write (data flywheel) ───────────────────────────────────
+  // Writes to analyses table for trend charts, echo chamber, fingerprints.
+  // Non-blocking — never fails the response if Supabase is down.
+  const supabaseUrl = Netlify.env.get("SUPABASE_URL");
+  const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (supabaseUrl && supabaseKey) {
+    try {
+      const supabase = createClient(supabaseUrl, supabaseKey, {
+        auth: { persistSession: false },
+      });
+
+      const dim = result.dimensions || {};
+
+      // Upsert by canonical key — community cache deduplicates repeated analyses
+      await supabase.from("analyses").upsert({
+        job_id:               jobId,
+        canonical_key:        job.canonicalKey || jobId,
+        url:                  job.url || "",
+        episode_title:        result.episodeTitle,
+        show_name:            result.showName,
+        bias_score:           result.biasScore,
+        bias_label:           result.biasLabel,
+        factuality_label:     result.factualityLabel || null,
+        omission_risk:        result.omissionRisk || null,
+        summary:              result.summary || null,
+        bias_reason:          result.biasReason || null,
+        // 6 dimensions
+        dim_political_lean:   dim.politicalLean?.score   ?? null,
+        dim_factual_density:  dim.factualDensity?.score  ?? null,
+        dim_source_diversity: dim.sourceDiversity?.score ?? null,
+        dim_framing_patterns: dim.framingPatterns?.score ?? null,
+        dim_host_credibility: dim.hostCredibility?.score ?? null,
+        dim_omission_risk:    dim.omissionRisk?.score    ?? null,
+        analyzed_at:          new Date().toISOString(),
+      }, { onConflict: "canonical_key" });
+
+      // Log the analysis event for per-user data flywheel
+      if (job.userId) {
+        await supabase.from("events").insert({
+          user_id:    job.userId,
+          event_type: "analysis_complete",
+          metadata: {
+            jobId,
+            canonicalKey: job.canonicalKey,
+            showName: result.showName,
+            biasScore: result.biasScore,
+            biasLabel: result.biasLabel,
+          },
+          created_at: new Date().toISOString(),
+        });
+      }
+    } catch (sbErr) {
+      // Supabase write failed — log but never break the response
+      console.error("[status] Supabase dual-write failed:", sbErr);
+    }
+  }
 
   return new Response(JSON.stringify(result), { status: 200, headers: { "Content-Type": "application/json" } });
 };

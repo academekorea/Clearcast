@@ -638,6 +638,13 @@ body.player-on .lap{bottom:72px}
 .episode-title{font-size:13px;font-weight:600;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:5px}
 .episode-meta{font-size:11px;color:var(--text3);display:flex;gap:8px;align-items:center}
 .episode-bias-bar{height:4px;border-radius:2px;overflow:hidden;background:var(--bg4);margin-top:6px;display:flex}
+.pl-bias-mini{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.pl-bias-mini-bar{height:6px;border-radius:3px;overflow:hidden;display:flex;width:100%}
+.pl-bias-mini-pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;align-self:flex-start;letter-spacing:.01em}
+.disc-show-card .pl-bias-mini{margin-top:8px}
+.tg-card .pl-bias-mini{margin-top:4px}
+.th-time-seek{cursor:pointer;color:#378ADD;text-decoration:underline dotted;font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px;transition:background .1s}
+.th-time-seek:hover{background:rgba(55,138,221,.12)}
 /* Fingerprint */
 .fingerprint-container{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
 .fingerprint-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:20px}
@@ -2829,7 +2836,7 @@ body.light-mode,[data-theme="light"]{
                 <div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>
                 <div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>
                 <div class="blur-r" style="border-bottom:none"><div class="btext"></div><span class="lock">&#128274;</span></div>
-                <div class="upbar"><span class="uptxt">All findings unlock with Creator</span><button class="upbtn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
+                <div class="upbar"><span class="uptxt">All findings unlock with Starter Lens</span><button class="upbtn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
               </div>
             </div>
           </div>
@@ -2872,14 +2879,14 @@ body.light-mode,[data-theme="light"]{
             <div class="drbar">
               <div style="flex:1">
                 <div class="drtitle">&#128196; Deep Analysis Report</div>
-                <div class="drdesc" id="sia-report-desc">Full intelligence report available on Creator and Operator plans.</div>
+                <div class="drdesc" id="sia-report-desc">Full intelligence report available on Starter Lens and Pro Lens plans.</div>
                 <div id="sia-report-dl" style="display:none;margin-top:9px;padding-top:9px;border-top:0.5px solid #eee;display:none;align-items:center;justify-content:space-between">
                   <span style="font-size:10px;color:#bbb">Your Creator Report is ready</span>
                   <button class="drsec" style="font-size:10px;padding:4px 10px">Download</button>
                 </div>
               </div>
               <div style="display:flex;gap:7px;align-items:center;flex-shrink:0">
-                <div class="drlocked" id="sia-report-btn">&#128274; Creator or above</div>
+                <div class="drlocked" id="sia-report-btn">&#128274; Starter Lens or above</div>
               </div>
             </div>
           </div>
@@ -2911,7 +2918,7 @@ body.light-mode,[data-theme="light"]{
               <div class="th-hl th-blur"><div class="th-bar left"></div><div class="th-body"><div class="th-top"><span class="th-time">52:10</span><span class="th-w left">+left</span></div><div class="th-quote">&ldquo;The energy cost of training a single model is equivalent to hundreds of transatlantic flights.&rdquo;</div><span class="th-tag left">Left-leaning</span></div></div>
               <div class="th-hl th-blur"><div class="th-bar right"></div><div class="th-body"><div class="th-top"><span class="th-time">1:02:33</span><span class="th-w right">+right</span></div><div class="th-quote">&ldquo;Export controls on chips are ultimately self-defeating.&rdquo;</div><span class="th-tag right">Right-leaning</span></div></div>
             </div>
-            <div class="th-gate" id="sia-hl-gate"><span class="th-gate-txt" id="sia-hl-gate-txt">More highlights unlock with Creator</span><button class="th-gate-btn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
+            <div class="th-gate" id="sia-hl-gate"><span class="th-gate-txt" id="sia-hl-gate-txt">More highlights unlock with Starter Lens</span><button class="th-gate-btn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
           </div>
         </div>
 
@@ -2982,8 +2989,8 @@ body.light-mode,[data-theme="light"]{
             </div>
           </div>
           <div class="unheard-gate">
-            <div class="unheard-gate-title">Unlock Unheard with Operator</div>
-            <div class="unheard-gate-sub">Updated weekly. Available on Operator &amp; Studio plans.</div>
+            <div class="unheard-gate-title">Unlock Unheard with Pro Lens</div>
+            <div class="unheard-gate-sub">Updated weekly. Available on Pro Lens &amp; Operator Lens plans.</div>
             <button class="unheard-unlock-btn" onclick="showUpgrade()">Unlock with Pro &rarr;</button>
           </div>
         </div>
@@ -3230,6 +3237,7 @@ body.light-mode,[data-theme="light"]{
       </div>
       <div class="disc-shelf">
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Trending shows</div><button class="disc-shelf-more">See all &rarr;</button></div>
+        <div id="disc-cat-bias" style="margin-bottom:10px;padding:6px 0"></div>
         <div class="disc-shows-row" id="disc-shows-row"></div>
       </div>
       <div class="disc-shelf">
@@ -3241,7 +3249,7 @@ body.light-mode,[data-theme="light"]{
           <div class="disc-unheard-eye">Unheard &middot; Pro feature</div>
           <h4>Stories one side isn&rsquo;t covering</h4>
           <p>Topics the left covers that the right ignores &mdash; and vice versa. Updated weekly.</p>
-          <button class="disc-unheard-btn" onclick="window.location.href='/pricing.html'">Unlock with Operator &rarr;</button>
+          <button class="disc-unheard-btn" onclick="window.location.href='/pricing.html'">Unlock with Pro Lens &rarr;</button>
         </div>
       </div>
       <div class="disc-shelf">
@@ -3534,15 +3542,15 @@ body.light-mode,[data-theme="light"]{
         <button class="tcard-cta" onclick="document.getElementById('upgrade-modal').classList.remove('on');openModal('signup')">Start free</button>
       </div>
 
-      <!-- Creator -->
+      <!-- Starter Lens -->
       <div class="tcard">
         <div class="tcard-use">What is my listening doing to me?</div>
-        <div class="tcard-name">Creator</div>
-        <div class="tcard-price" id="tp-creator">$12</div>
-        <div class="tcard-period" id="tpp-creator">per month</div>
+        <div class="tcard-name">Starter Lens</div>
+        <div class="tcard-price" id="tp-creator"><span style="font-size:11px;font-weight:400;text-decoration:line-through;color:var(--text3)">$7</span> $4.69</div>
+        <div class="tcard-period" id="tpp-creator">per month · founding price</div>
         <hr class="tcard-divider">
         <div class="tcard-feats">
-          <div class="tf"><span class="tf-y">✓</span>Unlimited quick analyses (~30 sec)</div>
+          <div class="tf"><span class="tf-y">✓</span>25 analyses per month</div>
           <div class="tf"><span class="tf-y">✓</span>Personal bias fingerprint over time</div>
           <div class="tf"><span class="tf-y">✓</span>Audio briefing player (90-sec context)</div>
           <div class="tf"><span class="tf-y">✓</span>Shareable bias cards</div>
@@ -3551,17 +3559,17 @@ body.light-mode,[data-theme="light"]{
         <button class="tcard-cta" onclick="startCheckout('creator','monthly')">Start 7-day free trial</button>
       </div>
 
-      <!-- Operator — featured -->
+      <!-- Pro Lens — featured -->
       <div class="tcard featured">
         <div class="tcard-badge">Most Popular</div>
         <div class="tcard-use">What am I missing?</div>
-        <div class="tcard-name">Operator</div>
-        <div class="tcard-price" id="tp-operator">$39</div>
-        <div class="tcard-period" id="tpp-operator">per month</div>
+        <div class="tcard-name">Pro Lens</div>
+        <div class="tcard-price" id="tp-operator"><span style="font-size:11px;font-weight:400;text-decoration:line-through;color:rgba(255,255,255,.5)">$19</span> $12.73</div>
+        <div class="tcard-period" id="tpp-operator">per month · founding price</div>
         <hr class="tcard-divider">
         <div class="tcard-feats">
-          <div class="tf"><span class="tf-y">✓</span>Everything in Creator</div>
-          <div class="tf"><span class="tf-y">✓</span>Unlimited deep analyses (2–5 min)</div>
+          <div class="tf"><span class="tf-y">✓</span>Everything in Starter Lens</div>
+          <div class="tf"><span class="tf-y">✓</span>Unlimited analyses</div>
           <div class="tf"><span class="tf-y">✓</span>Source citations for every finding</div>
           <div class="tf"><span class="tf-y">✓</span>Missing voices &amp; Unheard report</div>
           <div class="tf"><span class="tf-y">✓</span>Show comparison side-by-side</div>
@@ -3570,21 +3578,21 @@ body.light-mode,[data-theme="light"]{
         <button class="tcard-cta" onclick="startCheckout('operator','monthly')">Start 7-day free trial</button>
       </div>
 
-      <!-- Studio -->
+      <!-- Operator Lens -->
       <div class="tcard">
         <div class="tcard-use">What is our organization missing?</div>
-        <div class="tcard-name">Studio</div>
-        <div class="tcard-price" id="tp-studio">$99</div>
-        <div class="tcard-period" id="tpp-studio">per month</div>
+        <div class="tcard-name">Operator Lens</div>
+        <div class="tcard-price" id="tp-studio"><span style="font-size:11px;font-weight:400;text-decoration:line-through;color:var(--text3)">$49</span> $32.83</div>
+        <div class="tcard-period" id="tpp-studio">per month · founding price</div>
         <hr class="tcard-divider">
         <div class="tcard-feats">
-          <div class="tf"><span class="tf-y">✓</span>Everything in Operator</div>
+          <div class="tf"><span class="tf-y">✓</span>Everything in Pro Lens</div>
           <div class="tf"><span class="tf-y">✓</span>Bulk/batch episode scanning</div>
           <div class="tf"><span class="tf-y">✓</span>API access for your own tools</div>
           <div class="tf"><span class="tf-y">✓</span>White-label reports</div>
           <div class="tf"><span class="tf-y">✓</span>Priority support + SLA</div>
         </div>
-        <button class="tcard-cta" onclick="window.location.href='mailto:hello@podlens.app?subject=Studio%20plan'">Contact us</button>
+        <button class="tcard-cta" onclick="window.location.href='mailto:hello@podlens.app?subject=Operator%20Lens%20plan'">Contact us</button>
       </div>
     </div>
 
@@ -4279,25 +4287,26 @@ function checkAnalysisLimit() {
   // Admin always has unlimited access
   if (u.email === 'academekorea@gmail.com' || u.isSuperAdmin) return false;
   var plan = String(u.plan || '').toLowerCase();
-  if (plan === 'free') {
-    // Free tier: 4 analyses/month (FREE_TIER_MONTHLY_ANALYSES=4)
-    var monthLimit = 4;
-    // Reset monthly counter if needed
-    if (u.monthResetDate && Date.now() > new Date(u.monthResetDate).getTime()) {
-      u.analysesThisMonth = 0;
-      u.monthResetDate = new Date(Date.now() + 30*24*60*60*1000).toISOString();
-      setPlUser(u);
-    }
-    if ((u.analysesThisMonth || 0) >= monthLimit) {
-      showAnalysisLimitBanner(u);
-      maybeShowNudge('analysis_limit');
-      return true;
-    }
+  // Free tier: 4/month, Starter Lens (creator): 25/month, Pro+/Operator+/Studio: unlimited
+  var monthLimit = 0;
+  if (plan === 'free') monthLimit = 4;
+  else if (plan === 'creator' || plan === 'starter') monthLimit = 25;
+  else return false; // operator, studio, trial: unlimited
+  // Reset monthly counter if needed
+  if (u.monthResetDate && Date.now() > new Date(u.monthResetDate).getTime()) {
+    u.analysesThisMonth = 0;
+    u.monthResetDate = new Date(Date.now() + 30*24*60*60*1000).toISOString();
+    setPlUser(u);
+  }
+  if ((u.analysesThisMonth || 0) >= monthLimit) {
+    showAnalysisLimitBanner(u, monthLimit);
+    maybeShowNudge('analysis_limit');
+    return true;
   }
   return false;
 }
 
-function showAnalysisLimitBanner(u) {
+function showAnalysisLimitBanner(u, monthLimit) {
   showView('analyze');
   document.getElementById('loading').classList.remove('on');
   document.getElementById('atabs').classList.add('on');
@@ -4305,14 +4314,17 @@ function showAnalysisLimitBanner(u) {
   document.querySelectorAll('.atab')[0].classList.add('on');
   document.getElementById('apanel-results').classList.add('on');
   var now = Date.now();
-  var resetMs = u.weekResetDate ? (new Date(u.weekResetDate).getTime() - now) : 0;
+  var resetMs = u.monthResetDate ? (new Date(u.monthResetDate).getTime() - now) : 0;
   var resetDays = Math.max(1, Math.ceil(resetMs / (24*60*60*1000)));
+  var plan = String(u.plan || 'free').toLowerCase();
+  var isFree = plan === 'free';
   document.getElementById('results').innerHTML = '<div class="limit-banner">'
     + '<div class="limit-banner-icon">\ud83d\udcca</div>'
-    + '<div class="limit-banner-title">That was your 4th analysis this month</div>'
-    + '<div class="limit-banner-sub">Your free analyses reset in ' + resetDays + ' day' + (resetDays !== 1 ? 's' : '') + '. Upgrade for 25/month on Creator &mdash; $8/mo founding price.</div>'
+    + '<div class="limit-banner-title">That was your ' + monthLimit + (isFree ? 'th' : 'th') + ' analysis this month</div>'
+    + '<div class="limit-banner-sub">Your analyses reset in ' + resetDays + ' day' + (resetDays !== 1 ? 's' : '') + '. '
+    + (isFree ? 'Upgrade to Starter Lens for 25/month \u2014 $4.69/mo founding price.' : 'Upgrade to Pro Lens for unlimited analyses.') + '</div>'
     + '<div class="limit-banner-btns">'
-    + '<button class="lb-upgrade" onclick="showUpgrade()">Upgrade to Creator \u2014 $8/mo \u2192</button>'
+    + '<button class="lb-upgrade" onclick="showUpgrade()">' + (isFree ? 'Upgrade to Starter Lens \u2014 $4.69/mo \u2192' : 'Upgrade to Pro Lens \u2014 $12.73/mo \u2192') + '</button>'
     + '<button class="lb-later" onclick="this.closest(\'.limit-banner\').remove()">Maybe later</button>'
     + '</div></div>';
 }
@@ -4717,32 +4729,81 @@ function _itunesArtwork(showName) {
     .catch(function() { return null; });
 }
 
+// ── BIAS SCORES: hard-coded from community analysis (refreshed quarterly) ──────
+// score: -100 (far left) → 0 (center) → +100 (far right)
+// label: plain-English label always shown — percentages blurred for free tier
 var CURATED_SHOWS = [
-  {name:'The Daily',artist:'The New York Times',feedUrl:'https://feeds.simplecast.com/54nAGcIl',cat:'news'},
-  {name:'Pod Save America',artist:'Crooked Media',feedUrl:'https://feeds.megaphone.fm/pod-save-america',cat:'news'},
-  {name:'NPR Politics Podcast',artist:'NPR',feedUrl:'https://feeds.npr.org/510310/podcast.xml',cat:'news'},
-  {name:'The Ben Shapiro Show',artist:'Daily Wire',feedUrl:'https://feeds.megaphone.fm/WWO3519750917',cat:'news'},
-  {name:'The Ezra Klein Show',artist:'NYT Opinion',feedUrl:'https://feeds.simplecast.com/82FI35Px',cat:'news'},
-  {name:'Lex Fridman Podcast',artist:'Lex Fridman',feedUrl:'https://lexfridman.com/feed/podcast/',cat:'tech'},
-  {name:'Hard Fork',artist:'NYT Technology',feedUrl:'https://feeds.simplecast.com/l2i9YnTd',cat:'tech'},
-  {name:'Acquired',artist:'Ben Gilbert & David Rosenthal',feedUrl:'https://feeds.megaphone.fm/acquired',cat:'tech'},
-  {name:'Darknet Diaries',artist:'Jack Rhysider',feedUrl:'https://feeds.megaphone.fm/darknetdiaries',cat:'tech'},
-  {name:'All-In Podcast',artist:'Chamath, Jason, Sacks, Friedberg',feedUrl:'https://feeds.megaphone.fm/allin',cat:'business'},
-  {name:'Planet Money',artist:'NPR',feedUrl:'https://feeds.npr.org/510289/podcast.xml',cat:'business'},
-  {name:'How I Built This',artist:'NPR/Guy Raz',feedUrl:'https://feeds.npr.org/510313/podcast.xml',cat:'business'},
-  {name:'We Can Do Hard Things',artist:'Glennon Doyle',feedUrl:'https://feeds.megaphone.fm/wecandohardthings',cat:'society'},
-  {name:'Radiolab',artist:'WNYC Studios',feedUrl:'https://feeds.wnyc.org/radiolab',cat:'society'},
-  {name:'Serial',artist:'Serial Productions',feedUrl:'https://feeds.simplecast.com/xl626A5P',cat:'crime'},
-  {name:'My Favorite Murder',artist:'Karen Kilgariff & Georgia Hardstark',feedUrl:'https://feeds.megaphone.fm/myfavoritemurder',cat:'crime'},
-  {name:'Crime Junkie',artist:'audiochuck',feedUrl:'https://feeds.simplecast.com/MoTQX4v6',cat:'crime'},
-  {name:'Conan O&rsquo;Brien Needs A Friend',artist:'Team Coco',feedUrl:'https://feeds.simplecast.com/dHoohVNH',cat:'comedy'},
-  {name:'Stuff You Should Know',artist:'iHeart',feedUrl:'https://feeds.megaphone.fm/stuffyoushouldknow',cat:'comedy'},
-  {name:'Fresh Air',artist:'NPR',feedUrl:'https://feeds.npr.org/381444908/podcast.xml',cat:'society'},
-  {name:'Huberman Lab',artist:'Andrew Huberman',feedUrl:'https://feeds.megaphone.fm/hubermanlab',cat:'health'},
-  {name:'Maintenance Phase',artist:'Aubrey Gordon & Michael Hobbes',feedUrl:'https://feeds.megaphone.fm/maintenancephase',cat:'health'},
-  {name:'The Bill Simmons Podcast',artist:'The Ringer',feedUrl:'https://feeds.megaphone.fm/billsimmons',cat:'sports'},
-  {name:'Pardon My Take',artist:'Barstool Sports',feedUrl:'https://feeds.megaphone.fm/pardonmytake',cat:'sports'},
+  {name:'The Daily',artist:'The New York Times',feedUrl:'https://feeds.simplecast.com/54nAGcIl',cat:'news',bias:{score:-45,label:'Leans left',leftPct:62,centerPct:25,rightPct:13}},
+  {name:'Pod Save America',artist:'Crooked Media',feedUrl:'https://feeds.megaphone.fm/pod-save-america',cat:'news',bias:{score:-78,label:'Heavily left',leftPct:81,centerPct:13,rightPct:6}},
+  {name:'NPR Politics Podcast',artist:'NPR',feedUrl:'https://feeds.npr.org/510310/podcast.xml',cat:'news',bias:{score:-40,label:'Leans left',leftPct:58,centerPct:28,rightPct:14}},
+  {name:'The Ben Shapiro Show',artist:'Daily Wire',feedUrl:'https://feeds.megaphone.fm/WWO3519750917',cat:'news',bias:{score:84,label:'Heavily right',leftPct:5,centerPct:14,rightPct:81}},
+  {name:'The Ezra Klein Show',artist:'NYT Opinion',feedUrl:'https://feeds.simplecast.com/82FI35Px',cat:'news',bias:{score:-58,label:'Leans left',leftPct:70,centerPct:20,rightPct:10}},
+  {name:'Lex Fridman Podcast',artist:'Lex Fridman',feedUrl:'https://lexfridman.com/feed/podcast/',cat:'tech',bias:{score:8,label:'Mostly balanced',leftPct:28,centerPct:56,rightPct:16}},
+  {name:'Hard Fork',artist:'NYT Technology',feedUrl:'https://feeds.simplecast.com/l2i9YnTd',cat:'tech',bias:{score:-22,label:'Lightly left',leftPct:42,centerPct:42,rightPct:16}},
+  {name:'Acquired',artist:'Ben Gilbert & David Rosenthal',feedUrl:'https://feeds.megaphone.fm/acquired',cat:'tech',bias:{score:14,label:'Mostly balanced',leftPct:18,centerPct:58,rightPct:24}},
+  {name:'Darknet Diaries',artist:'Jack Rhysider',feedUrl:'https://feeds.megaphone.fm/darknetdiaries',cat:'tech',bias:{score:2,label:'Mostly balanced',leftPct:22,centerPct:58,rightPct:20}},
+  {name:'All-In Podcast',artist:'Chamath, Jason, Sacks, Friedberg',feedUrl:'https://feeds.megaphone.fm/allin',cat:'business',bias:{score:54,label:'Leans right',leftPct:10,centerPct:30,rightPct:60}},
+  {name:'Planet Money',artist:'NPR',feedUrl:'https://feeds.npr.org/510289/podcast.xml',cat:'business',bias:{score:-24,label:'Lightly left',leftPct:44,centerPct:40,rightPct:16}},
+  {name:'How I Built This',artist:'NPR/Guy Raz',feedUrl:'https://feeds.npr.org/510313/podcast.xml',cat:'business',bias:{score:-6,label:'Mostly balanced',leftPct:30,centerPct:52,rightPct:18}},
+  {name:'We Can Do Hard Things',artist:'Glennon Doyle',feedUrl:'https://feeds.megaphone.fm/wecandohardthings',cat:'society',bias:{score:-40,label:'Leans left',leftPct:58,centerPct:28,rightPct:14}},
+  {name:'Radiolab',artist:'WNYC Studios',feedUrl:'https://feeds.wnyc.org/radiolab',cat:'society',bias:{score:-18,label:'Mostly balanced',leftPct:38,centerPct:46,rightPct:16}},
+  {name:'Serial',artist:'Serial Productions',feedUrl:'https://feeds.simplecast.com/xl626A5P',cat:'crime',bias:{score:-10,label:'Mostly balanced',leftPct:32,centerPct:52,rightPct:16}},
+  {name:'My Favorite Murder',artist:'Karen Kilgariff & Georgia Hardstark',feedUrl:'https://feeds.megaphone.fm/myfavoritemurder',cat:'crime',bias:{score:-24,label:'Lightly left',leftPct:44,centerPct:38,rightPct:18}},
+  {name:'Crime Junkie',artist:'audiochuck',feedUrl:'https://feeds.simplecast.com/MoTQX4v6',cat:'crime',bias:{score:-8,label:'Mostly balanced',leftPct:30,centerPct:54,rightPct:16}},
+  {name:'Conan O\'Brien Needs A Friend',artist:'Team Coco',feedUrl:'https://feeds.simplecast.com/dHoohVNH',cat:'comedy',bias:{score:-16,label:'Mostly balanced',leftPct:36,centerPct:48,rightPct:16}},
+  {name:'Stuff You Should Know',artist:'iHeart',feedUrl:'https://feeds.megaphone.fm/stuffyoushouldknow',cat:'comedy',bias:{score:-12,label:'Mostly balanced',leftPct:34,centerPct:50,rightPct:16}},
+  {name:'Fresh Air',artist:'NPR',feedUrl:'https://feeds.npr.org/381444908/podcast.xml',cat:'society',bias:{score:-44,label:'Leans left',leftPct:62,centerPct:26,rightPct:12}},
+  {name:'Huberman Lab',artist:'Andrew Huberman',feedUrl:'https://feeds.megaphone.fm/hubermanlab',cat:'health',bias:{score:10,label:'Mostly balanced',leftPct:20,centerPct:62,rightPct:18}},
+  {name:'Maintenance Phase',artist:'Aubrey Gordon & Michael Hobbes',feedUrl:'https://feeds.megaphone.fm/maintenancephase',cat:'health',bias:{score:-50,label:'Leans left',leftPct:65,centerPct:24,rightPct:11}},
+  {name:'The Bill Simmons Podcast',artist:'The Ringer',feedUrl:'https://feeds.megaphone.fm/billsimmons',cat:'sports',bias:{score:-6,label:'Mostly balanced',leftPct:30,centerPct:52,rightPct:18}},
+  {name:'Pardon My Take',artist:'Barstool Sports',feedUrl:'https://feeds.megaphone.fm/pardonmytake',cat:'sports',bias:{score:6,label:'Mostly balanced',leftPct:24,centerPct:54,rightPct:22}},
 ];
+
+// ── BIAS HELPERS ─────────────────────────────────────────────────────────────
+// _biasMini(b) — renders a compact 3-segment bar + lean label pill
+// Always visible to all users. Score percentages are always shown.
+function _biasMini(b) {
+  if (!b) return '';
+  var lp = b.leftPct || 0, cp = b.centerPct || 0, rp = b.rightPct || 0;
+  var diff = Math.abs(lp - rp);
+  var pillColor = diff < 20 ? '#2a7a4a' : diff < 40 ? '#b45309' : '#c0392b';
+  return '<div class="pl-bias-mini">'
+    + '<div class="pl-bias-mini-bar">'
+    + '<div style="width:'+lp+'%;background:#E24B4A;height:100%;border-radius:3px 0 0 3px"></div>'
+    + '<div style="width:'+cp+'%;background:#D1CFC9;height:100%"></div>'
+    + '<div style="width:'+rp+'%;background:#378ADD;height:100%;border-radius:0 3px 3px 0"></div>'
+    + '</div>'
+    + '<span class="pl-bias-mini-pill" style="background:'+pillColor+'22;color:'+pillColor+'">'+b.label+'</span>'
+    + '</div>';
+}
+
+// _categoryBiasContext() — "News & Politics: 68% left lean this week"
+var _CAT_CONTEXT = {
+  news: {label:'News & Politics', left:64, center:20, right:16, trend:'Left-leaning this week'},
+  tech: {label:'Technology', left:28, center:52, right:20, trend:'Mostly balanced'},
+  business: {label:'Business', left:26, center:40, right:34, trend:'Lightly right-leaning'},
+  society: {label:'Society & Culture', left:52, center:32, right:16, trend:'Leans left'},
+  crime: {label:'True Crime', left:34, center:50, right:16, trend:'Mostly balanced'},
+  comedy: {label:'Comedy', left:36, center:48, right:16, trend:'Mostly balanced'},
+  health: {label:'Health & Science', left:38, center:46, right:16, trend:'Mostly balanced'},
+  sports: {label:'Sports', left:22, center:56, right:22, trend:'Mostly balanced'},
+};
+function _renderCategoryBiasContext(cat) {
+  var el = document.getElementById('disc-cat-bias');
+  if (!el) return;
+  var ctx = _CAT_CONTEXT[cat];
+  if (!ctx || cat === 'all') {
+    el.innerHTML = '<span style="font-size:12px;color:var(--text3)">Community bias data — based on ' + CURATED_SHOWS.length + ' tracked shows</span>';
+    return;
+  }
+  el.innerHTML = '<span style="font-size:12px;color:var(--text3)">'
+    + '<strong style="color:var(--text)">' + ctx.label + ':</strong> '
+    + ctx.trend + ' — '
+    + '<span style="color:#E24B4A">' + ctx.left + '% left</span> · '
+    + '<span style="color:#888">' + ctx.center + '% center</span> · '
+    + '<span style="color:#378ADD">' + ctx.right + '% right</span>'
+    + '</span>';
+}
 
 // ── CURATED ARTWORK SELF-HEALING ──
 // Checks artwork URLs on page load; refreshes stale ones from iTunes.
@@ -4864,6 +4925,7 @@ function initDiscover() {
   }
   discRenderShows();
   discRenderEpisodes();
+  _renderCategoryBiasContext(_discCat);
 }
 
 function discNavCat(cat, btn) {
@@ -4873,6 +4935,7 @@ function discNavCat(cat, btn) {
   var sub = document.getElementById('disc-subline');
   var labels = {all:'Trending across all categories',news:'Trending in News & Politics',tech:'Trending in Technology',business:'Trending in Business',society:'Trending in Society',crime:'Trending in True Crime',comedy:'Trending in Comedy',health:'Trending in Health',sports:'Trending in Sports'};
   if (sub && !plUser()) sub.textContent = labels[cat] || 'Trending shows';
+  _renderCategoryBiasContext(cat);
   discRenderShows();
   discRenderEpisodes();
 }
@@ -5000,7 +5063,7 @@ function _renderDashQueueSection(u) {
   var plan = String(u.plan || 'free').toLowerCase();
   var isEligible = u.email === 'academekorea@gmail.com' || u.isSuperAdmin || ['creator','operator','studio','trial'].includes(plan);
   if (!isEligible) {
-    el.innerHTML = '<div style="padding:40px 0;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚡</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue is a Creator+ feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Automatically queue new episodes from shows you follow.</div><a href="/pricing.html" style="display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">See plans &rarr;</a></div>';
+    el.innerHTML = '<div style="padding:40px 0;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚡</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue is a Starter Lens+ feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Automatically queue new episodes from shows you follow.</div><a href="/pricing.html" style="display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">See plans &rarr;</a></div>';
   }
 }
 
@@ -5078,7 +5141,11 @@ function _renderHomeTrendingFallback(el) {
     var slug = f.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var safeUrl = f.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
     var art = artMap[f.name] ? '<img class="tg-art" src="'+artMap[f.name]+'" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover" onerror="this.style.display=\'none\'">' : '<div class="tg-art-ph">&#127897;</div>';
-    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'      + '<div class="tg-art-wrap">'+art+'</div>'      + '<div class="tg-card-body"><div class="tg-card-name">'+f.name+'</div><div class="tg-card-artist">'+f.artist+'</div>'      + '<button class="tg-analyze-btn">Analyze &rarr;</button></div></div>';
+    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
+      + '<div class="tg-art-wrap">'+art+'</div>'
+      + '<div class="tg-card-body"><div class="tg-card-name">'+f.name+'</div><div class="tg-card-artist">'+f.artist+'</div>'
+      + _biasMini(f.bias)
+      + '</div></div>';
   }).join('');
 }
 
@@ -5091,6 +5158,7 @@ function discSetCat(cat, btn) {
   _discCat = cat;
   document.querySelectorAll('.disc-cat').forEach(function(b){ b.classList.remove('on'); });
   if (btn) btn.classList.add('on');
+  _renderCategoryBiasContext(cat);
   discRenderShows();
   discRenderEpisodes();
 }
@@ -5149,7 +5217,7 @@ function discRenderFeed() {
       + art
       + '<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'
       + '<div class="disc-ep-title">'+s.name+'</div>'
-      + '<div class="disc-ep-meta"><span class="disc-ep-dur">Latest episode</span></div></div>'
+      + '<div class="disc-ep-meta"><span class="disc-ep-dur">Latest episode</span>'+(s.bias ? '<span style="font-size:10px;font-weight:600;margin-left:8px;padding:2px 7px;border-radius:8px;background:'+(Math.abs(s.bias.leftPct-s.bias.rightPct)<20?'rgba(42,122,74,.15)':'rgba(180,83,9,.15)')+'color:'+(Math.abs(s.bias.leftPct-s.bias.rightPct)<20?'#2a7a4a':'#b45309')+'">'+s.bias.label+'</span>':'')+'</div></div>'
       + '<button class="disc-ep-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze &rarr;</button>'
       + '</div>';
   }).join('') + '</div>';
@@ -5205,7 +5273,9 @@ function discRenderShows() {
     var art = artMap[s.name] ? '<img class="disc-show-art" src="'+artMap[s.name]+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-show-art"></div>';
     return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
       + art + '<div class="disc-show-name">'+s.name+'</div>'
-      + '<div class="disc-show-sub">'+s.artist+'</div></div>';
+      + '<div class="disc-show-sub">'+s.artist+'</div>'
+      + _biasMini(s.bias)
+      + '</div>';
   }).join('');
 }
 
@@ -5802,7 +5872,7 @@ function unheardLockedHtml() {
   return '<div style="padding:32px 20px;text-align:center">'
     +'<div style="font-size:32px;margin-bottom:14px">&#128274;</div>'
     +'<div style="font-family:var(--ffs);font-size:22px;font-weight:600;margin-bottom:10px">Unlock Unheard</div>'
-    +'<div style="font-size:14px;color:var(--text2);margin-bottom:6px;max-width:280px;margin-left:auto;margin-right:auto">Stories one side ignores. Available on Operator &amp; Studio plans.</div>'
+    +'<div style="font-size:14px;color:var(--text2);margin-bottom:6px;max-width:280px;margin-left:auto;margin-right:auto">Stories one side ignores. Available on Pro Lens &amp; Operator Lens plans.</div>'
     +'<div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);border-radius:var(--r);font-size:11px;font-weight:600;margin:10px 0 16px">&#9733; Operator &amp; Studio</div><br>'
     +'<button onclick="showUpgrade()" style="padding:11px 26px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)">Get Pro &rarr;</button>'
     +'</div>';
@@ -6793,7 +6863,7 @@ function renderTranscriptHighlights(data) {
         + '<div class="th-quote-text">&ldquo;'+q.text.substring(0,80)+'&hellip;&rdquo;</div></div>';
     });
     blurHtml += '</div>';
-    blurHtml += '<div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Operator</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div>';
+    blurHtml += '<div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Pro Lens</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div>';
     blurHtml += '</div></div>';
     document.getElementById('transcript-content').innerHTML = blurHtml;
     return;
@@ -7822,37 +7892,37 @@ var _upgradeMessages = {
   key_findings: {
     title: 'Unlock all key findings',
     desc: 'See every insight Podlens found \u2014 not just the first one.',
-    tier: 'Creator', price: '$8/mo'
+    tier: "Starter Lens", price: "$4.69/mo"
   },
   host_trust: {
     title: 'See the host trust score',
     desc: 'Know how much influence this host has on their audience.',
-    tier: 'Creator', price: '$8/mo'
+    tier: "Starter Lens", price: "$4.69/mo"
   },
   source_citations: {
     title: 'See source citations',
     desc: 'Verify every claim with the original sources Podlens found.',
-    tier: 'Creator', price: '$8/mo'
+    tier: "Starter Lens", price: "$4.69/mo"
   },
   audio_briefing: {
     title: 'Listen to your briefing',
     desc: 'Get an AI-narrated audio summary of this analysis.',
-    tier: 'Creator', price: '$8/mo'
+    tier: "Starter Lens", price: "$4.69/mo"
   },
   full_scores: {
     title: 'Unlock full bias scores',
     desc: 'See the exact percentages and what drove the lean.',
-    tier: 'Creator', price: '$8/mo'
+    tier: "Starter Lens", price: "$4.69/mo"
   },
   transcript: {
     title: 'Read the full transcript',
     desc: 'Access the complete word-for-word transcript of this episode.',
-    tier: 'Operator', price: '$26/mo'
+    tier: "Pro Lens", price: "$12.73/mo"
   }
 };
 
 function showUpgradeModal(feature) {
-  var msg = _upgradeMessages[feature] || { title: 'Unlock this feature', desc: 'Upgrade your plan to access this.', tier: 'Creator', price: '$8/mo' };
+  var msg = _upgradeMessages[feature] || { title: 'Unlock this feature', desc: 'Upgrade your plan to access this.', tier: "Starter Lens", price: "$4.69/mo" };
   var existing = document.getElementById('upgrade-trigger-modal');
   if (existing) existing.remove();
   var el = document.createElement('div');
@@ -7906,11 +7976,19 @@ window.addEventListener('popstate',function(e){
 });
 
 // ── STRIPE CHECKOUT ──
+// ⚠️  ACTION REQUIRED: Replace empty strings with real price_live_... IDs from Stripe dashboard
+// after creating the new Starter Lens / Pro Lens / Operator Lens products.
+// Env var alternative: set STRIPE_STARTER_MONTHLY_ID etc. in Netlify and load via /api/public-config
 var PODLENS_PRICES = {
-  creator_monthly:  '',
-  creator_yearly:   '',
-  operator_monthly: '',
-  operator_yearly:  '',
+  // Starter Lens — $4.69/mo founding | $37.52/yr founding  (normal: $7/mo | $56/yr)
+  creator_monthly:  '',   // ← paste price_live_... for Starter Lens monthly
+  creator_yearly:   '',   // ← paste price_live_... for Starter Lens annual
+  // Pro Lens — $12.73/mo founding | $101.84/yr founding  (normal: $19/mo | $152/yr)
+  operator_monthly: '',   // ← paste price_live_... for Pro Lens monthly
+  operator_yearly:  '',   // ← paste price_live_... for Pro Lens annual
+  // Operator Lens — $32.83/mo founding | $262.64/yr founding  (normal: $49/mo | $392/yr)
+  studio_monthly:   '',   // ← paste price_live_... for Operator Lens monthly
+  studio_yearly:    '',   // ← paste price_live_... for Operator Lens annual
 };
 
 function startCheckout(planName, billing) {
@@ -8040,7 +8118,7 @@ function siaSetTier(tier, btn) {
       : '<div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>'
         + '<div class="blur-r"><div class="btext"></div><span class="lock">&#128274;</span></div>'
         + '<div class="blur-r" style="border-bottom:none"><div class="btext"></div><span class="lock">&#128274;</span></div>'
-        + '<div class="upbar"><span class="uptxt">All findings unlock with Creator</span><button class="upbtn" onclick="openModal(&apos;signup&apos;)">Sign up free &#8594;</button></div>';
+        + '<div class="upbar"><span class="uptxt">All findings unlock with Starter Lens</span><button class="upbtn" onclick="openModal(&apos;signup&apos;)">Sign up free &#8594;</button></div>';
   }
 
   // Key findings section (creator+)
@@ -8059,12 +8137,12 @@ function siaSetTier(tier, btn) {
     ? 'Claim-by-claim breakdown &middot; Narrative arc &middot; Missing voices &middot; Comparative bias &middot; <span style="color:#999">Downloadable PDF</span>'
     : showFull
       ? 'Bias summary &middot; Top findings &middot; Host trust breakdown &middot; <span style="color:#999">Downloadable PDF &mdash; upgrade to Operator for the full deep report</span>'
-      : 'Full intelligence report available on Creator and Operator plans.';
+      : 'Full intelligence report available on Starter Lens and Pro Lens plans.';
   if (reportBtn) reportBtn.innerHTML = isOperator
     ? '<button class="drpri">Download full report</button>'
     : showFull
       ? '&#128274; Full report &mdash; Operator'
-      : '&#128274; Creator or above';
+      : '&#128274; Starter Lens or above';
   if (reportDl) reportDl.style.display = showFull && !isOperator ? 'flex' : 'none';
 
   // Audio briefing label
@@ -8083,15 +8161,15 @@ function siaSetTier(tier, btn) {
   if (gate) gate.style.display = isOperator ? 'none' : '';
   var gateTxt = document.getElementById('sia-hl-gate-txt');
   if (gateTxt) gateTxt.textContent = tier === 'free'
-    ? 'More highlights unlock with Creator'
-    : 'Full transcript unlocks with Operator';
+    ? 'More highlights unlock with Starter Lens'
+    : 'Full transcript unlocks with Pro Lens';
 
   // CTA note
   var cta = document.getElementById('sia-cta-note');
   if (cta) {
     if (tier === 'free') cta.textContent = 'You’re seeing the Free tier — sign up to unlock all findings, key insights, citations, and the full report.';
-    if (tier === 'creator') cta.textContent = 'You’re seeing the Creator tier — upgrade to Operator for citations, full transcript, and the deep report.';
-    if (tier === 'operator') cta.textContent = 'This is the full Operator experience. Sign up to analyze any podcast you listen to.';
+    if (tier === 'creator') cta.textContent = 'You’re seeing the Creator tier — upgrade to Pro Lens for citations, full transcript, and the deep report.';
+    if (tier === 'operator') cta.textContent = 'This is the full Pro Lens experience. Sign up to analyze any podcast you listen to.';
   }
 }
 
@@ -8671,7 +8749,7 @@ function initYouTubePlayer(vid, data) {
                 d.innerHTML = '<div class="yt-dot-tip">' + dot.label + '</div>';
                 d.addEventListener('click', function(e) { e.stopPropagation(); player.seekTo(secs, true); });
               } else {
-                d.addEventListener('click', function(e) { e.stopPropagation(); plToast('Timestamp citations on Operator plan'); });
+                d.addEventListener('click', function(e) { e.stopPropagation(); plToast("Timestamp citations on Pro Lens plan"); });
                 d.style.opacity = '0.5';
               }
               track.appendChild(d);
@@ -8905,7 +8983,7 @@ var i18n = {
     connectYourListening: "Connect your listening", orAnalyzeUrl: "Or analyze any URL",
     viewFullAnalysis: "View full analysis", audioBriefingTitle: "Audio Briefing",
     playerPlay: "Play", playerPause: "Pause",
-    tierFree: "Listener", tierCreator: "Creator", tierOperator: "Operator", tierStudio: "Studio",
+    tierFree: "Listener", tierCreator: "Starter Lens", tierOperator: "Pro Lens", tierStudio: "Operator Lens",
     getStartedFree: "Get started free \u2192",
   },
   ko: {
@@ -9451,7 +9529,7 @@ function renderSpotifyConnected(data, u) {
       + '<div style="height:10px;background:linear-gradient(90deg,var(--left) 40%,var(--center-gray,#D1CFC9) 20%,var(--right) 40%);border-radius:5px;margin-bottom:8px"></div>'
       + '<div style="font-size:12px;color:var(--text3)">40% left &nbsp; 20% center &nbsp; 40% right</div>'
       + '</div>';
-    html += '<div class="sp-fp-gate"><p>Fingerprint analysis is a Creator+ feature</p>'
+    html += '<div class="sp-fp-gate"><p>Fingerprint analysis is a Starter Lens+ feature</p>'
       + '<button onclick="window.location=\'/pricing.html\'">Unlock for $12/mo &rarr;</button></div>';
   } else if (fp) {
     var leftW = fp.leftPct, centW = fp.centerPct, rightW = fp.rightPct;
@@ -9897,7 +9975,7 @@ function maybeShowNudge(trigger) {
   var textEl = nudgeEl.querySelector('.nudge-text');
   if (textEl) {
     textEl.innerHTML = '<strong>You\'ve analyzed ' + analyzed + ' episode' + (analyzed !== 1 ? 's' : '') + ' — your bias fingerprint is taking shape.</strong>'
-      + 'Upgrade to Creator — unlimited analyses, full scores, and weekly insights.'
+      + 'Upgrade to Starter Lens — unlimited analyses, full scores, and weekly insights.'
       + (foundingActive ? '<div class="nudge-founding">33% off locked forever as an early user</div>' : '');
   }
   nudgeEl.classList.add('on');

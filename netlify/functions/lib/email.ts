@@ -101,8 +101,8 @@ export function pilotExpiryEmail(opts: {
     </div>
     <p>As a pilot member you get <strong>33% off for life</strong>. That discount disappears once your free access ends.</p>
     <div style="background:#f8f8f6;border-radius:6px;padding:14px 16px;margin:14px 0;border:1px solid #e0ddd8">
-      <div style="font-size:13px;margin-bottom:6px"><strong>Creator</strong> &nbsp;${creatorPrice}/mo <span style="font-size:11px;color:#999">(normally $12/mo)</span></div>
-      <div style="font-size:13px"><strong>Operator</strong> &nbsp;${operatorPrice}/mo <span style="font-size:11px;color:#999">(normally $39/mo)</span></div>
+      <div style="font-size:13px;margin-bottom:6px"><strong>Starter Lens</strong> &nbsp;${creatorPrice}/mo <span style="font-size:11px;color:#999">(normally $12/mo)</span></div>
+      <div style="font-size:13px"><strong>Pro Lens</strong> &nbsp;${operatorPrice}/mo <span style="font-size:11px;color:#999">(normally $39/mo)</span></div>
     </div>
     <a class="btn" href="https://podlens.app/pricing">Lock in my early pricing →</a>
   `)

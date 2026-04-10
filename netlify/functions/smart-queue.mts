@@ -99,7 +99,7 @@ export default async (req: Request): Promise<Response> => {
             .eq("smart_queue", true);
 
           if ((count || 0) >= 5) {
-            return json({ error: "Creator plan allows up to 5 Smart Queue shows. Upgrade to Operator for unlimited.", limitReached: true }, 403);
+            return json({ error: "Starter Lens allows up to 5 Smart Queue shows. Upgrade to Pro Lens for unlimited.", limitReached: true }, 403);
           }
         }
       }

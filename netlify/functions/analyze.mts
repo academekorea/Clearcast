@@ -242,6 +242,7 @@ export default async (req: Request, context: Context) => {
   await store.setJSON(jobId, {
     status: "pending", jobId, url, canonicalKey: canonical,
     episodeTitle: resolvedEpisodeTitle, showName: resolvedShowName,
+    userId: userId || null,
   });
 
   // ── 3. YouTube path ───────────────────────────────────────────────────────

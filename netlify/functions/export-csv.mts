@@ -25,7 +25,7 @@ export default async (req: Request) => {
   const { userId, plan } = body;
 
   if (plan !== 'studio') {
-    return new Response(JSON.stringify({ error: 'Studio plan required for CSV export' }), {
+    return new Response(JSON.stringify({ error: 'Operator Lens plan required for CSV export' }), {
       status: 403, headers: { 'Content-Type': 'application/json' },
     });
   }

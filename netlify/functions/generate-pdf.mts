@@ -139,10 +139,10 @@ export default async (req: Request) => {
 
   const type = FULL_TIERS.has(plan) && reportType === 'full' ? 'full' : 'basic';
   if (type === 'basic' && !BASIC_TIERS.has(plan)) {
-    return new Response(JSON.stringify({ error: 'Creator plan required for PDF download' }), { status: 403, headers: {'Content-Type':'application/json'} });
+    return new Response(JSON.stringify({ error: 'Starter Lens plan required for PDF download' }), { status: 403, headers: {'Content-Type':'application/json'} });
   }
   if (type === 'full' && !FULL_TIERS.has(plan)) {
-    return new Response(JSON.stringify({ error: 'Operator plan required for full PDF' }), { status: 403, headers: {'Content-Type':'application/json'} });
+    return new Response(JSON.stringify({ error: 'Pro Lens plan required for full PDF' }), { status: 403, headers: {'Content-Type':'application/json'} });
   }
 
   // Check cache

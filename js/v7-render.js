@@ -150,7 +150,7 @@ function renderResults(data) {
   } else {
     kfRows = '<div class="blur-r"><div class="btext"></div><span class="lock">\uD83D\uDD12</span></div>'
       + '<div class="blur-r"><div class="btext"></div><span class="lock">\uD83D\uDD12</span></div>'
-      + '<div class="upbar"><span class="uptxt">Key findings unlock with Creator</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div>';
+      + '<div class="upbar"><span class="uptxt">Key findings unlock with Starter Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div>';
   }
 
   var html = '<div class="pl-results-wrap">';
@@ -160,8 +160,8 @@ function renderResults(data) {
     html += '<div class="demo">'
       + '<span class="dlbl">Previewing as</span>'
       + '<button class="p'+(f?' on':'')+'" onclick="setPreviewTier(\'free\')">Free</button>'
-      + '<button class="p'+(c?' on':'')+'" onclick="setPreviewTier(\'creator\')">Creator</button>'
-      + '<button class="p'+(o?' on':'')+'" onclick="setPreviewTier(\'operator\')">Operator</button>'
+      + '<button class="p'+(c?' on':'')+'" onclick="setPreviewTier(\'creator\')">Starter Lens</button>'
+      + '<button class="p'+(o?' on':'')+'" onclick="setPreviewTier(\'operator\')">Pro Lens</button>'
       + '</div>';
   }
 
@@ -182,7 +182,7 @@ function renderResults(data) {
   html += '<div>';
   if (vid) {
     html += '<div class="artwork" style="aspect-ratio:16/9;position:relative">'
-      + '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&modestbranding=1"'
+      + '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&modestbranding=1&enablejsapi=1" id="v7-yt-player"'
       + ' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
       + ' allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:7px"></iframe></div>';
   } else {
@@ -305,6 +305,48 @@ function renderResults(data) {
   html += '</div>'; // end rc
   html += '</div>'; // end trow
 
+  // ── 6-Dimension Intelligence Panel ───────────────────────────────────────
+  if (data.dimensions) {
+    var dim = data.dimensions;
+    function _dimBar(score, colorHigh, colorLow) {
+      var pct = Math.max(0, Math.min(100, score || 0));
+      var color = pct >= 60 ? colorHigh : pct >= 35 ? '#d97706' : colorLow;
+      return '<div style="flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden">'
+        + '<div style="width:'+pct+'%;height:100%;background:'+color+';border-radius:3px;transition:width .4s"></div></div>';
+    }
+    var dims6 = [
+      { key:'politicalLean',   label:'Political lean',     icon:'⚖️',  d: dim.politicalLean,   barFn: function(d){ var abs = Math.abs(d.score||0); return _dimBar(abs, '#e0352b', '#378ADD'); } },
+      { key:'factualDensity',  label:'Factual density',    icon:'🔬',  d: dim.factualDensity,  barFn: function(d){ return _dimBar(d.score, '#16a34a', '#ea580c'); } },
+      { key:'sourceDiversity', label:'Source diversity',   icon:'🌐',  d: dim.sourceDiversity, barFn: function(d){ return _dimBar(d.score, '#16a34a', '#ea580c'); } },
+      { key:'framingPatterns', label:'Loaded language',    icon:'🗣️',  d: dim.framingPatterns, barFn: function(d){ return _dimBar(d.score, '#ea580c', '#16a34a'); } },
+      { key:'hostCredibility', label:'Host credibility',   icon:'🎙️',  d: dim.hostCredibility, barFn: function(d){ return _dimBar(d.score, '#16a34a', '#ea580c'); } },
+      { key:'omissionRisk',    label:'Omission risk',      icon:'🕳️',  d: dim.omissionRisk,    barFn: function(d){ return _dimBar(d.score, '#ea580c', '#16a34a'); } },
+    ];
+    html += '<div class="sec"><div class="seclbl">6-Dimension intelligence</div>';
+    html += '<div style="display:flex;flex-direction:column;gap:10px">';
+    dims6.forEach(function(row) {
+      if (!row.d) return;
+      var labelColor = row.d.label === 'High' || row.d.label === 'Heavy' ? '#ea580c'
+        : row.d.label === 'Low' || row.d.label === 'Neutral' ? '#16a34a' : '#d97706';
+      if (row.key === 'hostCredibility') labelColor = row.d.label === 'High' ? '#16a34a' : row.d.label === 'Low' ? '#ea580c' : '#d97706';
+      if (row.key === 'omissionRisk') labelColor = row.d.label === 'High' ? '#ea580c' : row.d.label === 'Low' ? '#16a34a' : '#d97706';
+      html += '<div style="padding:9px 0;border-bottom:0.5px solid #f0f0f0">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'
+        + '<span style="font-size:13px">' + row.icon + '</span>'
+        + '<span style="font-size:12px;font-weight:600;color:#333;flex:1">' + row.label + '</span>'
+        + '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:' + labelColor + '22;color:' + labelColor + '">' + (row.d.label||'') + '</span>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:8px">'
+        + row.barFn(row.d)
+        + '</div>'
+        + (showFull && row.d.note ? '<div style="font-size:10px;color:#999;margin-top:4px;font-style:italic">' + row.d.note + '</div>' : '')
+        + '</div>';
+    });
+    html += '</div>'
+      + (!showFull ? '<div class="upbar" style="margin-top:8px"><span class="uptxt">Dimension notes unlock with Starter Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade →</button></div>' : '')
+      + '</div>';
+  }
+
   // Quick metrics
   if (showFull) {
     var ts = data.hostTrustScore;
@@ -336,7 +378,7 @@ function renderResults(data) {
     html += '<div style="font-size:11px;color:#bbb;padding:6px 0">No citations available.</div>';
   } else {
     html += '<div class="blur-r"><div class="btext"></div><span class="lock">\uD83D\uDD12</span></div>'
-      + '<div class="upbar"><span class="uptxt">Citations unlock with Creator</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div>';
+      + '<div class="upbar"><span class="uptxt">Citations unlock with Starter Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div>';
   }
   html += '</div>';
 
@@ -348,7 +390,7 @@ function renderResults(data) {
       + '</div></div>';
   } else if (c) {
     html += '<div class="sec"><div class="seclbl">Full transcript</div>'
-      + '<div class="upbar"><span class="uptxt">Full transcript unlocks with Operator</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div></div>';
+      + '<div class="upbar"><span class="uptxt">Full transcript unlocks with Pro Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div></div>';
   }
 
   // Deep report bar
@@ -357,13 +399,13 @@ function renderResults(data) {
     + '<div class="drdesc">'
     + (o ? 'Claim-by-claim breakdown \u00b7 Narrative arc \u00b7 Missing voices \u00b7 Comparative bias \u00b7 <span style="color:#999">Downloadable PDF</span>'
          : c ? 'Bias summary \u00b7 Top findings \u00b7 Host trust breakdown \u00b7 <span style="color:#999">Downloadable PDF \u2014 upgrade to Operator for the full deep report</span>'
-             : 'Full intelligence report available on Creator and Operator plans.')
+             : 'Full intelligence report available on Starter Lens and Pro Lens plans.')
     + '</div>'
-    + (c ? '<div class="cdlrow"><span style="font-size:10px;color:#bbb">Your Creator Report is ready</span><button class="drsec" style="font-size:10px;padding:4px 10px" onclick="downloadReport()">Download</button></div>' : '')
+    + (c ? '<div class="cdlrow"><span style="font-size:10px;color:#bbb">Your Starter Lens report is ready</span><button class="drsec" style="font-size:10px;padding:4px 10px" onclick="downloadReport()">Download</button></div>' : '')
     + '</div><div style="display:flex;gap:7px;align-items:center;flex-shrink:0">'
     + (o ? '<button class="drpri" onclick="downloadReport()">Download full report</button>'
          : c ? '<div class="drlocked">\uD83D\uDD12 Full report \u2014 Operator</div>'
-             : '<div class="drlocked">\uD83D\uDD12 Creator or above</div>')
+             : '<div class="drlocked">\uD83D\uDD12 Starter Lens or above</div>')
     + '</div></div>';
 
   html += '</div></div>'; // end pl-main + pl-results-wrap
@@ -462,7 +504,7 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
   html += '<div class="trow"><div>';
   if (vid) {
     html += '<div class="artwork" style="aspect-ratio:16/9;position:relative">'
-      + '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&modestbranding=1"'
+      + '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&modestbranding=1&enablejsapi=1" id="v7-yt-player"'
       + ' allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"'
       + ' allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:7px"></iframe></div>';
   } else {
@@ -557,10 +599,19 @@ function renderTranscriptHighlights(data) {
     var leanCls = h.lean === 'left' ? 'left' : h.lean === 'right' ? 'right' : 'neutral';
     var weightLabel = h.lean === 'left' ? '+left' : h.lean === 'right' ? '+right' : 'neutral';
     var tagCls = h.lean === 'left' ? 'left' : h.lean === 'right' ? 'right' : 'neutral';
+    // Parse "1:14:08" or "12:04" into seconds for seek
+    var tsStr = h.timestamp || '';
+    var tsSecs = 0;
+    var tsParts = tsStr.split(':').map(Number);
+    if (tsParts.length === 3) tsSecs = tsParts[0]*3600 + tsParts[1]*60 + tsParts[2];
+    else if (tsParts.length === 2) tsSecs = tsParts[0]*60 + tsParts[1];
+    var tsHtml = tsStr
+      ? '<span class="th-time th-time-seek" onclick="thSeekTo('+tsSecs+')" title="Jump to this moment">⏱ ' + tsStr + '</span>'
+      : '';
     return '<div class="th-hl' + (blurred ? ' th-blur' : '') + '">'
       + '<div class="th-bar ' + leanCls + '"></div>'
       + '<div class="th-body">'
-      + '<div class="th-top"><span class="th-time">' + (h.timestamp||'') + '</span>'
+      + '<div class="th-top">' + tsHtml
       + '<span class="th-weight ' + leanCls + '">' + weightLabel + '</span></div>'
       + '<div class="th-quote">\u201c' + (h.quote||'') + '\u201d</div>'
       + (h.reason ? '<div class="th-reason ' + leanCls + '">' + h.reason + '</div>' : '')
@@ -650,6 +701,41 @@ function renderTranscriptHighlights(data) {
 
   html += '</div>'; // end th-wrap
   el.innerHTML = html;
+}
+
+// ── TIMESTAMP SEEK ────────────────────────────────────────────────────────────
+// Works for YouTube iframe (postMessage) and native audio element
+function thSeekTo(seconds) {
+  // YouTube iframe seek via postMessage
+  var iframe = document.querySelector('.artwork iframe, iframe[src*="youtube"]');
+  if (iframe) {
+    try {
+      iframe.contentWindow.postMessage(
+        JSON.stringify({ event: 'command', func: 'seekTo', args: [seconds, true] }),
+        '*'
+      );
+      // Also enable JS API on the iframe src if not already
+      if (iframe.src && iframe.src.indexOf('enablejsapi') < 0) {
+        iframe.src = iframe.src + (iframe.src.indexOf('?') >= 0 ? '&' : '?') + 'enablejsapi=1';
+      }
+    } catch(e) {}
+    return;
+  }
+  // Native audio seek
+  var audio = document.getElementById('ar-native-audio');
+  if (audio) {
+    audio.currentTime = seconds;
+    audio.play();
+    return;
+  }
+  // Web Speech / no player — show toast
+  plToast('Seek to ' + _fmtSecs(seconds) + ' — open the episode to use timestamps');
+}
+
+function _fmtSecs(s) {
+  var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  if (h) return h+':'+(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;
+  return m+':'+(sec<10?'0':'')+sec;
 }
 
 // Search filter
