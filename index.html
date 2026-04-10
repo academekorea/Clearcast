@@ -2635,7 +2635,7 @@ body.light-mode,[data-theme="light"]{
 
     <!-- LOGGED OUT: marketing links -->
     <div class="nav-links-logged-out" id="nav-logged-out">
-      <button class="nav-link" id="nav-discover-guest" onclick="showView('discover')">Discover</button>
+      <button class="nav-link" id="nav-discover-guest" onclick="showView(\'discover\')">Discover</button>
       <a href="/how-it-works.html" class="nav-link" id="nav-hiw-guest">How it works</a>
       <a href="/pricing.html" class="nav-link" id="nav-pricing-guest">Pricing</a>
       <button class="nav-theme-toggle mode-toggle" onclick="toggleMode()" id="mode-toggle-btn-guest" aria-label="Toggle dark/light mode">☀️</button>
@@ -2645,7 +2645,7 @@ body.light-mode,[data-theme="light"]{
 
     <!-- LOGGED IN: app links -->
     <div class="nav-links-logged-in" id="nav-logged-in">
-      <button class="nav-link" id="nl-discover" onclick="showView('discover')">Discover</button>
+      <button class="nav-link" id="nl-discover" onclick="showView(\'discover\')">Discover</button>
       <button class="nav-link" id="nl-analyze" onclick="showView('analyze')">Analyze</button>
       <a class="nav-link" id="nl-library" href="/library.html">Library</a>
       <button class="nav-theme-toggle mode-toggle" onclick="toggleMode()" id="mode-toggle-btn"
@@ -2986,7 +2986,7 @@ body.light-mode,[data-theme="light"]{
       <div class="dash-nav" id="dash-nav">
           <div class="dash-nav-lbl">Dashboard</div>
           <button class="dash-nav-btn on" data-section="home" onclick="showDashSection('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
-          <button class="dash-nav-btn" onclick="showView('discover')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
+          <button class="dash-nav-btn" onclick="showView(\'discover\')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
           <button class="dash-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
           <div class="dash-nav-div"></div>
           <div class="dash-nav-lbl">My library</div>
@@ -3053,7 +3053,7 @@ body.light-mode,[data-theme="light"]{
               <div style="font-size:32px;margin-bottom:12px">⚡</div>
               <div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue auto-detects new episodes</div>
               <div style="font-size:13px;max-width:400px;margin:0 auto 20px;line-height:1.6">Follow shows from any podcast profile and we'll queue new episodes for analysis automatically.</div>
-              <button onclick="showView('discover')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Browse shows to follow &rarr;</button>
+              <button onclick="showView(\'discover\')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Browse shows to follow &rarr;</button>
             </div>
           </div>
         </div>
@@ -3069,7 +3069,7 @@ body.light-mode,[data-theme="light"]{
               <div style="font-size:32px;margin-bottom:12px">📌</div>
               <div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">No shows followed yet</div>
               <div style="font-size:13px;color:var(--text3);margin-bottom:20px">Follow any show from its profile page to get new episode alerts.</div>
-              <button onclick="showView('discover')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Discover shows &rarr;</button>
+              <button onclick="showView(\'discover\')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Discover shows &rarr;</button>
             </div>
           </div>
         </div>
@@ -3252,7 +3252,7 @@ body.light-mode,[data-theme="light"]{
     <div style="background:#0a1a20;display:flex;flex-direction:column;min-height:calc(100vh - 60px);position:sticky;top:60px">
       <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;padding:16px 20px 8px;color:#fff">Menu</div>
       <button onclick="showHome()" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
-      <button onclick="showView('discover')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
+      <button onclick="showView(\'discover\')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
       <button onclick="showView('analyze')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:rgba(255,255,255,.13);width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
       <div style="height:0.5px;background:rgba(255,255,255,.1);margin:6px 20px"></div>
       <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;padding:16px 20px 8px;color:#fff">Recent</div>
@@ -3475,7 +3475,7 @@ body.light-mode,[data-theme="light"]{
 <!-- MOBILE NAV -->
 <div class="mob-nav" id="mob-nav">
   <button class="mob-btn on" id="mob-home" onclick="showHome()"><span class="mob-icon">&#127968;</span>Home</button>
-  <button class="mob-btn" id="mob-discover" onclick="showView('discover')"><span class="mob-icon">&#128269;</span>Discover</button>
+  <button class="mob-btn" id="mob-discover" onclick="showView(\'discover\')"><span class="mob-icon">&#128269;</span>Discover</button>
   <button class="mob-btn" id="mob-analyze" onclick="showView('analyze')"><span class="mob-icon">&#127897;</span>Analyze</button>
 </div>
 
@@ -4485,6 +4485,7 @@ function renderHomeState() {
     renderBiasFingerprint();
     renderDashUnheardPreview(u);
     renderDashFollowedShows(u);
+    renderDashFollowingSection(u);
     loadDashTrending();
     renderDashStats(u, recent);
     loadSqWidget();
@@ -4656,25 +4657,67 @@ function _isFollowingShow(name) {
 function toggleFollowShow(name, feedUrl, artwork, btn) {
   var u = plUser();
   if (!u) { openModal('signup'); return; }
+  var normName = (name||'').trim().toLowerCase();
   var followed = u.followedShows || [];
-  var idx = followed.findIndex(function(s){ return (s.name||s.showName||'').toLowerCase() === (name||'').toLowerCase(); });
+  var idx = followed.findIndex(function(s){ return (s.name||s.showName||'').trim().toLowerCase() === normName; });
   if (idx >= 0) {
-    // Unfollow
     followed.splice(idx, 1);
     u.followedShows = followed;
     setPlUser(u);
-    if (btn) { btn.textContent = '+ Follow'; btn.classList.remove('following'); }
     plToast('Unfollowed ' + name, 2000);
   } else {
-    // Follow
     followed.push({ name: name, feedUrl: feedUrl || '', artwork: artwork || '', addedAt: new Date().toISOString() });
     u.followedShows = followed;
     setPlUser(u);
-    if (btn) { btn.textContent = '✓ Following'; btn.classList.add('following'); }
-    plToast('Following ' + name + ' — new episodes will appear in your queue', 3000);
+    plToast('Following ' + name, 2500);
+  }
+  // Refresh ALL follow buttons on the page for this show
+  document.querySelectorAll('[data-follow-name]').forEach(function(b) {
+    if ((b.dataset.followName||'').trim().toLowerCase() === normName) {
+      var nowFollowing = followed.some(function(s){ return (s.name||'').trim().toLowerCase() === normName; });
+      b.textContent = nowFollowing ? '✓ Following' : '+ Follow';
+    }
+  });
+  // Also refresh the specifically-clicked button
+  if (btn) {
+    var nowFollowing2 = followed.some(function(s){ return (s.name||'').trim().toLowerCase() === normName; });
+    btn.textContent = nowFollowing2 ? '✓ Following' : '+ Follow';
   }
   renderDashFollowedShows(u);
+  renderDashFollowingSection(u);
   renderDashStats(u, getRecent());
+}
+
+function renderDashFollowingSection(u) {
+  var el = document.getElementById('dash-following-list');
+  if (!el) return;
+  var followed = (u && u.followedShows) || [];
+  if (!followed.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 0">'
+      + '<div style="font-size:32px;margin-bottom:12px">📌</div>'
+      + '<div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">No shows followed yet</div>'
+      + '<div style="font-size:13px;color:var(--text3);margin-bottom:20px">Follow any show from Discover to get new episode alerts.</div>'
+      + '<button onclick="showView(\'discover\')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Discover shows →</button></div>';
+    return;
+  }
+  el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding-top:8px">'
+    + followed.map(function(s) {
+      var name = s.name || s.showName || 'Show';
+      var normName = name.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-');
+      var art = s.artwork ? '<img src="'+s.artwork+'" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0" alt="" onerror="this.style.display=\'none\'">'
+        : '<div style="width:52px;height:52px;border-radius:8px;background:var(--navy);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:rgba(255,255,255,.7)">'+name.charAt(0)+'</div>';
+      var safeUrl = (s.feedUrl||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
+      var safeArt = (s.artwork||'').replace(/'/g,"\'").replace(/"/g,'');
+      var safeName = name.replace(/'/g,"\'").replace(/"/g,'');
+      return '<div style="display:flex;gap:12px;align-items:center;padding:14px;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px">'
+        + '<div onclick="showView(\'show\');loadShowProfile(\''+normName+'\',\''+safeUrl+'\')" style="cursor:pointer;display:flex;gap:12px;align-items:center;flex:1;min-width:0">'
+        + art
+        + '<div style="min-width:0"><div style="font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+name+'</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-top:2px">Following</div></div></div>'
+        + '<button data-follow-name="'+safeName+'" onclick="toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+safeArt+'\',this)" style="padding:5px 10px;background:none;border:0.5px solid var(--border2);border-radius:6px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff);white-space:nowrap">✓ Following</button>'
+        + '</div>';
+    }).join('')
+    + '</div>';
 }
 
 function renderDashFollowedShows(u) {
@@ -5749,7 +5792,7 @@ function discRenderShows() {
       + art + '<div class="disc-show-name">'+s.name+'</div>'
       + '<div class="disc-show-sub">'+s.artist+'</div>'
       + _biasMini(s.bias)
-      + '<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="margin-top:10px;width:100%;padding:6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
+      + '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="margin-top:10px;width:100%;padding:6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
       + '</div>';
   }).join('');
 }
