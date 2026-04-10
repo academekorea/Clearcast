@@ -272,6 +272,8 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   <!-- Tabs -->
   <div class="lib-tabs" role="tablist">
     <button class="lib-tab active" id="tab-following" role="tab" aria-selected="true" onclick="switchTab('following')">Following <span class="tab-count" id="tc-following">0</span></button>
+    <button class="lib-tab" id="tab-liked" role="tab" aria-selected="false" onclick="switchTab('liked')">Liked <span class="tab-count" id="tc-liked">0</span></button>
+    <button class="lib-tab" id="tab-playlists" role="tab" aria-selected="false" onclick="switchTab('playlists')">Playlists <span class="tab-count" id="tc-playlists">0</span></button>
     <button class="lib-tab" id="tab-analyzed" role="tab" aria-selected="false" onclick="switchTab('analyzed')">Analyzed <span class="tab-count" id="tc-analyzed">0</span></button>
     <button class="lib-tab" id="tab-myshows" role="tab" aria-selected="false" onclick="switchTab('myshows')">Your Shows <span class="tab-count" id="tc-myshows"></span></button>
     <button class="lib-tab" id="tab-saved" role="tab" aria-selected="false" onclick="switchTab('saved')">Saved <span class="tab-count" id="tc-saved">0</span></button>
@@ -281,6 +283,16 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   <!-- Following Panel -->
   <div class="lib-panel active" id="panel-following">
     <div id="following-content"></div>
+  </div>
+
+  <!-- Liked Panel -->
+  <div class="lib-panel" id="panel-liked">
+    <div id="liked-content"></div>
+  </div>
+
+  <!-- Playlists Panel -->
+  <div class="lib-panel" id="panel-playlists">
+    <div id="playlists-content"></div>
   </div>
 
   <!-- Analyzed Panel -->
@@ -405,6 +417,8 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   /* ── RENDER ── */
   function renderAll() {
     renderFollowing();
+    renderLiked();
+    renderPlaylists();
     renderAnalyzed();
     renderSaved();
     renderDownloads();
@@ -584,6 +598,105 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   }
 
   /* ── TAB SWITCHING ── */
+  /* Liked episodes */
+  var PL_LIKED_KEY = 'pl_liked_episodes';
+  var PL_PLAYLISTS_KEY = 'pl_playlists';
+  function getLiked() { try { return JSON.parse(localStorage.getItem(PL_LIKED_KEY)||'[]'); } catch(e){ return []; } }
+  function getPlaylists() { try { return JSON.parse(localStorage.getItem(PL_PLAYLISTS_KEY)||'[]'); } catch(e){ return []; } }
+
+  function renderLiked() {
+    var el = document.getElementById('liked-content');
+    var liked = getLiked();
+    var tc = document.getElementById('tc-liked');
+    if (tc) tc.textContent = liked.length || 0;
+    if (!liked.length) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">♡</div><div class="empty-title">No liked episodes yet</div><div class="empty-sub">Tap the heart on any episode in Discover to save it here.</div></div>';
+      return;
+    }
+    el.innerHTML = '<div class="saved-grid">' + liked.map(function(ep, i) {
+      return '<div class="saved-card">'
+        + artHtml(ep.artwork, ep.showName, 'saved-art')
+        + '<div class="saved-info">'
+        + '<div class="saved-show">' + esc(ep.showName||'') + '</div>'
+        + '<div class="saved-title">' + esc(ep.title||'Episode') + '</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-top:4px">' + new Date(ep.likedAt||0).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + '</div>'
+        + '<div class="saved-card-actions">'
+        + (ep.url ? '<button class="btn-analyze" onclick="analyzeLatest(''+esc(ep.url)+'',''+esc(ep.showName||'')+'')">Analyze →</button>' : '')
+        + '<button class="btn-remove" onclick="unlikeEp('+i+')">Unlike</button>'
+        + '</div></div></div>';
+    }).join('') + '</div>';
+  }
+
+  window.unlikeEp = function(i) {
+    var liked = getLiked(); liked.splice(i,1);
+    localStorage.setItem(PL_LIKED_KEY, JSON.stringify(liked));
+    renderLiked();
+  };
+
+  function renderPlaylists() {
+    var el = document.getElementById('playlists-content');
+    var pls = getPlaylists();
+    var tc = document.getElementById('tc-playlists');
+    if (tc) tc.textContent = pls.length || 0;
+
+    var activePl = window._activePl != null ? window._activePl : -1;
+
+    if (activePl >= 0 && pls[activePl]) {
+      var pl = pls[activePl];
+      el.innerHTML = '<button onclick="window._activePl=null;renderPlaylists()" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--text2);font-family:var(--ff);margin-bottom:16px;padding:0">&larr; All playlists</button>'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">'
+        + '<div><div style="font-size:20px;font-weight:700;font-family:var(--ffs)">' + esc(pl.name) + '</div>'
+        + '<div style="font-size:13px;color:var(--text3);margin-top:4px">' + pl.episodes.length + ' episode' + (pl.episodes.length!==1?'s':'') + '</div></div>'
+        + '<button onclick="deletePlaylist('+activePl+')" style="background:none;border:1px solid var(--border2);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;color:var(--text3);font-family:var(--ff)">Delete playlist</button>'
+        + '</div>';
+      if (!pl.episodes.length) {
+        el.innerHTML += '<div style="color:var(--text3);font-size:13px;padding:24px 0">No episodes in this playlist yet.</div>';
+      } else {
+        el.innerHTML += '<div class="saved-grid">' + pl.episodes.map(function(ep,i){
+          return '<div class="saved-card">'
+            + artHtml(ep.artwork, ep.showName, 'saved-art')
+            + '<div class="saved-info">'
+            + '<div class="saved-show">' + esc(ep.showName||'') + '</div>'
+            + '<div class="saved-title">' + esc(ep.title||'Episode') + '</div>'
+            + '<div class="saved-card-actions">'
+            + (ep.url ? '<button class="btn-analyze" onclick="analyzeLatest(''+esc(ep.url)+'',''+esc(ep.showName||'')+'')">Analyze →</button>' : '')
+            + '<button class="btn-remove" onclick="removeFromPlaylist('+activePl+','+i+')">Remove</button>'
+            + '</div></div></div>';
+        }).join('') + '</div>';
+      }
+      return;
+    }
+
+    if (!pls.length) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><div class="empty-title">No playlists yet</div><div class="empty-sub">Tap "Add to playlist" on any episode to create your first playlist.</div></div>';
+      return;
+    }
+    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px">'
+      + pls.map(function(pl,i){
+        var art = pl.episodes[0] && pl.episodes[0].artwork
+          ? '<img src="'+pl.episodes[0].artwork+'" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px 8px 0 0" alt="" onerror="this.style.display='none'">'
+          : '<div style="width:100%;aspect-ratio:1;background:var(--navy);border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:28px">🎵</div>';
+        return '<div onclick="window._activePl='+i+';renderPlaylists()" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer">'
+          + art
+          + '<div style="padding:12px 14px">'
+          + '<div style="font-weight:600;font-size:14px">' + esc(pl.name) + '</div>'
+          + '<div style="font-size:12px;color:var(--text3);margin-top:3px">' + pl.episodes.length + ' episode' + (pl.episodes.length!==1?'s':'') + '</div>'
+          + '</div></div>';
+      }).join('')
+      + '</div>';
+  }
+
+  window.deletePlaylist = function(i) {
+    var pls = getPlaylists(); pls.splice(i,1);
+    localStorage.setItem(PL_PLAYLISTS_KEY, JSON.stringify(pls));
+    window._activePl = null; renderPlaylists();
+  };
+  window.removeFromPlaylist = function(pi,ei) {
+    var pls = getPlaylists(); pls[pi].episodes.splice(ei,1);
+    localStorage.setItem(PL_PLAYLISTS_KEY, JSON.stringify(pls));
+    renderPlaylists();
+  };
+
   window.switchTab = function (tab) {
     activeTab = tab;
     document.querySelectorAll('.lib-tab').forEach(function (t) {
@@ -600,6 +713,8 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   window.filterLib = function (q) {
     searchQuery = q;
     if (activeTab === 'following') renderFollowing();
+    else if (activeTab === 'liked') renderLiked();
+    else if (activeTab === 'playlists') { window._activePl = null; renderPlaylists(); }
     else if (activeTab === 'analyzed') renderAnalyzed();
     else if (activeTab === 'myshows') renderMyShows();
     else if (activeTab === 'saved') renderSaved();

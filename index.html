@@ -5028,7 +5028,10 @@ function discRenderEpisodes() {
       +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'
       +'<div class="disc-ep-title">'+s.name+'</div>'
       +'<div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
-      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button></div>';
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button>'
+      +'<button onclick="event.stopPropagation();toggleLike({title:\''+safeName+'\',showName:\''+s.artist.replace(/\'/g,\'\\\\\'\')+'\'\',artwork:\''+s.artwork+'\',url:\''+safeUrl+'\'\'},this)" style="padding:6px 10px;background:none;border:1px solid var(--border2);border-radius:6px;cursor:pointer;font-size:14px;color:'+(isLiked({url:s.feedUrl})?'#e24b4a':'var(--text3)')+'">'+( isLiked({url:s.feedUrl}) ? '♥' : '♡' )+'</button>'
+      +'</div></div>';
   }).join('');
 }
 
@@ -10202,6 +10205,90 @@ function renderProfileEmptyState(el) {
     + '<p>Analyze your first episode to start building your personal bias fingerprint and listening history.</p>'
     + '<button class="empty-btn" onclick="showView(\'analyze\')">Analyze your first episode &rarr;</button>'
     + '</div>';
+}
+
+
+// ── LIKES & PLAYLISTS ────────────────────────────────────────────────────────
+var PL_LIKED_KEY = 'pl_liked_episodes';
+var PL_PLAYLISTS_KEY = 'pl_playlists';
+
+function _getLiked() { try { return JSON.parse(localStorage.getItem(PL_LIKED_KEY)||'[]'); } catch(e){ return []; } }
+function _setLiked(arr) { localStorage.setItem(PL_LIKED_KEY, JSON.stringify(arr)); }
+function _getPlaylists() { try { return JSON.parse(localStorage.getItem(PL_PLAYLISTS_KEY)||'[]'); } catch(e){ return []; } }
+function _setPlaylists(arr) { localStorage.setItem(PL_PLAYLISTS_KEY, JSON.stringify(arr)); }
+
+function _epId(ep) { return (ep.jobId||ep.url||ep.feedUrl||ep.title||'').replace(/[^a-z0-9]/gi,'').slice(0,40); }
+
+function isLiked(ep) {
+  var id = _epId(ep);
+  return _getLiked().some(function(e){ return _epId(e)===id; });
+}
+
+function toggleLike(ep, btnEl) {
+  var liked = _getLiked();
+  var id = _epId(ep);
+  var idx = liked.findIndex ? liked.findIndex(function(e){return _epId(e)===id;}) : -1;
+  if (idx === -1) {
+    liked.unshift({ title:ep.title||ep.episodeTitle||'Episode', showName:ep.showName||ep.artist||'', artwork:ep.artwork||'', url:ep.url||ep.feedUrl||'', jobId:ep.jobId||'', biasLabel:ep.biasLabel||'', likedAt:Date.now() });
+    _setLiked(liked);
+    if (btnEl) { btnEl.textContent='♥'; btnEl.style.color='#e24b4a'; }
+    plToast('Added to Liked Episodes');
+  } else {
+    liked.splice(idx,1);
+    _setLiked(liked);
+    if (btnEl) { btnEl.textContent='♡'; btnEl.style.color=''; }
+    plToast('Removed from Liked Episodes');
+  }
+}
+
+function addToPlaylist(ep) {
+  var playlists = _getPlaylists();
+  var id = _epId(ep);
+  var epObj = { title:ep.title||ep.episodeTitle||'Episode', showName:ep.showName||ep.artist||'', artwork:ep.artwork||'', url:ep.url||ep.feedUrl||'', jobId:ep.jobId||'', biasLabel:ep.biasLabel||'', addedAt:Date.now() };
+
+  // Build modal HTML
+  var opts = playlists.map(function(pl,i){
+    return '<button onclick="window._addEpToPlaylist('+i+',this)" style="display:block;width:100%;text-align:left;padding:10px 14px;background:var(--bg3);border:none;border-radius:6px;cursor:pointer;font-family:var(--ff);font-size:14px;color:var(--text);margin-bottom:6px">'+pl.name+' <span style="color:var(--text3);font-size:12px">('+pl.episodes.length+' eps)</span></button>';
+  }).join('');
+
+  window._pendingEp = epObj;
+  window._addEpToPlaylist = function(idx, btn) {
+    var pls = _getPlaylists();
+    var epId = _epId(window._pendingEp);
+    if (!pls[idx].episodes.find(function(e){return _epId(e)===epId;})) {
+      pls[idx].episodes.unshift(window._pendingEp);
+      _setPlaylists(pls);
+      plToast('Added to "'+pls[idx].name+'"');
+    } else {
+      plToast('Already in this playlist');
+    }
+    closeModal('playlist-picker');
+  };
+
+  var modalHtml = '<div id="modal-playlist-picker" class="modal-overlay" onclick="if(event.target===this)closeModal(\'playlist-picker\')">'
+    + '<div class="modal-box" style="max-width:380px">'
+    + '<div class="modal-title">Add to playlist</div>'
+    + (opts || '<div style="color:var(--text3);font-size:13px;margin-bottom:12px">No playlists yet.</div>')
+    + '<div style="border-top:1px solid var(--border);margin:12px 0;padding-top:12px">'
+    + '<input id="new-pl-name" placeholder="New playlist name…" style="width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:6px;font-size:14px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none">'
+    + '<button onclick="window._createAndAddPlaylist()" style="width:100%;margin-top:8px;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Create &amp; add</button>'
+    + '</div>'
+    + '<button onclick="closeModal(\'playlist-picker\')" style="width:100%;margin-top:4px;padding:8px;background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;font-family:var(--ff)">Cancel</button>'
+    + '</div></div>';
+
+  window._createAndAddPlaylist = function() {
+    var name = (document.getElementById('new-pl-name').value||'').trim();
+    if (!name) return;
+    var pls = _getPlaylists();
+    pls.unshift({ id: Date.now()+'', name:name, episodes:[window._pendingEp], createdAt:Date.now() });
+    _setPlaylists(pls);
+    plToast('Playlist "'+name+'" created');
+    closeModal('playlist-picker');
+  };
+
+  var existing = document.getElementById('modal-playlist-picker');
+  if (existing) existing.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
 
 // ── AUTO INIT ──
