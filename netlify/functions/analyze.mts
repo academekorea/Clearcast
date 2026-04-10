@@ -307,19 +307,26 @@ export default async (req: Request, context: Context) => {
         await store.setJSON(jobId, { status: "error", jobId, error: "Audio extraction service not configured. Try connecting your Google account for instant YouTube analysis." });
         return;
       }
-      const clients = ["ios", "android", "web", "mweb"];
+      // Client rotation: ios → android → web → mweb → tv
+      // Stop early on definitive errors (private/unavailable), retry on bot-detection
+      const clients = ["ios", "android", "web", "mweb", "tv"];
       let lastError = "";
+      let lastCode = "";
+
       for (const client of clients) {
         try {
-          console.log(`[analyze] Railway yt-dlp attempt, client: ${client}`);
+          console.log(`[analyze] Railway attempt client=${client}`);
           const extractRes = await fetch(`${audioServiceUrl}/extract`, {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${secret}` },
             body: JSON.stringify({ url, ytClient: client }),
             signal: AbortSignal.timeout(120000),
           });
-          const extracted = await extractRes.json();
+          const extracted = await extractRes.json() as any;
+
+          // Success: captions returned
           if (extracted.success && extracted.transcript) {
+            console.log(`[analyze] captions success client=${client}`);
             await store.setJSON(jobId, {
               status: "transcribed", jobId, url, canonicalKey: canonical,
               episodeTitle: resolvedEpisodeTitle || extracted.metadata?.title || "",
@@ -328,20 +335,22 @@ export default async (req: Request, context: Context) => {
             });
             return;
           }
+
+          // Success: audio returned — upload to AssemblyAI
           if (extracted.success && extracted.audioData) {
-            // Upload to AssemblyAI
+            console.log(`[analyze] audio success client=${client}, uploading to AssemblyAI`);
             const uploadRes = await fetch("https://api.assemblyai.com/v2/upload", {
               method: "POST",
               headers: { "authorization": Netlify.env.get("ASSEMBLYAI_API_KEY") || "", "content-type": "application/octet-stream" },
               body: Buffer.from(extracted.audioData, "base64"),
             });
-            const { upload_url } = await uploadRes.json();
+            const { upload_url } = await uploadRes.json() as any;
             const transcriptRes = await fetch("https://api.assemblyai.com/v2/transcript", {
               method: "POST",
               headers: { "authorization": Netlify.env.get("ASSEMBLYAI_API_KEY") || "", "content-type": "application/json" },
-              body: JSON.stringify({ audio_url: upload_url }),
+              body: JSON.stringify({ audio_url: upload_url, speech_model: "universal-2" }),
             });
-            const { id: transcriptId } = await transcriptRes.json();
+            const { id: transcriptId } = await transcriptRes.json() as any;
             await store.setJSON(jobId, {
               status: "transcribing", jobId, url, canonicalKey: canonical,
               episodeTitle: resolvedEpisodeTitle || extracted.metadata?.title || "",
@@ -350,24 +359,115 @@ export default async (req: Request, context: Context) => {
             });
             return;
           }
+
+          // Definitive failures — don't retry with other clients
           lastError = extracted.error || `Client ${client} returned no data`;
-          console.log(`[analyze] Railway client ${client} failed:`, lastError);
+          lastCode = extracted.code || "";
+          console.log(`[analyze] client ${client} failed: code=${lastCode} error=${lastError}`);
+
+          if (lastCode === "PRIVATE_VIDEO" || lastCode === "UNAVAILABLE") {
+            break; // No point trying other clients
+          }
+          // BOT_DETECTED / EXTRACTION_FAILED → try next client
+
         } catch (e: any) {
           lastError = e.message;
-          console.log(`[analyze] Railway client ${client} threw:`, e.message);
+          lastCode = "NETWORK_ERROR";
+          console.warn(`[analyze] client ${client} threw:`, e.message);
         }
       }
-      // All clients failed
+
+      // All clients exhausted
+      const userMessage = lastCode === "PRIVATE_VIDEO"
+        ? "This video is private and cannot be analyzed."
+        : lastCode === "UNAVAILABLE"
+        ? "This video is unavailable in this region."
+        : lastCode === "AGE_RESTRICTED"
+        ? "This video is age-restricted. Connect your Google account to analyze it."
+        : "YouTube analysis failed after trying all extraction methods. Connect your Google account for more reliable results.";
+
       await store.setJSON(jobId, {
         status: "error", jobId,
-        error: "YouTube analysis failed after all extraction methods. Try connecting your Google account for reliable YouTube analysis.",
-        detail: lastError,
-        suggestion: "connect_google",
+        error: userMessage,
+        code: lastCode,
+        suggestion: lastCode === "AGE_RESTRICTED" ? "connect_google" : (lastCode === "BOT_DETECTED" ? "connect_google" : null),
       });
     })();
 
     context.waitUntil(railwayWork);
     return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+  }
+
+  // ── 3b. Spotify episode path ──────────────────────────────────────────────
+  // Try: Spotify API (if user connected) → RSS via Podchaser/iTunes → direct
+  if (urlType === "spotify") {
+    const spEpId = url.match(/spotify\.com\/episode\/([a-zA-Z0-9]+)/)?.[1];
+    let resolved = { audioUrl: null as string | null, episodeTitle: "", showName: "" };
+
+    // L1: If user has Spotify connected, use the Web API
+    if (userId) {
+      try {
+        // Try to get episode from Spotify API
+        const spToken = await (async () => {
+          try {
+            const spData = await usersStore.get(`spotify-${userId}`, { type: "json" }) as any;
+            return spData?.accessToken || null;
+          } catch { return null; }
+        })();
+        if (spToken && spEpId) {
+          const epRes = await fetch(`https://api.spotify.com/v1/episodes/${spEpId}?market=US`, {
+            headers: { Authorization: `Bearer ${spToken}` },
+            signal: AbortSignal.timeout(8000),
+          });
+          if (epRes.ok) {
+            const ep = await epRes.json() as any;
+            if (!resolvedEpisodeTitle) resolvedEpisodeTitle = ep.name || "";
+            if (!resolvedShowName) resolvedShowName = ep.show?.name || "";
+            // Spotify doesn't give direct audio URLs but the RSS feed is often in the show
+            const showRss = ep.show?.external_urls?.spotify || "";
+            if (ep.show?.name) {
+              const rssResolved = await resolveRssFeedToAudio(
+                `https://itunes.apple.com/search?term=${encodeURIComponent(ep.show.name)}&media=podcast&limit=1`
+              ).catch(() => ({ audioUrl: null, episodeTitle: "", showName: "" }));
+              if (rssResolved.audioUrl) resolved = rssResolved;
+            }
+          }
+        }
+      } catch(e: any) { console.warn("[analyze] Spotify API failed:", e.message); }
+    }
+
+    // L2: iTunes search for the show → get RSS → find episode by title
+    if (!resolved.audioUrl && spEpId) {
+      try {
+        // Spotify canonical key exists, try iTunes lookup
+        const itunesRes = await fetch(
+          `https://itunes.apple.com/search?term=${encodeURIComponent(resolvedShowName || "podcast")}&media=podcast&limit=3`,
+          { signal: AbortSignal.timeout(8000) }
+        );
+        if (itunesRes.ok) {
+          const itunesData = await itunesRes.json() as any;
+          const feedUrl = itunesData.results?.[0]?.feedUrl;
+          if (feedUrl) {
+            const rssResult = await resolveRssFeedToAudio(feedUrl);
+            if (rssResult.audioUrl) resolved = rssResult;
+          }
+        }
+      } catch(e: any) { console.warn("[analyze] iTunes fallback for Spotify failed:", e.message); }
+    }
+
+    if (resolved.audioUrl) {
+      resolvedAudioUrl = resolved.audioUrl;
+      if (!resolvedEpisodeTitle) resolvedEpisodeTitle = resolved.episodeTitle;
+      if (!resolvedShowName) resolvedShowName = resolved.showName;
+    } else {
+      // Can't resolve — tell user to paste the RSS or audio URL directly
+      await store.setJSON(jobId, {
+        status: "error", jobId,
+        error: "Could not resolve Spotify episode to audio. Try pasting the show's RSS feed URL or a direct episode audio link.",
+        code: "SPOTIFY_UNRESOLVED",
+      });
+      return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
   }
 
   // ── 4. Apple Podcasts path ────────────────────────────────────────────────
