@@ -201,6 +201,14 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 
 /* ── VIEWS ── */
 .view{display:none}.view.on{display:block}
+/* ── AUTH-STATE CSS ENFORCEMENT (never trust JS timing alone) ── */
+body.authenticated #home-loggedout { display: none !important; }
+body:not(.authenticated) #home-loggedin { display: none !important; }
+body.authenticated .show-logged-out { display: none !important; }
+body:not(.authenticated) .show-logged-in { display: none !important; }
+
+.authenticated #home-loggedout{display:none!important}
+body:not(.authenticated) #home-loggedin{display:none!important}
 
 /* ── HOME HERO — 60/40 GRID ── */
 .home-hero{padding:0;margin:0;border-bottom:1px solid var(--border)}
@@ -576,9 +584,7 @@ body.player-on .lap{bottom:72px}
 
 .dash-layout{display:grid;grid-template-columns:1fr 280px;gap:0;min-height:400px}
 @media(max-width:900px){.dash-layout{grid-template-columns:1fr}}
-.dash-main{padding:40px 24px;border-right:1px solid var(--border)}
-.dash-sidebar{padding:32px 20px}
-@media(max-width:900px){.dash-main{border-right:none;border-bottom:1px solid var(--border)}.dash-sidebar{display:none}}
+
 .dash-section-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:16px}
 .recent-list{display:flex;flex-direction:column;gap:0}
 .recent-row{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .1s}
@@ -1530,10 +1536,10 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .btn-kakao{background:#FEE500;color:#1a1a1a;border:none;border-radius:4px;padding:10px 20px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer}
 
 /* ── DISCOVER PAGE — 3-COLUMN LAYOUT ── */
-.disc-wrap{display:grid;grid-template-columns:210px 1fr 240px;min-height:calc(100vh - 60px)}
+#view-discover.on{display:block}.disc-wrap{display:grid;grid-template-columns:210px 1fr 240px;min-height:calc(100vh - 60px)}
 @media(max-width:1200px){.disc-wrap{grid-template-columns:210px 1fr}}
 @media(max-width:900px){.disc-wrap{grid-template-columns:1fr}}
-.disc-nav{background:#0a1a20;display:flex;flex-direction:column;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07)}
+.disc-nav{background:#0a1a20;display:flex;flex-direction:column;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);flex-shrink:0}
 .disc-nav *{color:#fff !important}
 .disc-nav-lbl{padding:16px 20px 8px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4}
 .disc-nav-btn{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;border:none;background:transparent !important;width:100%;text-align:left;font-family:var(--ff);cursor:pointer}
@@ -1545,7 +1551,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-nav-cat:hover{background:rgba(255,255,255,.07) !important}
 .disc-nav-cat.on{background:rgba(255,255,255,.13) !important;font-weight:600}
 .disc-nav-cdot{width:9px;height:9px;border-radius:3px;flex-shrink:0;display:inline-block}
-.disc-main{background:var(--bg);padding:0 0 80px}
+.disc-main{background:var(--bg);padding:0 0 80px;overflow-y:auto;min-width:0}
 .disc-greeting{padding:24px 32px 2px;font-family:var(--ffs);font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.01em}
 .disc-subline{padding:0 32px 18px;font-size:12px;color:var(--text3)}
 .disc-hero{margin:0 32px 28px;background:var(--navy);border-radius:12px;display:grid;grid-template-columns:1fr 1.4fr;overflow:hidden;min-height:190px}
@@ -2545,8 +2551,10 @@ body.light-mode,[data-theme="light"]{
   if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}
   else{document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}
 })()</script>
+<script>(function(){try{var u=JSON.parse(localStorage.getItem("pl-user")||"null");if(u&&u.id)document.body.classList.add("authenticated");}catch(e){}})()</script>
 
 
+<script>(function(){var u=null;try{u=JSON.parse(localStorage.getItem('pl-user')||'null');}catch(e){}if(u&&u.id){document.body.classList.add('authenticated');}})();</script>
 <!-- BRANDED SPLASH SCREEN -->
 <div class="pl-splash" id="pl-splash">
   <div style="display:inline-flex;align-items:center;gap:16px">
@@ -3041,6 +3049,7 @@ body.light-mode,[data-theme="light"]{
         <div data-dash-section="home">
           <div class="dash-greeting-wrap">
             <div class="dashboard-greeting" id="dash-greeting">Good morning.</div>
+            <div id="dash-plan-badge" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)"></div>
           </div>
           <div class="analyze-bar">
             <input type="text" id="dash-url-input-b" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL…" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
@@ -3893,6 +3902,9 @@ function initNav() {
   var loggedOut = document.getElementById('nav-logged-out');
   var loggedIn  = document.getElementById('nav-logged-in');
 
+  // Always sync body.authenticated class first
+  document.body.classList.toggle('authenticated', !!(u && u.id));
+
   if (u && u.id) {
     // LOGGED IN — app nav
     if (loggedOut) loggedOut.style.display = 'none';
@@ -4426,6 +4438,14 @@ function renderHomeState() {
     if (greetEl) greetEl.innerHTML = greetText;
     var recent = getRecent();
     var isNewUser = recent.length === 0;
+    // Show plan badge
+    var planBadge = document.getElementById('dash-plan-badge');
+    if (planBadge) {
+      var planColors = { free: '#999', trial: '#16a34a', creator: '#2563eb', operator: '#7c3aed', studio: '#dc2626' };
+      var planLabel = String(u.plan || 'free').toLowerCase();
+      var displayPlan = planLabel.charAt(0).toUpperCase() + planLabel.slice(1);
+      planBadge.innerHTML = '<span style="width:7px;height:7px;border-radius:50%;background:' + (planColors[planLabel] || '#999') + ';flex-shrink:0"></span>' + displayPlan + ' plan';
+    }
     // Show connect CTAs for new users, recent list for returning
     var newUserCta = document.getElementById('dash-new-user-cta');
     var recentWrap = document.getElementById('dash-recent-wrap');
@@ -4831,7 +4851,6 @@ function initDiscover() {
     if (sub) sub.textContent = 'Trending shows, new episodes, and what the podcasting world is talking about.';
     if (tabs) tabs.style.display = 'flex';
     if (unheardTeaser) unheardTeaser.style.display = '';
-    discRenderRightCol(true, u);
     discRenderRightCol(true, u);
   } else {
     if (greet) greet.textContent = 'Explore podcasts';
@@ -9804,8 +9823,9 @@ function renderProfileEmptyState(el) {
 }
 
 // ── AUTO INIT ──
+// Set auth state FIRST before anything else runs
+if (plUser()) { document.body.classList.add('authenticated'); } else { document.body.classList.remove('authenticated'); }
 enforcePlanRules();
-if (plUser()) document.body.classList.add('authenticated');
 initNav();
 // Apply region, translations, Korean mode
 updateRegionUI();
