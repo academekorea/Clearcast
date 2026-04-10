@@ -101,19 +101,20 @@ const KOREAN_PLACEHOLDERS = [
 
 export default async (req: Request) => {
   const url = new URL(req.url);
-  const region = req.headers.get("x-pl-region") || url.searchParams.get("region") || "INTL";
-  const isKorean = region === "KR";
+  // Phase 2: Korean market deferred — always serve international showcases
+  // const region = req.headers.get("x-pl-region") || url.searchParams.get("region") || "INTL";
+  // const isKorean = region === "KR";
+  const isKorean = false;
 
   const store = getStore("podlens-blobs");
   const showcases: any[] = [];
 
-  // Always exactly 3 slugs — never 4
-  const slugs = isKorean
-    ? ["korean-showcase", "sisa-in", "news-factory"]
-    : ["jre", "lex-fridman", "the-daily"];
+  // Always exactly 3 slugs
+  const slugs = ["jre", "lex-fridman", "the-daily"];
 
   const placeholderMap: Record<string, any> = {};
   for (const p of PLACEHOLDERS) placeholderMap[p.slug] = p;
+  // Korean placeholders preserved for Phase 2 re-enable
   for (const p of KOREAN_PLACEHOLDERS) placeholderMap[p.slug] = p;
 
   for (const slug of slugs) {

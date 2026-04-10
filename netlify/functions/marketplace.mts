@@ -45,7 +45,7 @@ export default async (req: Request) => {
   // Support both "genre" (legacy) and "category" param names
   const genre = url.searchParams.get("category") || url.searchParams.get("genre") || "all";
   const region = url.searchParams.get("region") || "international";
-  const country = region === "ko-KR" ? "kr" : "us";
+  const country = "us"; // Phase 2: Korean routing disabled
   const genreId = GENRE_IDS[genre] ?? GENRE_IDS["all"] ?? "";
   const term = SEARCH_TERMS[genre] || "podcast";
 

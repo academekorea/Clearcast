@@ -19,10 +19,12 @@ export default async (req: Request) => {
   const region = url.searchParams.get("region") || "us";
   const lang = url.searchParams.get("lang") || "";
 
-  // Derive country code and language from region param
-  const isKorean = region === "ko-KR" || region === "kr";
-  const regionCode = isKorean ? "KR" : (region !== "international" && region.length === 2 ? region.toUpperCase() : "US");
-  const langCode = lang || (isKorean ? "ko" : "en");
+  // Phase 2: Korean market deferred — always route to international
+  // const isKorean = region === "ko-KR" || region === "kr";
+  const regionCode = (region !== "international" && region !== "ko-KR" && region.length === 2)
+    ? region.toUpperCase()
+    : "US";
+  const langCode = lang || "en";
 
   const apiKey = Netlify.env.get("YOUTUBE_API_KEY");
   if (!apiKey) {

@@ -21,27 +21,25 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<!-- KOREAN HREFLANG — stripped by edge function for non-Korean users -->
-<link rel="alternate" hreflang="ko" href="https://podlens.app/kr" data-korean-only="true">
-<link rel="alternate" hreflang="en" href="https://podlens.app" data-korean-only="false">
+<!-- KOREAN MARKET: Deferred to Phase 2 (after English/international product is complete)
+     Korean hreflang, KakaoTalk auth, and Korean UI are preserved in code but inactive.
+     To re-enable: set KOREAN_MARKET_ENABLED = true in the block below. -->
 <link rel="alternate" hreflang="x-default" href="https://podlens.app">
 <link rel="stylesheet" media="print" href="/print.css">
 <script src="/js/utils.js"></script>
 <script src="/js/bias-bar.js"></script>
 <script src="/js/v7-render.js?v=10"></script>
 <script>
-/* Early region tag — sets html[data-region] and [data-mode] for CSS hooks */
+/* Phase 2 flag — flip to true when Korean market launches */
+var KOREAN_MARKET_ENABLED = false;
+
+/* Early region tag — sets html[data-region] for CSS hooks */
 (function() {
   try {
     var saved = localStorage.getItem('podlens-region') || '';
-    var isKr = window.location.pathname.startsWith('/kr');
-    if (isKr || saved === 'ko-KR') {
-      document.documentElement.lang = 'ko';
-      document.documentElement.dataset.region = 'ko-KR';
-      document.documentElement.dataset.mode = 'korean';
-    } else {
-      document.documentElement.dataset.region = saved || 'international';
-    }
+    // Korean routing disabled until Phase 2
+    // var isKr = KOREAN_MARKET_ENABLED && (window.location.pathname.startsWith('/kr') || saved === 'ko-KR');
+    document.documentElement.dataset.region = saved && saved !== 'ko-KR' ? saved : 'international';
   } catch(e) {}
 })();
 </script>
@@ -3624,12 +3622,14 @@ body.light-mode,[data-theme="light"]{
       <div class="auth-field"><label>Password</label><input type="password" id="login-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password"/><button class="auth-forgot" onclick="alert('Password reset coming soon. Contact hello@podlens.app')">Forgot password?</button></div>
       <button class="auth-btn" onclick="doLogin()">Log in</button>
       <div class="auth-divider">or</div>
+      <!-- KAKAO AUTH: Phase 2 — disabled until Korean market launch
       <div class="kakao-social-section" id="login-kakao-section">
         <button class="auth-kakao-btn" onclick="doKakaoOAuth()">
           <svg width="18" height="18" viewBox="0 0 512 512"><path fill="#1a1a1a" d="M255.5 48C132.6 48 32 129.4 32 231.4c0 63.3 38.5 119 97 155.3l-24.7 91.5c-2.1 7.8 6.1 14 12.9 9.7l108.5-72.3c9.9 1.3 20.1 2 30.8 2 122.9 0 223.5-81.4 223.5-183.4C480 129.4 378.4 48 255.5 48z"/></svg>
           카카오로 로그인
         </button>
       </div>
+      -->
       <button class="auth-google-btn" onclick="doGoogleOAuth('login')">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
@@ -3674,12 +3674,14 @@ body.light-mode,[data-theme="light"]{
       </div>
       <div id="signup-heading" class="signup-heading">Analyze this episode free</div>
       <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">7 days of full access &mdash; no credit card required</div>
+      <!-- KAKAO AUTH: Phase 2 — disabled until Korean market launch
       <div class="kakao-social-section" id="signup-kakao-section">
         <button class="auth-kakao-btn" onclick="doKakaoOAuth()">
           <svg width="18" height="18" viewBox="0 0 512 512"><path fill="#1a1a1a" d="M255.5 48C132.6 48 32 129.4 32 231.4c0 63.3 38.5 119 97 155.3l-24.7 91.5c-2.1 7.8 6.1 14 12.9 9.7l108.5-72.3c9.9 1.3 20.1 2 30.8 2 122.9 0 223.5-81.4 223.5-183.4C480 129.4 378.4 48 255.5 48z"/></svg>
           카카오로 시작하기
         </button>
       </div>
+      -->
       <button class="auth-google-btn" onclick="doGoogleOAuth('signup')" style="margin-bottom:10px">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
@@ -4455,7 +4457,8 @@ function renderHomeState() {
     if (planBadge) {
       var planColors = { free: '#999', trial: '#16a34a', creator: '#2563eb', operator: '#7c3aed', studio: '#dc2626' };
       var planLabel = String(u.plan || 'free').toLowerCase();
-      var displayPlan = planLabel.charAt(0).toUpperCase() + planLabel.slice(1);
+      var planNames = { free: 'Free', trial: 'Trial', creator: 'Starter Lens', operator: 'Pro Lens', studio: 'Operator Lens' };
+      var displayPlan = planNames[planLabel] || (planLabel.charAt(0).toUpperCase() + planLabel.slice(1));
       planBadge.innerHTML = '<span style="width:7px;height:7px;border-radius:50%;background:' + (planColors[planLabel] || '#999') + ';flex-shrink:0"></span>' + displayPlan + ' plan';
     }
     // Show connect CTAs for new users, recent list for returning
@@ -5081,24 +5084,34 @@ function handleDiscCompare() {
 }
 
 function showHome() {
-  if (plUser()) {
-    // Logged-in: show home dashboard (view-home with home-loggedin)
-    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
-    document.getElementById('view-home').classList.add('on');
-    document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
-    var _nlHome = document.getElementById('nl-home'); if (_nlHome) _nlHome.classList.add('on');
-    if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
-    document.title = 'Podlens — Dashboard';
-    renderHomeState();
-    return;
-  }
-  // Logged-out: marketing homepage
+  // Always sync auth state before touching visibility
+  var u = plUser();
+  document.body.classList.toggle('authenticated', !!(u && u.id));
+
+  // Show the home view
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
   document.getElementById('view-home').classList.add('on');
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
   var _nlHome = document.getElementById('nl-home'); if (_nlHome) _nlHome.classList.add('on');
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
   var mb = document.getElementById('mob-home'); if (mb) mb.classList.add('on');
+
+  if (u) {
+    // Logged-in: dashboard
+    var footer = document.getElementById('site-footer');
+    if (footer) footer.style.display = 'none';
+    if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
+    document.title = 'Podlens — Dashboard';
+    renderHomeState();
+    return;
+  }
+
+  // Logged-out: marketing homepage
+  // Explicitly show/hide — don't rely solely on CSS since inline style="display:none" starts on #home-loggedout
+  var elOut = document.getElementById('home-loggedout');
+  var elIn  = document.getElementById('home-loggedin');
+  if (elOut) elOut.style.display = 'block';
+  if (elIn)  elIn.style.display  = 'none';
   var footer = document.getElementById('site-footer');
   if (footer) footer.style.display = '';
   if (!_homeTrendingLoaded) { loadHomeTrending(); }
@@ -6816,7 +6829,12 @@ function _setAudioState(jobId, playing, statusHtml) {
 
 // ── PRICING BILLING TOGGLE ──
 var _billing='monthly';
-var _prices={creator:{monthly:'$12',annual:'$99'},operator:{monthly:'$39',annual:'$299'},studio:{monthly:'$99',annual:'$799'}};
+// Founding prices shown by default; normal prices shown when founding period ends
+var _prices={
+  creator:  {monthly:'$4.69', annual:'$37.52',  normalMonthly:'$7',  normalAnnual:'$56'},
+  operator: {monthly:'$12.73',annual:'$101.84', normalMonthly:'$19', normalAnnual:'$152'},
+  studio:   {monthly:'$32.83',annual:'$262.64', normalMonthly:'$49', normalAnnual:'$392'},
+};
 function setBilling(mode) {
   _billing=mode;
   var isAnn=mode==='annual';
@@ -6826,8 +6844,13 @@ function setBilling(mode) {
   ['creator','operator','studio'].forEach(function(t){
     var pe=document.getElementById('tp-'+t);
     var pp=document.getElementById('tpp-'+t);
-    if (pe) pe.textContent=_prices[t][mode];
-    if (pp) pp.textContent=isAnn?'per year':'per month';
+    var p=_prices[t];
+    if (pe) {
+      var price=isAnn?p.annual:p.monthly;
+      var normal=isAnn?p.normalAnnual:p.normalMonthly;
+      pe.innerHTML='<span style="font-size:11px;font-weight:400;text-decoration:line-through;color:var(--text3)">'+normal+'</span> '+price;
+    }
+    if (pp) pp.textContent=(isAnn?'per year':'per month')+' \u00b7 founding price';
   });
 }
 
@@ -7066,7 +7089,7 @@ function showShareModal(data) {
     + _shareBtn('𝕏', 'Share on X', 'window.open(\'https://x.com/intent/tweet?text=' + tweetText + '\',\'_blank\')')
     + _shareBtn('in', 'LinkedIn', 'window.open(\'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(analysisUrl) + '\',\'_blank\')')
     + _shareBtn('💬', 'WhatsApp', 'window.open(\'https://wa.me/?text=' + encodeURIComponent(title + ' ' + analysisUrl) + '\',\'_blank\')')
-    + (isKorean ? _shareBtn('💛', 'KakaoTalk', '_shareKakao(\'' + analysisUrl + '\',\'' + _escJs(biasLabel) + '\')') : _shareBtn('📧', 'Email', 'window.open(\'mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(analysisUrl) + '\')'))
+    + (KOREAN_MARKET_ENABLED && isKorean ? _shareBtn('💛', 'KakaoTalk', '_shareKakao(\'' + analysisUrl + '\',\'' + _escJs(biasLabel) + '\')') : _shareBtn('📧', 'Email', 'window.open(\'mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(analysisUrl) + '\')'))
     + _shareBtn('🖼', 'Download card', 'document.getElementById(\'share-modal-overlay\').remove();_shareDownloadCard()')
     + '</div>'
     + '</div>';
@@ -7976,20 +7999,30 @@ window.addEventListener('popstate',function(e){
 });
 
 // ── STRIPE CHECKOUT ──
-// ⚠️  ACTION REQUIRED: Replace empty strings with real price_live_... IDs from Stripe dashboard
-// after creating the new Starter Lens / Pro Lens / Operator Lens products.
-// Env var alternative: set STRIPE_STARTER_MONTHLY_ID etc. in Netlify and load via /api/public-config
+// ⚠️  ACTION REQUIRED: Set STRIPE_STARTER_MONTHLY_ID etc. in Netlify env vars.
+// Price IDs are loaded from /api/public-config at startup — no hardcoding needed.
 var PODLENS_PRICES = {
-  // Starter Lens — $4.69/mo founding | $37.52/yr founding  (normal: $7/mo | $56/yr)
-  creator_monthly:  '',   // ← paste price_live_... for Starter Lens monthly
-  creator_yearly:   '',   // ← paste price_live_... for Starter Lens annual
-  // Pro Lens — $12.73/mo founding | $101.84/yr founding  (normal: $19/mo | $152/yr)
-  operator_monthly: '',   // ← paste price_live_... for Pro Lens monthly
-  operator_yearly:  '',   // ← paste price_live_... for Pro Lens annual
-  // Operator Lens — $32.83/mo founding | $262.64/yr founding  (normal: $49/mo | $392/yr)
-  studio_monthly:   '',   // ← paste price_live_... for Operator Lens monthly
-  studio_yearly:    '',   // ← paste price_live_... for Operator Lens annual
+  creator_monthly:  '',
+  creator_yearly:   '',
+  operator_monthly: '',
+  operator_yearly:  '',
+  studio_monthly:   '',
+  studio_yearly:    '',
 };
+
+// Load price IDs from server on startup (non-blocking)
+(function loadPriceConfig() {
+  fetch('/api/public-config')
+    .then(function(r){ return r.json(); })
+    .then(function(cfg){
+      if (cfg && cfg.prices) {
+        Object.keys(cfg.prices).forEach(function(k){
+          if (cfg.prices[k]) PODLENS_PRICES[k] = cfg.prices[k];
+        });
+      }
+    })
+    .catch(function(){});
+})();
 
 function startCheckout(planName, billing) {
   var u = plUser();
@@ -8141,7 +8174,7 @@ function siaSetTier(tier, btn) {
   if (reportBtn) reportBtn.innerHTML = isOperator
     ? '<button class="drpri">Download full report</button>'
     : showFull
-      ? '&#128274; Full report &mdash; Operator'
+      ? '&#128274; Full report — Pro Lens'
       : '&#128274; Starter Lens or above';
   if (reportDl) reportDl.style.display = showFull && !isOperator ? 'flex' : 'none';
 
@@ -9022,7 +9055,7 @@ var i18n = {
     connectYourListening: "\ud32c\ub4dc\uce90\uc2a4\ud2b8 \uc5f0\uacb0", orAnalyzeUrl: "\ub610\ub294 URL\ub85c \ubd84\uc11d",
     viewFullAnalysis: "\uc804\uccb4 \ubd84\uc11d \ubcf4\uae30", audioBriefingTitle: "\uc624\ub514\uc624 \ube0c\ub9ac\ud551",
     playerPlay: "\uc7ac\uc0dd", playerPause: "\uc77c\uc2dc\uc815\uc9c0",
-    tierFree: "\ubb34\ub8cc", tierCreator: "\ud06c\ub9ac\uc5d0\uc774\ud130", tierOperator: "\uc624\ud37c\ub808\uc774\ud130", tierStudio: "\uc2a4\ud29c\ub514\uc624",
+    tierFree: "\ubb34\ub8cc", tierCreator: "\uc2a4\ud0c0\ud130 \ub80c\uc988", tierOperator: "\ud504\ub85c \ub80c\uc988", tierStudio: "\uc624\ud37c\ub808\uc774\ud130 \ub80c\uc988",
     getStartedFree: "\ubb34\ub8cc\ub85c \uc2dc\uc791\ud558\uae30 \u2192",
   }
 };
@@ -9076,12 +9109,14 @@ function applyTranslations(lang) {
 }
 
 var prices = {
-  USD: { creator:"$12", creatorAnn:"$99", operator:"$39", operatorAnn:"$299", studio:"$99", studioAnn:"$799" },
-  GBP: { creator:"\u00a310", creatorAnn:"\u00a382", operator:"\u00a332", operatorAnn:"\u00a3245", studio:"\u00a382", studioAnn:"\u00a3650" },
-  EUR: { creator:"\u20ac11", creatorAnn:"\u20ac90", operator:"\u20ac36", operatorAnn:"\u20ac275", studio:"\u20ac92", studioAnn:"\u20ac730" },
-  AUD: { creator:"A$18", creatorAnn:"A$149", operator:"A$59", operatorAnn:"A$449", studio:"A$149", studioAnn:"A$1,190" },
-  CAD: { creator:"C$16", creatorAnn:"C$129", operator:"C$52", operatorAnn:"C$399", studio:"C$132", studioAnn:"C$1,059" },
-  KRW: { creator:"\u20a916,000", creatorAnn:"\u20a9130,000", operator:"\u20a952,000", operatorAnn:"\u20a9390,000", studio:"\u20a9135,000", studioAnn:"\u20a91,050,000" },
+  // Founding prices (33% off forever) — shown during founding period
+  // Keys map: creator=Starter Lens, operator=Pro Lens, studio=Operator Lens
+  USD: { creator:"$4.69",   creatorAnn:"$37",    operator:"$12.73",  operatorAnn:"$102",   studio:"$32.83",  studioAnn:"$263"   },
+  GBP: { creator:"\u00a33.59",  creatorAnn:"\u00a328",   operator:"\u00a39.73",  operatorAnn:"\u00a378",   studio:"\u00a325.07", studioAnn:"\u00a3200" },
+  EUR: { creator:"\u20ac4.19",  creatorAnn:"\u20ac33",   operator:"\u20ac11.39", operatorAnn:"\u20ac91",   studio:"\u20ac29.29", studioAnn:"\u20ac234" },
+  AUD: { creator:"A$7.29",  creatorAnn:"A$58",   operator:"A$19.79", operatorAnn:"A$158",  studio:"A$50.89", studioAnn:"A$407"  },
+  CAD: { creator:"C$6.39",  creatorAnn:"C$51",   operator:"C$17.29", operatorAnn:"C$138",  studio:"C$43.89", studioAnn:"C$351"  },
+  KRW: { creator:"\u20a96,500", creatorAnn:"\u20a952,000", operator:"\u20a917,500", operatorAnn:"\u20a9140,000", studio:"\u20a945,000", studioAnn:"\u20a9360,000" },
 };
 
 var regionFlags = { INTL:'\uD83C\uDF0D', US:'\uD83C\uDDFA\uD83C\uDDF8', GB:'\uD83C\uDDEC\uD83C\uDDE7', EU:'\uD83C\uDDEA\uD83C\uDDFA', AU:'\uD83C\uDDE6\uD83C\uDDFA', CA:'\uD83C\uDDE8\uD83C\uDDE6', KR:'\uD83C\uDDF0\uD83C\uDDF7' };
@@ -9125,6 +9160,9 @@ document.addEventListener('click', function() {
 });
 
 function applyKoreanMode() {
+  // PHASE 2: Korean market features disabled — flip KOREAN_MARKET_ENABLED = true to re-enable
+  if (!KOREAN_MARKET_ENABLED) return;
+
   var isKr = isKoreanMode();
   var t = isKr ? i18n.ko : i18n.en;
   // Korean beta banner
@@ -9170,8 +9208,8 @@ function applyKoreanMode() {
   // Hero "Connect your listening" label
   var connectLabel = document.querySelector('#hero-connect-block > div:first-child');
   if (connectLabel && t.connectYourListening) connectLabel.textContent = t.connectYourListening;
-  // Load Kakao SDK
-  if (isKr) loadKakaoSdk();
+  // Kakao SDK: Phase 2 — disabled until Korean market launch
+  // if (KOREAN_MARKET_ENABLED && isKr) loadKakaoSdk();
 }
 
 // ── REGIONAL ITUNES STORES ────────────────────────────────────────────────
@@ -9905,16 +9943,13 @@ function renderProfileEmptyState(el) {
 if (plUser()) { document.body.classList.add('authenticated'); } else { document.body.classList.remove('authenticated'); }
 enforcePlanRules();
 initNav();
-// Apply region, translations, Korean mode
+// Apply region, translations
 updateRegionUI();
 applyTranslations(_settings.lang);
 applyKoreanMode();
 initUpgradeTriggers();
 if (!handleUrlRouting()) {
-  showHome();
-  renderHomeState();
-  var _hl = document.getElementById('home-loggedout');
-  if (plUser() && _hl) _hl.style.display = 'none';
+  showHome(); // showHome now calls renderHomeState internally — covers both logged-in and logged-out
 }
 initFreeAccessPanel();
 // Pass store to startAnalysis for regional iTunes

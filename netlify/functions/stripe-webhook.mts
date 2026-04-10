@@ -4,10 +4,28 @@ import Stripe from "stripe";
 import { getSupabaseAdmin, sbUpsert, sbUpdate, trackEvent } from "./lib/supabase.js";
 import { sendEmail, paymentFailedEmail } from "./lib/email.js";
 
+// Internal plan keys → human display names for emails/metadata
+const PLAN_DISPLAY: Record<string, string> = {
+  creator:  "Starter Lens",
+  operator: "Pro Lens",
+  studio:   "Operator Lens",
+  free:     "Free",
+};
+
+function planDisplayName(key: string): string {
+  return PLAN_DISPLAY[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+}
+
 function planFromPriceId(priceId: string): string {
-  const PRICE_MAP: Record<string, string> = {};
-  // Fall back to metadata.planName; price IDs are set in Netlify env
-  return PRICE_MAP[priceId] || "creator";
+  // Build map from env vars at call time (no cold-start cache issues)
+  const map: Record<string, string> = {};
+  const starters = [Netlify.env.get("STRIPE_STARTER_MONTHLY_ID"), Netlify.env.get("STRIPE_STARTER_ANNUAL_ID")];
+  const pros     = [Netlify.env.get("STRIPE_PRO_MONTHLY_ID"),     Netlify.env.get("STRIPE_PRO_ANNUAL_ID")];
+  const ops      = [Netlify.env.get("STRIPE_OPERATOR_MONTHLY_ID"),Netlify.env.get("STRIPE_OPERATOR_ANNUAL_ID")];
+  starters.forEach(id => { if (id) map[id] = "creator"; });
+  pros    .forEach(id => { if (id) map[id] = "operator"; });
+  ops     .forEach(id => { if (id) map[id] = "studio"; });
+  return map[priceId] || "creator"; // default to starter if unknown
 }
 
 export default async (req: Request) => {
@@ -200,7 +218,7 @@ export default async (req: Request) => {
             subject: `Payment issue with your Podlens subscription`,
             html: paymentFailedEmail({
               name: userName || '',
-              planName: planName.charAt(0).toUpperCase() + planName.slice(1),
+              planName: planDisplayName(planName),
               updateUrl: portalUrl,
               daysUntilDowngrade: 3,
             }),

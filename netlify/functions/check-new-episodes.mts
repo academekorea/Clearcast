@@ -163,7 +163,7 @@ async function checkShowForSmartQueue(sb: any, user: any, show: any): Promise<vo
           user_id: user.id,
           type: "smart_queue_limit",
           title: "Smart Queue paused — monthly limit reached",
-          body: `New ${show.show_name} episode found but you've used all ${monthlyLimit} analyses this month. Upgrade to Operator for unlimited.`,
+          body: `New ${show.show_name} episode found but you've used all ${monthlyLimit} analyses this month. Upgrade to Pro Lens for unlimited.`,
           url: "/pricing.html",
           read: false,
           created_at: new Date().toISOString(),

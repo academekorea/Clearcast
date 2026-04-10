@@ -145,35 +145,73 @@ export default async (req: Request) => {
     return new Response(JSON.stringify(job), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
+  // ── Stuck job guard ───────────────────────────────────────────────────────
+  // If a job has been pending/transcribing for >20 min, it's stuck — mark as error
+  // so the user isn't waiting forever on a Railway or AssemblyAI timeout.
+  if (job.pendingTimeoutAt && Date.now() > job.pendingTimeoutAt) {
+    const timedOut = {
+      ...job,
+      status: "error",
+      error: "Analysis timed out. This can happen with very long episodes or audio quality issues. Please try again — results for this episode are cached if it was previously analyzed by anyone.",
+    };
+    await store.setJSON(jobId, timedOut);
+    return new Response(JSON.stringify(timedOut), { status: 200, headers: { "Content-Type": "application/json" } });
+  }
+
   let transcriptText: string;
   let audioDuration: number | undefined;
+  let transcriptWords: any[] = []; // word-level timestamps for seek (Priority 4)
 
   if (job.status === "transcribed") {
     transcriptText = job.transcript || "";
+    transcriptWords = job.words || [];
     audioDuration = undefined;
   } else {
     // AssemblyAI polling
     const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
-    const aaiRes = await fetch(`https://api.assemblyai.com/v2/transcript/${job.transcriptId}`, {
-      headers: { authorization: assemblyKey! },
-      signal: AbortSignal.timeout(15000),
-    });
-    const transcript = await aaiRes.json();
-
-    if (transcript.status === "error") {
-      const updated = { ...job, status: "error", error: transcript.error };
-      await store.setJSON(jobId, updated);
-      return new Response(JSON.stringify(updated), { status: 200, headers: { "Content-Type": "application/json" } });
+    if (!assemblyKey) {
+      const err = { ...job, status: "error", error: "Transcription service not configured." };
+      await store.setJSON(jobId, err);
+      return new Response(JSON.stringify(err), { status: 200, headers: { "Content-Type": "application/json" } });
     }
 
-    if (transcript.status !== "completed") {
+    let aaiJson: any;
+    try {
+      const aaiRes = await fetch(`https://api.assemblyai.com/v2/transcript/${job.transcriptId}`, {
+        headers: { authorization: assemblyKey },
+        signal: AbortSignal.timeout(15000),
+      });
+      aaiJson = await aaiRes.json();
+    } catch (fetchErr: any) {
+      // Network blip — return transcribing so client retries
       return new Response(JSON.stringify({ status: "transcribing", jobId }), {
         status: 200, headers: { "Content-Type": "application/json" },
       });
     }
 
-    transcriptText = transcript.text || "";
-    audioDuration = transcript.audio_duration;
+    if (aaiJson.status === "error") {
+      const updated = { ...job, status: "error", error: `Transcription failed: ${aaiJson.error || "unknown error"}` };
+      await store.setJSON(jobId, updated);
+      return new Response(JSON.stringify(updated), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+
+    if (aaiJson.status !== "completed") {
+      return new Response(JSON.stringify({ status: "transcribing", jobId }), {
+        status: 200, headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    transcriptText = aaiJson.text || "";
+    audioDuration = aaiJson.audio_duration;
+
+    // Store word-level timestamps — used by transcript seek (Priority 4)
+    // Each word: { text, start, end, confidence } where start/end are milliseconds
+    if (Array.isArray(aaiJson.words) && aaiJson.words.length > 0) {
+      // Store every 5th word to reduce blob size while keeping seek granularity ~2s
+      transcriptWords = aaiJson.words
+        .filter((_: any, i: number) => i % 5 === 0)
+        .map((w: any) => ({ t: w.text, s: Math.round(w.start / 1000), e: Math.round(w.end / 1000) }));
+    }
   }
 
   if (!transcriptText || transcriptText.trim().length < 100) {
@@ -247,6 +285,9 @@ export default async (req: Request) => {
     ...analysis,
     dimensions: analysis.dimensions || null,
     guest: analysis.guest || null,
+    // Word-level timestamps stored compactly for transcript seek
+    // Format: [{ t: "word", s: startSecs, e: endSecs }]
+    words: transcriptWords.length > 0 ? transcriptWords : undefined,
     analyzeCount: 1,
     firstAnalyzedAt: Date.now(),
     lastRequestedAt: Date.now(),

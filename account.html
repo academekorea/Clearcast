@@ -283,10 +283,10 @@ function renderActiveTab(tab) {
 // ── BILLING DATA ─────────────────────────────────────────────────────────────
 
 var TIERS = [
-  { key: 'free',     name: 'Listener', price: 'Free',  period: 'forever' },
-  { key: 'creator',  name: 'Creator',  price: '$8',    period: '/mo' },
-  { key: 'operator', name: 'Operator', price: '$26',   period: '/mo' },
-  { key: 'studio',   name: 'Studio',   price: '$66',   period: '/mo' },
+  { key: 'free',     name: 'Listener',     price: 'Free',    period: 'forever' },
+  { key: 'creator',  name: 'Starter Lens', price: '$4.69',   period: '/mo founding' },
+  { key: 'operator', name: 'Pro Lens',     price: '$12.73',  period: '/mo founding' },
+  { key: 'studio',   name: 'Operator Lens',price: '$32.83',  period: '/mo founding' },
 ];
 
 var PLAN_BADGES = {
@@ -302,6 +302,19 @@ var PODLENS_PRICES = {
   operator_monthly: '', operator_annual: '',
   studio_monthly: '', studio_annual: '',
 };
+
+// Load price IDs from server (same as index.html)
+(function loadAccountPrices() {
+  fetch('/api/public-config')
+    .then(function(r){ return r.json(); })
+    .then(function(cfg){
+      if (cfg && cfg.prices) {
+        Object.keys(cfg.prices).forEach(function(k){
+          if (cfg.prices[k]) PODLENS_PRICES[k] = cfg.prices[k];
+        });
+      }
+    }).catch(function(){});
+})();
 
 // ── PROFILE TAB ──────────────────────────────────────────────────────────────
 
@@ -494,14 +507,14 @@ async function renderBillingTab(u) {
     pane.innerHTML = '<div class="section">'
       + '<div class="plan-hero"><div class="plan-hero-badge" style="background:#dc2626;color:#fff">Admin</div>'
       + '<div><div class="plan-hero-name">Super Admin</div>'
-      + '<div class="plan-hero-meta">Studio Plan — complimentary access</div></div></div>'
+      + '<div class="plan-hero-meta">Operator Lens — complimentary access</div></div></div>'
       + '<div class="info-row"><span class="info-label">Email</span><span class="info-val">' + escHtml(u.email || '') + '</span></div>'
       + '<div class="info-row"><span class="info-label">Access</span><span class="info-val">All features unlocked</span></div>'
       + '</div>';
     return;
   }
 
-  var planLabel = { free:'Listener', trial:'Trial', creator:'Creator', operator:'Operator', studio:'Studio' }[plan] || 'Listener';
+  var planLabel = { free:"Listener", trial:"Trial", creator:"Starter Lens", operator:"Pro Lens", studio:"Operator Lens" }[plan] || 'Listener';
   var badgeStyle = PLAN_BADGES[plan] || PLAN_BADGES.free;
   var trialEnd = isTrial && u.trialEndsAt ? formatDate(u.trialEndsAt) : null;
   var periodEnd = u.currentPeriodEnd ? formatDate(u.currentPeriodEnd) : null;
@@ -511,7 +524,7 @@ async function renderBillingTab(u) {
     ? 'Free trial &mdash; full access through <strong>' + trialEnd + '</strong>'
     : isPaid && periodEnd
       ? 'Renews on <strong>' + periodEnd + '</strong>'
-      : 'Free forever &mdash; 3 analyses per week';
+      : 'Free forever &mdash; 4 analyses per month';
 
   var html = '<div class="section"><div class="section-title">Current plan</div>'
     + '<div class="plan-hero"><div class="plan-hero-badge" style="' + badgeStyle + '">' + planLabel + '</div>'
@@ -534,7 +547,7 @@ async function renderBillingTab(u) {
     if (isCurrent || (isTrial && t.key === 'free')) {
       cta = '<span class="tc-cta current-badge">Current plan</span>';
     } else if (t.key === 'studio') {
-      cta = '<a href="mailto:hello@podlens.app?subject=Studio plan enquiry" class="tc-cta">Contact us &rarr;</a>';
+      cta = '<a href="mailto:hello@podlens.app?subject=Operator Lens plan enquiry" class="tc-cta">Contact us &rarr;</a>';
     } else if (isHigher) {
       var hasPrice = PODLENS_PRICES[t.key + '_monthly'];
       cta = hasPrice

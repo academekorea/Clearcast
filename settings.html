@@ -312,7 +312,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
       <div class="settings-card" id="voice-settings-card">
         <div class="card-head">
           <h3>Audio briefing voice</h3>
-          <p>Choose the voice for your pre-listen briefings. Creator and above only.</p>
+          <p>Choose the voice for your pre-listen briefings. Starter Lens and above only.</p>
         </div>
         <div class="card-body">
           <div id="voice-locked-msg" style="display:none;font-size:13px;color:var(--text3);padding:8px 0">
@@ -374,7 +374,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
     <!-- SUBSCRIPTION -->
     <div class="tab-panel" id="tab-subscription">
       <div class="upgrade-banner" id="upgrade-banner" style="display:none">
-        <div><h4>Upgrade to Creator or Operator</h4><p>Unlock source citations, show profiles, and unlimited analyses.</p></div>
+        <div><h4>Upgrade to Starter Lens or Pro Lens</h4><p>Unlock source citations, show profiles, and unlimited analyses.</p></div>
         <button class="upgrade-cta" onclick="window.location='/pricing.html'">View plans &rarr;</button>
       </div>
 
@@ -772,7 +772,7 @@ function init() {
     listener: ['5 analyses per month','Bias bar + plain-English label','Audio summary player','Factuality + omission rating'],
     creator: ['50 analyses per month','Source citations on all findings','Deep topic breakdown','Key quotes + missing voices','Bias fingerprint'],
     operator: ['Unlimited analyses','Show intelligence profiles','Sponsor conflict detection','Bias drift tracking','Share cards + export'],
-    studio: ['Everything in Operator','API access','Team seats','Custom integrations','Priority support'],
+    studio: ['Everything in Pro Lens','API access','Team seats','Custom integrations','Priority support'],
   };
   var features = featureMap[plan] || featureMap.listener;
   document.getElementById('sub-features').innerHTML = features.map(function(f){return '<li>'+f+'</li>';}).join('');
@@ -966,7 +966,7 @@ function toggleShowSmartQueue(checkbox) {
     // -1 because the current one is already checked in the DOM
     if (checkedCount > 5) {
       checkbox.checked = false;
-      showSettingsToast('Creator allows up to 5 Smart Queue shows. Upgrade to Operator for unlimited.', 'warning');
+      showSettingsToast('Creator allows up to 5 Smart Queue shows. Upgrade to Pro Lens for unlimited.', 'warning');
       return;
     }
   }
@@ -980,7 +980,7 @@ function toggleShowSmartQueue(checkbox) {
   .then(function(d){
     if (d.limitReached) {
       checkbox.checked = false;
-      showSettingsToast('Creator allows up to 5 Smart Queue shows. Upgrade to Operator for unlimited.', 'warning');
+      showSettingsToast('Creator allows up to 5 Smart Queue shows. Upgrade to Pro Lens for unlimited.', 'warning');
     } else if (!d.ok) {
       checkbox.checked = !enabled;
       showSettingsToast('Failed to update', 'error');

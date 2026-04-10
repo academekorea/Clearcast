@@ -4,7 +4,7 @@ import { getStore } from "@netlify/blobs";
 const OPENAI_KEY = () => Netlify.env.get("OPENAI_API_KEY") || "";
 const ELEVENLABS_KEY = () => Netlify.env.get("ELEVENLABS_API_KEY") || "";
 const ELEVENLABS_VOICE_EN = "pqHfZKP75CvOlQylNhV4"; // Bill — warm, clear, natural for narration
-const ELEVENLABS_VOICE_KO = "ThT5KcBeYPX3keUQqHPh"; // Dorothy — multilingual
+// Phase 2: Korean voice deferred — const ELEVENLABS_VOICE_KO = "ThT5KcBeYPX3keUQqHPh";
 
 export default async (req: Request) => {
   if (req.method !== "POST") {
@@ -81,8 +81,8 @@ export default async (req: Request) => {
 
 async function callOpenAI(script: string, lang: string): Promise<ArrayBuffer | null> {
   try {
-    // Use a calm, clear voice — nova for English, alloy for Korean
-    const voice = lang === "ko" ? "alloy" : "nova";
+    // Phase 2: Korean voice deferred — always use English voice
+    const voice = "nova";
     const res = await fetch("https://api.openai.com/v1/audio/speech", {
       method: "POST",
       headers: {
@@ -111,7 +111,8 @@ async function callOpenAI(script: string, lang: string): Promise<ArrayBuffer | n
 }
 
 async function callElevenLabs(script: string, lang: string, voiceId?: string): Promise<ArrayBuffer | null> {
-  const selectedVoice = voiceId || (lang === "ko" ? ELEVENLABS_VOICE_KO : ELEVENLABS_VOICE_EN);
+  // Phase 2: Korean voice deferred — always use English voice
+  const selectedVoice = voiceId || ELEVENLABS_VOICE_EN;
   try {
     const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoice}`, {
       method: "POST",

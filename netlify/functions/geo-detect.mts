@@ -14,12 +14,13 @@ export default async (
 
     return Response.json({
       country,
-      isKorean: country === 'kr'
+      // isKorean: Phase 2 — Korean market deferred until English product is complete
+      isKorean: false,
     })
   } catch {
     return Response.json({
       country: '',
-      isKorean: false
+      isKorean: false,
     })
   }
 }

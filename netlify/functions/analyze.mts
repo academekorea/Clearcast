@@ -112,22 +112,75 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
 
 // ── YOUTUBE CAPTIONS — TIMEDTEXT (no auth) ───────────────────────────────────
 async function fetchYouTubeCaptionsNoAuth(videoId: string): Promise<string | null> {
-  const langs = ["en", "en-US", "en-GB", "en-AU"];
-  for (const lang of langs) {
+  // Try manual captions first (en variants), then auto-generated (asr)
+  // fmt=srv3 returns XML with <text> elements including timing
+  const attempts = [
+    // Manual captions — highest quality
+    { lang: "en",    kind: "" },
+    { lang: "en-US", kind: "" },
+    { lang: "en-GB", kind: "" },
+    { lang: "en-AU", kind: "" },
+    // Auto-generated captions — available on most English YouTube videos
+    { lang: "en",    kind: "asr" },
+    { lang: "en-US", kind: "asr" },
+  ];
+
+  function parseTimedtextXml(xml: string): string {
+    return (xml.match(/<text[^>]*>([^<]*)<\/text>/g) || [])
+      .map(t => t
+        .replace(/<[^>]+>/g, "")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&#39;/g, "'")
+        .replace(/&quot;/g, '"')
+        .replace(/\n/g, " ")
+        .trim()
+      )
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+  }
+
+  for (const { lang, kind } of attempts) {
     try {
+      const kindParam = kind ? `&kind=${kind}` : "";
       const res = await fetch(
-        `https://www.youtube.com/api/timedtext?lang=${lang}&v=${videoId}&fmt=srv3`,
+        `https://www.youtube.com/api/timedtext?lang=${lang}&v=${videoId}&fmt=srv3${kindParam}`,
         { signal: AbortSignal.timeout(12000) }
       );
       if (!res.ok) continue;
       const xml = await res.text();
       if (!xml || xml.length < 200) continue;
-      const captions = (xml.match(/<text[^>]*>([^<]*)<\/text>/g) || [])
-        .map(t => t.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#39;/g, "'").trim())
-        .filter(Boolean).join(" ").trim();
-      if (captions && captions.length > 500) return captions;
+      const captions = parseTimedtextXml(xml);
+      if (captions && captions.length > 500) {
+        console.log(`[analyze] timedtext success lang=${lang} kind=${kind || "manual"} chars=${captions.length}`);
+        return captions;
+      }
     } catch {}
   }
+
+  // Last resort: try the public transcript endpoint (works on some videos)
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&fmt=json3`,
+      { signal: AbortSignal.timeout(10000) }
+    );
+    if (res.ok) {
+      const data = await res.json() as any;
+      const text = (data.events || [])
+        .filter((e: any) => e.segs)
+        .flatMap((e: any) => e.segs.map((s: any) => s.utf8 || ""))
+        .join(" ")
+        .replace(/\n/g, " ")
+        .trim();
+      if (text.length > 500) {
+        console.log(`[analyze] json3 timedtext success chars=${text.length}`);
+        return text;
+      }
+    }
+  } catch {}
+
   return null;
 }
 
@@ -239,10 +292,12 @@ export default async (req: Request, context: Context) => {
   const jobId = `${urlType}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
   // Save initial pending state
+  const TIMEOUT_MS = 20 * 60 * 1000; // 20 min — covers long episodes
   await store.setJSON(jobId, {
     status: "pending", jobId, url, canonicalKey: canonical,
     episodeTitle: resolvedEpisodeTitle, showName: resolvedShowName,
     userId: userId || null,
+    pendingTimeoutAt: Date.now() + TIMEOUT_MS,
   });
 
   // ── 3. YouTube path ───────────────────────────────────────────────────────
@@ -340,16 +395,26 @@ export default async (req: Request, context: Context) => {
           // Success: audio returned — upload to AssemblyAI
           if (extracted.success && extracted.audioData) {
             console.log(`[analyze] audio success client=${client}, uploading to AssemblyAI`);
+            const aaiKey = Netlify.env.get("ASSEMBLYAI_API_KEY") || "";
             const uploadRes = await fetch("https://api.assemblyai.com/v2/upload", {
               method: "POST",
-              headers: { "authorization": Netlify.env.get("ASSEMBLYAI_API_KEY") || "", "content-type": "application/octet-stream" },
+              headers: { "authorization": aaiKey, "content-type": "application/octet-stream" },
               body: Buffer.from(extracted.audioData, "base64"),
             });
+            if (!uploadRes.ok) {
+              console.error(`[analyze] AssemblyAI upload failed: ${uploadRes.status}`);
+              continue;
+            }
             const { upload_url } = await uploadRes.json() as any;
             const transcriptRes = await fetch("https://api.assemblyai.com/v2/transcript", {
               method: "POST",
-              headers: { "authorization": Netlify.env.get("ASSEMBLYAI_API_KEY") || "", "content-type": "application/json" },
-              body: JSON.stringify({ audio_url: upload_url, speech_model: "universal-2" }),
+              headers: { "authorization": aaiKey, "content-type": "application/json" },
+              body: JSON.stringify({
+                audio_url: upload_url,
+                speech_model: "best",
+                // Store word-level timestamps for transcript seek (Priority 4)
+                // words_json: true is the default — explicitly request it
+              }),
             });
             const { id: transcriptId } = await transcriptRes.json() as any;
             await store.setJSON(jobId, {
@@ -357,6 +422,8 @@ export default async (req: Request, context: Context) => {
               episodeTitle: resolvedEpisodeTitle || extracted.metadata?.title || "",
               showName: resolvedShowName || "",
               transcriptId,
+              createdAt: Date.now(),
+              pendingTimeoutAt: Date.now() + TIMEOUT_MS,
             });
             return;
           }
@@ -516,24 +583,41 @@ export default async (req: Request, context: Context) => {
 
   // ── 8. Submit to AssemblyAI ───────────────────────────────────────────────
   const assemblyKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
+  if (!assemblyKey) {
+    await store.setJSON(jobId, { status: "error", jobId, error: "Transcription service not configured." });
+    return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+  }
+
   const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
-    headers: { authorization: assemblyKey!, "content-type": "application/json" },
-    body: JSON.stringify({ audio_url: resolvedAudioUrl, speech_model: "universal-2" }),
+    headers: { authorization: assemblyKey, "content-type": "application/json" },
+    body: JSON.stringify({
+      audio_url: resolvedAudioUrl,
+      speech_model: "best",
+      // word_boost not needed — default word-level timestamps are always returned
+    }),
+    signal: AbortSignal.timeout(30000),
   });
 
   if (!aaiRes.ok) {
-    const err = await aaiRes.text();
+    const err = await aaiRes.text().catch(() => String(aaiRes.status));
     await store.setJSON(jobId, { status: "error", jobId, error: "Transcription service error: " + err });
     return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
   const aaiData = await aaiRes.json();
+  if (!aaiData.id) {
+    await store.setJSON(jobId, { status: "error", jobId, error: "Transcription service returned no job ID." });
+    return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+  }
+
   await store.setJSON(jobId, {
     status: "transcribing", jobId, url, canonicalKey: canonical,
     episodeTitle: resolvedEpisodeTitle, showName: resolvedShowName,
     transcriptId: aaiData.id,
     createdAt: Date.now(),
+    // pendingTimeoutAt: used by status.mts to detect stuck jobs
+    pendingTimeoutAt: Date.now() + TIMEOUT_MS,
   });
 
   return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });

@@ -4,10 +4,11 @@ import { sendEmail, pilotExpiryEmail } from "./lib/email.js";
 
 // Runs daily — sends pilot expiry emails at 30, 7, and 1 day before expiry
 
+// Phase 2: KRW pricing deferred — international USD only
+// Founding prices shown (33% off normal)
 const TIER_PRICES: Record<string, { creator: string; operator: string }> = {
-  USD: { creator: '$8/mo', operator: '$26/mo' },
-  KRW: { creator: '₩10,600/mo', operator: '₩34,600/mo' },
-}
+  USD: { creator: '$4.69/mo (Starter Lens)', operator: '$12.73/mo (Pro Lens)' },
+};
 
 export default async (req: Request) => {
   const sb = getSupabaseAdmin();
