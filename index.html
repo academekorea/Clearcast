@@ -6,10 +6,13 @@
 <title>Podlens — Know what you're actually listening to</title>
 <!-- AUTH STATE: runs before body renders — signed-in users never see marketing page -->
 <style>
-  html.pl-signed-in #home-loggedout { display:none!important; visibility:hidden!important; }
-  html.pl-signed-in #home-loggedin  { display:block!important; }
-  html:not(.pl-signed-in) #home-loggedout { display:block; }
-  html:not(.pl-signed-in) #home-loggedin  { display:none!important; }
+  /* Auth visibility — two hooks so there's zero flash at any timing */
+  /* 1. html.pl-signed-in: set in <head> before body renders */
+  html.pl-signed-in #home-loggedout { display:none !important; visibility:hidden !important; }
+  html.pl-signed-in #home-loggedin  { display:block !important; }
+  /* 2. body.authenticated: set by IIFE after DOM parsed, overrides any stale inline styles */
+  body.authenticated   #home-loggedout { display:none !important; visibility:hidden !important; }
+  body:not(.authenticated) #home-loggedin  { display:none !important; }
 </style>
 <script>(function(){try{var u=JSON.parse(localStorage.getItem('pl-user')||'null');if(u&&u.id){document.documentElement.classList.add('pl-signed-in');}}catch(e){}})()</script>
 <meta name="description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
@@ -4474,14 +4477,20 @@ function renderHomeState() {
   var u = plUser();
   if (u) u = enforcePlanRules() || u;
 
-  document.body.classList.toggle('authenticated', !!(u && u.id));
+  var isAuth = !!(u && u.id);
+  // Sync class on BOTH html and body so CSS fires immediately
+  document.body.classList.toggle('authenticated', isAuth);
+  document.documentElement.classList.toggle('pl-signed-in', isAuth);
+  // Also set inline styles as belt-and-suspenders
+  var elOut = document.getElementById('home-loggedout');
+  var elIn  = document.getElementById('home-loggedin');
+  if (elOut) elOut.style.display = isAuth ? 'none' : '';
+  if (elIn)  elIn.style.display  = isAuth ? ''     : 'none';
 
-  if (u && u.id) {
-    // Show dashboard, ensure home-loggedout (if still in DOM) is hidden
-    var _dashEl = document.getElementById('home-loggedin');
-    if (_dashEl) _dashEl.style.display = 'block';
-    var _mktEl = document.getElementById('home-loggedout');
-    if (_mktEl) _mktEl.style.display = 'none';
+  if (isAuth) {
+    var _dashEl = document.getElementById('home-loggedin'); // already shown above
+    var _mktEl  = document.getElementById('home-loggedout'); // already hidden above
+    var hr = new Date().getHours(); // FIX: was undefined (window.hr)
     var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
     var first = (u.name || '').split(' ')[0];
     var greetText = greeting + (first ? ', <em>' + first + '</em>' : '') + '.';
@@ -10166,19 +10175,23 @@ function renderProfileEmptyState(el) {
 }
 
 // ── AUTO INIT ──
-// If user is signed in, delete the marketing page from the DOM immediately.
-// You cannot show something that doesn't exist.
+// Set auth state synchronously before any render logic runs.
+// CSS keys off body.authenticated to hide/show marketing vs dashboard.
 (function() {
-  var _u = null;
-  try { _u = JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) {}
-  if (_u && _u.id) {
-    var _elOut = document.getElementById('home-loggedout');
-    if (_elOut) _elOut.parentNode.removeChild(_elOut);
-  }
+  try {
+    var _u = JSON.parse(localStorage.getItem('pl-user') || 'null');
+    var _isAuth = !!(_u && _u.id);
+    document.body.classList.toggle('authenticated', _isAuth);
+    document.documentElement.classList.toggle('pl-signed-in', _isAuth);
+    // Belt-and-suspenders: set inline styles immediately so there's zero flash
+    if (_isAuth) {
+      var _elOut = document.getElementById('home-loggedout');
+      var _elIn  = document.getElementById('home-loggedin');
+      if (_elOut) _elOut.style.display = 'none';
+      if (_elIn)  _elIn.style.display  = '';
+    }
+  } catch(e) {}
 })();
-
-// Set auth state FIRST before anything else runs
-if (plUser()) { document.body.classList.add('authenticated'); } else { document.body.classList.remove('authenticated'); }
 enforcePlanRules();
 initNav();
 // Apply region, translations
