@@ -135,7 +135,7 @@ function renderResults(data) {
     + '<div class="blur-r"><div class="btext"></div><span class="lock">\uD83D\uDD12</span></div>'
     + '<div class="blur-r"><div class="btext"></div><span class="lock">\uD83D\uDD12</span></div>'
     + '<div class="blur-r" style="border-bottom:none"><div class="btext"></div><span class="lock">\uD83D\uDD12</span></div>'
-    + '<div class="upbar"><span class="uptxt">All findings unlock with Creator</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div>';
+    + '<div class="upbar"><span class="uptxt">All findings unlock with Starter Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div>';
   }
 
   var kfRows;
@@ -404,7 +404,7 @@ function renderResults(data) {
     + (c ? '<div class="cdlrow"><span style="font-size:10px;color:#bbb">Your Starter Lens report is ready</span><button class="drsec" style="font-size:10px;padding:4px 10px" onclick="downloadReport()">Download</button></div>' : '')
     + '</div><div style="display:flex;gap:7px;align-items:center;flex-shrink:0">'
     + (o ? '<button class="drpri" onclick="downloadReport()">Download full report</button>'
-         : c ? '<div class="drlocked">\uD83D\uDD12 Full report \u2014 Operator</div>'
+         : c ? '<div class="drlocked">\uD83D\uDD12 Full report \u2014 Pro Lens</div>'
              : '<div class="drlocked">\uD83D\uDD12 Starter Lens or above</div>')
     + '</div></div>';
 
@@ -686,7 +686,7 @@ function renderTranscriptHighlights(data) {
     lockedNeutral.forEach(function(h) { html += hlHTML(h, true); });
     if (!isOperator && lockedNeutral.length) {
       html += '<div class="th-gate">'
-        + '<span class="th-gate-txt">' + lockedNeutral.length + ' more \u2014 Operator plan</span>'
+        + '<span class="th-gate-txt">' + lockedNeutral.length + ' more \u2014 Pro Lens</span>'
         + '<button class="th-gate-btn" onclick="showUpgrade()">Upgrade \u2192</button>'
         + '</div>';
     }
@@ -694,7 +694,7 @@ function renderTranscriptHighlights(data) {
   } else if (neutral.length && !isCreator) {
     html += '<div class="th-sec-lbl">Neutral context &amp; factual moments</div>'
       + '<div class="th-list">'
-      + '<div class="th-gate"><span class="th-gate-txt">Neutral moments \u2014 Creator plan</span>'
+      + '<div class="th-gate"><span class="th-gate-txt">Neutral moments \u2014 Starter Lens</span>'
       + '<button class="th-gate-btn" onclick="showUpgrade()">Upgrade \u2192</button></div>'
       + '</div>';
   }

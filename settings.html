@@ -812,11 +812,11 @@ function renderMembershipStatus(u, plan) {
       + '<div style="font-size:11px;color:var(--text3);display:flex;justify-content:space-between"><span>'+start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</span><span>'+(expiresAt?expiresAt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'')+'</span></div>'
       + '</div>'
       + '<div style="background:#f8f4ff;border:1px solid #d8ccff;border-radius:6px;padding:14px;margin-bottom:16px">'
-      + '<div style="font-size:13px;font-weight:600;color:#5a4fcf;margin-bottom:6px">🔒 Early User Pricing locked in</div>'
+      + '<div style="font-size:13px;font-weight:600;color:#5a4fcf;margin-bottom:6px">🔒 Founding pricing locked in forever</div>'
       + '<div style="font-size:12px;color:var(--text2);margin-bottom:10px">When your pilot ends you\'ll get 33% off forever. No action needed.</div>'
-      + '<div style="font-size:12px;color:var(--text2)">Creator <s style="color:var(--text3)">$12/mo</s> → <strong>$8/mo</strong></div>'
-      + '<div style="font-size:12px;color:var(--text2)">Operator <s style="color:var(--text3)">$39/mo</s> → <strong>$26/mo</strong></div>'
-      + '<div style="font-size:12px;color:var(--text2)">Studio <s style="color:var(--text3)">$99/mo</s> → <strong>$66/mo</strong></div>'
+      + '<div style="font-size:12px;color:var(--text2)">Starter Lens <s style="color:var(--text3)">$7/mo</s> → <strong>$4.69/mo</strong></div>'
+      + '<div style="font-size:12px;color:var(--text2)">Pro Lens <s style="color:var(--text3)">$19/mo</s> → <strong>$12.73/mo</strong></div>'
+      + '<div style="font-size:12px;color:var(--text2)">Operator Lens <s style="color:var(--text3)">$49/mo</s> → <strong>$32.83/mo</strong></div>'
       + '</div>';
   } else if (isFounding) {
     var num = u.signupCount || '?';

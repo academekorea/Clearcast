@@ -255,7 +255,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
       <div class="pf"><span class="pf-check">&#10003;</span>5 team seats</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Bulk scanner (20 URLs at once)</div>
       <div class="pf"><span class="pf-check">&#10003;</span>CSV export</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Korean dubbing</div>
+      
       <div class="pf"><span class="pf-check">&#10003;</span>Pre-analysis: unlimited shows</div>
       <div class="pf"><span class="pf-check">&#10003;</span>Everything in Pro Lens</div>
     </div>
@@ -359,7 +359,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
         <tr><td>Live subtitles</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
         <tr><td>Translation</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
         <tr><td>Voice assistant</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Korean dubbing</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+        
 
         <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Platform &mdash; always free for everyone</td></tr>
         <tr><td>Discover page</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
@@ -402,23 +402,23 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
 var _billing = 'monthly';
 var _foundingActive = true; // Founding period active — show founding prices by default
 
-// Full and founding prices
+// Full prices and founding prices (33% off, locked forever)
 var PRICES = {
   monthly: {
-    creator:  { full: '$12', founding: '$8',  period: '/mo', priceKey: 'creator_monthly' },
-    operator: { full: '$39', founding: '$26', period: '/mo', priceKey: 'operator_monthly' },
-    studio:   { full: '$99', founding: '$66', period: '/mo', priceKey: 'studio_monthly' },
+    creator:  { full: '$7',  founding: '$4.69',  period: '/mo', priceKey: 'creator_monthly' },
+    operator: { full: '$19', founding: '$12.73', period: '/mo', priceKey: 'operator_monthly' },
+    studio:   { full: '$49', founding: '$32.83', period: '/mo', priceKey: 'studio_monthly' },
   },
   annual: {
-    creator:  { full: '$99',  founding: '$66',  period: '/yr', priceKey: 'creator_annual' },
-    operator: { full: '$299', founding: '$200', period: '/yr', priceKey: 'operator_annual' },
-    studio:   { full: '$799', founding: '$535', period: '/yr', priceKey: 'studio_annual' },
+    creator:  { full: '$56',  founding: '$37.52',  period: '/yr', priceKey: 'creator_annual' },
+    operator: { full: '$152', founding: '$101.84', period: '/yr', priceKey: 'operator_annual' },
+    studio:   { full: '$392', founding: '$262.64', period: '/yr', priceKey: 'studio_annual' },
   },
 };
 // Show founding prices immediately (don't wait for API)
 renderPrices();
 
-// Stripe price IDs (passed via env at build time or fetched)
+// Stripe price IDs — loaded from /api/public-config at runtime
 var PRICE_IDS = {
   creator_monthly:  '',
   creator_annual:   '',
@@ -427,6 +427,17 @@ var PRICE_IDS = {
   studio_monthly:   '',
   studio_annual:    '',
 };
+
+// Load price IDs from server so no hardcoding needed
+fetch('/api/public-config')
+  .then(function(r){ return r.json(); })
+  .then(function(cfg){
+    if (cfg && cfg.prices) {
+      Object.keys(cfg.prices).forEach(function(k){
+        if (cfg.prices[k]) PRICE_IDS[k] = cfg.prices[k];
+      });
+    }
+  }).catch(function(){});
 
 function setBilling(billing) {
   _billing = billing;

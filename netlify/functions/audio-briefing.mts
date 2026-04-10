@@ -123,7 +123,7 @@ async function callElevenLabs(script: string, lang: string, voiceId?: string): P
       },
       body: JSON.stringify({
         text: script,
-        model_id: lang === "ko" ? "eleven_multilingual_v2" : "eleven_multilingual_v2",
+        model_id: "eleven_multilingual_v2",
         voice_settings: { stability: 0.45, similarity_boost: 0.80, style: 0.35, use_speaker_boost: true },
       }),
       signal: AbortSignal.timeout(30000),
