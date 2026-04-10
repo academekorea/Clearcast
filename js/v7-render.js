@@ -169,7 +169,7 @@ function renderResults(data) {
 
   // ETA banner
   if (isPartial || data.jobId === 'demo') {
-    html += '<div class="sec"><div style="background:#fffbeb;border:0.5px solid #fde68a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
+    html += '<div class="sec"><div style="background:var(--amber-bg);border:0.5px solid #fde68a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
       + '<div><div style="font-size:12px;color:#92580a">Episode is '+(data.duration||'2h 18m')+' \u2014 full analysis ready in about 7 minutes</div>'
       + '<div style="font-size:10px;color:#b58a40;margin-top:2px">First findings appear in ~90 seconds \u00b7 Play while you wait</div></div>'
       + '<div id="ar-eta-pct" style="font-size:10px;color:#b58a40">Analyzing…</div></div></div>';
@@ -296,7 +296,7 @@ function renderResults(data) {
     + '<div class="bpcts">'
     + '<span style="color:#e0352b">\u25cf '+segs.lp+'% left</span>'
     + '<span style="color:#999">\u25aa '+segs.cp+'% center</span>'
-    + '<span style="color:#3a7fd4">\u25cf '+segs.rp+'% right</span>'
+    + '<span style="color:#378ADD">\u25cf '+segs.rp+'% right</span>'
     + '</div>'
     + '<div class="bverdict">'+(data.biasLabel||'Slight left lean')+'</div>'
     + (isPartial||data.jobId==='demo' ? '<div class="enote">Based on first 30 min \u00b7 updating as analysis continues</div>' : '')
@@ -454,9 +454,9 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
   if (emptyState) emptyState.style.display = 'none';
 
   var html = '<div class="pl-results-wrap"><div class="pl-main">';
-  html += '<div class="sec"><div style="background:#fffbeb;border:0.5px solid #fde68a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
+  html += '<div class="sec"><div style="background:var(--amber-bg);border:0.5px solid #fde68a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
     + '<div><div style="font-size:12px;color:#92580a">Analyzing \u2014 first findings appear in ~90 seconds</div>'
-    + '<div style="font-size:10px;color:#b58a40;margin-top:2px">Play while you wait \u00b7 <strong style="color:#92580a">\u26A1 Analyzed once? Loads instantly next time</strong></div></div>'
+    + '<div style="font-size:10px;color:#b58a40;margin-top:2px">Play while you wait \u00b7 <strong style="color:#b45309">\u26A1 Analyzed once? Loads instantly next time</strong></div></div>'
     + '<div id="ar-eta-pct" style="font-size:10px;color:#b58a40">0% complete</div></div></div>';
 
   html += '<div class="trow"><div>';
@@ -585,7 +585,7 @@ function renderTranscriptHighlights(data) {
     + '<div class="bpcts" style="margin-bottom:8px">'
     + '<span style="color:#e0352b">\u25cf ' + segs.lp + '% left</span>'
     + '<span style="color:#999">\u25aa ' + segs.cp + '% center</span>'
-    + '<span style="color:#3a7fd4">\u25cf ' + segs.rp + '% right</span>'
+    + '<span style="color:#378ADD">\u25cf ' + segs.rp + '% right</span>'
     + '</div>'
     + '<div class="th-br-note">'
     + (biasReason ? biasReason : '')
