@@ -1077,6 +1077,12 @@ body.player-on .lap{bottom:72px}
 .sp-analyze-btn:hover{opacity:.85}
 .sp-share-btn{padding:8px 14px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;font-family:var(--ff);transition:all .1s}
 .sp-share-btn:hover{border-color:var(--text);color:var(--text)}
+.sp-follow-btn{padding:8px 14px;border:1.5px solid var(--navy);border-radius:var(--r);background:transparent;color:var(--navy);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--ff);transition:all .15s}
+.sp-follow-btn:hover{background:var(--navy);color:#fff}
+.sp-follow-btn.following{background:var(--navy);color:#fff}
+.sp-follow-btn.following:hover{background:transparent;color:var(--navy);border-color:var(--navy)}
+[data-theme="dark"] .sp-follow-btn{border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.8)}
+[data-theme="dark"] .sp-follow-btn.following{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.4)}
 .sp-section{padding:16px 0;border-bottom:1px solid var(--border)}
 .sp-section:last-child{border-bottom:none}
 .sp-section-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:12px}
@@ -4632,6 +4638,38 @@ function loadSqWidget() {
     .catch(function() { widget.style.display = 'none'; });
 }
 
+// ── FOLLOW / UNFOLLOW SHOW ────────────────────────────────────────────────────
+function _isFollowingShow(name) {
+  var u = plUser();
+  if (!u || !u.followedShows) return '+ Follow';
+  var following = u.followedShows.some(function(s){ return (s.name||s.showName||'').toLowerCase() === (name||'').toLowerCase(); });
+  return following ? '✓ Following' : '+ Follow';
+}
+
+function toggleFollowShow(name, feedUrl, artwork, btn) {
+  var u = plUser();
+  if (!u) { openModal('signup'); return; }
+  var followed = u.followedShows || [];
+  var idx = followed.findIndex(function(s){ return (s.name||s.showName||'').toLowerCase() === (name||'').toLowerCase(); });
+  if (idx >= 0) {
+    // Unfollow
+    followed.splice(idx, 1);
+    u.followedShows = followed;
+    setPlUser(u);
+    if (btn) { btn.textContent = '+ Follow'; btn.classList.remove('following'); }
+    plToast('Unfollowed ' + name, 2000);
+  } else {
+    // Follow
+    followed.push({ name: name, feedUrl: feedUrl || '', artwork: artwork || '', addedAt: new Date().toISOString() });
+    u.followedShows = followed;
+    setPlUser(u);
+    if (btn) { btn.textContent = '✓ Following'; btn.classList.add('following'); }
+    plToast('Following ' + name + ' — new episodes will appear in your queue', 3000);
+  }
+  renderDashFollowedShows(u);
+  renderDashStats(u, getRecent());
+}
+
 function renderDashFollowedShows(u) {
   var el = document.getElementById('sb-follow-list');
   if (!el) return;
@@ -5009,12 +5047,19 @@ function discRenderEpisodes() {
   if (cached && cached.urls) CURATED_SHOWS.forEach(function(s,i){ if(cached.urls[i]) artMap[s.name]=cached.urls[i]; });
   var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
   el.innerHTML = shows.map(function(s, i) {
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); // was undefined
     var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
     var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
     var artHtml = artMap[s.name]
       ? '<img src="'+artMap[s.name]+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\'">'
       : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+s.name.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
-    return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'      +'<div class="disc-ep-art" style="background:'+bgs[i]+'">'+artHtml+'</div>'      +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'      +'<div class="disc-ep-title">'+s.name+'</div>'      +'<div class="disc-ep-dur">Latest episode</div></div>'      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button></div>';
+    var biasPill = s.bias ? '<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);margin-left:6px">'+s.bias.label+'</span>' : '';
+    return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
+      +'<div class="disc-ep-art" style="background:'+bgs[i]+'">'+artHtml+'</div>'
+      +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'
+      +'<div class="disc-ep-title">'+s.name+'</div>'
+      +'<div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
+      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button></div>';
   }).join('');
 }
 
@@ -5044,7 +5089,7 @@ function showDashSection(section) {
 function _renderDashAnalyzedSection() {
   var el = document.getElementById('dash-analyzed-list');
   if (!el) return;
-  var recent = getRecent();
+  var recent = getRecent().filter(function(r){ return !_isRawJobId(r.title); });
   if (!recent.length) {
     el.innerHTML = '<div style="padding:40px 0;text-align:center;color:var(--text3)"><div style="font-size:32px;margin-bottom:12px">&#128336;</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">No analyses yet</div><div style="font-size:13px;margin-bottom:20px">Paste any podcast URL to get started.</div><button onclick="showView(\'analyze\')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Analyze an episode &rarr;</button></div>';
     return;
@@ -5229,14 +5274,78 @@ function discRenderHero() {
 function discRenderFeed() {
   var el = document.getElementById('disc-feed');
   if (!el) return;
+
   if (_discTab === 'analyzed') {
     discRenderRecentFeed(el); return;
   }
-  if (_discTab === 'unheard') {
-    el.innerHTML = '<div style="padding:32px 0;text-align:center"><div style="font-size:14px;font-weight:500;margin-bottom:6px">Unheard is a Pro feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:16px">Stories one side covers that the other ignores &mdash; updated weekly.</div><a href="/pricing.html" style="display:inline-block;padding:9px 20px;background:var(--navy);color:#fff;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none">Upgrade to Operator &rarr;</a></div>';
+
+  if (_discTab === 'following') {
+    var u = plUser();
+    var followed = (u && u.followedShows) || [];
+    if (!followed.length) {
+      el.innerHTML = '<div style="padding:40px 0;text-align:center">'
+        + '<div style="font-size:32px;margin-bottom:12px">📌</div>'
+        + '<div style="font-size:15px;font-weight:500;margin-bottom:6px">No shows followed yet</div>'
+        + '<div style="font-size:13px;color:var(--text3);margin-bottom:20px">Open any show profile and click Follow to track new episodes.</div>'
+        + '<button onclick="discSetTab(\'foryou\',document.getElementById(\'disc-tab-foryou\'))" style="padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--ff)">Browse shows &rarr;</button>'
+        + '</div>';
+    } else {
+      var cached2 = null;
+      try { cached2 = JSON.parse(localStorage.getItem('pl_tg_artwork_v3')||'null'); } catch(e){}
+      el.innerHTML = '<div class="disc-ep-list">' + followed.map(function(s, i) {
+        var name = s.name || s.showName || 'Show';
+        var slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        var safeUrl = (s.feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+        var art = s.artwork ? '<img class="disc-ep-art" src="'+artworkProxy(s.artwork)+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-ep-art"></div>';
+        return '<div class="disc-ep" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
+          + '<div class="disc-ep-num">'+(i+1)+'</div>' + art
+          + '<div class="disc-ep-body"><div class="disc-ep-show">Following</div>'
+          + '<div class="disc-ep-title">'+name+'</div>'
+          + '<div class="disc-ep-meta"><span class="disc-ep-dur">Tap to view episodes</span></div></div>'
+          + '<button class="disc-ep-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+name.replace(/'/g,"\\'").replace(/"/g,'')+'\')">Analyze &rarr;</button>'
+          + '</div>';
+      }).join('') + '</div>';
+    }
     return;
   }
-  // Trending — filter CURATED_SHOWS by category, show as episode rows
+
+  if (_discTab === 'unheard') {
+    var uPlan = (plUser() && plUser().plan) || 'free';
+    var isPro = ['operator','studio','trial'].includes(uPlan) || (plUser() && plUser().isSuperAdmin);
+    if (!isPro) {
+      el.innerHTML = '<div style="padding:32px 0;text-align:center">'
+        + '<div style="font-size:14px;font-weight:500;margin-bottom:6px">Unheard is a Pro Lens feature</div>'
+        + '<div style="font-size:13px;color:var(--text3);margin-bottom:16px">Stories one side covers that the other ignores — updated weekly.</div>'
+        + '<a href="/pricing.html" style="display:inline-block;padding:9px 20px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:500;text-decoration:none">Upgrade to Pro Lens &rarr;</a>'
+        + '</div>';
+    } else {
+      el.innerHTML = '<div style="padding:24px 0;color:var(--text3);font-size:13px">Loading Unheard stories&hellip;</div>';
+      // Load from blindspot API
+      fetch('/api/blindspot', { headers: { 'x-pl-plan': uPlan } })
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+          if (data.locked || (!data.leftLeaning && !data.rightLeaning)) {
+            el.innerHTML = '<div style="padding:24px 0;color:var(--text3);font-size:13px">Not enough data yet. Analyze more episodes to unlock Unheard.</div>';
+            return;
+          }
+          var items = [];
+          if (data.leftLeaning && data.leftLeaning.topFlags) items = items.concat(data.leftLeaning.topFlags.slice(0,3).map(function(t){ return {text:t,side:'left'}; }));
+          if (data.rightLeaning && data.rightLeaning.topFlags) items = items.concat(data.rightLeaning.topFlags.slice(0,3).map(function(t){ return {text:t,side:'right'}; }));
+          if (!items.length) { el.innerHTML = '<div style="padding:24px 0;color:var(--text3);font-size:13px">No Unheard stories this week.</div>'; return; }
+          el.innerHTML = '<div class="disc-ep-list">' + items.map(function(item) {
+            var dotColor = item.side === 'left' ? '#E24B4A' : '#378ADD';
+            return '<div class="disc-ep" style="cursor:default">'
+              + '<div style="width:10px;height:10px;border-radius:50%;background:'+dotColor+';flex-shrink:0;margin:0 4px"></div>'
+              + '<div class="disc-ep-body"><div class="disc-ep-title">'+item.text+'</div>'
+              + '<div class="disc-ep-meta"><span class="disc-ep-dur" style="color:'+dotColor+'">'+(item.side==='left'?'Left-only':'Right-only')+'</span></div></div></div>';
+          }).join('') + '</div>';
+        })
+        .catch(function(){ el.innerHTML = '<div style="padding:24px 0;color:var(--text3);font-size:13px">Could not load Unheard. Try again.</div>'; });
+    }
+    return;
+  }
+
+  // For You / Trending — filter CURATED_SHOWS by category, show as ranked rows
   var shows = _discCat === 'all' ? CURATED_SHOWS : CURATED_SHOWS.filter(function(s){ return s.cat === _discCat; });
   if (!shows.length) shows = CURATED_SHOWS;
   var cached = null;
@@ -5249,34 +5358,35 @@ function discRenderFeed() {
     var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var art = artMap[s.name] ? '<img class="disc-ep-art" src="'+artMap[s.name]+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-ep-art"></div>';
+    var biasPill = s.bias ? '<span style="font-size:10px;font-weight:600;margin-left:8px;padding:2px 7px;border-radius:8px;background:'+(Math.abs(s.bias.leftPct-s.bias.rightPct)<20?'rgba(42,122,74,.12)':'rgba(180,83,9,.12)')+';color:'+(Math.abs(s.bias.leftPct-s.bias.rightPct)<20?'#2a7a4a':'#b45309')+'">'+s.bias.label+'</span>' : '';
     return '<div class="disc-ep" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
       + '<div class="disc-ep-num">'+(i+1)+'</div>'
       + art
       + '<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'
       + '<div class="disc-ep-title">'+s.name+'</div>'
-      + '<div class="disc-ep-meta"><span class="disc-ep-dur">Latest episode</span>'+(s.bias ? '<span style="font-size:10px;font-weight:600;margin-left:8px;padding:2px 7px;border-radius:8px;background:'+(Math.abs(s.bias.leftPct-s.bias.rightPct)<20?'rgba(42,122,74,.15)':'rgba(180,83,9,.15)')+'color:'+(Math.abs(s.bias.leftPct-s.bias.rightPct)<20?'#2a7a4a':'#b45309')+'">'+s.bias.label+'</span>':'')+'</div></div>'
+      + '<div class="disc-ep-meta"><span class="disc-ep-dur">Latest episode</span>'+biasPill+'</div></div>'
       + '<button class="disc-ep-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze &rarr;</button>'
       + '</div>';
   }).join('') + '</div>';
 
-  // Load missing artwork
+  // Load missing artwork live
   shows.slice(0,8).forEach(function(s) {
     if (artMap[s.name]) return;
     _itunesArtwork(s.name).then(function(url){
-        if (!url) return;
-        el.querySelectorAll('.disc-ep').forEach(function(row){
-          var titleEl = row.querySelector('.disc-ep-title');
-          if (titleEl && titleEl.textContent === s.name) {
-            var artEl = row.querySelector('.disc-ep-art');
-            if (artEl && artEl.tagName === 'DIV') {
-              var img = document.createElement('img');
-              img.className = 'disc-ep-art'; img.src = url; img.alt = s.name;
-              img.onerror = function(){ this.style.display='none'; };
-              artEl.parentNode.replaceChild(img, artEl);
-            }
+      if (!url) return;
+      el.querySelectorAll('.disc-ep').forEach(function(row){
+        var titleEl = row.querySelector('.disc-ep-title');
+        if (titleEl && titleEl.textContent === s.name) {
+          var artEl = row.querySelector('.disc-ep-art');
+          if (artEl && artEl.tagName === 'DIV') {
+            var img = document.createElement('img');
+            img.className = 'disc-ep-art'; img.src = url; img.alt = s.name;
+            img.onerror = function(){ this.style.display='none'; };
+            artEl.parentNode.replaceChild(img, artEl);
           }
-        });
-      }).catch(function(){});
+        }
+      });
+    }).catch(function(){});
   });
 }
 
@@ -7511,6 +7621,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     html+='<div class="sp-actions" style="margin-top:10px"><button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
     if (yt.channelId) html+='<a href="https://youtube.com/channel/'+yt.channelId+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:12px;font-weight:600;color:var(--text2);text-decoration:none">View channel ↗</a>';
     if (data.episodeCount>0) html+='<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share &#8599;</button>';
+    html+='<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+'\',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\',\''+(yt.thumbnailHigh||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_isFollowingShow(displayName)+'</button>';
     html+='</div></div></div>';
     // Channel description
     var ytDesc=yt.channelDescription||(rss&&rss.description)||null;
@@ -7562,6 +7673,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     html+='</div>';
     html+='<div class="sp-actions"><button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
     if (data.episodeCount>0) html+='<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share card &#8599;</button>';
+    html+='<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+ '\',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\',\''+(artwork||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_isFollowingShow(displayName)+'</button>';
     html+='</div></div></div>';
   }
 
