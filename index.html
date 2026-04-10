@@ -2646,7 +2646,7 @@ body.light-mode,[data-theme="light"]{
     <!-- LOGGED IN: app links -->
     <div class="nav-links-logged-in" id="nav-logged-in">
       <button class="nav-link" id="nl-discover" onclick="showView(\'discover\')">Discover</button>
-      <button class="nav-link" id="nl-analyze" onclick="showView('analyze')">Analyze</button>
+      <button class="nav-link" id="nl-analyze" onclick="showView(\'analyze\')">Analyze</button>
       <a class="nav-link" id="nl-library" href="/library.html">Library</a>
       <button class="nav-theme-toggle mode-toggle" onclick="toggleMode()" id="mode-toggle-btn"
               aria-label="Toggle dark/light mode">☀️</button>
@@ -2987,12 +2987,13 @@ body.light-mode,[data-theme="light"]{
           <div class="dash-nav-lbl">Dashboard</div>
           <button class="dash-nav-btn on" data-section="home" onclick="showDashSection('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
           <button class="dash-nav-btn" onclick="showView(\'discover\')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
-          <button class="dash-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
+          <button class="dash-nav-btn" onclick="showView(\'analyze\')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
           <div class="dash-nav-div"></div>
           <div class="dash-nav-lbl">My library</div>
           <button class="dash-nav-btn" data-section="queue" onclick="showDashSection('queue')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
           <button class="dash-nav-btn" data-section="following" onclick="showDashSection('following')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Following</button>
           <button class="dash-nav-btn" data-section="analyzed" onclick="showDashSection('analyzed')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
+          <button class="dash-nav-btn" data-section="intelligence" onclick="showDashSection('intelligence')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My Intelligence</button>
           <button class="dash-nav-btn" data-section="fingerprint" onclick="showDashSection('fingerprint')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
         </div>
 
@@ -3083,6 +3084,15 @@ body.light-mode,[data-theme="light"]{
           <div id="dash-analyzed-list"></div>
         </div>
 
+        <!-- SECTION: Intelligence Profile -->
+        <div data-dash-section="intelligence" style="display:none">
+          <div class="dash-greeting-wrap">
+            <div class="dashboard-greeting" style="font-size:22px">My Podcast Intelligence</div>
+            <div class="dashboard-subline">A full picture of your media diet — bias, topics, and listening patterns.</div>
+          </div>
+          <div id="dash-intelligence-content" style="padding-top:8px"></div>
+        </div>
+
         <!-- SECTION: My Fingerprint -->
         <div data-dash-section="fingerprint" style="display:none">
           <div class="dash-greeting-wrap">
@@ -3159,7 +3169,7 @@ body.light-mode,[data-theme="light"]{
       <div class="disc-nav-lbl">Browse</div>
       <button class="disc-nav-btn" onclick="showHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
       <button class="disc-nav-btn on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
-      <button class="disc-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
+      <button class="disc-nav-btn" onclick="showView(\'analyze\')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
 
       <!-- CATEGORY SECTION — always shown on Discover -->
       <div id="disc-nav-cat-section">
@@ -3263,7 +3273,7 @@ body.light-mode,[data-theme="light"]{
       <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;padding:16px 20px 8px;color:#fff">Menu</div>
       <button onclick="showHome()" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
       <button onclick="showView(\'discover\')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
-      <button onclick="showView('analyze')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:rgba(255,255,255,.13);width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
+      <button onclick="showView(\'analyze\')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:rgba(255,255,255,.13);width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
       <div style="height:0.5px;background:rgba(255,255,255,.1);margin:6px 20px"></div>
       <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;padding:16px 20px 8px;color:#fff">Recent</div>
       <div id="analyze-nav-recent" style="padding:0 12px"></div>
@@ -3440,7 +3450,7 @@ body.light-mode,[data-theme="light"]{
         <a href="/" onclick="showHome();return false"><span data-en>Home</span><span data-ko>홈</span></a>
         <button onclick="showView('discover');showFeed('foryou')"><span data-en>Trending</span><span data-ko>트렌드</span></button>
         <button onclick="showView('discover');showFeed('unheard')"><span data-en>Unheard</span><span data-ko>언헤드</span></button>
-        <button onclick="showView('analyze')"><span data-en>Analyze a show</span><span data-ko>팟캐스트 분석</span></button>
+        <button onclick="showView(\'analyze\')"><span data-en>Analyze a show</span><span data-ko>팟캐스트 분석</span></button>
       </div>
     </div>
 
@@ -3486,7 +3496,7 @@ body.light-mode,[data-theme="light"]{
 <div class="mob-nav" id="mob-nav">
   <button class="mob-btn on" id="mob-home" onclick="showHome()"><span class="mob-icon">&#127968;</span>Home</button>
   <button class="mob-btn" id="mob-discover" onclick="showView(\'discover\')"><span class="mob-icon">&#128269;</span>Discover</button>
-  <button class="mob-btn" id="mob-analyze" onclick="showView('analyze')"><span class="mob-icon">&#127897;</span>Analyze</button>
+  <button class="mob-btn" id="mob-analyze" onclick="showView(\'analyze\')"><span class="mob-icon">&#127897;</span>Analyze</button>
 </div>
 
 <!-- INFO MODAL -->
@@ -4698,6 +4708,68 @@ function toggleFollowShow(name, feedUrl, artwork, btn) {
   renderDashStats(u, getRecent());
 }
 
+
+function renderDashIntelligence(u) {
+  var el = document.getElementById('dash-intelligence-content');
+  if (!el) return;
+  var recent = [];
+  try { recent = JSON.parse(localStorage.getItem('pl_analysis_history') || '[]'); } catch(e){}
+  var fp = (u && u.biasFingerprint) || {};
+  var followed = (u && u.followedShows) || [];
+
+  if (!recent.length && !followed.length) {
+    el.innerHTML = '<div style="text-align:center;padding:60px 0"><div style="font-size:40px;margin-bottom:16px">🧠</div>'
+      + '<div style="font-size:16px;font-weight:600;margin-bottom:8px">Your intelligence profile is empty</div>'
+      + '<div style="font-size:13px;color:var(--text3);margin-bottom:24px;max-width:360px;margin-left:auto;margin-right:auto">Analyze podcast episodes to build your personal bias fingerprint, topic map, and media diet insights.</div>'
+      + '<button onclick="showView(\'analyze\')" style="padding:12px 28px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--ff)">Analyze your first episode →</button></div>';
+    return;
+  }
+
+  // Bias bar
+  var leftPct = fp.leftPct || 0, centerPct = fp.centerPct || 0, rightPct = fp.rightPct || 0;
+  var label = leftPct > rightPct + 20 ? 'You lean left' : rightPct > leftPct + 20 ? 'You lean right' : "You're mostly balanced";
+  var topTopics = {};
+  recent.forEach(function(r){ var t = r.topic || r.category || 'General'; topTopics[t] = (topTopics[t]||0)+1; });
+  var topicList = Object.keys(topTopics).sort(function(a,b){return topTopics[b]-topTopics[a];}).slice(0,6);
+
+  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
+    // Bias fingerprint card
+    + '<div class="sidebar-card" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">'
+    + '<div><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Bias fingerprint</div>'
+    + '<div style="font-size:28px;font-weight:700;font-family:var(--ffs)">'+label+'</div></div>'
+    + '<div style="font-size:13px;color:var(--text3)">Based on '+recent.length+' episode'+(recent.length===1?'':'s')+'</div></div>'
+    + '<div style="display:flex;justify-content:space-between;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px"><span>Left</span><span>Center</span><span>Right</span></div>'
+    + '<div style="height:10px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:8px"><div style="background:#e0352b;width:'+leftPct+'%"></div><div style="background:var(--border2);width:'+centerPct+'%"></div><div style="background:#378ADD;width:'+rightPct+'%"></div></div>'
+    + '<div style="font-size:12px;color:var(--text3)">'+leftPct+'% left · '+centerPct+'% center · '+rightPct+'% right</div></div>'
+    // Shows followed
+    + '<div class="sidebar-card"><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Shows following</div>'
+    + (followed.length ? followed.slice(0,6).map(function(s){
+        return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border)">'
+          +(s.artwork?'<img src="'+s.artwork+'" style="width:28px;height:28px;border-radius:4px;object-fit:cover" alt="">'
+            :'<div style="width:28px;height:28px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">'+s.name.charAt(0)+'</div>')
+          +'<div style="font-size:12px;font-weight:500">'+s.name+'</div></div>';
+      }).join('') : '<div style="font-size:12px;color:var(--text3)">Not following any shows yet.</div>')
+    + '</div>'
+    // Topics covered
+    + '<div class="sidebar-card"><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Topics in your diet</div>'
+    + (topicList.length ? '<div style="display:flex;flex-wrap:wrap;gap:6px">'
+        +topicList.map(function(t){return '<span style="padding:4px 10px;background:var(--bg3);border-radius:12px;font-size:11px;font-weight:500">'+t+' <span style="opacity:.5">'+topTopics[t]+'</span></span>';}).join('')
+        +'</div>' : '<div style="font-size:12px;color:var(--text3)">Analyze episodes to see topic breakdown.</div>')
+    + '</div>'
+    // Recent analyses list
+    + '<div class="sidebar-card" style="grid-column:1/-1"><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Recent analyses</div>'
+    + (recent.length ? recent.slice(0,5).map(function(r){
+        var b = r.audioLean || {};
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border)">'
+          +'<div style="min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(r.episodeTitle||r.title||'Episode')+'</div>'
+          +'<div style="font-size:11px;color:var(--text3);margin-top:2px">'+(r.showName||'')+(r.analyzedAt?' · '+new Date(r.analyzedAt).toLocaleDateString():'')+'</div></div>'
+          +(b.label?'<span class="bpill '+_biasCls(b.score||0)+'" style="font-size:10px;flex-shrink:0;margin-left:10px">'+b.label+'</span>':'')
+          +'</div>';
+      }).join('') : '<div style="font-size:12px;color:var(--text3)">No analyses yet.</div>')
+    + '</div>'
+    + '</div>';
+}
+
 function renderDashFollowingSection(u) {
   var el = document.getElementById('dash-following-list');
   if (!el) return;
@@ -5166,8 +5238,8 @@ function showDashSection(section) {
     el.style.display = el.getAttribute('data-dash-section') === section ? '' : 'none';
   });
   // Update URL and title to reflect section
-  var sectionUrls  = { home:'/dashboard', queue:'/dashboard/queue', following:'/dashboard/following', analyzed:'/dashboard/analyzed', fingerprint:'/dashboard/fingerprint' };
-  var sectionTitles = { home:'Dashboard', queue:'Smart Queue', following:'Following', analyzed:'Analyzed', fingerprint:'My Fingerprint' };
+  var sectionUrls  = { home:'/dashboard', queue:'/dashboard/queue', following:'/dashboard/following', analyzed:'/dashboard/analyzed', fingerprint:'/dashboard/fingerprint', intelligence:'/dashboard/intelligence' };
+  var sectionTitles = { home:'Dashboard', queue:'Smart Queue', following:'Following', analyzed:'Analyzed', fingerprint:'My Fingerprint', intelligence:'My Intelligence' };
   var newUrl = sectionUrls[section] || '/dashboard';
   if (window.location.pathname !== newUrl) history.pushState({ view: 'home', section: section }, '', newUrl);
   document.title = (sectionTitles[section] || 'Dashboard') + ' — Podlens';
@@ -5599,7 +5671,7 @@ function loadDiscTrendingNews() {
 
 // ── TOPIC HERO DATA ───────────────────────────────────────────────────────────
 var TOPIC_HEROES = {
-  'Artificial Intelligence': { title:'Sam Altman on AI & the Future', show:'Lex Fridman Podcast', url:'https://www.youtube.com/watch?v=jvqFAi7vkBc', ytId:'jvqFAi7vkBc', duration:'2h 45m', cat:'tech' },
+  'Artificial Intelligence': { title:'Sam Altman — OpenAI, GPT-5 & the Future of AI', show:'Lex Fridman Podcast', url:'https://www.youtube.com/watch?v=jvqFAi7vkBc', ytId:'jvqFAi7vkBc', duration:'2h 45m', cat:'tech' },
   'Trump Administration':    { title:'Trump 2.0 — What Happened in 100 Days', show:'Pod Save America', url:'https://feeds.megaphone.fm/pod-save-america', ytId:null, duration:'1h 12m', cat:'news' },
   'Federal Reserve':         { title:'Inside the Fed Rate Decision', show:'Planet Money', url:'https://feeds.npr.org/510289/podcast.xml', ytId:null, duration:'28m', cat:'business' },
   'Gaza Ceasefire':          { title:'The Gaza War — What Comes Next', show:'The Daily', url:'https://feeds.simplecast.com/54nAGcIl', ytId:null, duration:'32m', cat:'news' },
@@ -8076,10 +8148,10 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       + (hostName ? '<div style="font-size:10px;opacity:.5;margin-top:2px">'+hostName+'</div>' : '')
       + '</div></div>'
       + '<div class="sp-3col-nav-div"></div>'
-      + '<button class="sp-3col-nav-btn on" style="background:rgba(255,255,255,.13)" onclick=""><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Overview</button>'
-      + '<button class="sp-3col-nav-btn" onclick=""><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Episodes</button>'
-      + '<button class="sp-3col-nav-btn" onclick=""><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Bias history</button>'
-      + '<button class="sp-3col-nav-btn" onclick=""><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Host profile</button>'
+      + '<button class="sp-3col-nav-btn on" id="sp-nav-overview" style="background:rgba(255,255,255,.13)" onclick="spShowSection(\'overview\',this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Overview</button>'
+      + '<button class="sp-3col-nav-btn" id="sp-nav-episodes" onclick="spShowSection(\'episodes\',this)"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Episodes</button>'
+      + '<button class="sp-3col-nav-btn" id="sp-nav-bias" onclick="spShowSection(\'bias\',this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Bias history</button>'
+      + '<button class="sp-3col-nav-btn" id="sp-nav-host" onclick="spShowSection(\'host\',this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Host profile</button>'
       + '<div class="sp-3col-nav-div"></div>'
       + '<button class="sp-3col-nav-btn" onclick="goBack()" style="opacity:.6"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>'
       + '</div>'
@@ -8115,7 +8187,8 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     if (description) {
       var cleanedD = (typeof cleanDescription === 'function') ? cleanDescription(description) : description;
       if (cleanedD && cleanedD !== 'No description available.') {
-        mainHtml += '<div class="sp-3col-card"><div class="sp-3col-sec-lbl">About</div>';
+        mainHtml += '<div class="sp-3col-card" data-sp-section="overview">';
+    mainHtml += '<div class="sp-3col-sec-lbl">About</div>';
         mainHtml += '<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(cleanedD.slice(0,400))+(cleanedD.length>400?'&hellip;':'')+'</div>';
         mainHtml += '</div>';
       }
@@ -8135,7 +8208,8 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     }
 
     // Intelligence overview card
-    mainHtml += '<div class="sp-3col-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div class="sp-3col-sec-lbl" style="margin-bottom:0">Intelligence overview</div>' + _metricQ('bias') + '</div>';
+    mainHtml += '<div class="sp-3col-card" data-sp-section="overview">';
+    mainHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div class="sp-3col-sec-lbl" style="margin-bottom:0">Intelligence overview</div>' + _metricQ('bias') + '</div>';
     mainHtml += '<div class="sp-intel-grid">';
     mainHtml += spMetric('Bias label',m.biasLabel||'&mdash;','Based on analyzed episodes',m.biasLabel?60:0,'var(--center-bar)');
     mainHtml += spMetric('Host trust',m.avgTrustScore!=null?m.avgTrustScore:'&mdash;','Parasocial language score',m.avgTrustScore!=null?m.avgTrustScore:0,m.avgTrustScore>60?'var(--left-bar)':m.avgTrustScore>30?'var(--amber)':'var(--center-bar)');
@@ -8248,6 +8322,87 @@ function formatDuration(d) {
   var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60);
   return h>0?h+'h '+m+'m':m+'m';
 }
+
+function spShowSection(section, btn) {
+  // Update nav active state
+  document.querySelectorAll('.sp-3col-nav-btn').forEach(function(b) {
+    b.classList.remove('on');
+    b.style.background = '';
+  });
+  if (btn) { btn.classList.add('on'); btn.style.background = 'rgba(255,255,255,.13)'; }
+
+  // Show/hide main content sections
+  var main = document.querySelector('.sp-3col-main');
+  if (!main) return;
+
+  // All cards default: show overview sections, hide others
+  main.querySelectorAll('[data-sp-section]').forEach(function(el) {
+    el.style.display = (el.dataset.spSection === section || section === 'overview') ? '' : 'none';
+  });
+
+  // Episodes section — load from sidebar RSS list
+  var epSection = main.querySelector('[data-sp-section="episodes"]');
+  if (section === 'episodes') {
+    if (!epSection) {
+      // Create episodes section from sidebar data
+      var sidebar = document.querySelector('.sp-3col-sidebar');
+      var latestEps = sidebar ? sidebar.querySelector('.sp-3col-card') : null;
+      var div = document.createElement('div');
+      div.setAttribute('data-sp-section', 'episodes');
+      div.className = 'sp-3col-card';
+      div.innerHTML = '<div class="sp-3col-sec-lbl">Episodes</div>'
+        + (latestEps ? latestEps.innerHTML : '<div style="font-size:13px;color:var(--text3)">Loading episodes…</div>');
+      main.appendChild(div);
+    }
+  }
+
+  // Bias history section
+  if (section === 'bias') {
+    var biasSection = main.querySelector('[data-sp-section="bias"]');
+    if (!biasSection) {
+      var div2 = document.createElement('div');
+      div2.setAttribute('data-sp-section', 'bias');
+      div2.className = 'sp-3col-card';
+      var history = [];
+      try { history = JSON.parse(localStorage.getItem('pl_analysis_history') || '[]').filter(function(h){
+        var spName = document.querySelector('.sp-3col-hdr .sp-hdr-name');
+        return spName && (h.showName||'').toLowerCase().includes((spName.textContent||'').toLowerCase().slice(0,8));
+      }); } catch(e) {}
+      div2.innerHTML = '<div class="sp-3col-sec-lbl">Bias history</div>'
+        + (history.length ? '<div style="font-size:13px;color:var(--text2);margin-bottom:12px">Based on your ' + history.length + ' analyzed episode(s) of this show.</div>'
+          + history.map(function(h) {
+            var b = h.audioLean || {};
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border)">'
+              + '<div><div style="font-size:13px;font-weight:500">' + (h.episodeTitle||h.title||'Episode') + '</div>'
+              + '<div style="font-size:11px;color:var(--text3)">' + new Date(h.analyzedAt||h.createdAt||0).toLocaleDateString() + '</div></div>'
+              + (b.label ? '<span class="bpill ' + _biasCls(b.score||0) + '" style="font-size:10px">' + b.label + '</span>' : '')
+              + '</div>';
+          }).join('')
+          : '<div style="font-size:13px;color:var(--text3);padding:20px 0">No analyses for this show yet. Analyze an episode to see bias history.</div>');
+      main.appendChild(div2);
+    }
+  }
+
+  // Host profile section
+  if (section === 'host') {
+    var hostSection = main.querySelector('[data-sp-section="host"]');
+    if (!hostSection) {
+      var div3 = document.createElement('div');
+      div3.setAttribute('data-sp-section', 'host');
+      div3.className = 'sp-3col-card';
+      var hostCard = main.querySelector('[data-sp-section="overview"] .sp-host-card, .sp-host-card');
+      div3.innerHTML = '<div class="sp-3col-sec-lbl">Host profile</div>'
+        + (hostCard ? hostCard.outerHTML : '<div style="font-size:13px;color:var(--text3)">Host information available after analyzing an episode.</div>');
+      main.appendChild(div3);
+    }
+  }
+
+  // Re-apply show/hide for newly created sections
+  main.querySelectorAll('[data-sp-section]').forEach(function(el) {
+    el.style.display = el.dataset.spSection === section ? '' : 'none';
+  });
+}
+
 function spMetric(label,val,sub,barPct,barColor) {
   var mkeys={'Bias label':'bias','Host trust':'trust','Consistency':'consistency','Factual rate':'factual','Sponsor rate':'sponsor','Episodes analyzed':null};
   var qk=mkeys[label]!==undefined?mkeys[label]:null;
