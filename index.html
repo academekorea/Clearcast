@@ -5046,9 +5046,10 @@ function discRenderEpisodes() {
       +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'
       +'<div class="disc-ep-title">'+s.name+'</div>'
       +'<div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
-      +'<div style="display:flex;gap:6px">'
+      +'<div style="display:flex;gap:6px;align-items:center">'
       +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button>'
-      +'<button class="ep-like-btn" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 10px;background:none;border:1px solid var(--border2);border-radius:6px;cursor:pointer;font-size:14px;color:'+(isLiked({url:s.feedUrl})?'#e24b4a':'var(--text3)')+'">'+(isLiked({url:s.feedUrl})?'♥':'♡')+'</button>'
+      +'<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="padding:5px 10px;background:none;border:0.5px solid var(--border2);border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
+      +'<button class="ep-like-btn" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 10px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:'+(isLiked({url:s.feedUrl})?'#e24b4a':'var(--text3)')+'">'+(isLiked({url:s.feedUrl})?'♥':'♡')+'</button>'
       +'</div></div>';
   }).join('');
 }
@@ -5452,6 +5453,7 @@ function discRenderShows() {
       + art + '<div class="disc-show-name">'+s.name+'</div>'
       + '<div class="disc-show-sub">'+s.artist+'</div>'
       + _biasMini(s.bias)
+      + '<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="margin-top:10px;width:100%;padding:6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
       + '</div>';
   }).join('');
 }
