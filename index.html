@@ -2627,7 +2627,7 @@ body.light-mode,[data-theme="light"]{
 <!-- VIEWS -->
 
 <!-- HOME VIEW -->
-<div class="view on" id="view-home">
+<div class="view" id="view-home" style="display:none">
 
   <!-- STATE A: Logged out -->
   <div id="home-loggedout" style="display:none">
@@ -4838,6 +4838,11 @@ function showView(name) {
     name = 'discover';
   }
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); v.style.display = 'none'; });
+  // Also hide home sub-divs so any async renderHomeState callbacks don't bleed through
+  var _hli = document.getElementById('home-loggedin');
+  var _hlo = document.getElementById('home-loggedout');
+  if (_hli) _hli.style.display = 'none';
+  if (_hlo) _hlo.style.display = 'none';
   var el = document.getElementById('view-' + name);
   if (el) { el.classList.add('on'); el.style.display = 'block'; }
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
