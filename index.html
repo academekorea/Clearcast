@@ -2602,7 +2602,6 @@ body.light-mode,[data-theme="light"]{
 
     <!-- LOGGED IN: app links -->
     <div class="nav-links-logged-in" id="nav-logged-in">
-      <button class="nav-link" id="nl-home" onclick="showHome()">Home</button>
       <button class="nav-link" id="nl-discover" onclick="showView('discover')">Discover</button>
       <button class="nav-link" id="nl-analyze" onclick="showView('analyze')">Analyze</button>
       <a class="nav-link" id="nl-library" href="/library.html">Library</a>
@@ -4638,9 +4637,16 @@ function renderDashFollowedShows(u) {
   }).join('');
 }
 
+// Helper: returns true if the title looks like a raw job ID rather than a real episode title
+function _isRawJobId(t) {
+  if (!t) return true;
+  // Job IDs: all-caps alphanumeric, 10+ chars, no spaces — e.g. GLT6476784414, AAI-xxx
+  return /^[A-Z0-9_-]{8,}$/.test(t.trim()) || t === 'Episode' || t === 'Podcast Episode';
+}
+
 function renderDashRecent() {
   var recent = getRecent().filter(function(r) {
-    return r.title && r.title !== 'Podcast Episode' && r.title !== 'Episode';
+    return r.title && !_isRawJobId(r.title);
   });
   var el = document.getElementById('dash-recent-list');
   if (!el) return;
@@ -4844,6 +4850,10 @@ function showView(name) {
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
   var nl = document.getElementById('nl-' + name);
   if (nl) nl.classList.add('on');
+  // Also sync .active on nav-link buttons (logged-in nav uses .active not .on)
+  document.querySelectorAll('.nav-link').forEach(function(b){ b.classList.remove('active'); });
+  var nlBtn = document.getElementById('nl-' + name);
+  if (nlBtn) nlBtn.classList.add('active');
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
   var mb = document.getElementById('mob-' + name);
   if (mb) mb.classList.add('on');
@@ -5091,8 +5101,9 @@ function showHome() {
   // Show the home view
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
   document.getElementById('view-home').classList.add('on');
+  // Clear all nav active states — logo is the home button, no nav link should be active on home
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
-  var _nlHome = document.getElementById('nl-home'); if (_nlHome) _nlHome.classList.add('on');
+  document.querySelectorAll('.nav-link').forEach(function(b){ b.classList.remove('active'); });
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
   var mb = document.getElementById('mob-home'); if (mb) mb.classList.add('on');
 
@@ -5102,12 +5113,12 @@ function showHome() {
     if (footer) footer.style.display = 'none';
     if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
     document.title = 'Podlens — Dashboard';
+    document.body.classList.remove('app-page');
     renderHomeState();
     return;
   }
 
   // Logged-out: marketing homepage
-  // Explicitly show/hide — don't rely solely on CSS since inline style="display:none" starts on #home-loggedout
   var elOut = document.getElementById('home-loggedout');
   var elIn  = document.getElementById('home-loggedin');
   if (elOut) elOut.style.display = 'block';
@@ -5272,7 +5283,7 @@ function discRenderRecentFeed(el) {
 }
 
 function discRenderShows() {
-  var el = document.getElementById('disc-show-grid');
+  var el = document.getElementById('disc-shows-row');
   if (!el) return;
   var shows = _discCat === 'all' ? CURATED_SHOWS.slice(0,4) : CURATED_SHOWS.filter(function(s){return s.cat===_discCat;}).slice(0,4);
   if (!shows.length) shows = CURATED_SHOWS.slice(0,4);
