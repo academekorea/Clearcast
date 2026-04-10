@@ -6,13 +6,17 @@
 <title>Podlens — Know what you're actually listening to</title>
 <!-- AUTH STATE: runs before body renders — signed-in users never see marketing page -->
 <style>
-  /* Auth visibility — two hooks so there's zero flash at any timing */
-  /* 1. html.pl-signed-in: set in <head> before body renders */
-  html.pl-signed-in #home-loggedout { display:none !important; visibility:hidden !important; }
-  html.pl-signed-in #home-loggedin  { display:block !important; }
-  /* 2. body.authenticated: set by IIFE after DOM parsed, overrides any stale inline styles */
-  body.authenticated   #home-loggedout { display:none !important; visibility:hidden !important; }
-  body:not(.authenticated) #home-loggedin  { display:none !important; }
+  /* Auth visibility — belt-and-suspenders, zero flash */
+  /* Pre-render (html.pl-signed-in set in <head> script before body paints) */
+  html.pl-signed-in    #home-loggedout { display:none  !important; visibility:hidden !important; }
+  html.pl-signed-in    #home-loggedin  { display:block !important; }
+  html:not(.pl-signed-in) #home-loggedin  { display:none  !important; }
+  html:not(.pl-signed-in) #home-loggedout { display:block !important; }
+  /* Post-JS (body.authenticated set by IIFE, overrides any inline styles) */
+  body.authenticated       #home-loggedout { display:none  !important; visibility:hidden !important; }
+  body.authenticated       #home-loggedin  { display:block !important; }
+  body:not(.authenticated) #home-loggedin  { display:none  !important; }
+  body:not(.authenticated) #home-loggedout { display:block !important; }
 </style>
 <script>(function(){try{var u=JSON.parse(localStorage.getItem('pl-user')||'null');if(u&&u.id){document.documentElement.classList.add('pl-signed-in');}}catch(e){}})()</script>
 <meta name="description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
@@ -2620,6 +2624,7 @@ body.light-mode,[data-theme="light"]{
 
     <!-- LOGGED IN: app links -->
     <div class="nav-links-logged-in" id="nav-logged-in">
+      <button class="nav-link" id="nl-home" onclick="showHome()">Home</button>
       <button class="nav-link" id="nl-discover" onclick="showView('discover')">Discover</button>
       <button class="nav-link" id="nl-analyze" onclick="showView('analyze')">Analyze</button>
       <a class="nav-link" id="nl-library" href="/library.html">Library</a>
@@ -4484,8 +4489,8 @@ function renderHomeState() {
   // Also set inline styles as belt-and-suspenders
   var elOut = document.getElementById('home-loggedout');
   var elIn  = document.getElementById('home-loggedin');
-  if (elOut) elOut.style.display = isAuth ? 'none' : '';
-  if (elIn)  elIn.style.display  = isAuth ? ''     : 'none';
+  if (elOut) elOut.style.display = isAuth ? 'none' : 'block';
+  if (elIn)  elIn.style.display  = isAuth ? 'block' : 'none';
 
   if (isAuth) {
     var _dashEl = document.getElementById('home-loggedin'); // already shown above
@@ -5117,6 +5122,12 @@ function showDashSection(section) {
   main.querySelectorAll('[data-dash-section]').forEach(function(el) {
     el.style.display = el.getAttribute('data-dash-section') === section ? '' : 'none';
   });
+  // Update URL and title to reflect section
+  var sectionUrls  = { home:'/dashboard', queue:'/dashboard/queue', following:'/dashboard/following', analyzed:'/dashboard/analyzed', fingerprint:'/dashboard/fingerprint' };
+  var sectionTitles = { home:'Dashboard', queue:'Smart Queue', following:'Following', analyzed:'Analyzed', fingerprint:'My Fingerprint' };
+  var newUrl = sectionUrls[section] || '/dashboard';
+  if (window.location.pathname !== newUrl) history.pushState({ view: 'home', section: section }, '', newUrl);
+  document.title = (sectionTitles[section] || 'Dashboard') + ' — Podlens';
   // Populate section content on demand
   var u = plUser();
   if (section === 'home') {
@@ -5205,25 +5216,29 @@ function showHome() {
   // Show the home view
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
   document.getElementById('view-home').classList.add('on');
-  document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
-  document.querySelectorAll('.nav-link').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.nl, .nav-link').forEach(function(b){ b.classList.remove('on', 'active'); });
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
   var mb = document.getElementById('mob-home'); if (mb) mb.classList.add('on');
+  // Mark the logo/home nav link as active
+  var nlHome = document.getElementById('nl-home');
+  if (nlHome) nlHome.classList.add('active');
 
-  // Single source: home-loggedout was removed from DOM on init if user is signed in
   document.body.classList.toggle('authenticated', !!(u && u.id));
+  document.documentElement.classList.toggle('pl-signed-in', !!(u && u.id));
 
   if (u && u.id) {
     var footer = document.getElementById('site-footer');
     if (footer) footer.style.display = 'none';
-    if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
-    document.title = 'Podlens — Dashboard';
     document.body.classList.remove('app-page');
+    // URL: /dashboard for logged-in users so browser reflects the app state
+    var target = '/dashboard';
+    if (window.location.pathname !== target) history.pushState({ view: 'home' }, '', target);
+    document.title = 'Dashboard — Podlens';
     renderHomeState();
     return;
   }
 
-  // Logged-out
+  // Logged-out marketing page
   var footer2 = document.getElementById('site-footer');
   if (footer2) footer2.style.display = '';
   if (!_homeTrendingLoaded) { loadHomeTrending(); }
@@ -7513,7 +7528,16 @@ function handleUrlRouting() {
     return true;
   }
 
-  // Handle pathname-based routing (/discover, /analyze)
+  // Handle pathname-based routing
+  if (path === '/dashboard' || path === '/dashboard/') {
+    showHome(); return true;
+  }
+  if (path.startsWith('/dashboard/')) {
+    var sec = path.replace('/dashboard/', '');
+    showHome();
+    setTimeout(function(){ showDashSection(sec); }, 50);
+    return true;
+  }
   if (path === '/discover') {
     history.replaceState({ view: 'discover' }, '', '/discover');
     showView('discover');
@@ -10184,12 +10208,10 @@ function renderProfileEmptyState(el) {
     document.body.classList.toggle('authenticated', _isAuth);
     document.documentElement.classList.toggle('pl-signed-in', _isAuth);
     // Belt-and-suspenders: set inline styles immediately so there's zero flash
-    if (_isAuth) {
-      var _elOut = document.getElementById('home-loggedout');
-      var _elIn  = document.getElementById('home-loggedin');
-      if (_elOut) _elOut.style.display = 'none';
-      if (_elIn)  _elIn.style.display  = '';
-    }
+    var _elOut = document.getElementById('home-loggedout');
+    var _elIn  = document.getElementById('home-loggedin');
+    if (_elOut) _elOut.style.display = _isAuth ? 'none'  : 'block';
+    if (_elIn)  _elIn.style.display  = _isAuth ? 'block' : 'none';
   } catch(e) {}
 })();
 enforcePlanRules();
@@ -11068,13 +11090,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── URL ROUTING — handle browser back/forward ─────────────────────────────────
 window.addEventListener('popstate', function(e) {
-  var view = (e.state && e.state.view) || _viewFromPath(window.location.pathname);
-  if (view === 'home') { showHome(); }
-  else { showView(view); }
+  var path = window.location.pathname;
+  var view = (e.state && e.state.view) || _viewFromPath(path);
+  if (view === 'home') {
+    var sec = e.state && e.state.section;
+    showHome();
+    if (sec) setTimeout(function(){ showDashSection(sec); }, 50);
+  } else {
+    showView(view);
+  }
 });
 
 function _viewFromPath(path) {
-  if (!path || path === '/') return 'home';
+  if (!path || path === '/' || path.startsWith('/dashboard')) return 'home';
   var map = { '/discover': 'discover', '/analyze': 'analyze', '/show': 'show', '/admin': 'admin' };
   return map[path] || map[path.replace(/\/$/, '')] || 'home';
 }
