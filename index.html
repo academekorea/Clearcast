@@ -3199,10 +3199,19 @@ body.light-mode,[data-theme="light"]{
 <!-- ANALYZE VIEW -->
 <div class="view" id="view-analyze">
   <div class="analyze-wrap">
-    <button class="sp-back-btn" onclick="showHome()">&larr; Back</button>
-    <div class="analyze-url-row">
-      <input type="text" id="url-input" class="url-input" placeholder="Paste a podcast URL, YouTube link, or Spotify episode" autocomplete="url"/>
-      <button id="go-btn" class="go-btn" onclick="handleAnalyze()">Analyze</button>
+    <div id="analyze-hero" style="max-width:700px;margin:0 auto 40px;padding:48px 0 0;text-align:center">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px">Podcast Intelligence</div>
+      <h1 style="font-family:var(--ffs);font-size:clamp(32px,4vw,48px);font-weight:700;line-height:1.1;color:var(--text);margin-bottom:12px;letter-spacing:-.02em">Know what you&rsquo;re<br><em style="font-style:italic;color:var(--navy)">actually listening to.</em></h1>
+      <p style="font-size:17px;color:var(--text2);margin-bottom:32px;line-height:1.6">Paste any YouTube, Spotify, Apple Podcasts, or RSS URL below.</p>
+      <div style="display:flex;border:1.5px solid var(--border2);border-radius:12px;overflow:hidden;background:var(--bg2);margin-bottom:10px;transition:border-color .15s" onfocusin="this.style.borderColor='var(--navy)'" onfocusout="this.style.borderColor='var(--border2)'">
+        <input type="text" id="url-input" class="url-input" placeholder="Paste a YouTube, Spotify, Apple Podcasts, RSS, or .mp3 URL" autocomplete="url" style="flex:1;padding:16px 20px;font-size:15px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none"/>
+        <button id="go-btn" class="go-btn" onclick="handleAnalyze()" style="padding:14px 28px;background:var(--navy);color:#fff;border:none;cursor:pointer;font-size:14px;font-weight:600;font-family:var(--ff);white-space:nowrap;transition:opacity .15s;border-radius:0 10px 10px 0">Analyze &rarr;</button>
+      </div>
+      <p style="font-size:12px;color:var(--text3)">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
+    </div>
+    <div class="analyze-url-row" style="display:none">
+      <input type="text" id="url-input-hidden" style="display:none"/>
+      <button id="go-btn-hidden" style="display:none"></button>
     </div>
     <div class="ep-picker" id="ep-picker">
       <div class="ep-picker-hd">Select an episode to analyze</div>
@@ -4878,6 +4887,19 @@ function showView(name) {
   };
   document.title = titles[name] || 'Podlens';
   if (name === 'discover') { initDiscover(); }
+  if (name === 'analyze') {
+    // Reset analyze page to hero state
+    var _ah = document.getElementById('analyze-hero');
+    if (_ah) _ah.style.display = '';
+    var _atabs = document.getElementById('atabs');
+    if (_atabs) _atabs.classList.remove('on');
+    var _es = document.getElementById('empty-state');
+    if (_es) _es.style.display = 'none';
+    var _res = document.getElementById('results');
+    if (_res) _res.innerHTML = '';
+    var _loading = document.getElementById('loading');
+    if (_loading) _loading.classList.remove('on');
+  }
   if (name === 'admin') { var _au = plUser(); if (_au && (_au.isSuperAdmin || _au.email === 'academekorea@gmail.com')) { adminLoad('overview'); } else { showView('home'); } }
   if (name === 'analyze' && !plUser()) {
     // Don't show analyze view to guests — show auth gate then redirect to discover
@@ -6181,6 +6203,8 @@ function startAnalysis(audioUrl, epTitle, showName) {
   }
   document.getElementById('ep-picker').classList.remove('on');
   document.getElementById('empty-state').style.display='none';
+  var _ah = document.getElementById('analyze-hero');
+  if (_ah) _ah.style.display = 'none';
   // Preserve original URL for display (e.g. feed URL before resolution)
   var _displayUrl = _submittedFeedUrl || audioUrl;
   _submittedFeedUrl = null;
