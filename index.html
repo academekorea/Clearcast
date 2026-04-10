@@ -3018,92 +3018,56 @@ body.light-mode,[data-theme="light"]{
 
   <!-- STATE B: Logged in -->
   <div id="home-loggedin" style="display:none">
-    <div id="trial-day6-banner" style="display:none;padding:16px 0 0"></div>
+    <div id="trial-day6-banner" style="display:none"></div>
+    <div class="dash-3col">
 
-    <!-- STATE A: New user -->
-    <div id="dash-state-a" style="display:none">
-      <div class="dash-3col">
-        <div class="dash-nav">
+      <div class="dash-nav" id="dash-nav">
           <div class="dash-nav-lbl">Dashboard</div>
-          <button class="dash-nav-btn on" onclick="showHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
+          <button class="dash-nav-btn on" data-section="home" onclick="showDashSection('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
           <button class="dash-nav-btn" onclick="showView('discover')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
           <button class="dash-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
           <div class="dash-nav-div"></div>
           <div class="dash-nav-lbl">My library</div>
-          <button class="dash-nav-btn" onclick="discShowSmartQueue()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
-          <button class="dash-nav-btn" onclick="discShowFollowing()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Following</button>
-          <button class="dash-nav-btn" onclick="discShowAnalyzed()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
-          <button class="dash-nav-btn" onclick="discShowFingerprint()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
+          <button class="dash-nav-btn" data-section="queue" onclick="showDashSection('queue')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
+          <button class="dash-nav-btn" data-section="following" onclick="showDashSection('following')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Following</button>
+          <button class="dash-nav-btn" data-section="analyzed" onclick="showDashSection('analyzed')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
+          <button class="dash-nav-btn" data-section="fingerprint" onclick="showDashSection('fingerprint')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
         </div>
-        <div class="dash-main">
-          <div class="dash-greeting-wrap">
-            <div class="dashboard-greeting" id="dash-greeting-a">Good morning.</div>
-            <div class="dashboard-subline">Connect your podcasts to get started — we'll take it from there.</div>
-          </div>
-          <div class="analyze-bar">
-            <input type="text" id="dash-url-input" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL to try it now…" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyze()"/>
-            <button class="analyze-btn" onclick="handleDashAnalyze()">Analyze &rarr;</button>
-          </div>
-          <div class="section-header"><span class="section-title">Connect your sources</span></div>
-          <div class="connect-cta-grid">
-            <button class="connect-btn spotify" onclick="heroConnectSpotify()">
-              <div class="connect-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg></div>
-              <div><div style="font-size:13px;font-weight:700">Connect Spotify</div><div style="font-size:11px;color:var(--text3)">Import your library</div></div>
-            </button>
-            <button class="connect-btn youtube" onclick="heroConnectYouTube()">
-              <div class="connect-btn-icon">▶</div>
-              <div><div style="font-size:13px;font-weight:700">Connect YouTube</div><div style="font-size:11px;color:var(--text3)">Analyze any video podcast</div></div>
-            </button>
-          </div>
-          <div class="section-header" style="margin-top:24px"><span class="section-title">Trending right now</span><a href="#" class="section-link" onclick="showView('discover');return false">Browse all &rarr;</a></div>
-          <div id="dash-trending-grid-a" class="tg-grid" style="margin-top:0"></div>
-        </div>
-        <div class="dash-sidebar">
-          <div class="fingerprint-container">
-            <div class="fingerprint-title">Your bias fingerprint</div>
-            <div class="fingerprint-bar-track"><div class="fingerprint-dot" style="left:50%"></div></div>
-            <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
-            <div style="font-size:12px;color:var(--text3);margin-top:16px;text-align:center">Analyze your first episode to see where you stand</div>
-          </div>
-          <div class="stats-grid" style="margin-top:16px">
-            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Analyzed</div></div>
-            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Following</div></div>
-            <div class="stat-card"><div class="stat-number">—</div><div class="stat-label">Your lean</div></div>
-          </div>
-        </div>
-      </div>
-    </div><!-- /dash-state-a -->
 
-    <!-- STATE B: Returning user -->
-    <div id="dash-state-b" style="display:none">
-      <div class="dash-3col">
-        <div class="dash-nav">
-          <div class="dash-nav-lbl">Dashboard</div>
-          <button class="dash-nav-btn on" onclick="showHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
-          <button class="dash-nav-btn" onclick="showView('discover')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
-          <button class="dash-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
-          <div class="dash-nav-div"></div>
-          <div class="dash-nav-lbl">My library</div>
-          <button class="dash-nav-btn" onclick="discShowSmartQueue()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
-          <button class="dash-nav-btn" onclick="discShowFollowing()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Following</button>
-          <button class="dash-nav-btn" onclick="discShowAnalyzed()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
-          <button class="dash-nav-btn" onclick="discShowFingerprint()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
-        </div>
-        <div class="dash-main">
+      <!-- MAIN CONTENT — sections switch via showDashSection() -->
+      <div class="dash-main dash-main-content">
+
+        <!-- SECTION: Home (default) -->
+        <div data-dash-section="home">
           <div class="dash-greeting-wrap">
-            <div class="dashboard-greeting" id="dash-greeting">Good morning</div>
+            <div class="dashboard-greeting" id="dash-greeting">Good morning.</div>
           </div>
           <div class="analyze-bar">
             <input type="text" id="dash-url-input-b" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL…" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
             <button class="analyze-btn" onclick="handleDashAnalyzeB()">Analyze &rarr;</button>
           </div>
-          <div class="section-header">
-            <span class="section-title">Continue where you left off</span>
-            <a href="#" class="section-link" onclick="showView('analyze');return false">Analyze new &rarr;</a>
+          <div id="dash-new-user-cta" style="display:none">
+            <div class="section-header"><span class="section-title">Connect your sources</span></div>
+            <div class="connect-cta-grid">
+              <button class="connect-btn spotify" onclick="heroConnectSpotify()">
+                <div class="connect-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg></div>
+                <div><div style="font-size:13px;font-weight:700">Connect Spotify</div><div style="font-size:11px;color:var(--text3)">Import your library</div></div>
+              </button>
+              <button class="connect-btn youtube" onclick="heroConnectYouTube()">
+                <div class="connect-btn-icon">&#9654;</div>
+                <div><div style="font-size:13px;font-weight:700">Connect YouTube</div><div style="font-size:11px;color:var(--text3)">Analyze any video podcast</div></div>
+              </button>
+            </div>
           </div>
-          <div id="dash-recent-list"></div>
+          <div id="dash-recent-wrap">
+            <div class="section-header">
+              <span class="section-title">Continue where you left off</span>
+              <a href="#" class="section-link" onclick="showView('analyze');return false">Analyze new &rarr;</a>
+            </div>
+            <div id="dash-recent-list"></div>
+          </div>
           <div class="section-header" style="margin-top:20px">
-            <span class="section-title">Trending in your categories</span>
+            <span class="section-title">Trending now</span>
             <a href="#" class="section-link" onclick="showView('discover');return false">Browse all &rarr;</a>
           </div>
           <div id="dash-trending-grid" class="tg-grid" style="margin-top:0"></div>
@@ -3114,35 +3078,94 @@ body.light-mode,[data-theme="light"]{
             <div class="stat-card"><div class="stat-number" id="stat-lean">—</div><div class="stat-label">Your lean</div></div>
           </div>
         </div>
-        <div class="dash-sidebar">
-          <div class="fingerprint-container">
-            <div class="fingerprint-title">Your bias fingerprint</div>
-            <div class="fingerprint-bar-track" id="dash-fp-track">
-              <div class="fingerprint-dot" id="dash-fp-dot" style="left:50%"></div>
-            </div>
-            <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
-            <div class="fingerprint-counts" id="dash-fp-counts"></div>
+
+        <!-- SECTION: Smart Queue -->
+        <div data-dash-section="queue" style="display:none">
+          <div class="dash-greeting-wrap">
+            <div class="dashboard-greeting" style="font-size:22px">Smart Queue</div>
+            <div class="dashboard-subline">Episodes queued for analysis based on your followed shows.</div>
           </div>
-          <div class="sq-widget" id="sq-widget" style="display:none">
-            <div class="sq-widget-header">
-              <span class="sq-widget-title">⚡ Smart Queue</span>
-              <a href="/settings.html#notifications" class="sq-widget-manage">Manage &rarr;</a>
-            </div>
-            <div id="sq-widget-body"><div class="sq-empty">Loading…</div></div>
-          </div>
-          <div class="sidebar-card" id="sb-follow-section">
-            <div class="sidebar-card-title">Shows I follow</div>
-            <div id="sb-follow-list"><div style="font-size:12px;color:var(--text3)">No shows followed yet.</div></div>
-          </div>
-          <div class="sidebar-card">
-            <div class="sidebar-card-title">Unheard Preview</div>
-            <div id="sb-unheard-preview" style="font-size:12px;color:var(--text2)">
-              <div style="color:var(--text3)">Analyze more to unlock.</div>
+          <div id="sq-main-content">
+            <div style="padding:40px 0;text-align:center;color:var(--text3)">
+              <div style="font-size:32px;margin-bottom:12px">⚡</div>
+              <div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue auto-detects new episodes</div>
+              <div style="font-size:13px;max-width:400px;margin:0 auto 20px;line-height:1.6">Follow shows from any podcast profile and we'll queue new episodes for analysis automatically.</div>
+              <button onclick="showView('discover')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Browse shows to follow &rarr;</button>
             </div>
           </div>
         </div>
+
+        <!-- SECTION: Following -->
+        <div data-dash-section="following" style="display:none">
+          <div class="dash-greeting-wrap">
+            <div class="dashboard-greeting" style="font-size:22px">Following</div>
+            <div class="dashboard-subline">Shows you follow — new episode alerts and bias tracking.</div>
+          </div>
+          <div id="dash-following-list">
+            <div style="font-size:13px;color:var(--text3);padding:40px 0;text-align:center">
+              <div style="font-size:32px;margin-bottom:12px">📌</div>
+              <div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">No shows followed yet</div>
+              <div style="font-size:13px;color:var(--text3);margin-bottom:20px">Follow any show from its profile page to get new episode alerts.</div>
+              <button onclick="showView('discover')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Discover shows &rarr;</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: Analyzed -->
+        <div data-dash-section="analyzed" style="display:none">
+          <div class="dash-greeting-wrap">
+            <div class="dashboard-greeting" style="font-size:22px">Analyzed</div>
+            <div class="dashboard-subline">Your full analysis history.</div>
+          </div>
+          <div id="dash-analyzed-list"></div>
+        </div>
+
+        <!-- SECTION: My Fingerprint -->
+        <div data-dash-section="fingerprint" style="display:none">
+          <div class="dash-greeting-wrap">
+            <div class="dashboard-greeting" style="font-size:22px">My Bias Fingerprint</div>
+            <div class="dashboard-subline">How your podcast listening leans across all your analyses.</div>
+          </div>
+          <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:24px;margin-bottom:16px">
+            <div class="fingerprint-title" style="margin-bottom:16px">Your listening bias distribution</div>
+            <div class="fingerprint-bar-track" id="dash-fp-track" style="height:16px;border-radius:8px;margin-bottom:12px">
+              <div class="fingerprint-dot" id="dash-fp-dot" style="left:50%"></div>
+            </div>
+            <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
+            <div class="fingerprint-counts" id="dash-fp-counts" style="margin-top:12px"></div>
+          </div>
+          <div class="section-header"><span class="section-title">Recent analyses</span></div>
+          <div id="dash-fp-recent"></div>
+        </div>
+
+      </div><!-- /dash-main-content -->
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="dash-sidebar">
+        <div class="fingerprint-container" id="sb-fp-container">
+          <div class="fingerprint-title">Bias fingerprint</div>
+          <div class="fingerprint-bar-track" id="sb-fp-track"><div class="fingerprint-dot" id="sb-fp-dot" style="left:50%"></div></div>
+          <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
+          <div class="fingerprint-counts" id="sb-fp-counts"></div>
+        </div>
+        <div class="sq-widget" id="sq-widget" style="display:none">
+          <div class="sq-widget-header">
+            <span class="sq-widget-title">⚡ Smart Queue</span>
+            <a href="/settings.html#notifications" class="sq-widget-manage">Manage &rarr;</a>
+          </div>
+          <div id="sq-widget-body"><div class="sq-empty">Loading&hellip;</div></div>
+        </div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Shows I follow</div>
+          <div id="sb-follow-list"><div style="font-size:12px;color:var(--text3)">No shows followed yet.</div></div>
+        </div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Unheard preview</div>
+          <div id="sb-unheard-preview"><div style="font-size:12px;color:var(--text3)">Analyze more to unlock.</div></div>
+        </div>
       </div>
-    </div><!-- /dash-state-b -->
+
+    </div><!-- /dash-3col -->
   </div><!-- /home-loggedin -->
 
 </div><!-- /view-home -->
@@ -4392,33 +4415,32 @@ function renderHomeState() {
   var elIn  = document.getElementById('home-loggedin');
 
   if (u) {
-    // Logged-in: show personalized dashboard inside view-home
+    // Logged-in: show personalized dashboard
     if (elOut) elOut.style.display = 'none';
     if (elIn)  elIn.style.display  = 'block';
     var hr = new Date().getHours();
     var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
     var first = (u.name || '').split(' ')[0];
     var greetText = greeting + (first ? ', <em>' + first + '</em>' : '') + '.';
+    var greetEl = document.getElementById('dash-greeting');
+    if (greetEl) greetEl.innerHTML = greetText;
     var recent = getRecent();
     var isNewUser = recent.length === 0;
-    var stateA = document.getElementById('dash-state-a');
-    var stateB = document.getElementById('dash-state-b');
-    if (stateA) stateA.style.display = isNewUser ? 'block' : 'none';
-    if (stateB) stateB.style.display = isNewUser ? 'none' : 'block';
-    if (isNewUser) {
-      var ga = document.getElementById('dash-greeting-a');
-      if (ga) ga.innerHTML = greetText;
-    } else {
-      var gb = document.getElementById('dash-greeting');
-      if (gb) gb.innerHTML = greetText;
-      renderDashRecent();
-      renderBiasFingerprint();
-      renderDashUnheardPreview(u);
-      renderDashFollowedShows(u);
-      loadDashTrending();
-      renderDashStats(u, recent);
-      loadSqWidget();
-    }
+    // Show connect CTAs for new users, recent list for returning
+    var newUserCta = document.getElementById('dash-new-user-cta');
+    var recentWrap = document.getElementById('dash-recent-wrap');
+    if (newUserCta) newUserCta.style.display = isNewUser ? '' : 'none';
+    if (recentWrap) recentWrap.style.display = isNewUser ? 'none' : '';
+    // Render all dashboard data
+    renderDashRecent();
+    renderBiasFingerprint();
+    renderDashUnheardPreview(u);
+    renderDashFollowedShows(u);
+    loadDashTrending();
+    renderDashStats(u, recent);
+    loadSqWidget();
+    // Make sure home section is visible (default)
+    showDashSection('home');
     if (u.plan === 'trial' && u.trialEndsAt) {
       var remaining = new Date(u.trialEndsAt).getTime() - Date.now();
       if (remaining > 0 && remaining <= 24*60*60*1000) showTrialDay6Banner(u);
@@ -4610,8 +4632,8 @@ function renderDashRecent() {
 
 function renderBiasFingerprint() {
   var recent = getRecent().filter(function(r){ return r.leftPct !== undefined; });
-  var countsEl = document.getElementById('dash-fp-counts');
-  var dotEl = document.getElementById('dash-fp-dot');
+  var countsEl = document.getElementById('sb-fp-counts') || document.getElementById('dash-fp-counts');
+  var dotEl = document.getElementById('sb-fp-dot') || document.getElementById('dash-fp-dot');
   if (!recent.length) {
     if (dotEl) dotEl.style.left = '50%';
     if (countsEl) countsEl.innerHTML = '<span style="color:var(--text3);font-size:11px">Analyze episodes to build your fingerprint</span>';
@@ -4888,38 +4910,85 @@ function discRenderEpisodes() {
   }).join('');
 }
 
-function discShowFollowing() {
-  // Go to home dashboard and scroll to following section
-  showHome();
-  setTimeout(function() {
-    var el = document.getElementById('sb-follow-list');
-    if (el) el.closest('.sidebar-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 400);
+// ── Dashboard section switching ──────────────────────────────────────────────
+var _dashSection = 'home';
+
+function showDashSection(section) {
+  _dashSection = section;
+  // Update active nav buttons
+  document.querySelectorAll('.dash-nav-btn[data-section]').forEach(function(b) {
+    b.classList.toggle('on', b.getAttribute('data-section') === section);
+  });
+  // Show correct section, hide others
+  var main = document.querySelector('.dash-main-content');
+  if (!main) return;
+  main.querySelectorAll('[data-dash-section]').forEach(function(el) {
+    el.style.display = el.getAttribute('data-dash-section') === section ? '' : 'none';
+  });
+  // Populate section content on demand
+  var u = plUser();
+  if (section === 'analyzed') _renderDashAnalyzedSection();
+  if (section === 'following') _renderDashFollowingSection(u);
+  if (section === 'fingerprint') _renderDashFingerprintSection();
+  if (section === 'queue') _renderDashQueueSection(u);
 }
-function discShowFingerprint() {
-  // Go to home dashboard and scroll to fingerprint
-  showHome();
-  setTimeout(function() {
-    var el = document.getElementById('dash-fp-track');
-    if (el) el.closest('.fingerprint-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 400);
+
+function _renderDashAnalyzedSection() {
+  var el = document.getElementById('dash-analyzed-list');
+  if (!el) return;
+  var recent = getRecent();
+  if (!recent.length) {
+    el.innerHTML = '<div style="padding:40px 0;text-align:center;color:var(--text3)"><div style="font-size:32px;margin-bottom:12px">&#128336;</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">No analyses yet</div><div style="font-size:13px;margin-bottom:20px">Paste any podcast URL to get started.</div><button onclick="showView(\'analyze\')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Analyze an episode &rarr;</button></div>';
+    return;
+  }
+  el.innerHTML = recent.map(function(r) {
+    var safeUrl = (r.url||'').replace(/"/g,'&quot;');
+    var artSrc = r.artwork ? artworkProxy(r.artwork) : '';
+    var artHtml = artSrc ? '<img class="episode-artwork" src="'+artSrc+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="episode-artwork" style="background:var(--navy)"></div>';
+    var bar = (r.leftPct !== undefined) ? '<div class="episode-bias-bar"><div style="width:'+r.leftPct+'%;background:var(--left-bar)"></div><div style="width:'+r.centerPct+'%;background:var(--center-bar)"></div><div style="width:'+r.rightPct+'%;background:var(--right-bar)"></div></div>' : '';
+    return '<div class="episode-card" onclick="goAnalyze(&quot;'+safeUrl+'&quot;)">'+artHtml+'<div class="episode-info"><div class="episode-show">'+(r.showName||'Podcast')+'</div><div class="episode-title">'+(r.title||'Episode')+'</div>'+(r.biasLabel?'<div class="episode-meta">'+r.biasLabel+'</div>':'')+ bar+'</div></div>';
+  }).join('');
 }
-function discShowAnalyzed() {
-  // Go to home dashboard and scroll to recent list
-  showHome();
-  setTimeout(function() {
-    var el = document.getElementById('dash-recent-list');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 400);
+
+function _renderDashFollowingSection(u) {
+  var el = document.getElementById('dash-following-list');
+  if (!el) return;
+  var followed = (u && u.followedShows) || [];
+  if (!followed.length) return; // Keep empty state HTML
+  el.innerHTML = '<div class="tg-grid">' + followed.slice(0, 12).map(function(s) {
+    var name = s.name || s.showName || 'Show';
+    var slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    var artHtml = s.artwork ? '<img src="'+artworkProxy(s.artwork)+'" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px">' : '<div style="width:100%;aspect-ratio:1;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:rgba(255,255,255,.5)">&#127897;</div>';
+    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null)"><div class="tg-art-wrap">'+artHtml+'</div><div class="tg-card-body"><div class="tg-card-name">'+name+'</div></div></div>';
+  }).join('') + '</div>';
 }
-function discShowSmartQueue() {
-  // Go to home dashboard and scroll to smart queue
-  showHome();
-  setTimeout(function() {
-    var el = document.getElementById('sq-widget');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 400);
+
+function _renderDashFingerprintSection() {
+  var el = document.getElementById('dash-fp-recent');
+  if (!el) return;
+  var recent = getRecent().filter(function(r){ return r.biasLabel; });
+  if (!recent.length) { el.innerHTML = '<div style="color:var(--text3);font-size:13px">No analyses yet.</div>'; return; }
+  el.innerHTML = recent.slice(0,8).map(function(r) {
+    var color = r.leftPct > r.rightPct ? 'var(--left)' : r.rightPct > r.leftPct ? 'var(--right)' : 'var(--text3)';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border)"><div style="flex:1;font-size:13px;color:var(--text)">'+(r.title||'Episode')+'</div><span style="font-size:11px;font-weight:600;color:'+color+'">'+r.biasLabel+'</span></div>';
+  }).join('');
 }
+
+function _renderDashQueueSection(u) {
+  // Smart queue content — show enabled shows or upgrade prompt
+  var el = document.getElementById('sq-main-content');
+  if (!el || !u) return;
+  var plan = String(u.plan || 'free').toLowerCase();
+  var isEligible = u.email === 'academekorea@gmail.com' || u.isSuperAdmin || ['creator','operator','studio','trial'].includes(plan);
+  if (!isEligible) {
+    el.innerHTML = '<div style="padding:40px 0;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚡</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue is a Creator+ feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Automatically queue new episodes from shows you follow.</div><a href="/pricing.html" style="display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">See plans &rarr;</a></div>';
+  }
+}
+
+function discShowFollowing() { showHome(); setTimeout(function(){ showDashSection('following'); }, 200); }
+function discShowFingerprint() { showHome(); setTimeout(function(){ showDashSection('fingerprint'); }, 200); }
+function discShowAnalyzed() { showHome(); setTimeout(function(){ showDashSection('analyzed'); }, 200); }
+function discShowSmartQueue() { showHome(); setTimeout(function(){ showDashSection('queue'); }, 200); }
 
 function handleDiscCompare() {
   var a = (document.getElementById('disc-compare-a')||{}).value||'';
