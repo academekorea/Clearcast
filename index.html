@@ -4643,8 +4643,7 @@ function showView(name) {
     admin: 'Admin — Podlens'
   };
   document.title = titles[name] || 'Podlens';
-  if (name === 'discover' && !_feedInit) { _feedInit = true; initDiscover(); }
-  else if (name === 'discover') { discRenderFeed(); discRenderShows(); }
+  if (name === 'discover') { initDiscover(); }
   if (name === 'admin') { var _au = plUser(); if (_au && (_au.isSuperAdmin || _au.email === 'academekorea@gmail.com')) { adminLoad('overview'); } else { showView('home'); } }
   if (name === 'analyze' && !plUser()) {
     // Don't show analyze view to guests — show auth gate then redirect to discover
@@ -4883,16 +4882,9 @@ function _renderHomeTrendingFallback(el) {
 }
 
 
-// ── DISCOVER PAGE ─────────────────────────────────────────────────────────────
+// ── DISCOVER PAGE JS (see initDiscover above) ──────────────────────────────
 var _discCat = 'all';
-var _discTab = 'trending';
-
-function initDiscover() {
-  discRenderHero();
-  discRenderFeed();
-  discRenderShows();
-  discRenderRecent();
-}
+var _discTab = 'foryou';
 
 function discSetCat(cat, btn) {
   _discCat = cat;
@@ -9845,16 +9837,7 @@ function rotateSpotlight() {
 // Initialize spotlight when discover view loads
 (function() {
   var origShowView = window.showView;
-  if (typeof origShowView === 'function') {
-    window.showView = function(name) {
-      origShowView.call(this, name);
-      if (name === 'discover') renderSpotlight();
-    };
-  }
-  // Also render on DOM ready if discover is already active
-  if (document.getElementById('view-discover') && document.getElementById('view-discover').classList.contains('on')) {
-    renderSpotlight();
-  }
+
   // Render on any init
   document.addEventListener('DOMContentLoaded', function() {
     renderSpotlight();
