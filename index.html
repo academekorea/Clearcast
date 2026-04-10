@@ -4646,8 +4646,12 @@ function showView(name) {
   if (name === 'discover' && !_feedInit) { _feedInit = true; initDiscover(); }
   else if (name === 'discover') { discRenderFeed(); discRenderShows(); }
   if (name === 'admin') { var _au = plUser(); if (_au && (_au.isSuperAdmin || _au.email === 'academekorea@gmail.com')) { adminLoad('overview'); } else { showView('home'); } }
-  // Show demo analysis for logged-out users visiting analyze view
   if (name === 'analyze' && !plUser()) {
+    // Don't show analyze view to guests — show auth gate then redirect to discover
+    showView('discover');
+    setTimeout(function(){ _showAnalysisAuthGate('', '', ''); }, 300);
+    return;
+  }
     setTimeout(function() {
       var resultsEl = document.getElementById('results');
       if (resultsEl && !resultsEl.innerHTML.trim()) {
@@ -5694,6 +5698,12 @@ async function handleAnalyze() {
   var raw = document.getElementById('url-input').value.trim();
   if (!raw) { document.getElementById('url-input').focus(); return; }
 
+  // Gate: require sign in to run analysis
+  if (!plUser()) {
+    _showAnalysisAuthGate(raw);
+    return;
+  }
+
   // Clear demo state so it doesn't bleed into real analysis
   window._lastAnalysisResult = null;
   var resultsEl = document.getElementById('results');
@@ -5754,11 +5764,7 @@ async function loadEpisodes(feedUrl) {
 function analyzeEp(e, url, epTitle, showName) {
   if (e) e.stopPropagation();
   if (!plUser()) {
-    // Guest mode: allow read-only preview, show soft upsell banner
-    showView('analyze');
-    document.getElementById('url-input').value = url;
-    startAnalysis(url, epTitle||'', showName||'');
-    _showGuestUpsellBanner();
+    _showAnalysisAuthGate(url, epTitle, showName);
     return;
   }
   if (checkAnalysisLimit()) return;
@@ -5767,20 +5773,45 @@ function analyzeEp(e, url, epTitle, showName) {
   startAnalysis(url, epTitle||'', showName||'');
 }
 
-function _showGuestUpsellBanner() {
-  if (document.getElementById('guest-upsell-banner')) return;
-  var b = document.createElement('div');
-  b.id = 'guest-upsell-banner';
-  b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#0f2027;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:12px;z-index:9000;font-size:13px;font-family:Inter,sans-serif;flex-wrap:wrap';
-  b.innerHTML = '<span style="flex:1;min-width:200px">Sign in free to run your own analyses and track your listening fingerprint</span>'
-    + '<button onclick="openModal(\'login\');document.getElementById(\'guest-upsell-banner\').remove()" style="background:#fff;color:#0f2027;border:none;border-radius:999px;padding:8px 18px;font-weight:600;cursor:pointer;font-size:13px;white-space:nowrap">Sign in</button>'
-    + '<button onclick="openModal(\'signup\');document.getElementById(\'guest-upsell-banner\').remove()" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.35);border-radius:999px;padding:8px 18px;font-weight:500;cursor:pointer;font-size:13px;white-space:nowrap">Create free account</button>'
-    + '<button onclick="this.parentElement.remove()" aria-label="Dismiss" style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;font-size:20px;padding:0 4px;line-height:1;flex-shrink:0">&times;</button>';
-  document.body.appendChild(b);
+function _showAnalysisAuthGate(url, epTitle, showName) {
+  // Remove any existing gate
+  var existing = document.getElementById('analysis-auth-gate');
+  if (existing) existing.remove();
+
+  var ep = epTitle || showName || 'this episode';
+  var overlay = document.createElement('div');
+  overlay.id = 'analysis-auth-gate';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px';
+  overlay.innerHTML = '<div style="background:var(--bg2,#fff);border-radius:14px;padding:32px 28px;max-width:420px;width:100%;text-align:center;position:relative">'
+    + '<button onclick="document.getElementById(\'analysis-auth-gate\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3,#aaa);line-height:1">&times;</button>'
+    + '<div style="font-size:28px;margin-bottom:14px">🔍</div>'
+    + '<div style="font-family:Georgia,serif;font-size:20px;font-weight:700;color:var(--text,#1a1a1a);margin-bottom:8px;line-height:1.3">Sign up to analyze</div>'
+    + '<div style="font-size:14px;color:var(--text2,#555);margin-bottom:24px;line-height:1.6">Create a free account to analyze <strong style="color:var(--text,#1a1a1a)">' + _escHtml(ep) + '</strong> and get the full bias report.</div>'
+    + '<div style="background:var(--bg3,#f5f5f3);border-radius:8px;padding:12px 16px;margin-bottom:20px;text-align:left">'
+    + '<div style="font-size:12px;font-weight:600;color:var(--text2,#555);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Free account includes</div>'
+    + '<div style="font-size:13px;color:var(--text,#1a1a1a);line-height:1.9">'
+    + '✓ &nbsp;4 analyses per month<br>'
+    + '✓ &nbsp;Full bias report &amp; key findings<br>'
+    + '✓ &nbsp;Personal bias fingerprint<br>'
+    + '✓ &nbsp;Follow shows &amp; get alerts'
+    + '</div></div>'
+    + '<button onclick="document.getElementById(\'analysis-auth-gate\').remove();openModal(\'signup\')" style="width:100%;padding:13px;background:#0f2027;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:10px">Create free account →</button>'
+    + '<button onclick="document.getElementById(\'analysis-auth-gate\').remove();openModal(\'login\')" style="width:100%;padding:12px;background:transparent;color:var(--text,#1a1a1a);border:0.5px solid var(--border2,#ccc);border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit">Sign in</button>'
+    + '</div>';
+  // Close on backdrop click
+  overlay.addEventListener('click', function(ev) {
+    if (ev.target === overlay) overlay.remove();
+  });
+  document.body.appendChild(overlay);
 }
 
 function startAnalysis(audioUrl, epTitle, showName) {
   epTitle=epTitle||''; showName=showName||'';
+  // Gate: require sign in
+  if (!plUser()) {
+    _showAnalysisAuthGate(audioUrl, epTitle, showName);
+    return;
+  }
   document.getElementById('ep-picker').classList.remove('on');
   document.getElementById('empty-state').style.display='none';
   // Preserve original URL for display (e.g. feed URL before resolution)
