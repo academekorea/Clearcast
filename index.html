@@ -4478,7 +4478,11 @@ function renderHomeState() {
   document.body.classList.toggle('authenticated', !!(u && u.id));
 
   if (u && u.id) {
-    var hr = new Date().getHours();
+    // Show dashboard, ensure home-loggedout (if still in DOM) is hidden
+    var _dashEl = document.getElementById('home-loggedin');
+    if (_dashEl) _dashEl.style.display = 'block';
+    var _mktEl = document.getElementById('home-loggedout');
+    if (_mktEl) _mktEl.style.display = 'none';
     var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
     var first = (u.name || '').split(' ')[0];
     var greetText = greeting + (first ? ', <em>' + first + '</em>' : '') + '.';
