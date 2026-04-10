@@ -3077,7 +3077,10 @@ body.light-mode,[data-theme="light"]{
       <!-- RIGHT SIDEBAR -->
       <div class="dash-sidebar">
         <div class="fingerprint-container" id="sb-fp-container">
-          <div class="fingerprint-title">Bias fingerprint</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div class="fingerprint-title" style="margin-bottom:0">Bias fingerprint</div>
+            <button onclick="showBiasExplainer()" style="background:none;border:none;font-size:11px;font-weight:600;color:var(--navy);cursor:pointer;font-family:var(--ff);padding:0;text-decoration:underline;text-underline-offset:2px">What is this?</button>
+          </div>
           <div class="fingerprint-bar-track" id="sb-fp-track"><div class="fingerprint-dot" id="sb-fp-dot" style="left:50%"></div></div>
           <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
           <div class="fingerprint-counts" id="sb-fp-counts"></div>
@@ -10214,6 +10217,41 @@ function _getPlaylists() { try { return JSON.parse(localStorage.getItem(PL_PLAYL
 function _setPlaylists(arr) { localStorage.setItem(PL_PLAYLISTS_KEY, JSON.stringify(arr)); }
 
 function _epId(ep) { return (ep.jobId||ep.url||ep.feedUrl||ep.title||'').replace(/[^a-z0-9]/gi,'').slice(0,40); }
+
+
+function showBiasExplainer() {
+  var existing = document.getElementById('modal-bias-explainer');
+  if (existing) { existing.style.display = 'flex'; return; }
+  var html = '<div id="modal-bias-explainer" class="modal-overlay" onclick="if(event.target===this)this.style.display=\'none\'" style="display:flex">'
+    + '<div class="modal-box" style="max-width:480px">'
+    + '<div style="font-size:18px;font-weight:700;margin-bottom:6px;font-family:var(--ffs)">Your bias fingerprint</div>'
+    + '<div style="font-size:13px;color:var(--text2);margin-bottom:20px">Built from every episode you analyze on Podlens.</div>'
+    + '<div style="display:flex;height:10px;border-radius:6px;overflow:hidden;margin-bottom:8px">'
+    + '<div style="width:60%;background:var(--left)"></div><div style="width:25%;background:var(--center)"></div><div style="width:15%;background:var(--right)"></div>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:20px"><span>Left</span><span>Center</span><span>Right</span></div>'
+    + '<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">'
+    + _biasExplainerRow("&#127968;", "Left leaning", "Episodes that use progressive framing, favour institutional voices on the left, or consistently omit conservative perspectives.")
+    + _biasExplainerRow("&#9878;&#65039;", "Center", "Episodes that present multiple viewpoints, avoid loaded framing, and don't consistently favour either side.")
+    + _biasExplainerRow("&#128308;", "Right leaning", "Episodes that use conservative framing, favour traditional or right-leaning sources, or consistently omit progressive perspectives.")
+    + '</div>'
+    + '<div style="background:var(--bg3);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:20px">'
+    + '<strong>How it is calculated</strong><br>Each episode you analyze gets a bias score based on language patterns, framing choices, guest diversity, and missing perspectives — not just topic selection. Your fingerprint is the weighted average across all your analyses.'
+    + '</div>'
+    + '<div style="display:flex;gap:10px">'
+    + '<button onclick="document.getElementById(\'modal-bias-explainer\').style.display=\'none\'" style="flex:1;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Got it</button>'
+    + '<a href="/how-it-works.html" target="_blank" style="flex:1;padding:10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;color:var(--text2);text-align:center;text-decoration:none;font-family:var(--ff)">Full explanation &#8599;</a>'
+    + '</div>'
+    + '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function _biasExplainerRow(icon, label, desc) {
+  return '<div style="display:flex;gap:12px;align-items:flex-start">'
+    + '<div style="font-size:18px;flex-shrink:0;margin-top:1px">'+icon+'</div>'
+    + '<div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">'+label+'</div>'
+    + '<div style="font-size:12px;color:var(--text2);line-height:1.5">'+desc+'</div></div></div>';
+}
 
 function _likeFromBtn(btn) {
   var ep = { url: btn.dataset.url, title: btn.dataset.title, showName: btn.dataset.artist, artwork: btn.dataset.art };
