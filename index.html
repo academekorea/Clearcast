@@ -2565,7 +2565,7 @@ body.light-mode,[data-theme="light"]{
 
   <!-- LEFT: Logo only -->
   <a href="/" class="nav-logo"
-     onclick="if(typeof plUser==='function'&&plUser()){if(typeof showView==='function')showView('home');}else{if(typeof showHome==='function')showHome();}return false"
+     onclick="if(typeof showHome==='function'){showHome();}return false"
      aria-label="Go to homepage">
     <img src="/favicon-32x32.png"
          alt="Podlens"
@@ -2608,7 +2608,7 @@ body.light-mode,[data-theme="light"]{
 <div class="view on" id="view-home">
 
   <!-- STATE A: Logged out -->
-  <div id="home-loggedout">
+  <div id="home-loggedout" style="display:none">
 
 
 
@@ -4390,10 +4390,13 @@ function renderHomeState() {
   var u = plUser();
   if (u) u = enforcePlanRules() || u;
 
+  var elOut = document.getElementById('home-loggedout');
+  var elIn  = document.getElementById('home-loggedin');
+
   if (u) {
     // Logged-in: show personalized dashboard inside view-home
-    document.getElementById('home-loggedout').style.display = 'none';
-    document.getElementById('home-loggedin').style.display = 'block';
+    if (elOut) elOut.style.display = 'none';
+    if (elIn)  elIn.style.display  = 'block';
     var hr = new Date().getHours();
     var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
     var first = (u.name || '').split(' ')[0];
@@ -4426,8 +4429,8 @@ function renderHomeState() {
   }
 
   // Logged-out: show marketing homepage
-  document.getElementById('home-loggedout').style.display = 'block';
-  document.getElementById('home-loggedin').style.display = 'none';
+  if (elOut) elOut.style.display = 'block';
+  if (elIn)  elIn.style.display  = 'none';
   loadHeroStats();
   loadTrendingGrid('all');
   loadHomeTrending();
@@ -9774,8 +9777,7 @@ var _origStartAnalysis = startAnalysis;
   // We patch the analyze POST to add store param in startAnalysis
 })();
 if (!handleUrlRouting()) {
-  renderHomeState();
-  showHome();
+  showHome();  // showHome handles both auth states and calls renderHomeState
 }
 
 // ── FOUNDING BANNER — visible by default, hidden for logged-in or dismissed ──
