@@ -2537,7 +2537,7 @@ body.light-mode,[data-theme="light"]{
     <span style="color:#92400E;font-size:13px;font-weight:600">Founding Member Pricing — 33% off forever</span>
     <span style="color:#92400E;font-size:12px;opacity:.8;margin-left:4px">Only available during our launch period →</span>
   </a>
-  <button onclick="event.stopPropagation();document.getElementById('founding-banner') && (document.getElementById('founding-banner').style.display='none';try{sessionStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:#92400E;opacity:.6;padding:4px 8px" aria-label="Dismiss">&times;</button>
+  <button onclick="event.stopPropagation();var _fb=document.getElementById('founding-banner');if(_fb)_fb.style.display='none';try{try{sessionStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:#92400E;opacity:.6;padding:4px 8px" aria-label="Dismiss">&times;</button>
 </div>
 
 <script>(function(){
@@ -4059,9 +4059,7 @@ function _timeAgo(isoStr) {
   if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
   return Math.floor(diff/86400000) + 'd ago';
 }
-function _esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+// [removed duplicate — see later definition]
 
 function openModal(name) { document.getElementById('modal-' + name).classList.add('on'); }
 function closeModal(name) { document.getElementById('modal-' + name).classList.remove('on'); }
@@ -4838,11 +4836,7 @@ function discNavCat(cat, btn) {
   discRenderEpisodes();
 }
 
-function discSetTab(tab, btn) {
-  _discTab = tab;
-  document.querySelectorAll('.disc-tab').forEach(function(b){ b.classList.remove('on'); });
-  if (btn) btn.classList.add('on');
-}
+// [removed duplicate — see later definition]
 
 function discRenderRightCol(isLoggedIn, user) {
   var topEl = document.getElementById('disc-rc-top');
@@ -4872,42 +4866,7 @@ function discRenderRightCol(isLoggedIn, user) {
   }
 }
 
-function discRenderShows() {
-  var el = document.getElementById('disc-shows-row');
-  if (!el) return;
-  var shows = _discCat === 'all' ? CURATED_SHOWS.slice(0,5) : CURATED_SHOWS.filter(function(s){ return s.cat === _discCat; }).slice(0,5);
-  if (!shows.length) shows = CURATED_SHOWS.slice(0,5);
-  var cached = null;
-  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v3')||'null'); } catch(e){}
-  var artMap = {};
-  if (cached && cached.urls && (Date.now()-cached.ts) < 48*60*60*1000) {
-    CURATED_SHOWS.forEach(function(s,i){ if(cached.urls[i]) artMap[s.name]=cached.urls[i]; });
-  }
-  var bgs = ['#1a3050','#0d1f35','#1e0a3c','#0a1e3a','#1a0a0a'];
-  var isGuest = !plUser();
-  el.innerHTML = shows.map(function(s, i) {
-    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    var artId = 'dsa-'+i;
-    var artHtml = artMap[s.name]
-      ? '<img src="'+artMap[s.name]+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.style.display=\'none\'">'
-      : '<span id="'+artId+'" style="font-family:Georgia,serif;font-size:20px;font-weight:700;color:rgba(255,255,255,.5)">'+s.name.charAt(0)+'</span>';
-    var gate = (isGuest && i >= 3) ? '<div class="disc-gate-overlay"><span>Sign up to analyze</span><button onclick="event.stopPropagation();openModal(\'signup\')">Sign up free</button></div>' : '';
-    return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'      +'<div class="disc-show-art" style="background:'+bgs[i%5]+'">'+artHtml+'</div>'      +'<div class="disc-show-name">'+s.name+'</div>'      +'<div class="disc-show-meta"><span class="disc-bdot" style="background:#aaa"></span>'+s.artist+'</div>'+gate+'</div>';
-  }).join('');
-  shows.forEach(function(s, i) {
-    if (artMap[s.name]) return;
-    var ph = document.getElementById('dsa-'+i);
-    if (!ph) return;
-    _itunesArtwork(s.name).then(function(url) {
-      if (!url || !ph.parentNode) return;
-      var img = document.createElement('img');
-      img.src = url; img.alt = s.name;
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px';
-      ph.parentNode.replaceChild(img, ph);
-    });
-  });
-}
+// [removed duplicate — see later definition]
 
 function discRenderEpisodes() {
   var el = document.getElementById('disc-ep-row');
@@ -5044,15 +5003,16 @@ function discSetCat(cat, btn) {
   _discCat = cat;
   document.querySelectorAll('.disc-cat').forEach(function(b){ b.classList.remove('on'); });
   if (btn) btn.classList.add('on');
-  discRenderFeed();
   discRenderShows();
+  discRenderEpisodes();
 }
 
 function discSetTab(tab, btn) {
   _discTab = tab;
   document.querySelectorAll('.disc-tab').forEach(function(b){ b.classList.remove('on'); });
   if (btn) btn.classList.add('on');
-  discRenderFeed();
+  discRenderShows();
+  discRenderEpisodes();
 }
 
 function discSearch(q) {
@@ -5199,7 +5159,7 @@ function handleDashAnalyze() {
 
 // ── NAV SEARCH ──
 function doNavSearch() {
-  var q = (document.getElementById('nav-search-q').value || '').trim();
+  var _nsq=document.getElementById('nav-search-q'); var q = (_nsq ? _nsq.value : '').trim();
   if (!q) return;
   showView('discover');
   showFeed('foryou');
@@ -5225,7 +5185,7 @@ function activeSb(el) {
 
 function setCategory(cat) {
   showFeed('browse');
-  document.getElementById('sb-browse').classList.add('on');
+  var _sb=document.getElementById('sb-browse'); if(_sb) _sb.classList.add('on');
   loadBrowse(cat, null);
 }
 
@@ -8951,7 +8911,7 @@ function setRegion(region, lang, currency, store) {
   // Sync podlens-region key used by detectUserRegion()
   var plRegion = region === 'KR' ? 'ko-KR' : 'international';
   localStorage.setItem('podlens-region', plRegion);
-  document.getElementById('region-menu').classList.remove('on');
+  var _rm=document.getElementById('region-menu'); if(_rm) _rm.classList.remove('on');
   updateRegionUI();
   applyTranslations(lang);
   applyKoreanMode();
@@ -10678,11 +10638,7 @@ function heroConnectYouTube() {
   window.location.href = '/api/connect-youtube?userId=' + encodeURIComponent(u.id);
 }
 
-function heroConnectApple() {
-  var u = plUser();
-  if (!u) { openModal('signup'); return; }
-  showToast('Apple Podcasts integration coming soon — paste your podcast URL above to analyze any episode now', 4000);
-}
+// [removed duplicate — see later definition]
 
 (function() {
   // Update connect buttons state on load
