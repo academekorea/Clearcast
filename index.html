@@ -4465,13 +4465,9 @@ async function loadDashTrending() {
   var el = document.getElementById('dash-trending-grid');
   if (!el) return;
 
-  // Build artwork map from cache
+  // Always seed artwork from CURATED_SHOWS directly — no cache dependency
   var artMap = {};
-  var cached = null;
-  try { cached = JSON.parse(localStorage.getItem('pl_tg_artwork_v3') || 'null'); } catch(e) {}
-  if (cached && cached.urls && (Date.now() - cached.ts) < 48*60*60*1000) {
-    CURATED_SHOWS.forEach(function(s, i) { artMap[s.name] = s.artwork || (cached && cached.urls && cached.urls[i]) || ''; });
-  }
+  CURATED_SHOWS.forEach(function(s) { artMap[s.name] = s.artwork || ''; });
 
   var shows = CURATED_SHOWS.slice(0, 6);
   el.innerHTML = shows.map(function(s) {
