@@ -19,8 +19,6 @@ export default async (req: Request) => {
   const region = url.searchParams.get("region") || "us";
   const lang = url.searchParams.get("lang") || "";
 
-  // Phase 2: Korean market deferred — always route to international
-  // const isKorean = region === "ko-KR" || region === "kr";
   const regionCode = (region !== "international" && region !== "ko-KR" && region.length === 2)
     ? region.toUpperCase()
     : "US";

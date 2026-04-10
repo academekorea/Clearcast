@@ -27,7 +27,6 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <!-- KOREAN MARKET: Deferred to Phase 2 (after English/international product is complete)
-     Korean hreflang, KakaoTalk auth, and Korean UI are preserved in code but inactive.
      To re-enable: set KOREAN_MARKET_ENABLED = true in the block below. -->
 <link rel="alternate" hreflang="x-default" href="https://podlens.app">
 <link rel="stylesheet" media="print" href="/print.css">
@@ -35,15 +34,14 @@
 <script src="/js/bias-bar.js"></script>
 <script src="/js/v7-render.js?v=10"></script>
 <script>
-/* Phase 2 flag — flip to true when Korean market launches */
+
 var KOREAN_MARKET_ENABLED = false;
 
 /* Early region tag — sets html[data-region] for CSS hooks */
 (function() {
   try {
     var saved = localStorage.getItem('podlens-region') || '';
-    // Korean routing disabled until Phase 2
-    // var isKr = KOREAN_MARKET_ENABLED && (window.location.pathname.startsWith('/kr') || saved === 'ko-KR');
+        // var isKr = KOREAN_MARKET_ENABLED && (window.location.pathname.startsWith('/kr') || saved === 'ko-KR');
     document.documentElement.dataset.region = saved && saved !== 'ko-KR' ? saved : 'international';
   } catch(e) {}
 })();
@@ -118,7 +116,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .region-menu button:hover{background:var(--bg3)}
 .region-menu button.on{background:var(--bg3);font-weight:500}
 .beta-pill{font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;background:#1DB954;color:#fff;letter-spacing:.03em;flex-shrink:0}
-/* Korean beta badge */
+
 .kr-beta-banner{display:none;align-items:center;justify-content:center;gap:8px;padding:6px 24px;background:rgba(29,185,84,.12);border-bottom:1px solid rgba(29,185,84,.2);font-size:12px;color:#1a7a3c;font-weight:500}
 [data-theme="dark"] .kr-beta-banner{color:#1DB954}
 .kr-beta-banner.on{display:flex}
@@ -132,7 +130,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .kakao-share-wrap.on{display:inline-block}
 .kakao-share-btn{background:#FEE500;color:#1a1a1a;border:none;border-radius:var(--r);padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;gap:6px;transition:opacity .15s}
 .kakao-share-btn:hover{opacity:.85}
-/* Korean shows grid */
+
 .kr-shows-section{padding:48px 0;border-top:1px solid var(--border)}
 .kr-shows-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
 @media(max-width:900px){.kr-shows-grid{grid-template-columns:repeat(3,1fr)}}
@@ -1242,7 +1240,7 @@ body.player-on .lap{bottom:72px}
 .sb-staff{background:#F0FDF4;color:#166534}
 .sb-new{background:#EFF6FF;color:#1e40af}
 .sb-underrated{background:#FFF7ED;color:#92400e}
-.sb-korean{background:#FEF9C3;color:#713f12}
+
 .spotlight-card-lean{margin-top:8px;display:flex;height:4px;border-radius:2px;overflow:hidden}
 .spotlight-card-lean-l{background:#E24B4A}
 .spotlight-card-lean-c{background:#D1CFC9}
@@ -1973,12 +1971,8 @@ body.light-mode,[data-theme="light"]{
 .adm-pagination{display:flex;gap:8px;margin-top:16px;justify-content:center}
 .adm-page-btn{border:1px solid var(--border);border-radius:4px;padding:6px 12px;font-size:12px;cursor:pointer;background:none;color:var(--text2)}
 .adm-page-btn.on{background:var(--navy);color:white;border-color:var(--navy)}
-/* ── KOREAN MODE: show/hide data-en / data-ko spans ── */
-[data-mode="korean"] [data-en]{display:none!important}
-[data-mode="korean"] [data-ko]{display:revert!important}
-[data-mode="korean"] [data-ko-inline]{display:inline!important}
-[data-ko]{display:none}
-[data-ko-inline]{display:none}
+[]{display:none}
+[-inline]{display:none}
 /* ── NAV BAR ── */
 .sticky-header{position:sticky;top:0;z-index:200;width:100%}.nav-bar{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;padding:0 24px!important;height:60px!important;background:var(--bg,#FAFAF8)!important;border-bottom:1px solid var(--border,#E5E7EB)!important;width:100%!important;box-sizing:border-box!important}
 .nav-logo{display:flex!important;align-items:center!important;gap:8px!important;text-decoration:none!important;color:var(--navy,#0f2027)!important;font-family:var(--ffs,'Playfair Display',Georgia,serif)!important;font-weight:700!important;font-size:1rem!important;letter-spacing:0.08em!important;flex-shrink:0!important}
@@ -2676,8 +2670,8 @@ body.light-mode,[data-theme="light"]{
         <!-- Left 60%: heading + analyze bar -->
         <div class="hero-left">
           <div class="hero-kicker">Podcast Intelligence</div>
-          <h1 class="hero-h" data-i18n="tagline">A force of clarity<br><em>in the age of noise.</em></h1>
-          <p class="hero-sub" data-i18n="subTagline">See the bias and missing voices in every podcast you love.</p>
+          <h1 class="hero-h">A force of clarity<br><em>in the age of noise.</em></h1>
+          <p class="hero-sub">See the bias and missing voices in every podcast you love.</p>
 
           <!-- Connected-first platform CTAs -->
           <div id="hero-connect-block" style="margin-bottom:24px">
@@ -2702,7 +2696,7 @@ body.light-mode,[data-theme="light"]{
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">Or analyze any URL</div>
           <div class="hero-input-wrap">
             <input type="text" id="hero-url-input" class="hero-input" placeholder="YouTube, Spotify, Apple Podcasts, RSS, or .mp3" autocomplete="url"/>
-            <button class="hero-analyze-btn" onclick="handleHeroAnalyze()" data-i18n="analyzeBtn">Analyze &rarr;</button>
+            <button class="hero-analyze-btn" onclick="handleHeroAnalyze()">Analyze &rarr;</button>
           </div>
           <p class="hero-platforms">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
         </div>
@@ -2762,7 +2756,7 @@ body.light-mode,[data-theme="light"]{
 
     <!-- TICKER -->
     <div class="ticker-section" id="ticker-section">
-      <div class="ticker-label"><span data-en>RECENTLY ANALYZED</span><span data-ko>최근 분석됨</span></div>
+      <div class="ticker-label">RECENTLY ANALYZED</div>
       <div class="ticker-wrapper"><div class="ticker-track" id="ticker-track"></div></div>
     </div>
 
@@ -3425,8 +3419,8 @@ body.light-mode,[data-theme="light"]{
         <span><span style="font-weight:400">POD</span>LENS</span>
       </a>
       <p class="footer-tagline">
-        <span data-en>A force of clarity in the age of noise.</span>
-        <span data-ko>소음의 시대를 밝히는 명확함.</span>
+        A force of clarity in the age of noise.
+        
       </p>
       <div class="footer-social">
         <a href="#" class="footer-social-link" aria-label="X (Twitter)" onclick="return false">
@@ -3449,52 +3443,51 @@ body.light-mode,[data-theme="light"]{
 
     <!-- Discover -->
     <div>
-      <div class="footer-col-title"><span data-en>DISCOVER</span><span data-ko>탐색</span></div>
+      <div class="footer-col-title">DISCOVER</div>
       <div class="footer-links">
-        <a href="/" onclick="showHome();return false"><span data-en>Home</span><span data-ko>홈</span></a>
-        <button onclick="showView('discover')"><span data-en>Trending</span><span data-ko>트렌드</span></button>
-        <a href="/pricing.html"><span data-en>Unheard</span><span data-ko>언헤드</span></a>
-        <button onclick="showView('analyze')"><span data-en>Analyze a show</span><span data-ko>팟캐스트 분석</span></button>
+        <a href="/" onclick="showHome();return false">Home</a>
+        <button onclick="showView('discover')">Trending</button>
+        <a href="/pricing.html">Unheard</a>
+        <button onclick="showView('analyze')">Analyze a show</button>
       </div>
     </div>
 
     <!-- Company -->
     <div>
-      <div class="footer-col-title"><span data-en>COMPANY</span><span data-ko>회사</span></div>
+      <div class="footer-col-title">COMPANY</div>
       <div class="footer-links">
-        <a href="/mission.html"><span data-en>Our mission</span><span data-ko>미션</span></a>
-        <a href="/how-it-works.html"><span data-en>How it works</span><span data-ko>작동 방식</span></a>
-        <a href="/pricing.html"><span data-en>Pricing</span><span data-ko>요금제</span></a>
+        <a href="/mission.html">Our mission</a>
+        <a href="/how-it-works.html">How it works</a>
+        <a href="/pricing.html">Pricing</a>
       </div>
     </div>
 
     <!-- Help -->
     <div>
-      <div class="footer-col-title"><span data-en>HELP</span><span data-ko>도움말</span></div>
+      <div class="footer-col-title">HELP</div>
       <div class="footer-links">
-        <a href="mailto:hello@podlens.app"><span data-en>Contact</span><span data-ko>문의하기</span></a>
+        <a href="mailto:hello@podlens.app">Contact</a>
         <a href="/faq.html">FAQ</a>
-        <a href="/privacy.html"><span data-en>Privacy Policy</span><span data-ko>개인정보처리방침</span></a>
-        <a href="/terms.html"><span data-en>Terms of Service</span><span data-ko>이용약관</span></a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
       </div>
     </div>
 
     <!-- Tools -->
     <div>
-      <div class="footer-col-title"><span data-en>TOOLS</span><span data-ko>도구</span></div>
+      <div class="footer-col-title">TOOLS</div>
       <div class="footer-links">
-        <a href="/extension.html"><span data-en>Browser Extension</span><span data-ko>브라우저 확장</span></a>
-        <a href="#" onclick="openModal('signup');return false"><span data-en>Daily Newsletter</span><span data-ko>뉴스레터</span></a>
+        <a href="/extension.html">Browser Extension</a>
+        <a href="#" onclick="openModal('signup');return false">Daily Newsletter</a>
       </div>
     </div>
 
   </div>
   <div class="footer-bottom-row">
     <p class="footer-copy">&copy; 2026 Podlens. All rights reserved.</p>
-    <p class="footer-made"><span data-en>A force of clarity in the age of noise.</span></p>
+    <p class="footer-made">A force of clarity in the age of noise.</p>
   </div>
-  <!-- compat: applyKoreanMode references this id -->
-  <div id="kr-footer" style="display:none"></div>
+  
 </footer>
 
 <!-- MOBILE NAV -->
@@ -3632,14 +3625,6 @@ body.light-mode,[data-theme="light"]{
       <div class="auth-field"><label>Password</label><input type="password" id="login-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password"/><button class="auth-forgot" onclick="alert('Password reset coming soon. Contact hello@podlens.app')">Forgot password?</button></div>
       <button class="auth-btn" onclick="doLogin()">Log in</button>
       <div class="auth-divider">or</div>
-      <!-- KAKAO AUTH: Phase 2 — disabled until Korean market launch
-      <div class="kakao-social-section" id="login-kakao-section">
-        <button class="auth-kakao-btn" onclick="doKakaoOAuth()">
-          <svg width="18" height="18" viewBox="0 0 512 512"><path fill="#1a1a1a" d="M255.5 48C132.6 48 32 129.4 32 231.4c0 63.3 38.5 119 97 155.3l-24.7 91.5c-2.1 7.8 6.1 14 12.9 9.7l108.5-72.3c9.9 1.3 20.1 2 30.8 2 122.9 0 223.5-81.4 223.5-183.4C480 129.4 378.4 48 255.5 48z"/></svg>
-          카카오로 로그인
-        </button>
-      </div>
-      -->
       <button class="auth-google-btn" onclick="doGoogleOAuth('login')">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
@@ -3684,14 +3669,6 @@ body.light-mode,[data-theme="light"]{
       </div>
       <div id="signup-heading" class="signup-heading">Analyze this episode free</div>
       <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">7 days of full access &mdash; no credit card required</div>
-      <!-- KAKAO AUTH: Phase 2 — disabled until Korean market launch
-      <div class="kakao-social-section" id="signup-kakao-section">
-        <button class="auth-kakao-btn" onclick="doKakaoOAuth()">
-          <svg width="18" height="18" viewBox="0 0 512 512"><path fill="#1a1a1a" d="M255.5 48C132.6 48 32 129.4 32 231.4c0 63.3 38.5 119 97 155.3l-24.7 91.5c-2.1 7.8 6.1 14 12.9 9.7l108.5-72.3c9.9 1.3 20.1 2 30.8 2 122.9 0 223.5-81.4 223.5-183.4C480 129.4 378.4 48 255.5 48z"/></svg>
-          카카오로 시작하기
-        </button>
-      </div>
-      -->
       <button class="auth-google-btn" onclick="doGoogleOAuth('signup')" style="margin-bottom:10px">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
@@ -3839,14 +3816,6 @@ window.switchToInternational = function() {
   window.location.href = path + window.location.search;
 };
 
-window.switchToKorean = function() {
-  try {
-    localStorage.setItem('podlens-region', 'ko-KR');
-    document.cookie = 'podlens-region=ko-KR; path=/; max-age=31536000; SameSite=Lax';
-  } catch(e) {}
-  var path = window.location.pathname.replace(/^\/kr/, '');
-  window.location.href = '/kr' + (path || '') + window.location.search;
-};
 
 window.initLangSwitch = async function() {
   var wrap = document.getElementById('lang-switch-wrap');
@@ -3866,37 +3835,10 @@ window.initLangSwitch = async function() {
     cachedGeo = '';
   }
 
-  var isKoreanIP = cachedGeo === 'kr';
-
-  // Fetch geo if no valid cache
-  if (!cachedGeo && !isKrPath && saved !== 'ko-KR' && saved !== 'international') {
-    try {
-      var res = await fetch('/api/geo-detect', { cache: 'no-store' });
-      var data = await res.json();
-      isKoreanIP = !!(data.isKorean);
-      try {
-        localStorage.setItem('podlens-geo', isKoreanIP ? 'kr' : 'us');
-        localStorage.setItem('podlens-geo-expires', String(Date.now() + 86400000));
-      } catch(e) {}
-    } catch(e) {
-      isKoreanIP = false;
-    }
-  }
-
-  // Korean user = /kr path, explicit ko-KR saved, OR Korean IP
-  // NEVER browser language alone
-  var isKoreanUser = isKrPath || saved === 'ko-KR' || isKoreanIP;
-
-  if (!isKoreanUser) {
-    wrap.innerHTML = '';
-    wrap.style.display = 'none';
-    return;
-  }
   wrap.style.display = '';
   if (isKrPath || saved === 'ko-KR') {
     wrap.innerHTML = '<button class="lang-switch" onclick="window.switchToInternational()">🌐 International</button>';
   } else {
-    wrap.innerHTML = '<button class="lang-switch" onclick="window.switchToKorean()">🌐 한국어</button>';
   }
 };
 
@@ -3945,8 +3887,7 @@ function initNav() {
   var themeBtn = document.getElementById('mode-toggle-btn');
   if (themeBtn) themeBtn.textContent = isDark ? '🌙' : '☀️';
 
-  // Lang switcher (Korean users only)
-  if (typeof window.initLangSwitch === 'function') window.initLangSwitch();
+    if (typeof window.initLangSwitch === 'function') window.initLangSwitch();
 }
 
 // Backward compat — all existing calls to renderNavAuth() work unchanged
@@ -6171,8 +6112,7 @@ function renderBiasBar(leftPct, centerPct, rightPct) {
 // ── BIAS BAR HELPERS ──
 function biasPlainLabel(leftPct, rightPct) {
   var diff = Math.abs((leftPct||0) - (rightPct||0));
-  var isKo = (typeof isKoreanMode === 'function' && isKoreanMode()) ||
-    document.documentElement.dataset.mode === 'korean';
+    false;
   if (isKo) {
     if (diff < 20) return '균형잡힘';
     if (diff < 40) return '약간 편향';
@@ -6188,8 +6128,7 @@ function biasPlainLabel(leftPct, rightPct) {
 }
 
 function getBiasLabel(score) {
-  var isKo = (typeof isKoreanMode === 'function' && isKoreanMode()) ||
-    document.documentElement.dataset.mode === 'korean';
+    false;
   if (isKo) {
     if (score >= 45 && score <= 55) return '대체로 균형';
     if (score >= 35 && score < 45) return '약간 좌편향';
@@ -6432,7 +6371,7 @@ async function loadBrowse(genre, el) {
   var grid=document.getElementById('show-grid'), loading=document.getElementById('browse-loading');
   grid.style.display='none'; loading.style.display='flex'; grid.innerHTML='';
   try {
-    var _region = (typeof isKoreanMode === 'function' && isKoreanMode()) ? 'ko-KR' : 'international';
+    var _region = 'international';
     var data=await fetch('/api/marketplace?category='+encodeURIComponent(genre)+'&region='+_region, { signal: AbortSignal.timeout(5000) }).then(function(r){return r.json();});
     var shows=data.podcasts||[];
     if (!shows.length) { loading.innerHTML='<p style="color:var(--text3)">Could not load. Try another category.</p>'; return; }
@@ -7719,7 +7658,6 @@ function showShareModal(data) {
   var biasLabel = (data.audioLean && data.audioLean.plainEnglishLabel) || 'Analyzed on Podlens';
   var showName = data.showName || 'Podcast';
   var tweetText = encodeURIComponent('"' + (data.episodeTitle || showName) + '" leans ' + biasLabel + '. See the full breakdown: ' + analysisUrl + ' via @podlensapp #podcasts');
-  var isKorean = (_settings && _settings.lang === 'ko');
 
   // Remove old modal if any
   var old = document.getElementById('share-modal-overlay');
@@ -7742,7 +7680,7 @@ function showShareModal(data) {
     + _shareBtn('𝕏', 'Share on X', 'window.open(\'https://x.com/intent/tweet?text=' + tweetText + '\',\'_blank\')')
     + _shareBtn('in', 'LinkedIn', 'window.open(\'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(analysisUrl) + '\',\'_blank\')')
     + _shareBtn('💬', 'WhatsApp', 'window.open(\'https://wa.me/?text=' + encodeURIComponent(title + ' ' + analysisUrl) + '\',\'_blank\')')
-    + (KOREAN_MARKET_ENABLED && isKorean ? _shareBtn('💛', 'KakaoTalk', '_shareKakao(\'' + analysisUrl + '\',\'' + _escJs(biasLabel) + '\')') : _shareBtn('📧', 'Email', 'window.open(\'mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(analysisUrl) + '\')'))
+    
     + _shareBtn('🖼', 'Download card', 'document.getElementById(\'share-modal-overlay\').remove();_shareDownloadCard()')
     + '</div>'
     + '</div>';
@@ -7930,7 +7868,6 @@ function handleUrlRouting() {
     return false;
   }
 
-  // Handle KakaoTalk OAuth callback
   var kakaoLogin = params.get('kakao_login');
   if (kakaoLogin) {
     try { handleSocialLogin(JSON.parse(decodeURIComponent(kakaoLogin))); } catch(e) {}
@@ -9742,8 +9679,7 @@ function renderFeaturedPlayer(item) {
 // ── GEO / i18n / REGION ──────────────────────────────────────────────────
 
 function detectSettings() {
-  // /kr path always means Korean mode — highest priority
-  if (window.location.pathname.startsWith('/kr')) {
+    if (window.location.pathname.startsWith('/kr')) {
     return { region:'KR', lang:'ko', currency:'KRW', store:'kr' };
   }
   // podlens-region key (set by geo detection and lang switcher)
@@ -9762,7 +9698,6 @@ function detectSettings() {
 
 var _settings = detectSettings();
 
-function isKoreanMode() { return _settings.region === 'KR' || _settings.lang === 'ko'; }
 
 var i18n = {
   en: {
@@ -9853,11 +9788,7 @@ function getT(key) {
 
 function applyTranslations(lang) {
   var t = i18n[lang] || i18n.en;
-  document.querySelectorAll('[data-i18n]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n');
-    if (t[key]) el.textContent = t[key];
-  });
-  // Update placeholders
+    // Update placeholders
   var heroInput = document.getElementById('hero-url-input');
   if (heroInput && t.analyzeBar) heroInput.placeholder = t.analyzeBar;
   var navSearch = document.getElementById('nav-search-q');
@@ -9915,8 +9846,7 @@ function setRegion(region, lang, currency, store) {
   var _rm=document.getElementById('region-menu'); if(_rm) _rm.classList.remove('on');
   updateRegionUI();
   applyTranslations(lang);
-  applyKoreanMode();
-  // Refresh discovery content with new region
+    // Refresh discovery content with new region
   if (_feedInit) {
     _feedInit = false;
     initFeed();
@@ -9944,58 +9874,6 @@ document.addEventListener('click', function() {
   if (m) m.classList.remove('on');
 });
 
-function applyKoreanMode() {
-  // PHASE 2: Korean market features disabled — flip KOREAN_MARKET_ENABLED = true to re-enable
-  if (!KOREAN_MARKET_ENABLED) return;
-
-  var isKr = isKoreanMode();
-  var t = isKr ? i18n.ko : i18n.en;
-  // Korean beta banner
-  var banner = document.getElementById('kr-beta-banner');
-  if (banner) banner.classList.toggle('on', isKr);
-  // Korean footer
-  var krf = document.getElementById('kr-footer');
-  if (krf) krf.style.display = isKr ? 'block' : 'none';
-  // Kakao buttons in auth modals
-  document.querySelectorAll('.kakao-social-section').forEach(function(el) {
-    el.classList.toggle('on', isKr);
-  });
-  // Korean shows in discover
-  var krSection = document.getElementById('kr-shows-section');
-  if (krSection) {
-    krSection.style.display = isKr ? 'block' : 'none';
-    if (isKr) renderKoreanShows();
-  }
-  // Translate category pills (home trending section)
-  var catMap = [
-    ['all', t.catAll], ['news', t.catNews], ['tech', t.catTech],
-    ['business', t.catBusiness], ['society', t.catSociety],
-    ['crime', t.catCrime], ['true-crime', t.catCrime], ['comedy', t.catComedy],
-    ['health', t.catHealth], ['sports', t.catSports],
-  ];
-  document.querySelectorAll('.cat-pill-btn').forEach(function(btn) {
-    var onclick = btn.getAttribute('onclick') || '';
-    var m = onclick.match(/filterTrendingGrid\('([^']+)'/);
-    if (m) {
-      var entry = catMap.find(function(e){ return e[0] === m[1]; });
-      if (entry && entry[1]) btn.textContent = entry[1];
-    }
-  });
-  // Translate discover browse chips
-  document.querySelectorAll('.cat-chip').forEach(function(btn) {
-    var onclick = btn.getAttribute('onclick') || '';
-    var m = onclick.match(/loadBrowse\('([^']+)'/);
-    if (m) {
-      var entry = catMap.find(function(e){ return e[0] === m[1]; });
-      if (entry && entry[1]) btn.textContent = entry[1];
-    }
-  });
-  // Hero "Connect your listening" label
-  var connectLabel = document.querySelector('#hero-connect-block > div:first-child');
-  if (connectLabel && t.connectYourListening) connectLabel.textContent = t.connectYourListening;
-  // Kakao SDK: Phase 2 — disabled until Korean market launch
-  // if (KOREAN_MARKET_ENABLED && isKr) loadKakaoSdk();
-}
 
 // ── REGIONAL ITUNES STORES ────────────────────────────────────────────────
 
@@ -10033,66 +9911,7 @@ var KR_SHOWS = [
   {name:"\uc36c\uc804\ub77c\uc774\ube0c", category:"\uc815\uce58/\uc2dc\uc0ac"},
 ];
 
-async function renderKoreanShows() {
-  var grid = document.getElementById('kr-shows-grid');
-  if (!grid) return;
-  // Use tg-grid class for parity with international cards
-  grid.className = 'tg-grid';
-  grid.innerHTML = [1,2,3].map(function(){
-    return '<div class="tg-card skel"><div class="tg-skel-art"></div><div class="tg-skel-line" style="width:80%;margin-bottom:8px"></div><div class="tg-skel-line" style="width:55%"></div></div>';
-  }).join('');
 
-  try {
-    var res = await fetch('https://itunes.apple.com/kr/rss/topaudiopodcasts/limit=25/json', { signal: AbortSignal.timeout(8000) });
-    var data = await res.json();
-    var entries = (data.feed && data.feed.entry) || [];
-    if (!entries.length) { _renderKoreanFallback(grid); return; }
-
-    // Batch lookup for feed URLs
-    var ids = entries.slice(0, 15).map(function(e) { return e.id && e.id.attributes && e.id.attributes['im:id']; }).filter(Boolean);
-    var feedUrls = {};
-    if (ids.length) {
-      try {
-        var lr = await fetch('https://itunes.apple.com/lookup?id=' + ids.join(',') + '&entity=podcast', { signal: AbortSignal.timeout(8000) });
-        if (lr.ok) {
-          var ld = await lr.json();
-          (ld.results || []).forEach(function(r) { if (r.trackId && r.feedUrl) feedUrls[String(r.trackId)] = r.feedUrl; });
-        }
-      } catch {}
-    }
-
-    grid.innerHTML = entries.slice(0, 6).map(function(e) {
-      var id = e.id && e.id.attributes && e.id.attributes['im:id'] || '';
-      var name = (e['im:name'] && e['im:name'].label) || '';
-      var artist = (e['im:artist'] && e['im:artist'].label) || '';
-      var imgs = e['im:image'] || [];
-      var rawArt = (imgs[2] || imgs[1] || imgs[0] || {}).label || '';
-      var art = rawArt ? artworkProxy(rawArt) : '';
-      var feedUrl = feedUrls[id] || '';
-      var slug = name.toLowerCase().replace(/[^a-z0-9가-힣]+/g, '-').replace(/^-|-$/g, '');
-      var safeUrl = feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-      var onclick = feedUrl
-        ? 'showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')'
-        : 'document.getElementById(\'url-input\').value=' + JSON.stringify(name) + ';showView(\'analyze\')';
-      return '<div class="tg-card" onclick="' + onclick + '">'
-        + '<div class="tg-art-wrap">' + (art ? '<img class="tg-art" src="' + art + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'&#127897;\'">' : '<div class="tg-art-ph">&#127897;</div>') + '</div>'
-        + '<div class="tg-card-body">'
-        + '<div class="tg-card-name">' + name + '</div>'
-        + '<div class="tg-card-artist">' + artist + '</div>'
-        + '<button class="tg-analyze-btn">\ubd84\uc11d\ud558\uae30 &rarr;</button>'
-        + '</div></div>';
-    }).join('');
-  } catch(e) { _renderKoreanFallback(grid); }
-}
-
-function _renderKoreanFallback(grid) {
-  grid.innerHTML = KR_SHOWS.slice(0, 6).map(function(show) {
-    var initial = show.name.charAt(0);
-    var krSlug = show.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    var krUrl = (show.feedUrl||'').replace(/'/g,"\\'");
-    return '<div class="tg-card" onclick="showView(\'show\');loadShowProfile(\''+krSlug+'\',\''+krUrl+'\')"><div class="tg-art-wrap"><div class="tg-art-ph">' + initial + '</div></div><div class="tg-card-body"><div class="tg-card-name">' + show.name + '</div><div class="tg-card-artist">' + show.category + '</div><button class="tg-analyze-btn">\ubd84\uc11d\ud558\uae30 &rarr;</button></div></div>';
-  }).join('');
-}
 
 // ── KAKAOTALK (TASK 9) ────────────────────────────────────────────────────
 
@@ -10131,7 +9950,6 @@ function doKakaoOAuth() {
 }
 
 function shareToKakao(data) {
-  // KakaoTalk share via web intent (works without SDK for text shares)
   var title = (data.episodeTitle || '') + ' \u2014 Podlens \ubd84\uc11d';
   var lean = data.audioLean;
   var leanStr = '';
@@ -10909,7 +10727,6 @@ initNav();
 // Apply region, translations
 updateRegionUI();
 applyTranslations(_settings.lang);
-applyKoreanMode();
 initUpgradeTriggers();
 if (!handleUrlRouting()) {
   showHome(); // showHome now calls renderHomeState internally — covers both logged-in and logged-out
@@ -11005,7 +10822,6 @@ function dismissNudge() {
   };
 
   function render(data) {
-    var isKr = typeof isKoreanMode === 'function' && isKoreanMode();
     var sample = isKr ? krSample : SAMPLE_DATA;
     var src = data || sample;
     var isSample = src.isSample || !data;
@@ -11066,9 +10882,7 @@ var SPOTLIGHT_POOL = [
   { name:'The Weeds', artist:'Vox Media', badge:'new', badge_text:'🆕 New', lean:{l:58,c:26,r:16}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts126/v4/2b/e2/4c/2be24cbc-c62e-2a43-b96e-6e574e3cb8c2/mza_4920277808576688327.jpg/100x100bb.jpg' },
   { name:'Conan O\'Brien Needs a Friend', artist:'Team Coco', badge:'staff', badge_text:'⭐ Staff Pick', lean:{l:28,c:56,r:16}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts113/v4/29/da/3f/29da3f0e-4b6c-aadb-b489-64a62a9b8620/mza_9781562012764539167.jpg/100x100bb.jpg' },
   { name:'Planet Money', artist:'NPR', badge:'staff', badge_text:'⭐ Staff Pick', lean:{l:36,c:44,r:20}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/d7/cb/6f/d7cb6f14-b823-db35-0b97-4c93e8e7e91b/mza_16434866568748638498.jpg/100x100bb.jpg' },
-  { name:'Darknet Diaries', artist:'Jack Rhysider', badge:'underrated', badge_text:'🔍 Underrated', lean:{l:22,c:60,r:18}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/90/16/d6/9016d690-baf9-6a21-5416-d17f4f1a7754/mza_5699671598940673432.jpg/100x100bb.jpg' },
-  { name:'슬기로운 라디오생활', artist:'팟빵', badge:'korean', badge_text:'🇰🇷 Korean', lean:{l:30,c:48,r:22}, art:'' },
-  { name:'The Rest Is History', artist:'Goalhanger Podcasts', badge:'new', badge_text:'🆕 New', lean:{l:25,c:52,r:23}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/23/a3/93/23a3932a-a68d-be8e-a4c0-aace1abd6bd2/mza_4849742068867789064.jpg/100x100bb.jpg' },
+  { name:'Darknet Diaries', artist:'Jack Rhysider', badge:'underrated', badge_text:'🔍 Underrated', lean:{l:22,c:60,r:18}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/90/16/d6/9016d690-baf9-6a21-5416-d17f4f1a7754/mza_5699671598940673432.jpg/100x100bb.jpg' },  { name:'The Rest Is History', artist:'Goalhanger Podcasts', badge:'new', badge_text:'🆕 New', lean:{l:25,c:52,r:23}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/23/a3/93/23a3932a-a68d-be8e-a4c0-aace1abd6bd2/mza_4849742068867789064.jpg/100x100bb.jpg' },
   { name:'How I Built This', artist:'NPR', badge:'staff', badge_text:'⭐ Staff Pick', lean:{l:24,c:62,r:14}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/ef/72/c7/ef72c79d-a41b-2af6-4e50-24b16d1fb5e4/mza_17023742700553085297.jpg/100x100bb.jpg' },
   { name:'You\'re Wrong About', artist:'Michael Hobbes & Sarah Marshall', badge:'underrated', badge_text:'🔍 Underrated', lean:{l:46,c:34,r:20}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/e5/ae/b1/e5aeb174-97e9-a60a-74f0-b6e9f9f4d9b3/mza_9741527735477729386.jpg/100x100bb.jpg' },
   { name:'Intelligence Squared', artist:'Intelligence Squared', badge:'staff', badge_text:'⭐ Staff Pick', lean:{l:28,c:58,r:14}, art:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/56/c7/59/56c759cf-7e27-6823-9b55-46b99b1b92e1/mza_14432695283476855765.jpg/100x100bb.jpg' },
@@ -11113,7 +10927,7 @@ function renderSpotlight() {
   }
   var page = _spotlightPage % Math.ceil(_spotlightShuffled.length / 4);
   var shows = _spotlightShuffled.slice(page * 4, page * 4 + 4);
-  var badgeClass = {staff:'sb-staff',new:'sb-new',underrated:'sb-underrated',korean:'sb-korean'};
+  var badgeClass = {staff:'sb-staff',new:'sb-new',underrated:'sb-underrated'};
   el.innerHTML = shows.map(function(s) {
     var artHtml = s.art
       ? '<img class="spotlight-card-art" src="'+s.art+'" alt="" onerror="this.style.display=\'none\'">'
@@ -11621,11 +11435,8 @@ function rotateSpotlight() {
   var grid = document.getElementById('showcase-grid');
   if (!grid) return;
 
-  // Detect Korean: /kr path or explicit ko-KR preference — never browser language
-  var isKorean = window.location.pathname.startsWith('/kr') ||
-    (function() { try { return localStorage.getItem('podlens-region') === 'ko-KR'; } catch(e) { return false; } })();
 
-  var region = isKorean ? 'KR' : 'INTL';
+  var region = 'INTL';
 
   var INTL_SHOWCASE_FALLBACK = [
     { show_name: 'The Joe Rogan Experience', episode_title: 'Episode #2254 — Elon Musk', bias_label: 'Lightly Right-Leaning', bias_direction: 'right', bias_score: 65, show_artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/58/96/56/58965665-7e50-2bb4-7f7a-92bd1882e27a/mza_12661574892354567111.jpg/300x300bb.jpg', top_finding: 'Long-form conversation tends to favor the host\'s political framing on economic topics.' },
@@ -11640,7 +11451,7 @@ function rotateSpotlight() {
   ];
 
   var timeoutId = setTimeout(function() {
-    var fallback = isKorean ? KR_SHOWCASE_FALLBACK : INTL_SHOWCASE_FALLBACK;
+    var fallback = INTL_SHOWCASE_FALLBACK;
     grid.innerHTML = fallback.map(renderShowcaseCard).join('');
   }, 5000);
 
@@ -11649,7 +11460,7 @@ function rotateSpotlight() {
     .then(function(data) {
       clearTimeout(timeoutId);
       if (!data.showcases || !data.showcases.length) {
-        var fallback = isKorean ? KR_SHOWCASE_FALLBACK : INTL_SHOWCASE_FALLBACK;
+        var fallback = INTL_SHOWCASE_FALLBACK;
         grid.innerHTML = fallback.map(renderShowcaseCard).join('');
         return;
       }
@@ -11659,7 +11470,7 @@ function rotateSpotlight() {
     })
     .catch(function() {
       clearTimeout(timeoutId);
-      var fallback = isKorean ? KR_SHOWCASE_FALLBACK : INTL_SHOWCASE_FALLBACK;
+      var fallback = INTL_SHOWCASE_FALLBACK;
       grid.innerHTML = fallback.map(renderShowcaseCard).join('');
     });
 })();
@@ -11668,8 +11479,6 @@ function rotateSpotlight() {
 (function initTicker() {
   var track = document.getElementById('ticker-track');
   if (!track) return;
-  var isKorean = window.location.pathname.startsWith('/kr') ||
-    (function() { try { return localStorage.getItem('podlens-region') === 'ko-KR'; } catch(e) { return false; } })();
 
   var ITEMS = [
     { name: 'The Joe Rogan Experience', label: 'Lightly Right-Leaning', dir: 'right', count: 2255 },
@@ -11692,7 +11501,7 @@ function rotateSpotlight() {
     { name: '이슈 있슈', label: '중립적', dir: 'balanced', ko: true, count: 156 },
   ];
 
-  var items = isKorean ? ITEMS : ITEMS.filter(function(i) { return !i.ko; });
+  var items = ITEMS;
   var doubled = items.concat(items);
   track.innerHTML = doubled.map(function(item) {
     var numFmt = item.count >= 1000
@@ -11725,7 +11534,6 @@ function renderShowcaseCard(c) {
   var onclick = c.analysis_url
     ? ''
     : ' onclick="showToast(\'Analysis coming soon — check back shortly\',3000);return false;"';
-  var isKo = document.documentElement.dataset.mode === 'korean';
   var seeMore = isKo ? '전체 분석 보기 &rarr;' : 'See full analysis &rarr;';
   var markerLeft = score + '%';
   return '<article class="showcase-card bias-' + dir + '">'
@@ -12122,9 +11930,7 @@ function _renderAdminTab(tab, d) {
       {slug:'jre', name:'The Joe Rogan Experience'},
       {slug:'lex-fridman', name:'Lex Fridman Podcast'},
       {slug:'the-daily', name:'The Daily (NYT)'},
-      {slug:'fresh-air', name:'NPR Fresh Air'},
-      {slug:'korean-showcase', name:'Korean Showcase'},
-    ];
+      {slug:'fresh-air', name:'NPR Fresh Air'},    ];
     html += '<table class="adm-table"><thead><tr><th>Show</th><th>Action</th></tr></thead><tbody>';
     showcases.forEach(function(s) {
       html += '<tr><td>' + s.name + '</td>'

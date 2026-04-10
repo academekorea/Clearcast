@@ -116,18 +116,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
   <div style="font-size:13px;opacity:.6;margin-top:12px">Chrome only &middot; ~65KB &middot; No data collected without sign-in</div>
 </div>
 
-<!-- KOREAN WAITLIST: Phase 2 — disabled until Korean market launch
-<div id="kr-waitlist-section" style="display:none;max-width:640px;margin:0 auto 48px;padding:32px 24px;background:#fff;border-radius:8px;text-align:center">
-  <div style="font-size:22px;font-weight:700;color:#0f2027;margin-bottom:8px">🇰🇷 한국 얼리 액세스 대기 목록에 참여하세요</div>
-  <p style="font-size:14px;color:#666;margin-bottom:20px">한국어 베타 서비스 및 익스텐션 출시 소식을 가장 먼저 받아보세요</p>
-  <form name="korean-waitlist" method="POST" data-netlify="true" onsubmit="handleKoreanWaitlist(event)" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-    <input type="hidden" name="form-name" value="korean-waitlist">
-    <input type="email" name="email" placeholder="이메일 주소" required style="flex:1;min-width:200px;padding:12px 16px;border:1px solid #e0ddd8;border-radius:4px;font-size:14px;font-family:inherit">
-    <button type="submit" style="padding:12px 24px;background:#0f2027;color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">참여하기</button>
-  </form>
-  <div id="kr-waitlist-success" style="display:none;margin-top:12px;font-size:14px;color:#1a7a3c;font-weight:500">감사합니다! 출시 시 알려드리겠습니다. 🙌</div>
-</div>
--->
+
 
 <div class="features">
   <div class="feature-card">
@@ -209,14 +198,7 @@ function handleWaitlist(e) {
     .then(function(){ form.style.display='none'; document.getElementById('waitlist-success').style.display='block'; })
     .catch(function(){ document.getElementById('waitlist-success').textContent="Something went wrong. Email hello@podlens.app to join the waitlist."; document.getElementById('waitlist-success').style.display='block'; });
 }
-function handleKoreanWaitlist(e) {
-  e.preventDefault();
-  var form = e.target;
-  fetch('/', { method:'POST', body: new FormData(form) })
-    .then(function(){ form.style.display='none'; document.getElementById('kr-waitlist-success').style.display='block'; })
-    .catch(function(){ document.getElementById('kr-waitlist-success').textContent='\uc624\ub958\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4. hello@podlens.app\uc73c\ub85c \uc5f0\ub77d\ud574\uc8fc\uc138\uc694.'; document.getElementById('kr-waitlist-success').style.display='block'; });
-}
-// Show Korean waitlist if Korean region
+
 (function() {
   var cookies = {};
   document.cookie.split('; ').forEach(function(c) { var p=c.split('='); if(p.length>=2) cookies[p[0].trim()]=p[1].trim(); });
@@ -244,8 +226,8 @@ document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getIt
         <span><span style="font-weight:400">POD</span>LENS</span>
       </a>
       <p class="footer-tagline">
-        <span data-en>Media literacy for the audio generation.</span>
-        <span data-ko>오디오 세대를 위한 미디어 리터러시.</span>
+        Media literacy for the audio generation.
+        
       </p>
       <div class="footer-social">
         <a href="#" class="footer-social-link" aria-label="X (Twitter)" onclick="return false">
@@ -268,52 +250,51 @@ document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getIt
 
     <!-- Discover -->
     <div>
-      <div class="footer-col-title"><span data-en>DISCOVER</span><span data-ko>탐색</span></div>
+      <div class="footer-col-title">DISCOVER</div>
       <div class="footer-links">
-        <a href="/" ><span data-en>Home</span><span data-ko>홈</span></a>
-        <a href="/"><span data-en><span data-en>Trending</span></span><span data-ko>트렌드</span></a>
-        <a href="/pricing.html"><span data-en>Unheard</span><span data-ko>언헤드</span></a>
-        <button onclick="showView('analyze')"><span data-en>Analyze a show</span><span data-ko>팟캐스트 분석</span></button>
+        <a href="/" >Home</a>
+        <a href="/">Trending</a>
+        <a href="/pricing.html">Unheard</a>
+        <button onclick="showView('analyze')">Analyze a show</button>
       </div>
     </div>
 
     <!-- Company -->
     <div>
-      <div class="footer-col-title"><span data-en>COMPANY</span><span data-ko>회사</span></div>
+      <div class="footer-col-title">COMPANY</div>
       <div class="footer-links">
-        <a href="/mission.html"><span data-en>Our mission</span><span data-ko>미션</span></a>
-        <a href="/how-it-works.html"><span data-en>How it works</span><span data-ko>작동 방식</span></a>
-        <a href="/pricing.html"><span data-en>Pricing</span><span data-ko>요금제</span></a>
+        <a href="/mission.html">Our mission</a>
+        <a href="/how-it-works.html">How it works</a>
+        <a href="/pricing.html">Pricing</a>
       </div>
     </div>
 
     <!-- Help -->
     <div>
-      <div class="footer-col-title"><span data-en>HELP</span><span data-ko>도움말</span></div>
+      <div class="footer-col-title">HELP</div>
       <div class="footer-links">
-        <a href="mailto:hello@podlens.app"><span data-en>Contact</span><span data-ko>문의하기</span></a>
+        <a href="mailto:hello@podlens.app">Contact</a>
         <a href="/faq.html">FAQ</a>
-        <a href="/privacy.html"><span data-en>Privacy Policy</span><span data-ko>개인정보처리방침</span></a>
-        <a href="/terms.html"><span data-en>Terms of Service</span><span data-ko>이용약관</span></a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
       </div>
     </div>
 
     <!-- Tools -->
     <div>
-      <div class="footer-col-title"><span data-en>TOOLS</span><span data-ko>도구</span></div>
+      <div class="footer-col-title">TOOLS</div>
       <div class="footer-links">
-        <a href="/extension.html"><span data-en>Browser Extension</span><span data-ko>브라우저 확장</span></a>
-        <a href="/"><span data-en>Daily Newsletter</span><span data-ko>뉴스레터</span></a>
+        <a href="/extension.html">Browser Extension</a>
+        <a href="/">Daily Newsletter</a>
       </div>
     </div>
 
   </div>
   <div class="footer-bottom-row">
-    <p class="footer-copy">&copy; 2026 Podlens. <span data-en>All rights reserved.</span><span data-ko>All rights reserved.</span></p>
-    <p class="footer-made"><span data-en>A force of clarity in the age of noise.</span><span data-ko>듣는 것을 이해하세요.</span></p>
+    <p class="footer-copy">&copy; 2026 Podlens. All rights reserved.</p>
+    <p class="footer-made">A force of clarity in the age of noise.</p>
   </div>
-  <!-- compat: applyKoreanMode references this id -->
-  <div id="kr-footer" style="display:none"></div>
+  
 </footer>
 </body>
 </html>

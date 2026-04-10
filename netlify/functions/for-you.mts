@@ -76,7 +76,6 @@ export default async (req: Request) => {
   const region = url.searchParams.get("region") || "us";
   const userId = url.searchParams.get("userId") || "";
 
-  // Phase 2: Korean market deferred — always use international iTunes store
   const country = "us";
 
   // Get user interests from DB if logged in

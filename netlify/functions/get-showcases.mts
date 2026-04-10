@@ -50,10 +50,7 @@ const PLACEHOLDERS = [
   },
 ];
 
-// Korean — exactly 3 cards
-const KOREAN_PLACEHOLDERS = [
   {
-    slug: "korean-showcase",
     show_name: "지식인의 사랑방",
     host: "",
     episode_title: "AI와 한국 사회의 미래",
@@ -101,10 +98,7 @@ const KOREAN_PLACEHOLDERS = [
 
 export default async (req: Request) => {
   const url = new URL(req.url);
-  // Phase 2: Korean market deferred — always serve international showcases
   // const region = req.headers.get("x-pl-region") || url.searchParams.get("region") || "INTL";
-  // const isKorean = region === "KR";
-  const isKorean = false;
 
   const store = getStore("podlens-blobs");
   const showcases: any[] = [];
@@ -114,8 +108,6 @@ export default async (req: Request) => {
 
   const placeholderMap: Record<string, any> = {};
   for (const p of PLACEHOLDERS) placeholderMap[p.slug] = p;
-  // Korean placeholders preserved for Phase 2 re-enable
-  for (const p of KOREAN_PLACEHOLDERS) placeholderMap[p.slug] = p;
 
   for (const slug of slugs) {
     try {
