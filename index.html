@@ -6474,6 +6474,18 @@ function pollStatus(jobId, audioUrl) {
 
       if (d.status === 'error') {
         clearInterval(_poll);
+        // YouTube → iTunes fallback: show episode picker from the found RSS feed
+        if (d.code === 'YOUTUBE_FALLBACK' && d.feedUrl) {
+          document.getElementById('atabs').classList.remove('on');
+          document.querySelectorAll('.apanel').forEach(function(p){ p.classList.remove('on'); });
+          document.getElementById('results').innerHTML = '';
+          var dockEl = document.getElementById('ar-dock'); if (dockEl) dockEl.classList.add('hidden');
+          var stripEl = document.getElementById('ar-progress-strip'); if (stripEl) stripEl.classList.add('hidden');
+          resetBtn();
+          plToast('Found this show on Apple Podcasts — select an episode to analyze');
+          showEpisodePickerFromYT(d.feedUrl, d.showName || d.channelName || '', d.showArtwork || '', d.channelName || '');
+          return;
+        }
         var errMsg = d.error || 'Analysis failed.';
         // Map railway error codes to friendly messages
         if (d.code === 'PRIVATE_VIDEO') errMsg = 'This video is private or unavailable.';

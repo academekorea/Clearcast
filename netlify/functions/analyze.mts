@@ -354,6 +354,42 @@ export default async (req: Request, context: Context) => {
       return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
 
+    // Quick iTunes check before committing to slow Railway yt-dlp
+    // Many YouTube podcast channels have RSS feeds — find it first
+    const channelForItunes = resolvedShowName || meta.channelTitle || "";
+    if (channelForItunes) {
+      try {
+        const itunesQuickRes = await fetch(
+          `https://itunes.apple.com/search?term=${encodeURIComponent(channelForItunes)}&media=podcast&entity=podcast&limit=5`,
+          { signal: AbortSignal.timeout(6000) }
+        );
+        if (itunesQuickRes.ok) {
+          const itunesQuick = await itunesQuickRes.json() as any;
+          const normalise = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+          const normCh = normalise(channelForItunes);
+          const bestQuick = (itunesQuick.results || []).find((r: any) => {
+            const n = normalise(r.collectionName || r.trackName || "");
+            return n.includes(normCh) || normCh.includes(n);
+          });
+          if (bestQuick?.feedUrl) {
+            console.log(`[analyze] iTunes quick-path found before Railway: ${bestQuick.collectionName}`);
+            // Found a podcast RSS — return episode picker immediately (much faster than yt-dlp)
+            await store.setJSON(jobId, {
+              status: "error", jobId,
+              error: "youtube_fallback_found",
+              code: "YOUTUBE_FALLBACK",
+              feedUrl: bestQuick.feedUrl,
+              showName: bestQuick.collectionName || channelForItunes,
+              showArtwork: bestQuick.artworkUrl600 || bestQuick.artworkUrl100 || "",
+              channelName: channelForItunes,
+              suggestion: "episode_picker",
+            });
+            return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+          }
+        }
+      } catch {}
+    }
+
     // L3: Railway yt-dlp (client rotation: ios → android → web → mweb)
     const audioServiceUrl = Netlify.env.get("AUDIO_SERVICE_URL");
     const secret = Netlify.env.get("YOUTUBE_SERVICE_SECRET");
@@ -445,14 +481,55 @@ export default async (req: Request, context: Context) => {
         }
       }
 
-      // All clients exhausted
+      // All clients exhausted — before giving up, try iTunes/Apple Podcasts fallback
+      // Many YouTube podcast channels also have RSS feeds via Apple Podcasts
+      const channelName = resolvedShowName || meta.channelTitle || "";
+      if (channelName && lastCode !== "PRIVATE_VIDEO" && lastCode !== "UNAVAILABLE") {
+        try {
+          console.log(`[analyze] YouTube failed, trying iTunes fallback for channel: ${channelName}`);
+          const itunesRes = await fetch(
+            `https://itunes.apple.com/search?term=${encodeURIComponent(channelName)}&media=podcast&entity=podcast&limit=5`,
+            { signal: AbortSignal.timeout(8000) }
+          );
+          if (itunesRes.ok) {
+            const itunesData = await itunesRes.json() as any;
+            const results = itunesData.results || [];
+            // Find best match — channel name similarity check
+            const normalise = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+            const normChannel = normalise(channelName);
+            const best = results.find((r: any) => {
+              const normName = normalise(r.collectionName || r.trackName || "");
+              return normName.includes(normChannel) || normChannel.includes(normName);
+            }) || results[0];
+
+            if (best?.feedUrl) {
+              console.log(`[analyze] iTunes fallback found: ${best.collectionName} → ${best.feedUrl}`);
+              await store.setJSON(jobId, {
+                status: "error", jobId,
+                error: `youtube_fallback_found`,
+                code: "YOUTUBE_FALLBACK",
+                feedUrl: best.feedUrl,
+                showName: best.collectionName || channelName,
+                showArtwork: best.artworkUrl600 || best.artworkUrl100 || "",
+                channelName,
+                suggestion: "episode_picker",
+              });
+              return;
+            }
+          }
+        } catch (e: any) {
+          console.warn("[analyze] iTunes fallback failed:", e.message);
+        }
+      }
+
+      // Truly no options left
       const userMessage = lastCode === "PRIVATE_VIDEO"
         ? "This video is private and cannot be analyzed."
         : lastCode === "UNAVAILABLE"
         ? "This video is unavailable in this region."
         : lastCode === "AGE_RESTRICTED"
-        ? "This video is age-restricted. Connect your Google account to analyze it."
-        : "YouTube analysis failed after trying all extraction methods. Connect your Google account for more reliable results.";
+        ? "This video is age-restricted. Connect your Google account to analyze it, or paste the RSS feed URL instead."
+        : "YouTube analysis failed. Try pasting the show's RSS feed or Apple Podcasts URL instead.";
 
       await store.setJSON(jobId, {
         status: "error", jobId,
