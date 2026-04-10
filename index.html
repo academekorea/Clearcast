@@ -3116,17 +3116,43 @@ body.light-mode,[data-theme="light"]{
       <button class="disc-nav-btn on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
       <button class="disc-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
       <button class="disc-nav-btn" id="disc-nav-library" onclick="showView('library')" style="display:none"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Library</button>
-      <div class="disc-nav-div"></div>
-      <div class="disc-nav-lbl">Categories</div>
-      <button class="disc-nav-cat on" onclick="discNavCat('all',this)"><span class="disc-nav-cdot" style="background:#e0352b"></span>All</button>
-      <button class="disc-nav-cat" onclick="discNavCat('news',this)"><span class="disc-nav-cdot" style="background:#e0352b"></span>News &amp; Politics</button>
-      <button class="disc-nav-cat" onclick="discNavCat('tech',this)"><span class="disc-nav-cdot" style="background:#378ADD"></span>Technology</button>
-      <button class="disc-nav-cat" onclick="discNavCat('business',this)"><span class="disc-nav-cdot" style="background:#22c55e"></span>Business</button>
-      <button class="disc-nav-cat" onclick="discNavCat('society',this)"><span class="disc-nav-cdot" style="background:#a855f7"></span>Society</button>
-      <button class="disc-nav-cat" onclick="discNavCat('crime',this)"><span class="disc-nav-cdot" style="background:#f59e0b"></span>True Crime</button>
-      <button class="disc-nav-cat" onclick="discNavCat('comedy',this)"><span class="disc-nav-cdot" style="background:#ec4899"></span>Comedy</button>
-      <button class="disc-nav-cat" onclick="discNavCat('health',this)"><span class="disc-nav-cdot" style="background:#14b8a6"></span>Health</button>
-      <button class="disc-nav-cat" onclick="discNavCat('sports',this)"><span class="disc-nav-cdot" style="background:#f97316"></span>Sports</button>
+
+      <!-- LIBRARY SECTION — logged-in only -->
+      <div id="disc-nav-lib-section" style="display:none">
+        <div class="disc-nav-div"></div>
+        <div class="disc-nav-lbl">My library</div>
+        <button class="disc-nav-btn" onclick="showView('analyze')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+          Smart queue
+        </button>
+        <button class="disc-nav-btn" onclick="discShowFollowing()">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Following
+        </button>
+        <button class="disc-nav-btn" onclick="showView('library')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Analyzed
+        </button>
+        <button class="disc-nav-btn" onclick="discShowFingerprint()">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          My fingerprint
+        </button>
+      </div>
+
+      <!-- CATEGORY SECTION — logged-out only -->
+      <div id="disc-nav-cat-section">
+        <div class="disc-nav-div"></div>
+        <div class="disc-nav-lbl">Categories</div>
+        <button class="disc-nav-cat on" onclick="discNavCat('all',this)"><span class="disc-nav-cdot" style="background:#e0352b"></span>All</button>
+        <button class="disc-nav-cat" onclick="discNavCat('news',this)"><span class="disc-nav-cdot" style="background:#e0352b"></span>News &amp; Politics</button>
+        <button class="disc-nav-cat" onclick="discNavCat('tech',this)"><span class="disc-nav-cdot" style="background:#378ADD"></span>Technology</button>
+        <button class="disc-nav-cat" onclick="discNavCat('business',this)"><span class="disc-nav-cdot" style="background:#22c55e"></span>Business</button>
+        <button class="disc-nav-cat" onclick="discNavCat('society',this)"><span class="disc-nav-cdot" style="background:#a855f7"></span>Society</button>
+        <button class="disc-nav-cat" onclick="discNavCat('crime',this)"><span class="disc-nav-cdot" style="background:#f59e0b"></span>True Crime</button>
+        <button class="disc-nav-cat" onclick="discNavCat('comedy',this)"><span class="disc-nav-cdot" style="background:#ec4899"></span>Comedy</button>
+        <button class="disc-nav-cat" onclick="discNavCat('health',this)"><span class="disc-nav-cdot" style="background:#14b8a6"></span>Health</button>
+        <button class="disc-nav-cat" onclick="discNavCat('sports',this)"><span class="disc-nav-cdot" style="background:#f97316"></span>Sports</button>
+      </div>
     </div>
     <div class="disc-main">
       <div class="disc-greeting" id="disc-greeting">Explore podcasts</div>
@@ -4274,14 +4300,20 @@ function showTrialExpiryRecap(u) {
 function renderHomeState() {
   var u = plUser();
   if (u) u = enforcePlanRules() || u;
-  document.getElementById('home-loggedout').style.display = u ? 'none' : 'block';
-  document.getElementById('home-loggedin').style.display = u ? 'block' : 'none';
-  if (!u) {
-    loadHeroStats();
-    loadTrendingGrid('all');
-    loadHomeTrending();
+
+  if (u) {
+    // Logged-in: homepage IS the dashboard (discover view)
+    showView('discover');
     return;
   }
+
+  // Logged-out: show marketing homepage
+  document.getElementById('home-loggedout').style.display = 'block';
+  document.getElementById('home-loggedin').style.display = 'none';
+  loadHeroStats();
+  loadTrendingGrid('all');
+  loadHomeTrending();
+}
   var hr = new Date().getHours();
   var greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
   var first = (u.name || '').split(' ')[0];
@@ -4683,6 +4715,9 @@ function initDiscover() {
   var tabs = document.getElementById('disc-tabs');
   var libBtn = document.getElementById('disc-nav-library');
   var unheardTeaser = document.getElementById('disc-unheard-teaser');
+  var navLibSection = document.getElementById('disc-nav-lib-section');
+  var navCatSection = document.getElementById('disc-nav-cat-section');
+
   if (u) {
     var first = (u.name||'').split(' ')[0];
     var tod = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
@@ -4691,6 +4726,9 @@ function initDiscover() {
     if (tabs) tabs.style.display = 'flex';
     if (libBtn) libBtn.style.display = '';
     if (unheardTeaser) unheardTeaser.style.display = '';
+    // Show library sidebar, hide categories
+    if (navLibSection) navLibSection.style.display = '';
+    if (navCatSection) navCatSection.style.display = 'none';
     discRenderRightCol(true, u);
   } else {
     if (greet) greet.textContent = 'Explore podcasts';
@@ -4698,6 +4736,9 @@ function initDiscover() {
     if (tabs) tabs.style.display = 'none';
     if (libBtn) libBtn.style.display = 'none';
     if (unheardTeaser) unheardTeaser.style.display = 'none';
+    // Show categories sidebar, hide library
+    if (navLibSection) navLibSection.style.display = 'none';
+    if (navCatSection) navCatSection.style.display = '';
     discRenderRightCol(false, null);
   }
   discRenderShows();
@@ -4806,6 +4847,9 @@ function discRenderEpisodes() {
   }).join('');
 }
 
+function discShowFollowing() { showView('library'); }
+function discShowFingerprint() { var fp=document.getElementById('disc-rc-top'); if(fp)fp.scrollIntoView({behavior:'smooth'}); }
+
 function handleDiscCompare() {
   var a = (document.getElementById('disc-compare-a')||{}).value||'';
   var b = (document.getElementById('disc-compare-b')||{}).value||'';
@@ -4815,6 +4859,12 @@ function handleDiscCompare() {
 }
 
 function showHome() {
+  // Logged-in users: home = dashboard (discover view)
+  if (plUser()) {
+    showView('discover');
+    return;
+  }
+  // Logged-out: marketing homepage
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
   document.getElementById('view-home').classList.add('on');
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
@@ -5015,15 +5065,6 @@ function discRenderRecent() {
   }).join('');
 }
 
-function handleDiscCompare() {
-  var a = (document.getElementById('disc-compare-a')||{}).value||'';
-  var b = (document.getElementById('disc-compare-b')||{}).value||'';
-  if (!a.trim() || !b.trim()) return;
-  var slugA = a.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-');
-  var slugB = b.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-');
-  showView('show');
-  loadShowProfile(slugA, a.trim().startsWith('http') ? a.trim() : null, slugB, b.trim().startsWith('http') ? b.trim() : null);
-}
 function handleHeroAnalyze() {
   var u = document.getElementById('hero-url-input').value.trim();
   if (!u) { document.getElementById('hero-url-input').focus(); return; }
