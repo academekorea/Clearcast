@@ -602,8 +602,13 @@ body.player-on .lap{bottom:72px}
 .dashboard-greeting{font-family:var(--ffs);font-size:clamp(1.8rem,4vw,3rem);font-weight:800;line-height:1.1;margin-bottom:6px}
 .dashboard-greeting em{font-style:italic;color:var(--text3)}
 .dashboard-subline{font-size:15px;color:var(--text2)}
-.dashboard-grid{display:grid;grid-template-columns:220px 1fr 340px;min-height:calc(100vh - 60px);gap:0;align-items:start}
-@media(max-width:1100px){.dashboard-grid{grid-template-columns:1fr 300px}}@media(max-width:768px){.dashboard-grid{grid-template-columns:1fr}}
+.dash-3col{display:grid;grid-template-columns:220px 1fr 300px;min-height:calc(100vh - 60px);align-items:start}
+@media(max-width:1100px){.dash-3col{grid-template-columns:220px 1fr}}
+@media(max-width:768px){.dash-3col{grid-template-columns:1fr}}
+.dash-main{padding:28px 28px 80px;min-width:0}
+.dash-sidebar{border-left:0.5px solid var(--border);padding:20px 18px 80px;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px)}
+@media(max-width:1100px){.dash-sidebar{display:none}}
+.dash-greeting-wrap{margin-bottom:20px}
 .dashboard-main{}
 .dashboard-sidebar{}
 /* Analyze bar */
@@ -3013,17 +3018,14 @@ body.light-mode,[data-theme="light"]{
 
   <!-- STATE B: Logged in -->
   <div id="home-loggedin" style="display:none">
-    <!-- Trial day-6 banner -->
     <div id="trial-day6-banner" style="display:none;padding:16px 0 0"></div>
 
-    <!-- STATE A: New user (0 analyses) -->
+    <!-- STATE A: New user -->
     <div id="dash-state-a" style="display:none">
-      <div class="dashboard-container">
-        <div class="dashboard-grid">
-        <!-- Left nav -->
+      <div class="dash-3col">
         <div class="dash-nav">
           <div class="dash-nav-lbl">Dashboard</div>
-          <button class="dash-nav-btn on"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
+          <button class="dash-nav-btn on" onclick="showHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
           <button class="dash-nav-btn" onclick="showView('discover')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
           <button class="dash-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
           <div class="dash-nav-div"></div>
@@ -3033,122 +3035,51 @@ body.light-mode,[data-theme="light"]{
           <button class="dash-nav-btn" onclick="discShowAnalyzed()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
           <button class="dash-nav-btn" onclick="discShowFingerprint()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
         </div>
-        <!-- Main content -->
-        <div>
-        <div class="dashboard-header">
-          <div class="dashboard-greeting" id="dash-greeting-a">Good morning.</div>
-          <div class="dashboard-subline">Connect your podcasts to get started — we&rsquo;ll take it from there.</div>
-        </div>
-        <div class="dashboard-grid">
-          <div class="dashboard-main">
-            <!-- Analyze bar -->
-            <div class="analyze-bar">
-              <input type="text" id="dash-url-input" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL to try it now&hellip;" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyze()"/>
-              <button class="analyze-btn" onclick="handleDashAnalyze()">Analyze &rarr;</button>
-            </div>
-            <!-- Connect CTAs -->
-            <div class="section-header"><span class="section-title">Connect your sources</span></div>
-            <div class="connect-cta-grid">
-              <button class="connect-btn spotify" onclick="heroConnectSpotify()">
-                <div class="connect-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg></div>
-                <div><div style="font-size:13px;font-weight:700">Connect Spotify</div><div style="font-size:11px;color:var(--text3);font-weight:400">Import your library</div></div>
-              </button>
-              <button class="connect-btn youtube" onclick="heroConnectYouTube()">
-                <div class="connect-btn-icon">▶</div>
-                <div><div style="font-size:13px;font-weight:700">Connect YouTube</div><div style="font-size:11px;color:var(--text3);font-weight:400">Analyze any video podcast</div></div>
-              </button>
-              <button class="connect-btn apple" onclick="heroConnectApple()">
-                <div class="connect-btn-icon">🎵</div>
-                <div><div style="font-size:13px;font-weight:700">Apple Podcasts</div><div style="font-size:11px;color:var(--text3);font-weight:400">Search &amp; follow shows</div></div>
-              </button>
-              <button class="connect-btn rss" onclick="showView('analyze')">
-                <div class="connect-btn-icon">📻</div>
-                <div><div style="font-size:13px;font-weight:700">RSS or direct URL</div><div style="font-size:11px;color:var(--text3);font-weight:400">Paste any episode link</div></div>
-              </button>
-            </div>
-            <!-- Preview -->
-            <div class="section-header" style="margin-top:32px"><span class="section-title">What you&rsquo;ll see after connecting</span></div>
-            <div class="preview-grid">
-              <div class="preview-card">
-                <div class="preview-card-title">Your bias fingerprint</div>
-                <div class="preview-blur">
-                  <div class="bias-bar" style="height:10px"><div class="bias-bar-l" style="width:38%"></div><div class="bias-bar-c" style="width:32%"></div><div class="bias-bar-r" style="width:30%"></div></div>
-                  <div style="font-size:11px;margin-top:6px;color:var(--text3)">🔴 38% &nbsp;⬜ 32% &nbsp;🔵 30%</div>
-                </div>
-                <div class="preview-caption">Builds as you analyze episodes</div>
-              </div>
-              <div class="preview-card">
-                <div class="preview-card-title">Most analyzed show</div>
-                <div class="preview-blur">
-                  <div style="display:flex;gap:10px;align-items:center">
-                    <div style="width:44px;height:44px;background:var(--bg4);border-radius:8px;flex-shrink:0"></div>
-                    <div><div style="height:10px;background:var(--bg4);border-radius:3px;width:120px;margin-bottom:6px"></div><div style="height:8px;background:var(--bg4);border-radius:3px;width:80px"></div></div>
-                  </div>
-                </div>
-                <div class="preview-caption">See your top podcasts</div>
-              </div>
-              <div class="preview-card">
-                <div class="preview-card-title">Unheard stories</div>
-                <div class="preview-blur">
-                  <div style="height:10px;background:var(--bg4);border-radius:3px;margin-bottom:7px"></div>
-                  <div style="height:10px;background:var(--bg4);border-radius:3px;width:85%;margin-bottom:7px"></div>
-                  <div style="height:10px;background:var(--bg4);border-radius:3px;width:70%"></div>
-                </div>
-                <div class="preview-caption">5 stories you haven&rsquo;t heard yet</div>
-              </div>
-            </div>
+        <div class="dash-main">
+          <div class="dash-greeting-wrap">
+            <div class="dashboard-greeting" id="dash-greeting-a">Good morning.</div>
+            <div class="dashboard-subline">Connect your podcasts to get started — we'll take it from there.</div>
           </div>
-          <div class="dashboard-sidebar">
-            <!-- Fingerprint preview -->
-            <div class="fingerprint-container">
-              <div class="fingerprint-title">Your listening fingerprint</div>
-              <div class="fingerprint-bar-track">
-                <div class="fingerprint-dot" style="left:50%"></div>
-              </div>
-              <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
-              <div style="font-size:12px;color:var(--text3);margin-top:16px;text-align:center">Analyze your first episode to see where you stand</div>
-            </div>
-            <!-- Stats -->
-            <div class="section-header"><span class="section-title">Your stats</span></div>
-            <div class="stats-grid">
-              <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Analyzed</div></div>
-              <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Following</div></div>
-              <div class="stat-card"><div class="stat-number">—</div><div class="stat-label">Your lean</div></div>
-            </div>
-            <!-- Free access card (shown to free users) -->
-            <div id="free-access-panel" style="display:none">
-              <div class="free-access-card">
-                <div class="free-access-header">&#10003; Your free access</div>
-                <div class="free-access-items">
-                  <div class="free-item">🔍 Discover page</div>
-                  <div class="free-item">📊 All show profiles</div>
-                  <div class="free-item">🧬 Bias fingerprint</div>
-                  <div class="free-item">🔔 Follow + alerts</div>
-                  <div class="free-item">📬 Weekly digest</div>
-                  <div class="free-item">💡 1 Unheard/week</div>
-                </div>
-              </div>
-              <div class="upgrade-nudge">
-                <div class="upgrade-nudge-text">
-                  <strong>Want deeper analysis?</strong>
-                  <p>Creator gives host trust scores, 5 citations, audio briefings and 25 analyses/month.</p>
-                </div>
-                <a href="/pricing.html" class="btn-upgrade-sm">See plans &rarr;</a>
-              </div>
-            </div>
+          <div class="analyze-bar">
+            <input type="text" id="dash-url-input" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL to try it now…" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyze()"/>
+            <button class="analyze-btn" onclick="handleDashAnalyze()">Analyze &rarr;</button>
+          </div>
+          <div class="section-header"><span class="section-title">Connect your sources</span></div>
+          <div class="connect-cta-grid">
+            <button class="connect-btn spotify" onclick="heroConnectSpotify()">
+              <div class="connect-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg></div>
+              <div><div style="font-size:13px;font-weight:700">Connect Spotify</div><div style="font-size:11px;color:var(--text3)">Import your library</div></div>
+            </button>
+            <button class="connect-btn youtube" onclick="heroConnectYouTube()">
+              <div class="connect-btn-icon">▶</div>
+              <div><div style="font-size:13px;font-weight:700">Connect YouTube</div><div style="font-size:11px;color:var(--text3)">Analyze any video podcast</div></div>
+            </button>
+          </div>
+          <div class="section-header" style="margin-top:24px"><span class="section-title">Trending right now</span><a href="#" class="section-link" onclick="showView('discover');return false">Browse all &rarr;</a></div>
+          <div id="dash-trending-grid-a" class="tg-grid" style="margin-top:0"></div>
+        </div>
+        <div class="dash-sidebar">
+          <div class="fingerprint-container">
+            <div class="fingerprint-title">Your bias fingerprint</div>
+            <div class="fingerprint-bar-track"><div class="fingerprint-dot" style="left:50%"></div></div>
+            <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
+            <div style="font-size:12px;color:var(--text3);margin-top:16px;text-align:center">Analyze your first episode to see where you stand</div>
+          </div>
+          <div class="stats-grid" style="margin-top:16px">
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Analyzed</div></div>
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Following</div></div>
+            <div class="stat-card"><div class="stat-number">—</div><div class="stat-label">Your lean</div></div>
           </div>
         </div>
       </div>
     </div><!-- /dash-state-a -->
 
-    <!-- STATE B: Returning user (1+ analyses) -->
+    <!-- STATE B: Returning user -->
     <div id="dash-state-b" style="display:none">
-      <div class="dashboard-container">
-        <div class="dashboard-grid">
-        <!-- Left nav -->
+      <div class="dash-3col">
         <div class="dash-nav">
           <div class="dash-nav-lbl">Dashboard</div>
-          <button class="dash-nav-btn on"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
+          <button class="dash-nav-btn on" onclick="showHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
           <button class="dash-nav-btn" onclick="showView('discover')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
           <button class="dash-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
           <div class="dash-nav-div"></div>
@@ -3158,78 +3089,59 @@ body.light-mode,[data-theme="light"]{
           <button class="dash-nav-btn" onclick="discShowAnalyzed()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
           <button class="dash-nav-btn" onclick="discShowFingerprint()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
         </div>
-        <!-- Main content -->
-        <div>
-        <div class="dashboard-header">
-          <div class="dashboard-greeting" id="dash-greeting">Good morning</div>
-        </div>
-        <div class="dashboard-grid">
-          <div class="dashboard-main">
-            <!-- Analyze bar -->
-            <div class="analyze-bar">
-              <input type="text" id="dash-url-input-b" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL&hellip;" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
-              <button class="analyze-btn" onclick="handleDashAnalyzeB()">Analyze &rarr;</button>
-            </div>
-            <!-- Recent episodes -->
-            <div class="section-header">
-              <span class="section-title">Continue where you left off</span>
-              <a href="#" class="section-link" onclick="showView('analyze');return false">Analyze new &rarr;</a>
-            </div>
-            <div id="dash-recent-list"></div>
-            <!-- Trending -->
-            <div class="section-header" style="margin-top:8px">
-              <span class="section-title">Trending in your categories</span>
-              <a href="#" class="section-link" onclick="showView('discover');return false">Browse all &rarr;</a>
-            </div>
-            <div id="dash-trending-grid" class="tg-grid" style="margin-top:0"></div>
-            <!-- Stats -->
-            <div class="section-header" style="margin-top:24px"><span class="section-title">Your stats</span></div>
-            <div class="stats-grid">
-              <div class="stat-card"><div class="stat-number" id="stat-analyses">0</div><div class="stat-label">Analyzed</div></div>
-              <div class="stat-card"><div class="stat-number" id="stat-shows">0</div><div class="stat-label">Following</div></div>
-              <div class="stat-card"><div class="stat-number" id="stat-lean">—</div><div class="stat-label">Your lean</div></div>
-            </div>
+        <div class="dash-main">
+          <div class="dash-greeting-wrap">
+            <div class="dashboard-greeting" id="dash-greeting">Good morning</div>
           </div>
-          <div class="dashboard-sidebar">
-            <!-- Bias fingerprint -->
-            <div class="fingerprint-container">
-              <div class="fingerprint-title">Your bias fingerprint</div>
-              <div class="fingerprint-bar-track" id="dash-fp-track">
-                <div class="fingerprint-dot" id="dash-fp-dot" style="left:50%"></div>
-              </div>
-              <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
-              <div class="fingerprint-counts" id="dash-fp-counts"></div>
+          <div class="analyze-bar">
+            <input type="text" id="dash-url-input-b" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL…" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
+            <button class="analyze-btn" onclick="handleDashAnalyzeB()">Analyze &rarr;</button>
+          </div>
+          <div class="section-header">
+            <span class="section-title">Continue where you left off</span>
+            <a href="#" class="section-link" onclick="showView('analyze');return false">Analyze new &rarr;</a>
+          </div>
+          <div id="dash-recent-list"></div>
+          <div class="section-header" style="margin-top:20px">
+            <span class="section-title">Trending in your categories</span>
+            <a href="#" class="section-link" onclick="showView('discover');return false">Browse all &rarr;</a>
+          </div>
+          <div id="dash-trending-grid" class="tg-grid" style="margin-top:0"></div>
+          <div class="section-header" style="margin-top:24px"><span class="section-title">Your stats</span></div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number" id="stat-analyses">0</div><div class="stat-label">Analyzed</div></div>
+            <div class="stat-card"><div class="stat-number" id="stat-shows">0</div><div class="stat-label">Following</div></div>
+            <div class="stat-card"><div class="stat-number" id="stat-lean">—</div><div class="stat-label">Your lean</div></div>
+          </div>
+        </div>
+        <div class="dash-sidebar">
+          <div class="fingerprint-container">
+            <div class="fingerprint-title">Your bias fingerprint</div>
+            <div class="fingerprint-bar-track" id="dash-fp-track">
+              <div class="fingerprint-dot" id="dash-fp-dot" style="left:50%"></div>
             </div>
-            <!-- Smart Queue widget (shown to Creator+ users with SQ enabled) -->
-            <div class="sq-widget" id="sq-widget" style="display:none">
-              <div class="sq-widget-header">
-                <span class="sq-widget-title">⚡ Smart Queue</span>
-                <a href="/settings.html#notifications" class="sq-widget-manage">Manage →</a>
-              </div>
-              <div id="sq-widget-body">
-                <div class="sq-empty">Loading…</div>
-              </div>
+            <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
+            <div class="fingerprint-counts" id="dash-fp-counts"></div>
+          </div>
+          <div class="sq-widget" id="sq-widget" style="display:none">
+            <div class="sq-widget-header">
+              <span class="sq-widget-title">⚡ Smart Queue</span>
+              <a href="/settings.html#notifications" class="sq-widget-manage">Manage &rarr;</a>
             </div>
-            <!-- Shows I follow -->
-            <div class="sidebar-card">
-              <div class="sidebar-card-title">Shows I follow</div>
-              <div id="sb-follow-list">
-                <div style="font-size:12px;color:var(--text3)">No shows followed yet.</div>
-              </div>
-            </div>
-            <!-- Unheard preview -->
-            <div class="sidebar-card">
-              <div class="sidebar-card-title">Unheard Preview</div>
-              <div id="sb-unheard-preview" style="font-size:12px;color:var(--text2)">
-                <div style="color:var(--text3)">Analyze more to unlock.</div>
-              </div>
+            <div id="sq-widget-body"><div class="sq-empty">Loading…</div></div>
+          </div>
+          <div class="sidebar-card" id="sb-follow-section">
+            <div class="sidebar-card-title">Shows I follow</div>
+            <div id="sb-follow-list"><div style="font-size:12px;color:var(--text3)">No shows followed yet.</div></div>
+          </div>
+          <div class="sidebar-card">
+            <div class="sidebar-card-title">Unheard Preview</div>
+            <div id="sb-unheard-preview" style="font-size:12px;color:var(--text2)">
+              <div style="color:var(--text3)">Analyze more to unlock.</div>
             </div>
           </div>
         </div>
       </div>
-        </div><!-- /dashboard-main -->
-        </div><!-- /dashboard-grid-inner -->
-        </div><!-- /dashboard-grid -->
     </div><!-- /dash-state-b -->
   </div><!-- /home-loggedin -->
 
