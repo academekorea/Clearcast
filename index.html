@@ -4358,11 +4358,13 @@ function _showVerifyEmailBanner(email) {
   b.style.cssText = 'background:#fffbeb;border-bottom:1px solid #fde68a;padding:11px 20px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-size:13px;color:#92580a;font-family:Inter,sans-serif;position:sticky;top:60px;z-index:900';
   b.innerHTML = '<span>📧 Check your inbox — we sent a verification link to <strong>' + _escHtml(email) + '</strong></span>'
     + '<button onclick="_resendVerification()" style="padding:5px 12px;background:#0f2027;color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Resend</button>'
-    + '<button onclick="document.getElementById('verify-email-banner').remove()" style="background:none;border:none;color:#b58a40;cursor:pointer;font-size:18px;line-height:1;padding:0 4px">×</button>';
+    + '<button onclick="_dismissVerifyBanner()" style="background:none;border:none;color:#b58a40;cursor:pointer;font-size:18px;line-height:1;padding:0 4px">×</button>';
   var nav = document.querySelector('nav') || document.body.firstElementChild;
   if (nav && nav.parentNode) nav.parentNode.insertBefore(b, nav.nextSibling);
   else document.body.insertBefore(b, document.body.firstChild);
 }
+
+function _dismissVerifyBanner() { var b=document.getElementById('verify-email-banner'); if(b) b.remove(); }
 
 function _resendVerification() {
   var u = plUser();
