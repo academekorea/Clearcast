@@ -106,7 +106,7 @@ export default async (req: Request) => {
       name: spotifyDisplayName || (spotifyEmail ? spotifyEmail.split("@")[0] : "Listener"),
       email: spotifyEmail,
       avatar: spotifyAvatar,
-      plan: "trial",
+      plan: "free",
       signupDate: new Date(now).toISOString(),
       trialEndsAt,
       analysesThisWeek: 0,

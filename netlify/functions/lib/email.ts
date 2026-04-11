@@ -198,21 +198,18 @@ export function welcomeEmail(opts: {
   trialEndsAt?: string
 }): { subject: string; html: string } {
   const firstName = opts.name.split(' ')[0] || 'there'
-  const trialNote = opts.plan === 'trial' && opts.trialEndsAt
-    ? `<p>Your 7-day Operator trial ends on <strong>${new Date(opts.trialEndsAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>. After that, you'll move to the free tier — or <a href="https://podlens.app/pricing" style="color:#0f2027">upgrade to keep your access</a>.</p>`
-    : ''
   return {
     subject: `Welcome to Podlens, ${firstName}`,
     html: baseTemplate(`
-      <h1 class="h1">You're in, ${firstName} 👋</h1>
-      <p>Welcome to Podlens — your podcast bias intelligence layer.</p>
-      <p>Here's what you can do right now:</p>
+      <h1 class="h1">You\'re in, ${firstName} 👋</h1>
+      <p>Welcome to Podlens — your podcast bias intelligence layer. Your free account is ready.</p>
+      <p>Here\'s what you can do right now:</p>
       <ul style="padding-left:18px;font-size:14px;color:#444;line-height:1.8">
         <li>Paste any YouTube, Spotify, or podcast URL to analyze it</li>
         <li>Connect Spotify or YouTube to build your bias fingerprint</li>
-        <li>Follow shows to get weekly bias insights</li>
+        <li>Follow shows and get weekly bias insights</li>
+        <li>Get 4 analyses per month, free forever</li>
       </ul>
-      ${trialNote}
       <a class="btn" href="https://podlens.app">Start analyzing →</a>
       <p class="muted">Questions? Just reply to this email — we read everything.</p>
     `)

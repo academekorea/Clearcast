@@ -79,7 +79,7 @@ export default async (req: Request) => {
       id: uid,
       email,
       name: email.split("@")[0],
-      plan: "trial",
+      plan: "free",
       signupDate: new Date(now).toISOString(),
       trialEndsAt,
       analysesThisWeek: 0,
@@ -108,7 +108,7 @@ export default async (req: Request) => {
       email,
       name: userData.name,
       provider: 'magic',
-      tier: userData.plan || 'trial',
+      tier: userData.plan || 'free',
       created_at: userData.signupDate || new Date().toISOString(),
       last_seen_at: new Date().toISOString(),
     };

@@ -3743,7 +3743,7 @@ body.light-mode,[data-theme="light"]{
           <div class="tf"><span class="tf-y">✓</span>Shareable bias cards</div>
           <div class="tf"><span class="tf-y">✓</span>Full analysis history</div>
         </div>
-        <button class="tcard-cta" onclick="startCheckout('creator','monthly')">Start 7-day free trial</button>
+        <button class="tcard-cta" onclick="startCheckout('creator','monthly')">Start Starter Lens &rarr;</button>
       </div>
 
       <!-- Pro Lens — featured -->
@@ -3762,7 +3762,7 @@ body.light-mode,[data-theme="light"]{
           <div class="tf"><span class="tf-y">✓</span>Show comparison side-by-side</div>
           <div class="tf"><span class="tf-y">✓</span>Chrome extension access</div>
         </div>
-        <button class="tcard-cta" onclick="startCheckout('operator','monthly')">Start 7-day free trial</button>
+        <button class="tcard-cta" onclick="startCheckout('operator','monthly')">Start Pro Lens &rarr;</button>
       </div>
 
       <!-- Operator Lens -->
@@ -3854,7 +3854,7 @@ body.light-mode,[data-theme="light"]{
         </div>
       </div>
       <div id="signup-heading" class="signup-heading">Analyze this episode free</div>
-      <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">7 days of full access &mdash; no credit card required</div>
+      <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">Free forever &mdash; no credit card required</div>
       <button class="auth-google-btn" onclick="doGoogleOAuth('signup')" style="margin-bottom:10px">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
@@ -4328,7 +4328,7 @@ function doSignup() {
   if (_pendingAnalyze) {
     var pa = _pendingAnalyze;
     _pendingAnalyze = null;
-    showToast('Welcome to Podlens \u2014 your 7-day trial has started');
+    showToast('Welcome to Podlens \u2014 your free account is ready ✨');
     setTimeout(function() {
       document.getElementById('url-input').value = pa.url;
       showView('analyze');
@@ -4394,7 +4394,7 @@ function openSignupGate() {
   var h = document.getElementById('signup-heading');
   var s = document.getElementById('signup-subtext');
   if (h) h.textContent = 'Analyze this episode free';
-  if (s) s.textContent = '7 days of full access \u2014 no credit card required';
+  if (s) s.textContent = 'Free forever \u2014 no credit card required';
   openModal('signup');
 }
 
@@ -10002,14 +10002,14 @@ var i18n = {
     hostTrust: "Host Trust", missingVoices: "Missing Voices",
     sponsorFlags: "Sponsor Flags", whyScore: "Why this score?",
     signupHeading: "Analyze this episode free",
-    signupSub: "7 days of full access \u2014 no credit card required",
+    signupSub: "Free forever \u2014 no credit card required",
     continueGoogle: "Continue with Google", continueSpotify: "Continue with Spotify",
     navHome: "Home", navDiscover: "Discover", navCompare: "Compare",
     navUnheard: "Unheard", navPricing: "Pricing",
     navSearch: "Search", navLibrary: "Library",
     navSettings: "Settings", tabAccount: "Account", tabBilling: "Billing", tabSecurity: "Security",
     logoTagline: "Know what you\u2019re actually listening to",
-    trialBanner: "Your free trial ends in {days} days",
+    trialBanner: "Your free plan renews every month",
     listenPlatform: "Listen on your preferred platform",
     analysisComplete: "Analysis complete", analyzingEpisode: "Analyzing this episode\u2026",
     connectSpotify: "Connect Spotify", connectYoutube: "Connect YouTube", connectApple: "Apple Podcasts",
@@ -10380,7 +10380,7 @@ function handleSocialLogin(userData) {
     if (u.foundingMember) {
       showToast('Welcome, Early User #' + (u.signupCount || '?') + ' — 33% off locked in forever');
     } else {
-      showToast('Welcome to Podlens \u2014 your 7-day trial has started');
+      showToast('Welcome to Podlens \u2014 your free account is ready ✨');
     }
     setTimeout(function() { openModal('onboarding'); }, 800);
   } else {
