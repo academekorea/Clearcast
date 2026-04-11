@@ -2774,8 +2774,8 @@ body.light-mode,[data-theme="light"]{
           <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)">Preview as a different plan</div>
           <div style="display:flex;align-items:center;background:var(--bg2);border:0.5px solid var(--border);border-radius:24px;padding:3px">
             <button class="tier-pill on" id="sia-btn-free" onclick="siaSetTier('free',this)">Free</button>
-            <button class="tier-pill" id="sia-btn-creator" onclick="siaSetTier('creator',this)">Creator</button>
-            <button class="tier-pill" id="sia-btn-operator" onclick="siaSetTier('operator',this)">Operator</button>
+            <button class="tier-pill" id="sia-btn-creator" onclick="siaSetTier('creator',this)">Starter Lens</button>
+            <button class="tier-pill" id="sia-btn-operator" onclick="siaSetTier('operator',this)">Pro Lens</button>
           </div>
         </div>
         <div style="display:flex;border-bottom:0.5px solid var(--border);padding:0 16px;background:var(--bg)">
@@ -9025,8 +9025,8 @@ function siaSetTier(tier, btn) {
   var cta = document.getElementById('sia-cta-note');
   if (cta) {
     if (tier === 'free') cta.textContent = 'You’re seeing the Free tier — sign up to unlock all findings, key insights, citations, and the full report.';
-    if (tier === 'creator') cta.textContent = 'You’re seeing the Creator tier — upgrade to Pro Lens for citations, full transcript, and the deep report.';
-    if (tier === 'operator') cta.textContent = 'This is the full Pro Lens experience. Sign up to analyze any podcast you listen to.';
+    if (tier === 'creator') cta.textContent = 'You’re seeing the Starter Lens tier — upgrade to Pro Lens for citations, full transcript, and the deep report.';
+    if (tier === 'operator') cta.textContent = 'This is the full Pro Lens experience — sign up to analyze any podcast you listen to.';
   }
 }
 
