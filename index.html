@@ -12410,7 +12410,7 @@ function _renderAdminTab(tab, d) {
       + '<input id="adm-user-search" class="adm-input" placeholder="Search email or name…" style="flex:1;min-width:200px" onkeydown="if(event.key===\'Enter\')_admUserSearch()">'
       + '<select id="adm-user-plan" class="adm-input" onchange="_admUserSearch()">'
       + '<option value="">All plans</option>'
-      + ['free','trial','creator','operator','studio'].map(function(p){ return '<option value="'+p+'">'+p+'</option>'; }).join('')
+      + [['free','Free'],['creator','Starter Lens'],['operator','Pro Lens'],['studio','Operator Lens']].map(function(p){ return '<option value="'+p[0]+'">'+p[1]+'</option>'; }).join('')
       + '</select>'
       + '<button onclick="_admUserSearch()" style="border:1px solid var(--border);border-radius:4px;padding:8px 14px;cursor:pointer;font-size:13px">Search</button></div>';
 
@@ -12540,7 +12540,7 @@ function _renderAdminTab(tab, d) {
       + '<div><div class="adm-ctrl-label">Set User Plan</div><div class="adm-ctrl-sub">Manually override a user\'s plan for testing or support</div></div>'
       + '<input id="adm-ctrl-userid" class="adm-input" placeholder="User ID" style="width:220px">'
       + '<select id="adm-ctrl-plan" class="adm-input">'
-      + ['free','creator','operator','studio'].map(function(p){ return '<option>'+p+'</option>'; }).join('')
+      + [['free','Free'],['creator','Starter Lens'],['operator','Pro Lens'],['studio','Operator Lens']].map(function(p){ return '<option value="'+p[0]+'">'+p[1]+'</option>'; }).join('')
       + '</select>'
       + '<button onclick="_admConfirmSetPlan()" class="btn-primary" style="font-size:12px;padding:8px 14px">Set Plan</button>'
       + '</div>';
