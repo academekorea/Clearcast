@@ -2389,7 +2389,7 @@ body.light-mode,[data-theme="light"]{
 .v7-prev-cta a{color:#378add;cursor:pointer;text-decoration:none}
 .v7-main{padding:16px}
 /* ── EXACT MOCKUP CSS — do not prefix these ── */
-.pl-results-wrap{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;color:var(--text);font-size:13px}
+.pl-results-wrap{background:var(--bg2);color:var(--text);font-size:13px}
 .demo{background:#fff;padding:9px 16px;display:flex;align-items:center;gap:7px;border-bottom:0.5px solid #e0e0e0;flex-wrap:wrap}
 .dlbl{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.08em}
 .tier-pill{background:transparent;border:none;color:var(--text3);padding:7px 20px;border-radius:20px;font-size:13px;font-weight:400;cursor:pointer;font-family:inherit;transition:all .15s}
@@ -6992,6 +6992,9 @@ function startAnalysis(audioUrl, epTitle, showName) {
   document.getElementById('atabs').classList.add('on');
   document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
   document.getElementById('apanel-results').classList.add('on');
+  // Expand analyze-wrap to full width when analysis runs
+  var _aw = document.querySelector('.analyze-wrap');
+  if (_aw) { _aw.style.maxWidth = 'none'; _aw.style.padding = '0'; }
   renderSkeletonDashboard(audioUrl, epTitle, showName);
 
   var btn=document.getElementById('go-btn');
