@@ -870,7 +870,7 @@ body.player-on .lap{bottom:72px}
 .search-btn:hover{background:var(--bg3)}
 
 /* ── ANALYZE VIEW ── */
-.analyze-wrap{max-width:900px;margin:0 auto;padding:32px 32px}
+.analyze-wrap{max-width:900px;margin:0 auto;padding:32px 32px}.analyze-wrap.analyzing{max-width:none!important;padding:0!important;margin:0!important}
 .analyze-nav-hidden .analyze-wrap{max-width:100%;padding:0}
 .analyze-nav-hidden .analyze-2col-nav{display:none!important}
 .analyze-url-row{display:flex;gap:8px;margin-bottom:16px}
@@ -2389,14 +2389,14 @@ body.light-mode,[data-theme="light"]{
 .v7-prev-cta a{color:#378add;cursor:pointer;text-decoration:none}
 .v7-main{padding:16px}
 /* ── EXACT MOCKUP CSS — do not prefix these ── */
-.pl-results-wrap{background:var(--bg2);color:var(--text);font-size:13px}
+.pl-results-wrap{color:var(--text);font-size:13px}
 .demo{background:#fff;padding:9px 16px;display:flex;align-items:center;gap:7px;border-bottom:0.5px solid #e0e0e0;flex-wrap:wrap}
 .dlbl{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.08em}
 .tier-pill{background:transparent;border:none;color:var(--text3);padding:7px 20px;border-radius:20px;font-size:13px;font-weight:400;cursor:pointer;font-family:inherit;transition:all .15s}
 .tier-pill:hover{color:var(--text);background:rgba(0,0,0,.04)}
 .tier-pill.on{background:var(--navy);color:#fff;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.18)}
-.pl-main{padding:20px 24px;background:var(--bg2)}
-.trow{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+.pl-main{padding:0;background:transparent}
+.trow{display:grid;grid-template-columns:260px 1fr;gap:0;margin-bottom:0;align-items:start}
 .pl-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:13px}
 .artwork{background:#e8e8e8;border-radius:7px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;border:0.5px solid #ddd;overflow:hidden}
 .aicon{width:52px;height:52px;border-radius:9px;background:#1a3050;display:flex;align-items:center;justify-content:center;font-size:20px}
@@ -7017,7 +7017,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
   document.getElementById('apanel-results').classList.add('on');
   // Expand analyze-wrap to full width when analysis runs
   var _aw = document.querySelector('.analyze-wrap');
-  if (_aw) { _aw.style.maxWidth = 'none'; _aw.style.padding = '0'; }
+  if (_aw) { _aw.style.maxWidth = 'none'; _aw.style.padding = '0'; _aw.style.margin = '0'; _aw.classList.add('analyzing'); }
   renderSkeletonDashboard(audioUrl, epTitle, showName);
 
   var btn=document.getElementById('go-btn');
