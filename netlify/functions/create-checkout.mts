@@ -6,11 +6,11 @@ import Stripe from "stripe";
 // After creating products in Stripe, set these in Netlify → Site config → Env vars.
 const PRICE_ENV_MAP: Record<string, string> = {
   creator_monthly:  "STRIPE_STARTER_MONTHLY_ID",
-  creator_yearly:   "STRIPE_STARTER_ANNUAL_ID",
+  creator_annual:   "STRIPE_STARTER_ANNUAL_ID",
   operator_monthly: "STRIPE_PRO_MONTHLY_ID",
-  operator_yearly:  "STRIPE_PRO_ANNUAL_ID",
+  operator_annual:  "STRIPE_PRO_ANNUAL_ID",
   studio_monthly:   "STRIPE_OPERATOR_MONTHLY_ID",
-  studio_yearly:    "STRIPE_OPERATOR_ANNUAL_ID",
+  studio_annual:    "STRIPE_OPERATOR_ANNUAL_ID",
 };
 
 // Human-readable plan names for metadata
