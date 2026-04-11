@@ -236,48 +236,83 @@ function renderResults(data) {
     + (showName ? '<a class="sl sl-podlens" onclick="showView(\'show\');loadShowProfile(\''+showName.toLowerCase().replace(/[^a-z0-9]+/g,\'-\')+\'\',null);return false" href="#">&#127897; Show profile</a>' : '')
     + '</div></div>';
 
-  // Build a rich ~90 second audio briefing script from the full analysis
+  // Build bias-intelligence-first audio briefing — tells listener what to watch for
   function buildBriefingScript(d) {
     var parts = [];
     var ep = d.episodeTitle || 'this episode';
     var show = d.showName || 'this podcast';
     var guest = d.guest && d.guest.name ? d.guest.name : null;
+    var dim = d.dimensions || {};
 
-    // Opening
-    parts.push('Before you listen — here\'s what you should know about ' + ep + (show ? ' from ' + show : '') + '.');
+    // Opening — what this brief is for
+    parts.push('Before you press play — here is what Podlens found about ' + ep + (show ? ', from ' + show : '') + '.');
 
-    // Guest
-    if (guest) {
-      var role = [d.guest.title, d.guest.organization].filter(Boolean).join(' at ');
-      parts.push(guest + (role ? ', ' + role + ',' : '') + ' is the guest.');
-    }
-
-    // Summary
-    if (d.summary) parts.push(d.summary);
-
-    // Bias
+    // Bias verdict — the headline finding
     if (d.biasLabel && d.audioLean) {
-      var lp = d.audioLean.leftPct, rp = d.audioLean.rightPct, cp = d.audioLean.centerPct;
-      parts.push('The episode ' + d.biasLabel.toLowerCase() + ' — ' + lp + '% of the framing leans left, ' + cp + '% is balanced, and ' + rp + '% leans right.');
+      var lp = d.audioLean.leftPct, rp = d.audioLean.rightPct;
+      var dir = lp > rp ? 'left' : rp > lp ? 'right' : 'balanced';
+      var stronger = Math.max(lp, rp);
+      if (stronger >= 40) {
+        parts.push('This episode leans ' + dir + '. ' + stronger + ' percent of the framing pushes in one direction.');
+      } else if (stronger >= 20) {
+        parts.push('The episode has a mild ' + dir + ' lean. Most of it is balanced, but watch for one-sided framing.');
+      } else {
+        parts.push('The framing is mostly balanced across the political spectrum.');
+      }
     }
 
-    // Bias reason
-    if (d.biasReason) parts.push(d.biasReason);
+    // Host credibility — should they trust the host
+    if (dim.hostCredibility) {
+      var hc = dim.hostCredibility;
+      var hLabel = (hc.label || '').toLowerCase();
+      if (hLabel === 'weak' || hLabel === 'low') {
+        parts.push('Host credibility is low. The host rarely challenged the guest. Accept claims with caution and verify key statistics independently.');
+      } else if (hLabel === 'moderate') {
+        parts.push('The host pushes back sometimes but lets some significant claims pass unchallenged. Stay critical on the big numbers.');
+      } else {
+        parts.push('Host credibility is strong. The host holds the guest to evidential standards throughout.');
+      }
+    }
 
-    // Top flags
-    var flags = (d.flags || []).slice(0, 3);
+    // Omission risk — what the listener won't hear
+    if (dim.omissionRisk) {
+      var or = dim.omissionRisk;
+      var orLabel = (or.label || '').toLowerCase();
+      if (orLabel === 'high') {
+        var ev = (or.evidence || [])[0];
+        parts.push('Omission risk is high. Important context is missing from this episode.' + (ev ? ' Specifically: ' + ev : ''));
+      } else if (orLabel === 'medium') {
+        parts.push('Some relevant context is missing, but nothing that materially distorts the picture.');
+      }
+    }
+
+    // Source diversity — is it one-sided sourcing
+    if (dim.sourceDiversity) {
+      var sd = dim.sourceDiversity;
+      var sdLabel = (sd.label || '').toLowerCase();
+      if (sdLabel === 'weak' || sdLabel === 'low') {
+        parts.push('Source diversity is weak. This episode relies on a single perspective. You are hearing one side of a larger conversation.');
+      }
+    }
+
+    // Top flags — specific things to watch for
+    var flags = (d.flags || []).filter(function(f) {
+      return f.type === 'fact-check' || f.type === 'omission' || f.type === 'framing';
+    }).slice(0, 2);
     if (flags.length) {
-      parts.push('A few things worth knowing: ' + flags.map(function(f) { return f.detail || f.title; }).join(' Also, '));
+      parts.push('Two things to watch for as you listen: ' + flags.map(function(f, i) {
+        return (i === 0 ? 'First, ' : 'Second, ') + (f.detail || f.title || '');
+      }).join(' '));
     }
 
-    // Closing
-    parts.push('That\'s your briefing. Now you know what to listen for.');
+    // Closing — actionable
+    parts.push('Now you know what to listen for. Stay critical.');
 
     return parts.join(' ').replace(/'/g, '\u2019').replace(/"/g, '');
   }
 
   var briefingScript = data.jobId === 'demo'
-    ? 'Before you listen — here\'s what you should know about this episode. Jensen Huang, CEO of NVIDIA, joins Lex Fridman for a two-hour conversation on AI infrastructure, CUDA, and the future of computing. The episode leans slightly left — about 38% of the framing uses progressive regulatory language, while 21% pushes back with free-market arguments. Four moments specifically push the bias left: Jensen frames government oversight as necessary for AI safety, emphasizes the environmental cost of model training, and argues that big tech cannot self-regulate. Two moments push right: he defends free-market innovation and argues that export controls are counterproductive. Worth knowing — the host rarely challenged Jensen\u2019s self-reported market share figures, and there is no mention of NVIDIA\u2019s ongoing antitrust scrutiny. Three sponsor segments are editorially integrated rather than clearly separated. On host trust, Jensen scores 7.2 out of 10. If you want balance, look for perspectives on AI regulation costs and NVIDIA\u2019s market dominance risks. That\u2019s your briefing. Now you know what to listen for.'
+    ? 'Before you press play \u2014 here is what Podlens found about this episode with Jensen Huang from Lex Fridman Podcast. The episode has a mild left lean. About 38 percent of the framing uses progressive regulatory language, while 21 percent pushes back with free-market arguments. Host credibility is strong overall, but Lex Fridman rarely challenged Jensen\u2019s self-reported market share figures. Key stat: Jensen claimed over 80 percent of AI training compute \u2014 independent estimates put it at 65 to 70 percent. That was never questioned. Omission risk is high. NVIDIA\u2019s active antitrust scrutiny in the EU and US is never mentioned. The 40 billion dollar ARM acquisition failure is also absent, despite a full discussion of NVIDIA\u2019s strategic bets. Three sponsor segments are editorially integrated rather than clearly separated from content. Two things to watch for as you listen: First, when market share figures are cited, they are not sourced. Second, government regulation is framed as necessary without presenting the counterargument. Now you know what to listen for. Stay critical.'
     : buildBriefingScript(data);
 
   briefingScript = briefingScript.replace(/'/g, '\u2019').replace(/"/g, '&quot;');
