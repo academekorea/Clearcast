@@ -372,11 +372,25 @@ export default async (req: Request, context: Context) => {
     const cached = await store.get(canonKey, { type: "json" }) as any;
     if (cached?.status === "complete" && cached?.biasScore !== undefined) {
       console.log("[analyze] community cache hit:", canonical);
-      // Increment community counter
+      const newCount = (cached.analyzeCount || 0) + 1;
+      // Increment community counter in Blobs
       try {
-        await store.setJSON(canonKey, { ...cached, analyzeCount: (cached.analyzeCount || 0) + 1, lastRequestedAt: Date.now() });
+        await store.setJSON(canonKey, { ...cached, analyzeCount: newCount, lastRequestedAt: Date.now() });
       } catch {}
-      return new Response(JSON.stringify({ jobId: cached.jobId, fromCache: true, communityCount: cached.analyzeCount || 1 }), {
+      // Increment analyze_count in Supabase (non-blocking)
+      try {
+        const sbUrl = Netlify.env.get("SUPABASE_URL");
+        const sbKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+        if (sbUrl && sbKey) {
+          const { createClient } = await import("@supabase/supabase-js");
+          const sb = createClient(sbUrl, sbKey, { auth: { persistSession: false } });
+          await sb.from("analyses").update({
+            analyze_count: newCount,
+            last_analyzed_at: new Date().toISOString(),
+          }).eq("canonical_key", canonical);
+        }
+      } catch {}
+      return new Response(JSON.stringify({ jobId: cached.jobId, fromCache: true, communityCount: newCount }), {
         status: 200, headers: { "Content-Type": "application/json" },
       });
     }
