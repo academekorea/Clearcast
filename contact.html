@@ -6,12 +6,22 @@
 <title>Contact — PodLens</title>
 <link rel="icon" href="/favicon-32x32.png">
 <style>
+.pl-lockup{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.pl-lockup-icon{width:28px;height:28px;flex-shrink:0;border-radius:6px;display:block}
+.pl-lockup-divider{width:1px;height:30px;background:rgba(255,255,255,.2);flex-shrink:0}
+.pl-lockup-text{display:flex;flex-direction:column;gap:3px;line-height:1}
+.pl-lockup-wm{font-family:'Playfair Display',Georgia,serif;font-size:16px;line-height:1;color:var(--navy);letter-spacing:0;display:block}
+[data-theme="dark"] .pl-lockup-wm{color:var(--text)}
+.pl-wm-pod{font-weight:400}
+.pl-wm-lens{font-weight:700}
+.pl-lockup-tagline{display:block;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;font-size:9.5px;color:var(--text3);letter-spacing:.02em;line-height:1.3;white-space:nowrap}
+@media(max-width:480px){.pl-lockup-divider,.pl-lockup-text{display:none}.pl-lockup-icon{width:30px;height:30px}}
+
   *{box-sizing:border-box;margin:0;padding:0}
   :root{--navy:#0a1a20;--teal:#0d7377;--bg:#f7f6f2;--bg2:#fff;--text:#111827;--text2:#374151;--text3:#6b7280;--border:#e5e7eb;--r:8px;--ff:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;--ffs:'Georgia',serif}
   body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh}
   .nav{background:var(--navy);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-  .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-family:var(--ffs);font-size:16px;font-weight:700;letter-spacing:.06em}
-  .nav-logo img{border-radius:4px}
+    .nav-logo img{border-radius:4px}
   .nav-back{color:rgba(255,255,255,.6);font-size:13px;text-decoration:none;transition:color .15s}
   .nav-back:hover{color:#fff}
   .page{max-width:520px;margin:0 auto;padding:56px 24px 80px}
@@ -41,9 +51,13 @@
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-logo">
-    <img src="/favicon-32x32.png" width="28" height="28" alt="">
-    <span><span style="font-weight:400">POD</span>LENS</span>
+  <a class="pl-lockup" href="/" aria-label="Podlens home">
+    <img src="/favicon.svg" class="pl-lockup-icon" alt="Podlens" width="28" height="28">
+    <span class="pl-lockup-divider"></span>
+    <span class="pl-lockup-text">
+      <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
+      <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
+    </span>
   </a>
   <a href="/" class="nav-back">← Back</a>
 </nav>
