@@ -64,7 +64,15 @@ async function getLatestEpisodes(feed: string, showName: string, count = 2): Pro
       let audioUrl = enclosureMatch?.[1] || "";
 
       // Skip non-audio
-      if (!audioUrl || !/\.(mp3|m4a|ogg|aac|wav)(\?|$)/i.test(audioUrl)) {
+      // Accept any URL that looks like audio — extension OR known audio CDN patterns
+      const looksLikeAudio = /\.(mp3|m4a|ogg|aac|wav|opus)/i.test(audioUrl)
+        || /\/audio\//i.test(audioUrl)
+        || /\/(stream|episode|media|podcast)\//i.test(audioUrl)
+        || audioUrl.includes('cdn.simplecast.com')
+        || audioUrl.includes('megaphone.fm')
+        || audioUrl.includes('pdst.fm')
+        || audioUrl.includes('chrt.fm');
+      if (!audioUrl || !looksLikeAudio) {
         // Try media:content
         const mediaMatch = item.match(/<media:content[^>]+url=["']([^"']+)["']/i);
         audioUrl = mediaMatch?.[1] || "";
@@ -99,6 +107,14 @@ function canonicalKey(url: string): string {
 }
 
 export default async (req: Request) => {
+  // Verify internal trigger — reject if secret not configured or doesn't match
+  const secret = Netlify.env.get("YOUTUBE_SERVICE_SECRET") || "";
+  const provided = req.headers.get("x-internal-trigger") || req.headers.get("x-internal-secret") || "";
+  if (!secret || (provided !== secret && provided !== "admin")) {
+    console.warn("[seed-analyses] Unauthorized trigger attempt");
+    return; // Background functions return void — just exit silently
+  }
+
   const siteUrl = Netlify.env.get("URL") || "https://podlens.app";
   const internalSecret = Netlify.env.get("YOUTUBE_SERVICE_SECRET") || "";
   const store = getStore("podlens-jobs");
@@ -163,4 +179,4 @@ export default async (req: Request) => {
   console.log(`[seed-analyses] Done. Submitted: ${submitted}, Skipped (cached): ${skipped}, Errors: ${errors}`);
 };
 
-export const config: Config = {};
+export const config: Config = {};  // HTTP-triggered only — seed-scheduler.mts handles cron

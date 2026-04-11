@@ -3469,9 +3469,10 @@ body.light-mode,[data-theme="light"]{
       <h1 style="font-family:var(--ffs);font-size:clamp(32px,4vw,48px);font-weight:700;line-height:1.1;color:var(--text);margin-bottom:12px;letter-spacing:-.02em">Know what you&rsquo;re<br><em style="font-style:italic;color:var(--navy)">actually listening to.</em></h1>
       <p style="font-size:17px;color:var(--text2);margin-bottom:32px;line-height:1.6">Paste any YouTube, Spotify, Apple Podcasts, or RSS URL below.</p>
       <div style="display:flex;border:1.5px solid var(--border2);border-radius:12px;overflow:hidden;background:var(--bg2);margin-bottom:10px;transition:border-color .15s" onfocusin="this.style.borderColor='var(--navy)'" onfocusout="this.style.borderColor='var(--border2)'">
-        <input type="text" id="url-input" class="url-input" placeholder="Paste a YouTube, Spotify, Apple Podcasts, RSS, or .mp3 URL" autocomplete="url" style="flex:1;padding:16px 20px;font-size:15px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none"/>
+        <input type="text" id="url-input" class="url-input" placeholder="Paste a YouTube, Spotify, Apple Podcasts, RSS, or .mp3 URL" autocomplete="url" oninput="_urlInputHint(this.value)" style="flex:1;padding:16px 20px;font-size:15px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none"/>
         <button id="go-btn" class="go-btn" onclick="handleAnalyze()" style="padding:14px 28px;background:var(--navy);color:#fff;border:none;cursor:pointer;font-size:14px;font-weight:600;font-family:var(--ff);white-space:nowrap;transition:opacity .15s;border-radius:0 10px 10px 0">Analyze &rarr;</button>
       </div>
+      <div id="url-hint" style="min-height:22px;margin-bottom:6px;font-size:12px;text-align:left;padding:0 4px"></div>
       <p style="font-size:12px;color:var(--text3)">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
     </div>
     <div class="analyze-url-row" style="display:none">
@@ -9236,6 +9237,70 @@ function reRunAnalysis() {
   showView('analyze');
   document.getElementById('url-input').value = data.url;
   startAnalysis(data.url, data.episodeTitle || '', data.showName || '');
+}
+
+
+// ── URL input smart hints ─────────────────────────────────────────────────────
+function _urlInputHint(val) {
+  var el = document.getElementById('url-hint');
+  if (!el) return;
+  val = (val || '').trim();
+  if (!val) { el.innerHTML = ''; return; }
+
+  var hint = '', color = 'var(--text3)', icon = '';
+
+  // YouTube video — best case
+  if (/youtube\.com\/watch\?v=|youtu\.be\/[a-zA-Z0-9_-]{11}/.test(val)) {
+    icon = '✓'; color = '#16a34a';
+    hint = 'YouTube video URL — works great.';
+
+  // YouTube channel/playlist — warn, suggest RSS
+  } else if (/youtube\.com\/(channel|c|@|playlist)/.test(val) || /youtube\.com\/?$/.test(val)) {
+    icon = '⚠'; color = '#d97706';
+    hint = 'YouTube channel URL — try pasting a specific video URL instead for best results. Or use the RSS feed if available.';
+
+  // Spotify episode — good
+  } else if (/open\.spotify\.com\/episode\//.test(val)) {
+    icon = '✓'; color = '#16a34a';
+    hint = 'Spotify episode URL — works great.';
+
+  // Spotify show — we'll find latest episode
+  } else if (/open\.spotify\.com\/show\//.test(val)) {
+    icon = '◎'; color = '#185FA5';
+    hint = 'Spotify show URL — we'll analyze the latest episode. To pick a specific one, paste the episode URL.';
+
+  // Apple Podcasts episode
+  } else if (/podcasts\.apple\.com/.test(val) && /\?i=/.test(val)) {
+    icon = '✓'; color = '#16a34a';
+    hint = 'Apple Podcasts episode — works great.';
+
+  // Apple Podcasts show
+  } else if (/podcasts\.apple\.com/.test(val)) {
+    icon = '◎'; color = '#185FA5';
+    hint = 'Apple Podcasts show — we'll pick the latest episode. Paste a specific episode URL to choose one.';
+
+  // RSS feed
+  } else if (/\.xml$|\/feed|\/rss|simplecast\.com|megaphone\.fm|feeds\.npr\.org|anchor\.fm\/s/.test(val)) {
+    icon = '✓'; color = '#16a34a';
+    hint = 'RSS feed — works great. We'll analyze the latest episode.';
+
+  // Direct MP3/audio file
+  } else if (/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(val)) {
+    icon = '✓'; color = '#16a34a';
+    hint = 'Direct audio file — works great.';
+
+  // Looks like a URL but unrecognized
+  } else if (/^https?:\/\//.test(val)) {
+    icon = '?'; color = '#d97706';
+    hint = 'Unrecognized URL — we'll try to resolve it. If it fails, try finding the RSS feed or a direct episode link.';
+
+  // Not a URL yet
+  } else if (val.length > 3) {
+    icon = '↩'; color = 'var(--text3)';
+    hint = 'Paste a full URL starting with https://';
+  }
+
+  el.innerHTML = hint ? '<span style="color:'+color+';font-weight:500">'+icon+'</span> <span style="color:'+color+'">'+hint+'</span>' : '';
 }
 
 function toggleDimCard(card) {
