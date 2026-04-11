@@ -4166,6 +4166,10 @@ function toggleUserMenu() {
   var d = document.getElementById('user-dropdown');
   if (d) d.classList.toggle('on');
 }
+function closeUserMenu() {
+  var d = document.getElementById('user-dropdown');
+  if (d) d.classList.remove('on');
+}
 document.addEventListener('click', function(e) {
   var d = document.getElementById('user-dropdown');
   if (d && !d.contains(e.target) && e.target.id !== 'avatar-btn' && !e.target.closest('#avatar-btn')) d.classList.remove('on');
@@ -4411,6 +4415,7 @@ function showToast(msg, duration) {
   if (_toastTimer) clearTimeout(_toastTimer);
   _toastTimer = setTimeout(function() { el.classList.remove('on'); }, duration);
 }
+var plToast = showToast;
 
 // ── PLAN ENFORCEMENT ──
 function enforcePlanRules() {
