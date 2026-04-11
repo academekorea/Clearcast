@@ -248,7 +248,9 @@ export default async (req: Request) => {
         signal: AbortSignal.timeout(60000),
       });
       if (claudeRes.ok) break;
-      throw new Error(`Claude HTTP ${claudeRes.status}`);
+      const errBody = await claudeRes.text().catch(() => "");
+      console.error(`[status] Claude HTTP ${claudeRes.status}: ${errBody}`);
+      throw new Error(`Claude HTTP ${claudeRes.status}: ${errBody}`);
     } catch (e) {
       claudeErr = e;
       console.error(`[status] Claude attempt ${attempt + 1} failed:`, e);
