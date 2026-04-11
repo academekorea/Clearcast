@@ -50,75 +50,7 @@ const PLACEHOLDERS = [
   },
 ];
 
-  {
-    show_name: "지식인의 사랑방",
-    host: "",
-    episode_title: "AI와 한국 사회의 미래",
-    episode_date: "",
-    bias_label: "중립적",
-    bias_score: 50,
-    bias_direction: "balanced",
-    top_finding: "한국의 시사와 문화를 균형 있게 다루는 팟캐스트",
-    show_artwork: "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/50/b9/1d/50b91d16-7f9d-f41e-12a5-a7ef7b7bfcf0/mza_16754016.jpg/600x600bb.jpg",
-    analysis_url: null,
-    source_type: "rss",
-    is_placeholder: true,
-  },
-  {
-    slug: "sisa-in",
-    show_name: "시사인 팟캐스트",
-    host: "시사인",
-    episode_title: "총선 이후 한국 정치의 변화",
-    episode_date: "",
-    bias_label: "약간 좌편향",
-    bias_score: 38,
-    bias_direction: "left",
-    top_finding: "진보적 관점에서 한국 정치 이슈를 심층 분석하는 시사 팟캐스트",
-    show_artwork: "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/7a/e1/88/7ae18843-6e4b-0e75-0e8a-6e7b66f17a15/mza_15784413.jpg/600x600bb.jpg",
-    analysis_url: null,
-    source_type: "rss",
-    is_placeholder: true,
-  },
-  {
-    slug: "news-factory",
-    show_name: "뉴스공장",
-    host: "김어준",
-    episode_title: "오늘의 이슈 분석",
-    episode_date: "",
-    bias_label: "좌편향",
-    bias_score: 28,
-    bias_direction: "left",
-    top_finding: "진보 성향의 시사 논평으로 현 정치 상황을 비판적으로 해석",
-    show_artwork: "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/6a/0a/fc/6a0afc24-4e4d-38c9-5aad-a2c5e7d78c7a/mza_3462780.jpg/600x600bb.jpg",
-    analysis_url: null,
-    source_type: "rss",
-    is_placeholder: true,
-  },
-];
 
-export default async (req: Request) => {
-  const url = new URL(req.url);
-  // const region = req.headers.get("x-pl-region") || url.searchParams.get("region") || "INTL";
-
-  const store = getStore("podlens-blobs");
-  const showcases: any[] = [];
-
-  // Always exactly 3 slugs
-  const slugs = ["jre", "lex-fridman", "the-daily"];
-
-  const placeholderMap: Record<string, any> = {};
-  for (const p of PLACEHOLDERS) placeholderMap[p.slug] = p;
-
-  for (const slug of slugs) {
-    try {
-      const card = await store.get(`showcase-card-${slug}`, { type: "json" }) as any;
-      if (card && card.show_name && !card.is_placeholder) {
-        showcases.push({ ...card, slug });
-        continue;
-      }
-    } catch {}
-    showcases.push(placeholderMap[slug] || { slug, show_name: slug, is_placeholder: true });
-  }
 
   return new Response(JSON.stringify({ showcases: showcases.slice(0, 3) }), {
     status: 200,

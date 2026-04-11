@@ -312,4 +312,4 @@ export default async (_req: Request) => {
   });
 };
 
-export const config: Config = { schedule: "0 * * * *"  // Hourly — checks smart queue shows for new episodes };
+export const config: Config = { schedule: "0 * * * *" }; // Hourly — checks smart queue shows for new episodes

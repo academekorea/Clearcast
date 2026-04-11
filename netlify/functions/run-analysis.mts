@@ -218,7 +218,7 @@ export default async (req: Request) => {
 
         // Also write to community cache (canon key) for instant future lookups
         if (job.canonicalKey) {
-          const canonKey = \`canon:\${job.canonicalKey}\`;
+          const canonKey = `canon:${job.canonicalKey}`;
           await store.setJSON(canonKey, {
             ...result,
             analyzeCount: 1,
