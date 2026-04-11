@@ -27,14 +27,14 @@ html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.7}
 a{color:var(--navy)}[data-theme="dark"] a{color:inherit}
 
-nav{display:flex;align-items:center;padding:0 32px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
 .nav-logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;margin-right:auto}
 .nav-logo img{width:28px;height:28px;border-radius:6px}
 .nav-logo-name{font-family:var(--ffs);font-size:18px;color:var(--navy);font-weight:700}
 [data-theme="dark"] .nav-logo-name{color:var(--text)}
 .nav-link{padding:8px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:4px;transition:background .15s,color .15s;font-weight:400}
 .nav-link:hover{background:var(--bg3);color:var(--text)}
-.nav-cta{padding:8px 18px;background:var(--navy);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--ff);text-decoration:none;transition:opacity .15s}
+.nav-cta{padding:8px 20px;background:var(--navy);color:#fff;border:none;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);text-decoration:none;transition:opacity .15s}
 .nav-cta:hover{opacity:.88}
 
 main{max-width:800px;margin:0 auto;padding:80px 32px 100px}
@@ -76,7 +76,6 @@ main{max-width:800px;margin:0 auto;padding:80px 32px 100px}
   .pillars{grid-template-columns:1fr}
   .values-grid{grid-template-columns:1fr}
   main{padding:56px 20px 80px}
-  nav{padding:0 20px}
 }
 
 /* ── FOOTER ── */
@@ -105,9 +104,10 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
     <img src="/favicon.svg" alt="Podlens">
     <span class="nav-logo-name">PODLENS</span>
   </a>
+  <a href="/" class="nav-link">Discover</a>
   <a href="/how-it-works.html" class="nav-link">How it works</a>
   <a href="/pricing.html" class="nav-link">Pricing</a>
-  <a href="/" class="nav-cta">Launch app</a>
+  <a href="/" class="nav-cta">Sign in / up</a>
 </nav>
 
 <main>
