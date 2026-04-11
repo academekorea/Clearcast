@@ -5687,21 +5687,58 @@ function discSetTab(tab, btn) {
   discRenderEpisodes();
 }
 
-function discSearch(q) {
+function discSearch(q, isLive) {
   if (!q || !q.trim()) return;
   q = q.trim();
   // If it looks like a URL, open show profile
   if (q.startsWith('http')) { showView('show'); loadShowProfile(q.toLowerCase().replace(/[^a-z0-9]+/g,'-'), q); return; }
-  // Otherwise: update search input and filter discover content
   var inp = document.getElementById('disc-search-input');
-  if (inp) inp.value = q;
-  // Filter shows by keyword
+  if (inp && !isLive) inp.value = q;
   var el = document.getElementById('disc-shows-row');
   var epEl = document.getElementById('disc-ep-row');
   var lower = q.toLowerCase();
+  // Always show curated matches instantly
   var matches = CURATED_SHOWS.filter(function(s){
-    return s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || s.cat.toLowerCase().includes(lower);
+    return s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || (s.cat||'').toLowerCase().includes(lower);
   });
+  // Also hit iTunes Search API for real results
+  var itunesUrl = 'https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=podcast&limit=8&entity=podcast';
+  if (el && !matches.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:12px 0">Searching iTunes…</div>';
+  }
+  fetch(itunesUrl)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.results || !d.results.length) {
+        if (el && !matches.length) el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:12px 0">No results for "'+_escHtml(q)+'"</div>';
+        return;
+      }
+      var results = d.results.map(function(r){
+        return { name: r.collectionName||r.trackName||'', artist: r.artistName||'', artwork: r.artworkUrl600||r.artworkUrl100||'', feedUrl: r.feedUrl||'', bias: null };
+      }).filter(function(r){ return r.name && r.feedUrl; });
+      // Merge curated (with bias data) + iTunes results (deduped)
+      var curatedNames = matches.map(function(s){ return s.name.toLowerCase(); });
+      var itunesOnly = results.filter(function(r){ return !curatedNames.includes(r.name.toLowerCase()); });
+      var merged = matches.concat(itunesOnly).slice(0,6);
+      if (el) {
+        el.innerHTML = merged.map(function(s) {
+          var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+          var safeUrl = (s.feedUrl||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
+          var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-show-art"></div>';
+          return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+_escHtml(s.name)+'</div><div class="disc-show-sub">'+_escHtml(s.artist)+'</div>'+_biasMini(s.bias)+'</div>';
+        }).join('');
+      }
+    }).catch(function(){
+      // iTunes failed — fall back to curated only
+      if (el && matches.length) {
+        el.innerHTML = matches.slice(0,4).map(function(s) {
+          var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+          var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+          var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
+          return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'</div>';
+        }).join('');
+      }
+    });
   if (matches.length === 0) matches = CURATED_SHOWS.slice(0,4);
   if (el) {
     el.innerHTML = matches.slice(0,4).map(function(s) {
@@ -5881,21 +5918,27 @@ function discRenderRecentFeed(el) {
 
 
 
+var _discSearchTimer = null;
 function discLiveSearch(q) {
   if (!q || q.length < 2) return;
-  // Lightweight live preview — filter CURATED_SHOWS and show results
+  // First: instant results from CURATED_SHOWS
   var el = document.getElementById('disc-shows-row');
   if (!el) return;
-  var results = CURATED_SHOWS.filter(function(s){
-    return s.name.toLowerCase().includes(q.toLowerCase()) || s.artist.toLowerCase().includes(q.toLowerCase());
+  var lower = q.toLowerCase();
+  var curated = CURATED_SHOWS.filter(function(s){
+    return s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || (s.cat||'').includes(lower);
   });
-  if (!results.length) return;
-  el.innerHTML = results.slice(0,4).map(function(s) {
-    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
-    var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
-    return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'</div>';
-  }).join('');
+  if (curated.length) {
+    el.innerHTML = curated.slice(0,4).map(function(s) {
+      var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+      var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
+      return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'</div>';
+    }).join('');
+  }
+  // Then: debounced iTunes search for anything beyond curated
+  clearTimeout(_discSearchTimer);
+  _discSearchTimer = setTimeout(function() { discSearch(q, true); }, 400);
 }
 
 function loadDiscTrendingNews() {
