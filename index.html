@@ -2861,120 +2861,108 @@ body.light-mode,[data-theme="light"]{
           </div>
 
 
-          <!-- 6-Dimension Intelligence (Starter Lens+) -->
+          <!-- 6-Dimension Intelligence -->
           <div class="sec" id="sia-6d-section">
-            <div class="seclbl">6-Dimension intelligence <span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px" id="sia-6d-hint">&middot; tap any row for evidence</span></div>
-            <div id="sia-6d-rows" style="display:flex;flex-direction:column;gap:0">
+            <div class="seclbl">Credibility check <span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px" id="sia-6d-hint">&middot; tap any row to see evidence</span></div>
+            <div id="sia-6d-rows">
 
-              <!-- Political Lean -->
-              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="padding:10px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-                  <span style="font-size:13px">⚖️</span>
-                  <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">Political lean</span>
-                  <span class="sia-dim-lbl" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:#fde8e722;color:#b83228">Slight left</span>
-                  <span style="font-size:14px;color:var(--text3);transition:transform .2s" class="sia-dim-arr">›</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div style="width:38%;height:100%;background:#e0352b;border-radius:3px"></div></div>
-                </div>
-                <div class="sia-dim-evidence" style="display:none;margin-top:8px;display:none;flex-direction:column;gap:4px">
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #e0352b;border-radius:2px">&ldquo;We need governments to be active participants in shaping this technology.&rdquo;</div>
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #e0352b;border-radius:2px">&ldquo;The environmental cost of training a single model is equivalent to hundreds of flights.&rdquo;</div>
+              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
+                <div style="width:8px;height:8px;border-radius:50%;background:#e0352b;flex-shrink:0;margin-top:4px"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <span style="font-size:12px;font-weight:600;color:var(--text)">Political lean &mdash; <span style="font-weight:400;color:#e0352b">slight left</span></span>
+                    <span style="font-size:14px;color:var(--text3);transition:transform .2s;flex-shrink:0" class="sia-dim-arr">›</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:2px">4 moments used regulatory framing. 2 pushed back with free-market arguments.</div>
+                  <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:5px;margin-top:8px">
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #e0352b">&ldquo;We need governments to be active participants in shaping this technology.&rdquo;</div>
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #e0352b">&ldquo;The environmental cost of training a single model is equivalent to hundreds of flights.&rdquo;</div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Factual Density -->
-              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="padding:10px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-                  <span style="font-size:13px">🔬</span>
-                  <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">Factual density</span>
-                  <span class="sia-dim-lbl" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:#d9780022;color:#d97800">Medium</span>
-                  <span style="font-size:14px;color:var(--text3);transition:transform .2s" class="sia-dim-arr">›</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div style="width:55%;height:100%;background:#d97800;border-radius:3px"></div></div>
-                </div>
-                <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:4px;margin-top:8px">
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #d97800;border-radius:2px">&ldquo;We supply over 80% of AI training compute&rdquo; — stated without citing source (est. 65–70%)</div>
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #d97800;border-radius:2px">&ldquo;CUDA took 10 years to pay off&rdquo; — biographical claim, no external source cited</div>
+              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
+                <div style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;margin-top:4px"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <span style="font-size:12px;font-weight:600;color:var(--text)">Factual density &mdash; <span style="font-weight:400;color:#d97706">medium</span></span>
+                    <span style="font-size:14px;color:var(--text3);transition:transform .2s;flex-shrink:0" class="sia-dim-arr">›</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:2px">Several major claims stated as fact without source. Key market share figures unverified.</div>
+                  <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:5px;margin-top:8px">
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #d97706">&ldquo;We supply over 80% of AI training compute&rdquo; &mdash; no source cited. Independent estimates: 65&ndash;70%.</div>
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #d97706">&ldquo;CUDA took 10 years to pay off&rdquo; &mdash; biographical claim, no external source.</div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Source Diversity -->
-              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="padding:10px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-                  <span style="font-size:13px">🌐</span>
-                  <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">Source diversity</span>
-                  <span class="sia-dim-lbl" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:#ea580c22;color:#ea580c">Weak</span>
-                  <span style="font-size:14px;color:var(--text3);transition:transform .2s" class="sia-dim-arr">›</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div style="width:28%;height:100%;background:#ea580c;border-radius:3px"></div></div>
-                </div>
-                <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:4px;margin-top:8px">
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #ea580c;border-radius:2px">Single guest interview — no critics, regulators, or competing executives represented</div>
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #ea580c;border-radius:2px">No academic researchers or policy experts cited despite AI regulation claims</div>
+              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
+                <div style="width:8px;height:8px;border-radius:50%;background:#ea580c;flex-shrink:0;margin-top:4px"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <span style="font-size:12px;font-weight:600;color:var(--text)">Source diversity &mdash; <span style="font-weight:400;color:#ea580c">weak</span></span>
+                    <span style="font-size:14px;color:var(--text3);transition:transform .2s;flex-shrink:0" class="sia-dim-arr">›</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:2px">Single-guest interview. No regulators, critics, or independent researchers represented.</div>
+                  <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:5px;margin-top:8px">
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #ea580c">No critics of NVIDIA's market dominance included despite episode covering antitrust-adjacent topics.</div>
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #ea580c">No academic researchers or policy experts cited despite AI regulation claims.</div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Framing Patterns -->
-              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="padding:10px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-                  <span style="font-size:13px">🗣️</span>
-                  <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">Loaded language</span>
-                  <span class="sia-dim-lbl" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:#d9780022;color:#d97800">Moderate</span>
-                  <span style="font-size:14px;color:var(--text3);transition:transform .2s" class="sia-dim-arr">›</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div style="width:52%;height:100%;background:#d97800;border-radius:3px"></div></div>
-                </div>
-                <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:4px;margin-top:8px">
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #d97800;border-radius:2px">&ldquo;We are in a new industrial revolution&rdquo; — emotionally loaded, positions NVIDIA as historically inevitable</div>
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #d97800;border-radius:2px">&ldquo;The market alone can't handle this&rdquo; — assumes market failure, advocacy framing</div>
+              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
+                <div style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;margin-top:4px"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <span style="font-size:12px;font-weight:600;color:var(--text)">Loaded language &mdash; <span style="font-weight:400;color:#d97706">moderate</span></span>
+                    <span style="font-size:14px;color:var(--text3);transition:transform .2s;flex-shrink:0" class="sia-dim-arr">›</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:2px">Emotionally charged framing in ~20% of key claims. More advocacy than neutral reporting.</div>
+                  <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:5px;margin-top:8px">
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #d97706">&ldquo;We are in a new industrial revolution&rdquo; &mdash; positions NVIDIA as historically inevitable, no qualifier.</div>
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #d97706">&ldquo;The market alone can&rsquo;t handle this&rdquo; &mdash; assumes market failure without evidence.</div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Host Credibility -->
-              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="padding:10px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-                  <span style="font-size:13px">🎙️</span>
-                  <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">Host credibility</span>
-                  <span class="sia-dim-lbl" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:#16a34a22;color:#16a34a">High</span>
-                  <span style="font-size:14px;color:var(--text3);transition:transform .2s" class="sia-dim-arr">›</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div style="width:72%;height:100%;background:#16a34a;border-radius:3px"></div></div>
-                </div>
-                <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:4px;margin-top:8px">
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #16a34a;border-radius:2px">Lex Fridman is a credentialed researcher with consistent, long-form interview track record</div>
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #16a34a;border-radius:2px">However: rarely challenges numerical claims — accepted 80% market share without pushback</div>
+              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
+                <div style="width:8px;height:8px;border-radius:50%;background:#16a34a;flex-shrink:0;margin-top:4px"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <span style="font-size:12px;font-weight:600;color:var(--text)">Host credibility &mdash; <span style="font-weight:400;color:#16a34a">high</span></span>
+                    <span style="font-size:14px;color:var(--text3);transition:transform .2s;flex-shrink:0" class="sia-dim-arr">›</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:2px">Credentialed researcher. Consistent long-form track record. But rarely challenges statistics.</div>
+                  <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:5px;margin-top:8px">
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #16a34a">Lex Fridman is a published AI researcher at MIT &mdash; strong baseline credibility.</div>
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #16a34a">Accepted &ldquo;80% market share&rdquo; claim at 44:22 without pushback or request for source.</div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Omission Risk -->
-              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="padding:10px 0;border-bottom:none;cursor:pointer">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-                  <span style="font-size:13px">🕳️</span>
-                  <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">Omission risk</span>
-                  <span class="sia-dim-lbl" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:#ea580c22;color:#ea580c">High</span>
-                  <span style="font-size:14px;color:var(--text3);transition:transform .2s" class="sia-dim-arr">›</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div style="width:78%;height:100%;background:#ea580c;border-radius:3px"></div></div>
-                </div>
-                <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:4px;margin-top:8px">
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #ea580c;border-radius:2px">No mention of NVIDIA's active antitrust scrutiny in EU, US, and China</div>
-                  <div style="font-size:11px;color:#666;font-style:italic;padding:4px 8px;background:#f9f9f7;border-left:2px solid #ea580c;border-radius:2px">$40B ARM acquisition failure never mentioned despite discussing NVIDIA's strategic bets</div>
+              <div class="sia-dim-row" onclick="siaDimToggle(this)" style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:none;cursor:pointer">
+                <div style="width:8px;height:8px;border-radius:50%;background:#ea580c;flex-shrink:0;margin-top:4px"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <span style="font-size:12px;font-weight:600;color:var(--text)">Omission risk &mdash; <span style="font-weight:400;color:#ea580c">high</span></span>
+                    <span style="font-size:14px;color:var(--text3);transition:transform .2s;flex-shrink:0" class="sia-dim-arr">›</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:2px">Major context absent: antitrust scrutiny, ARM acquisition failure, export control impact on revenue.</div>
+                  <div class="sia-dim-evidence" style="display:none;flex-direction:column;gap:5px;margin-top:8px">
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #ea580c">NVIDIA under active antitrust review in EU, US, and China at time of recording &mdash; never mentioned.</div>
+                    <div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid #ea580c">$40B ARM acquisition failure unmentioned despite discussing NVIDIA&rsquo;s strategic track record.</div>
+                  </div>
                 </div>
               </div>
 
             </div>
             <div id="sia-6d-gate" style="margin-top:10px;display:none">
-              <div class="upbar"><span class="uptxt">Evidence quotes unlock with Starter Lens</span><button class="upbtn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
+              <div class="upbar"><span class="uptxt">Evidence unlocks with Starter Lens</span><button class="upbtn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
             </div>
           </div>
 
-          <!-- Findings -->
+                    <!-- Findings -->
           <div class="sec">
             <div class="seclbl">Worth knowing before you listen <span id="sia-findings-hint" style="display:none;font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap any finding to expand</span></div>
             <div class="findings-wrap">
@@ -9068,6 +9056,16 @@ function siaSwitchTab(name, el) {
   document.querySelectorAll('.sia-panel').forEach(function(p){p.classList.remove('on');});
   var panel = document.getElementById('sia-panel-'+name);
   if (panel) panel.classList.add('on');
+}
+
+// For real analysis results in v7-render.js
+function toggleDimRow(row) {
+  var ev = row.querySelector('.v7-dim-evidence');
+  var arr = row.querySelector('.v7-dim-arr');
+  if (!ev) return;
+  var isOpen = ev.style.display === 'flex';
+  ev.style.display = isOpen ? 'none' : 'flex';
+  if (arr) arr.style.transform = isOpen ? '' : 'rotate(90deg)';
 }
 
 function siaDimToggle(row) {

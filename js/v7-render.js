@@ -318,43 +318,118 @@ function renderResults(data) {
   // ── 6-Dimension Intelligence Panel ───────────────────────────────────────
   if (data.dimensions) {
     var dim = data.dimensions;
-    function _dimBar(score, colorHigh, colorLow) {
-      var pct = Math.max(0, Math.min(100, score || 0));
-      var color = pct >= 60 ? colorHigh : pct >= 35 ? '#d97706' : colorLow;
-      return '<div style="flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden">'
-        + '<div style="width:'+pct+'%;height:100%;background:'+color+';border-radius:3px;transition:width .4s"></div></div>';
+
+    function _dimColor(key, label, score) {
+      if (key === 'hostCredibility') {
+        return label === 'Strong' || label === 'High' ? '#16a34a' : label === 'Weak' || label === 'Low' ? '#ea580c' : '#d97706';
+      }
+      if (key === 'politicalLean') {
+        var abs = Math.abs(score || 0);
+        return abs >= 60 ? '#e0352b' : abs >= 25 ? '#d97706' : '#16a34a';
+      }
+      if (key === 'factualDensity' || key === 'sourceDiversity') {
+        return (score||0) >= 60 ? '#16a34a' : (score||0) >= 35 ? '#d97706' : '#ea580c';
+      }
+      // framingPatterns, omissionRisk — high = bad
+      return (score||0) >= 60 ? '#ea580c' : (score||0) >= 35 ? '#d97706' : '#16a34a';
     }
+
+    function _dimSummary(key, d) {
+      var label = (d.label || '').toLowerCase();
+      var ev = (d.evidence || []);
+      // Build a one-line plain English summary from label + first evidence if available
+      var summaries = {
+        politicalLean: function() {
+          if (!label || label === 'center') return 'Framing is mostly balanced across political perspectives.';
+          var dir = label.indexOf('left') >= 0 ? 'left' : 'right';
+          return label.indexOf('far') >= 0
+            ? 'Strongly ' + dir + '-leaning framing throughout. Little balance.'
+            : label.indexOf('lean') >= 0 || label.indexOf('slight') >= 0
+              ? 'Mild ' + dir + '-leaning framing. Some balance present.'
+              : 'Clear ' + dir + '-leaning framing. Opposing views underrepresented.';
+        },
+        factualDensity: function() {
+          if (label === 'high') return 'Most claims are sourced or verifiable. High factual rigor.';
+          if (label === 'low') return 'Many unsourced assertions. Factual claims should be independently verified.';
+          return 'Mix of sourced and unsourced claims. Some assertions lack evidence.';
+        },
+        sourceDiversity: function() {
+          if (label === 'strong') return 'Multiple independent perspectives represented.';
+          if (label === 'weak') return 'Limited source diversity. One primary viewpoint dominates.';
+          return 'Some variety in sources, but key perspectives missing.';
+        },
+        framingPatterns: function() {
+          if (label === 'neutral') return 'Language is mostly neutral and informational.';
+          if (label === 'highly loaded') return 'Frequent use of emotionally charged or advocacy language.';
+          return 'Some loaded framing detected. Blend of neutral and persuasive language.';
+        },
+        hostCredibility: function() {
+          if (label === 'strong' || label === 'high') return 'Host actively challenges claims and cites sources rigorously.';
+          if (label === 'weak' || label === 'low') return 'Host rarely challenges guest. Functions more as platform than interrogator.';
+          return 'Host sometimes pushes back but lets some significant claims pass unchallenged.';
+        },
+        omissionRisk: function() {
+          if (label === 'low') return 'No significant omissions detected. Coverage appears comprehensive.';
+          if (label === 'high') return 'Important context appears absent. Key facts or perspectives not addressed.';
+          return 'Some relevant context missing, but not materially distorting.';
+        }
+      };
+      var fn = summaries[key];
+      return fn ? fn() : (d.label || '');
+    }
+
     var dims6 = [
-      { key:'politicalLean',   label:'Political lean',     icon:'⚖️',  d: dim.politicalLean,   barFn: function(d){ var abs = Math.abs(d.score||0); return _dimBar(abs, '#e0352b', '#378ADD'); } },
-      { key:'factualDensity',  label:'Factual density',    icon:'🔬',  d: dim.factualDensity,  barFn: function(d){ return _dimBar(d.score, '#16a34a', '#ea580c'); } },
-      { key:'sourceDiversity', label:'Source diversity',   icon:'🌐',  d: dim.sourceDiversity, barFn: function(d){ return _dimBar(d.score, '#16a34a', '#ea580c'); } },
-      { key:'framingPatterns', label:'Loaded language',    icon:'🗣️',  d: dim.framingPatterns, barFn: function(d){ return _dimBar(d.score, '#ea580c', '#16a34a'); } },
-      { key:'hostCredibility', label:'Host credibility',   icon:'🎙️',  d: dim.hostCredibility, barFn: function(d){ return _dimBar(d.score, '#16a34a', '#ea580c'); } },
-      { key:'omissionRisk',    label:'Omission risk',      icon:'🕳️',  d: dim.omissionRisk,    barFn: function(d){ return _dimBar(d.score, '#ea580c', '#16a34a'); } },
+      { key:'politicalLean',   d: dim.politicalLean   },
+      { key:'factualDensity',  d: dim.factualDensity  },
+      { key:'sourceDiversity', d: dim.sourceDiversity },
+      { key:'framingPatterns', d: dim.framingPatterns },
+      { key:'hostCredibility', d: dim.hostCredibility },
+      { key:'omissionRisk',    d: dim.omissionRisk    },
     ];
-    html += '<div class="sec"><div class="seclbl">6-Dimension intelligence</div>';
-    html += '<div style="display:flex;flex-direction:column;gap:10px">';
-    dims6.forEach(function(row) {
-      if (!row.d) return;
-      var labelColor = row.d.label === 'High' || row.d.label === 'Heavy' ? '#ea580c'
-        : row.d.label === 'Low' || row.d.label === 'Neutral' ? '#16a34a' : '#d97706';
-      if (row.key === 'hostCredibility') labelColor = row.d.label === 'High' ? '#16a34a' : row.d.label === 'Low' ? '#ea580c' : '#d97706';
-      if (row.key === 'omissionRisk') labelColor = row.d.label === 'High' ? '#ea580c' : row.d.label === 'Low' ? '#16a34a' : '#d97706';
-      html += '<div style="padding:9px 0;border-bottom:0.5px solid #f0f0f0">'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'
-        + '<span style="font-size:13px">' + row.icon + '</span>'
-        + '<span style="font-size:12px;font-weight:600;color:#333;flex:1">' + row.label + '</span>'
-        + '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:' + labelColor + '22;color:' + labelColor + '">' + (row.d.label||'') + '</span>'
-        + '</div>'
-        + '<div style="display:flex;align-items:center;gap:8px">'
-        + row.barFn(row.d)
-        + '</div>'
-        + (showFull && row.d.evidence && row.d.evidence.length ? '<div style="margin-top:5px;display:flex;flex-direction:column;gap:3px">' + row.d.evidence.slice(0, 2).map(function(ev) { return '<div style="font-size:11px;color:#666;font-style:italic;padding:3px 8px;background:#f9f9f7;border-left:2px solid #e0ddd8;border-radius:2px">&ldquo;' + ev + '&rdquo;</div>'; }).join('') + '</div>' : '')
-        + '</div>';
-    });
-    html += '</div>'
-      + (!showFull ? '<div class="upbar" style="margin-top:8px"><span class="uptxt">Dimension notes unlock with Starter Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade →</button></div>' : '')
+
+    var dimLabels = {
+      politicalLean:'Political lean', factualDensity:'Factual density',
+      sourceDiversity:'Source diversity', framingPatterns:'Loaded language',
+      hostCredibility:'Host credibility', omissionRisk:'Omission risk'
+    };
+
+    html += '<div class="sec"><div class="seclbl">Credibility check'
+      + (showFull ? '<span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap to see evidence</span>' : '')
       + '</div>';
+
+    dims6.forEach(function(row, i) {
+      if (!row.d) return;
+      var color = _dimColor(row.key, row.d.label, row.d.score);
+      var isLast = i === dims6.length - 1;
+      var summary = _dimSummary(row.key, row.d);
+      var label = (row.d.label || '').toLowerCase();
+      var name = dimLabels[row.key] || row.key;
+
+      html += '<div class="v7-dim-row" onclick="toggleDimRow(this)" style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:' + (isLast ? 'none' : '0.5px solid #f0f0f0') + ';cursor:pointer">'
+        + '<div style="width:8px;height:8px;border-radius:50%;background:' + color + ';flex-shrink:0;margin-top:4px"></div>'
+        + '<div style="flex:1;min-width:0">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">'
+        + '<span style="font-size:12px;font-weight:600;color:var(--text)">' + name + ' &mdash; <span style="font-weight:400;color:' + color + '">' + label + '</span></span>'
+        + '<span style="font-size:14px;color:#ccc;transition:transform .2s" class="v7-dim-arr">›</span>'
+        + '</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-top:2px;line-height:1.5">' + summary + '</div>';
+
+      if (showFull && row.d.evidence && row.d.evidence.length) {
+        html += '<div class="v7-dim-evidence" style="display:none;flex-direction:column;gap:5px;margin-top:8px">'
+          + row.d.evidence.slice(0, 2).map(function(ev) {
+            return '<div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid ' + color + '">&ldquo;' + ev + '&rdquo;</div>';
+          }).join('')
+          + '</div>';
+      }
+
+      html += '</div></div>';
+    });
+
+    if (!showFull) {
+      html += '<div class="upbar" style="margin-top:8px"><span class="uptxt">Evidence unlocks with Starter Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade →</button></div>';
+    }
+
+    html += '</div>';
   }
 
   // Quick metrics
