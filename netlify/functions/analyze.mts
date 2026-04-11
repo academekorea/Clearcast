@@ -310,7 +310,7 @@ export default async (req: Request, context: Context) => {
   }
 
   const body = await req.json();
-  const { url, episodeTitle: epTitleRaw, showName: showNameRaw, userId } = body;
+  const { url, episodeTitle: epTitleRaw, showName: showNameRaw, userId, userEmail } = body;
   if (!url) {
     return new Response(JSON.stringify({ error: "URL is required" }), {
       status: 400, headers: { "Content-Type": "application/json" },
@@ -319,6 +319,51 @@ export default async (req: Request, context: Context) => {
 
   const store = getStore("podlens-jobs");
   const usersStore = getStore("podlens-users");
+  const { getSupabaseAdmin } = await import("./lib/supabase.js");
+
+  // ── 0. Server-side analysis limit enforcement ─────────────────────────────
+  // Prevents bypassing frontend limits by calling API directly
+  const { userId: limitUserId, userPlan } = body;
+  if (limitUserId && userPlan !== undefined) {
+    const plan = String(userPlan || "free").toLowerCase();
+    const SUPER_ADMIN = Netlify.env.get("SUPER_ADMIN_EMAIL") || "";
+    const isAdmin = userEmail === SUPER_ADMIN;
+
+    if (!isAdmin) {
+      let monthLimit = 0;
+      if (plan === "free") monthLimit = parseInt(Netlify.env.get("FREE_TIER_MONTHLY_ANALYSES") || "4", 10);
+      else if (plan === "creator") monthLimit = 25;
+      // operator, studio, trial = unlimited (monthLimit stays 0)
+
+      if (monthLimit > 0) {
+        // Check usage in Supabase
+        const sb = getSupabaseAdmin();
+        if (sb) {
+          try {
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+            const { count } = await sb
+              .from("analyses")
+              .select("id", { count: "exact", head: true })
+              .eq("user_id", limitUserId)
+              .gte("created_at", monthStart);
+
+            if ((count || 0) >= monthLimit) {
+              return new Response(JSON.stringify({
+                error: "Monthly analysis limit reached",
+                code: "ANALYSIS_LIMIT",
+                limit: monthLimit,
+                plan,
+              }), { status: 429, headers: { "Content-Type": "application/json" } });
+            }
+          } catch (e) {
+            // If Supabase check fails, allow through (don't block on infra issues)
+            console.warn("[analyze] limit check failed:", e);
+          }
+        }
+      }
+    }
+  }
 
   // ── 1. Canonical cache check (community-wide, permanent) ──────────────────
   const canonical = canonicalKey(url);

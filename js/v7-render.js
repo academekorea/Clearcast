@@ -76,7 +76,15 @@ function renderResults(data) {
   var tier;
   if (!u) { tier = _previewTier || 'free'; }
   else if (isAdmin) { tier = 'operator'; }
-  else { var plan = String(enforcePlanRules() || u.plan || 'free').toLowerCase(); tier = (plan === 'trial' || plan === 'studio') ? 'operator' : plan; }
+  else {
+    var plan = String(enforcePlanRules() || u.plan || 'free').toLowerCase();
+    // Map plan keys to display tiers
+    // studio = Operator Lens (full features), trial = operator during trial
+    if (plan === 'studio' || plan === 'trial') tier = 'operator';
+    else if (plan === 'operator') tier = 'operator';
+    else if (plan === 'creator') tier = 'creator';
+    else tier = 'free';
+  }
 
   var c = tier === 'creator', o = tier === 'operator', f = tier === 'free';
   var showFull = c || o;
@@ -341,7 +349,7 @@ function renderResults(data) {
         + '<div style="display:flex;align-items:center;gap:8px">'
         + row.barFn(row.d)
         + '</div>'
-        + (showFull && row.d.note ? '<div style="font-size:10px;color:#999;margin-top:4px;font-style:italic">' + row.d.note + '</div>' : '')
+        + (showFull && row.d.evidence && row.d.evidence.length ? '<div style="margin-top:5px;display:flex;flex-direction:column;gap:3px">' + row.d.evidence.slice(0, 2).map(function(ev) { return '<div style="font-size:11px;color:#666;font-style:italic;padding:3px 8px;background:#f9f9f7;border-left:2px solid #e0ddd8;border-radius:2px">&ldquo;' + ev + '&rdquo;</div>'; }).join('') + '</div>' : '')
         + '</div>';
     });
     html += '</div>'

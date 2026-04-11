@@ -1,35 +1,81 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
-const ANALYSIS_PROMPT = `You are a media literacy expert analyzing a podcast transcript for bias, factual accuracy, and framing patterns.
+const ANALYSIS_PROMPT = `You are a media literacy expert analyzing a podcast transcript across 6 dimensions of bias and credibility.
 
-Analyze the transcript and return a JSON object with this exact structure:
+Analyze the transcript and return a JSON object with this EXACT structure — no extra fields, no markdown:
 {
-  "biasScore": <number from -100 (far left) to +100 (far right)>,
+  "biasScore": <number -100 (far left) to +100 (far right)>,
   "biasLabel": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
+  "dimensions": {
+    "politicalLean": {
+      "score": <-100 to +100>,
+      "label": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
+      "evidence": [<up to 2 short transcript quotes that show this lean, each under 25 words>]
+    },
+    "factualDensity": {
+      "score": <0 to 100, where 100 = all claims sourced>,
+      "label": <"High" | "Medium" | "Low">,
+      "evidence": [<up to 2 examples of sourced or unsourced claims>]
+    },
+    "sourceDiversity": {
+      "score": <0 to 100, where 100 = many diverse sources>,
+      "label": <"Strong" | "Moderate" | "Weak">,
+      "evidence": [<up to 2 notes on sources cited or missing>]
+    },
+    "framingPatterns": {
+      "score": <0 to 100, where 100 = highly loaded language>,
+      "label": <"Neutral" | "Somewhat loaded" | "Highly loaded">,
+      "evidence": [<up to 2 specific loaded phrases or neutral examples>]
+    },
+    "hostCredibility": {
+      "score": <0 to 100, where 100 = very credible>,
+      "label": <"Strong" | "Moderate" | "Weak">,
+      "evidence": [<up to 2 notes on corrections, pushback, or citation quality>]
+    },
+    "omissionRisk": {
+      "score": <0 to 100, where 100 = major omissions>,
+      "label": <"Low" | "Medium" | "High">,
+      "evidence": [<up to 2 topics or perspectives that were missing>]
+    }
+  },
   "factualityLabel": <"Mostly factual" | "Mixed factuality" | "Unreliable">,
-  "omissionRisk": <"Low" | "Med" | "High">,
   "summary": <2-3 sentence plain English summary of what this episode is about and how it leans>,
   "flags": [
     {
       "type": <"fact-check" | "framing" | "omission" | "sponsor-note" | "context">,
       "title": <short description under 15 words>,
-      "detail": <explanation 1-2 sentences, grounded in fact>
+      "detail": <explanation 1-2 sentences, grounded in fact>,
+      "citations": [
+        {
+          "timestamp": <"MM:SS" or "" if unknown>,
+          "quote": <exact short quote from transcript, under 30 words>,
+          "explanation": <why this quote is relevant, 1 sentence>
+        }
+      ]
     }
   ],
   "guest": {
     "name": <string — the main guest or interviewee full name, null if none>,
     "title": <string — their role or title e.g. "CEO, NVIDIA", null if unknown>,
     "organization": <string — their company or organization, null if unknown>
-  }
+  },
+  "hostTrustScore": <0 to 100 — overall host credibility score>,
+  "keyFindings": [
+    {
+      "title": <finding title under 10 words>,
+      "detail": <1-2 sentence explanation>
+    }
+  ]
 }
 
 Rules:
-- Only flag things you are highly confident about
+- Only flag things you are highly confident about based on the transcript
 - Every fact-check flag must be verifiable against known public information
-- Be specific, not vague
-- Maximum 6 flags
-- Return ONLY the JSON, no other text`;
+- Be specific — cite actual words from the transcript where possible
+- Maximum 6 flags, maximum 3 keyFindings
+- All scores are integers
+- Return ONLY the JSON object, no markdown, no preamble`;
 
 export default async (req: Request) => {
   // AssemblyAI sends a POST webhook when transcription completes

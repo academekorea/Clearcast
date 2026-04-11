@@ -4329,9 +4329,9 @@ function checkAnalysisLimit() {
   // Admin always has unlimited access
   if (u.email === 'academekorea@gmail.com' || u.isSuperAdmin) return false;
   var plan = String(u.plan || '').toLowerCase();
-  // Free tier: 3/month, Starter Lens (creator): 25/month, Pro+/Operator+/Studio: unlimited
+  // Free: 4/month, Starter Lens (creator): 25/month, Pro/Operator/Studio: unlimited
   var monthLimit = 0;
-  if (plan === 'free') monthLimit = 3;
+  if (plan === 'free') monthLimit = 4;
   else if (plan === 'creator' || plan === 'starter') monthLimit = 25;
   else return false; // operator, studio, trial: unlimited
   // Reset monthly counter if needed
@@ -6849,8 +6849,14 @@ function startAnalysis(audioUrl, epTitle, showName) {
     // Feed enclosure might not have extension — init anyway
     setTimeout(function() { _arInitNativeAudio(resolvedUrl, {}); }, 50);
   }
-  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:resolvedTitle||undefined,showName:resolvedShow||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free'})})
+  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:resolvedTitle||undefined,showName:resolvedShow||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
     .then(function(d){
+      // Handle server-side analysis limit (429)
+      if (d.code === 'ANALYSIS_LIMIT') {
+        resetBtn();
+        showAnalysisLimitBanner(plUser() || {}, d.limit || 4);
+        return;
+      }
       // Guard: single YouTube video URLs should NEVER show feed lookup/episode picker
       var _isYtVideo = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(audioUrl);
       // ── Fallback: episode picker (Apple/PodcastIndex found a feed) ──
