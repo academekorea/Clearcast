@@ -4048,7 +4048,43 @@ document.addEventListener('DOMContentLoaded', function() {
     var errs = { missing_token: 'Verification link is invalid.', invalid: 'Verification link not found.', used: 'This link has already been used.', expired: 'Verification link has expired — please request a new one.' };
     showToast((errs[params.get('verify_error')] || 'Verification failed.'), 'error');
     history.replaceState({}, '', '/');
-  } window.initLangSwitch(); });
+  }
+
+  // Handle YouTube OAuth callback — sets connected flag in localStorage
+  if (params.get('youtube') === 'connected') {
+    localStorage.setItem('pl-youtube-connected', '1');
+    var ytName = params.get('display_name') || 'YouTube';
+    showToast('✓ ' + ytName + ' connected successfully', 3000);
+    history.replaceState({}, '', window.location.pathname);
+    // Update any connect buttons on screen
+    var ytBtn = document.getElementById('hero-youtube-btn');
+    var ytLabel = document.getElementById('hero-youtube-label');
+    if (ytBtn) ytBtn.classList.add('connected');
+    if (ytLabel) ytLabel.textContent = '✓ YouTube connected';
+  }
+  if (params.get('youtube') === 'error') {
+    var msg = params.get('msg') || 'unknown error';
+    showToast('YouTube connection failed: ' + msg, 4000);
+    history.replaceState({}, '', window.location.pathname);
+  }
+
+  // Handle Spotify OAuth callback — two possible param formats
+  if (params.get('spotify') === 'connected' || params.get('connected') === 'spotify') {
+    localStorage.setItem('pl-spotify-connected', '1');
+    var spName = params.get('display_name') || 'Spotify';
+    showToast('✓ ' + spName + ' connected successfully', 3000);
+    history.replaceState({}, '', window.location.pathname);
+    var spBtn = document.getElementById('hero-spotify-btn');
+    var spLabel = document.getElementById('hero-spotify-label');
+    if (spBtn) spBtn.classList.add('connected');
+    if (spLabel) spLabel.textContent = '✓ Spotify connected';
+    setTimeout(function() {
+      if (typeof openSpotifyConnectedOverlay === 'function') openSpotifyConnectedOverlay();
+    }, 800);
+  }
+
+  window.initLangSwitch();
+});
 
 function initNav() {
   var u = plUser();
