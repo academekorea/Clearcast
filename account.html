@@ -681,7 +681,9 @@ async function init() {
       var sd = await sr.json();
       if (sd.plan) { u.plan = sd.plan; if (sd.currentPeriodEnd) u.currentPeriodEnd = sd.currentPeriodEnd; setPlUser(u); plan = u.plan.toLowerCase(); }
     } catch {}
-    showToast('Plan upgraded — welcome to ' + (u.plan || ''));
+    var _planDisplayNames = { creator:'Starter Lens', operator:'Pro Lens', studio:'Operator Lens', trial:'Trial', free:'Free' };
+    var _upgradedDisplayName = _planDisplayNames[(u.plan||'').toLowerCase()] || u.plan || 'your new plan';
+    showToast('You\'re on ' + _upgradedDisplayName + ' — welcome aboard! ✨');
     var cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete('upgraded');
     cleanUrl.searchParams.delete('session_id');

@@ -319,6 +319,54 @@ export function pilotExpiredEmail(opts: {
   }
 }
 
+export function upgradeEmail(opts: {
+  name: string
+  email: string
+  planName: string
+  price: string
+  foundingApplied: boolean
+  nextBillingDate: string
+}): { subject: string; html: string } {
+  const firstName = opts.name?.split(' ')[0] || 'there'
+  const planLabels: Record<string, string> = {
+    creator: 'Starter Lens', operator: 'Pro Lens', studio: 'Operator Lens'
+  }
+  const displayPlan = planLabels[opts.planName] || opts.planName
+  const foundingNote = opts.foundingApplied
+    ? `<div class="warning" style="margin-bottom:14px"><strong>Founding member price locked in.</strong> You\'re paying ${opts.price}/mo forever — this rate never increases as long as you stay subscribed.</div>`
+    : ''
+  return {
+    subject: `You\'re on ${displayPlan} — welcome aboard`,
+    html: baseTemplate(`
+      <h1 class="h1">You\'re on ${displayPlan}, ${firstName} 🎉</h1>
+      <p>Your subscription is active. Here\'s what\'s now unlocked on your account:</p>
+      ${foundingNote}
+      <div style="background:#f8f8f6;border-radius:6px;padding:14px 16px;margin:14px 0;border:1px solid #e0ddd8">
+        ${opts.planName === 'creator' ? `
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>25 analyses per month</strong></div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>All 6 bias dimensions</strong> with transcript evidence</div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Audio briefings</strong> before you listen</div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Smart queue</strong> + live subtitles</div>
+        ` : opts.planName === 'operator' ? `
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Unlimited analyses</strong></div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Unheard stories</strong> — what the other side isn\'t covering</div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Full transcripts</strong> + timestamp search</div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Show bias trend charts</strong> (30/90/180 days)</div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Deep report + PDF export</strong></div>
+        ` : `
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Everything in Pro Lens</strong></div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>10 team seats</strong></div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Brand monitoring + API access</strong></div>
+          <div style="font-size:13px;margin-bottom:6px">✓ &nbsp;<strong>Bulk scanner</strong> (20 URLs at once)</div>
+        `}
+      </div>
+      <p style="font-size:13px;color:#888">Next billing date: ${opts.nextBillingDate}</p>
+      <a class="btn" href="https://podlens.app">Start analyzing →</a>
+      <p class="muted">Questions? Reply to this email — we read everything.</p>
+    `)
+  }
+}
+
 // ── Send helper ──────────────────────────────────────────────────────────────
 
 export async function sendEmail(opts: {

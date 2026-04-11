@@ -2,7 +2,7 @@ import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import Stripe from "stripe";
 import { getSupabaseAdmin, sbUpsert, sbUpdate, trackEvent } from "./lib/supabase.js";
-import { sendEmail, paymentFailedEmail } from "./lib/email.js";
+import { sendEmail, paymentFailedEmail, upgradeEmail } from "./lib/email.js";
 
 // Internal plan keys → human display names for emails/metadata
 const PLAN_DISPLAY: Record<string, string> = {
@@ -110,6 +110,28 @@ export default async (req: Request) => {
           plan: planName, founding_applied: foundingApplied,
           source: 'stripe_webhook',
         });
+
+        // Send upgrade confirmation email
+        const userEmail = session.customer_details?.email || session.customer_email || '';
+        const userName = session.customer_details?.name || '';
+        if (userEmail) {
+          const nextDate = periodEnd
+            ? new Date(periodEnd).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+            : 'in 30 days';
+          const planPrices: Record<string, string> = {
+            creator: '$4.69', operator: '$12.73', studio: '$32.83'
+          };
+          const price = planPrices[planName] || '';
+          const { subject, html } = upgradeEmail({
+            name: userName,
+            email: userEmail,
+            planName,
+            price,
+            foundingApplied,
+            nextBillingDate: nextDate,
+          });
+          sendEmail({ to: userEmail, subject, html }).catch(() => {});
+        }
         break;
       }
 
