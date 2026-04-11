@@ -9224,6 +9224,38 @@ function startCheckout(planName, billing) {
   .catch(function(){ alert('Could not start checkout. Try again.'); });
 }
 
+
+function restoreConnections(u) {
+  if (!u || !u.id) return;
+  // If already marked connected in localStorage, skip
+  var spotifyAlready = localStorage.getItem('pl-spotify-connected') === '1';
+  var youtubeAlready = localStorage.getItem('pl-youtube-connected') === '1';
+  if (spotifyAlready && youtubeAlready) return;
+
+  // Check server for existing connections
+  fetch('/api/get-connections?userId=' + encodeURIComponent(u.id))
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){
+      if (!d) return;
+      if (d.spotify && !spotifyAlready) {
+        localStorage.setItem('pl-spotify-connected', '1');
+        if (d.spotifyToken) localStorage.setItem('pl-spotify-token-' + u.id, d.spotifyToken);
+        // Update UI
+        var spotifyBtn = document.querySelector('.connect-btn.spotify');
+        var spotifyLabel = document.querySelector('.connect-btn.spotify .connect-btn-label');
+        if (spotifyLabel) spotifyLabel.textContent = '✓ Spotify connected';
+        if (spotifyBtn) spotifyBtn.classList.add('connected');
+      }
+      if (d.youtube && !youtubeAlready) {
+        localStorage.setItem('pl-youtube-connected', '1');
+        var ytBtn = document.querySelector('.connect-btn.youtube');
+        var ytLabel = document.querySelector('.connect-btn.youtube .connect-btn-label');
+        if (ytLabel) ytLabel.textContent = '✓ YouTube connected';
+        if (ytBtn) ytBtn.classList.add('connected');
+      }
+    }).catch(function(){});
+}
+
 function syncPlanFromStripe(u) {
   if (!u || !u.id) return;
   fetch('/api/get-plan?userId=' + encodeURIComponent(u.id))
@@ -9236,6 +9268,8 @@ function syncPlanFromStripe(u) {
         renderNavAuth();
         renderHomeState();
       }
+      // Restore platform connections from server
+      restoreConnections(u);
       // Show payment grace period banner if needed
       if (d.graceMode && d.graceUntil) {
         showGraceBanner(d.graceUntil);
