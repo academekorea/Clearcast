@@ -224,8 +224,7 @@ export default async (req: Request) => {
   const sampledTranscript = sampleTranscript(transcriptText, 9000);
 
   // ── Claude analysis with retry + exponential backoff ──────────────────────
-  const anthropicKey = process.env.ANTHROPIC_API_KEY || Netlify.env.get("ANTHROPIC_API_KEY");
-  console.log(`[status] anthropicKey present=${!!anthropicKey} len=${anthropicKey?.length} prefix=${anthropicKey?.slice(0,12)}`);
+  const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
   let claudeRes: Response | null = null;
   let claudeErr: any = null;
   const delays = [0, 3000, 8000]; // 3 attempts: immediate, 3s, 8s
@@ -241,7 +240,7 @@ export default async (req: Request) => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          model: "claude-3-5-sonnet-20241022",
+          model: "claude-sonnet-4-5",
           max_tokens: 2000,
           messages: [{ role: "user", content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${sampledTranscript}` }],
         }),
