@@ -375,7 +375,7 @@ export default async (req: Request) => {
         summary:              result.summary || null,
         bias_reason:          result.biasReason || null,
         // 6 dimensions
-        dim_political_lean:   dim.politicalLean?.score   ?? null,
+        dim_perspective_balance: dim.perspectiveBalance?.score ?? null,
         dim_factual_density:  dim.factualDensity?.score  ?? null,
         dim_source_diversity: dim.sourceDiversity?.score ?? null,
         dim_framing_patterns: dim.framingPatterns?.score ?? null,

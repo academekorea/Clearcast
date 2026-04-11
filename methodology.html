@@ -149,7 +149,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
     <p>The score is derived from four weighted signals detected in the transcript:</p>
 
     <div class="formula">
-      <strong>Bias Score</strong> = (Framing signals × 0.40) + (Language patterns × 0.25) + (Source selection × 0.20) + (Omitted perspectives × 0.15)
+      <strong>Bias Score</strong> = (Framing signals &times; 0.40) + (Language patterns &times; 0.25) + (Source selection &times; 0.20) + (Omitted perspectives &times; 0.15)
     </div>
 
     <p>Each signal is scored independently by Claude using the transcript, then combined into the final score. The model is instructed to evaluate language patterns, regulatory framing, value assumptions, and perspective omission — not the political positions themselves.</p>
@@ -171,9 +171,9 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
     <div class="dim-grid">
       <div class="dim-card">
         <span class="dim-icon">⚖️</span>
-        <div class="dim-name">Political Lean</div>
-        <div class="dim-desc">Measures directional framing — regulatory language, value assumptions, who is positioned as credible or suspect. Scale: −100 (far left) to +100 (far right).</div>
-        <div class="dim-scale">Signal source: framing language, rhetorical patterns, source framing</div>
+        <div class="dim-name">Perspective Balance</div>
+        <div class="dim-desc">Were opposing viewpoints given meaningful airtime? A score of 100 means all major perspectives were fairly represented. A score near 0 means one viewpoint dominated with no counterweight.</div>
+        <div class="dim-scale">0 = single perspective only &nbsp;·&nbsp; 100 = all major views represented</div>
       </div>
       <div class="dim-card">
         <span class="dim-icon">🔬</span>

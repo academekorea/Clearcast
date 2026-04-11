@@ -318,115 +318,132 @@ function renderResults(data) {
   // ── 6-Dimension Intelligence Panel ───────────────────────────────────────
   if (data.dimensions) {
     var dim = data.dimensions;
+    var TAU6 = Math.PI * 2 * 26;
 
-    function _dimColor(key, label, score) {
+    function _ringColor(key, label, score) {
       if (key === 'hostCredibility') {
-        return label === 'Strong' || label === 'High' ? '#16a34a' : label === 'Weak' || label === 'Low' ? '#ea580c' : '#d97706';
+        return label === 'Strong' || label === 'High' ? '#639922' : label === 'Weak' || label === 'Low' ? '#D85A30' : '#EF9F27';
       }
-      if (key === 'politicalLean') {
-        var abs = Math.abs(score || 0);
-        return abs >= 60 ? '#e0352b' : abs >= 25 ? '#d97706' : '#16a34a';
-      }
-      if (key === 'factualDensity' || key === 'sourceDiversity') {
-        return (score||0) >= 60 ? '#16a34a' : (score||0) >= 35 ? '#d97706' : '#ea580c';
+      if (key === 'perspectiveBalance' || key === 'factualDensity' || key === 'sourceDiversity') {
+        return (score||0) >= 60 ? '#639922' : (score||0) >= 35 ? '#EF9F27' : '#D85A30';
       }
       // framingPatterns, omissionRisk — high = bad
-      return (score||0) >= 60 ? '#ea580c' : (score||0) >= 35 ? '#d97706' : '#16a34a';
+      return (score||0) >= 60 ? '#D85A30' : (score||0) >= 35 ? '#EF9F27' : '#639922';
     }
 
-    function _dimSummary(key, d) {
-      var label = (d.label || '').toLowerCase();
-      var ev = (d.evidence || []);
-      // Build a one-line plain English summary from label + first evidence if available
-      var summaries = {
-        politicalLean: function() {
-          if (!label || label === 'center') return 'Framing is mostly balanced across political perspectives.';
-          var dir = label.indexOf('left') >= 0 ? 'left' : 'right';
-          return label.indexOf('far') >= 0
-            ? 'Strongly ' + dir + '-leaning framing throughout. Little balance.'
-            : label.indexOf('lean') >= 0 || label.indexOf('slight') >= 0
-              ? 'Mild ' + dir + '-leaning framing. Some balance present.'
-              : 'Clear ' + dir + '-leaning framing. Opposing views underrepresented.';
+    function _ringVerdict(key, d) {
+      var label = (d.label||'').toLowerCase();
+      var s = d.score || 0;
+      var map = {
+        perspectiveBalance: {
+          strong:'Multiple perspectives represented fairly.',
+          moderate:'Some balance, but key views underrepresented.',
+          weak:'Opposing views largely absent.'
         },
-        factualDensity: function() {
-          if (label === 'high') return 'Most claims are sourced or verifiable. High factual rigor.';
-          if (label === 'low') return 'Many unsourced assertions. Factual claims should be independently verified.';
-          return 'Mix of sourced and unsourced claims. Some assertions lack evidence.';
+        factualDensity: {
+          high:'Most claims are sourced or verifiable.',
+          medium:'Mix of sourced and unsourced claims.',
+          low:'Many unsourced assertions. Verify independently.'
         },
-        sourceDiversity: function() {
-          if (label === 'strong') return 'Multiple independent perspectives represented.';
-          if (label === 'weak') return 'Limited source diversity. One primary viewpoint dominates.';
-          return 'Some variety in sources, but key perspectives missing.';
+        sourceDiversity: {
+          strong:'Multiple independent sources represented.',
+          moderate:'Some source variety, but gaps remain.',
+          weak:'Single viewpoint dominates.'
         },
-        framingPatterns: function() {
-          if (label === 'neutral') return 'Language is mostly neutral and informational.';
-          if (label === 'highly loaded') return 'Frequent use of emotionally charged or advocacy language.';
-          return 'Some loaded framing detected. Blend of neutral and persuasive language.';
+        framingPatterns: {
+          neutral:'Language is mostly neutral and informational.',
+          'somewhat loaded':'Some advocacy framing detected.',
+          'highly loaded':'Frequent emotionally charged language.'
         },
-        hostCredibility: function() {
-          if (label === 'strong' || label === 'high') return 'Host actively challenges claims and cites sources rigorously.';
-          if (label === 'weak' || label === 'low') return 'Host rarely challenges guest. Functions more as platform than interrogator.';
-          return 'Host sometimes pushes back but lets some significant claims pass unchallenged.';
+        hostCredibility: {
+          strong:'Host actively challenges claims and cites sources.',
+          high:'Host actively challenges claims and cites sources.',
+          moderate:'Host sometimes pushes back, sometimes lets claims slide.',
+          weak:'Host rarely challenges guest claims.',
+          low:'Host rarely challenges guest claims.'
         },
-        omissionRisk: function() {
-          if (label === 'low') return 'No significant omissions detected. Coverage appears comprehensive.';
-          if (label === 'high') return 'Important context appears absent. Key facts or perspectives not addressed.';
-          return 'Some relevant context missing, but not materially distorting.';
+        omissionRisk: {
+          low:'No significant omissions detected.',
+          medium:'Some relevant context missing.',
+          high:'Important context notably absent.'
         }
       };
-      var fn = summaries[key];
-      return fn ? fn() : (d.label || '');
+      var tier = map[key];
+      if (!tier) return d.label || '';
+      return tier[label] || d.label || '';
+    }
+
+    function _ringBadge(key, label) {
+      var color, bg;
+      var l = (label||'').toLowerCase();
+      var good = l === 'strong' || l === 'high' || l === 'neutral' || l === 'low';
+      var bad  = l === 'weak' || l === 'highly loaded' || (key === 'omissionRisk' && l === 'high') || (key === 'framingPatterns' && l === 'highly loaded');
+      if (key === 'hostCredibility') { good = l === 'strong' || l === 'high'; bad = l === 'weak' || l === 'low'; }
+      if (key === 'omissionRisk' || key === 'framingPatterns') { good = l === 'low' || l === 'neutral'; bad = l === 'high' || l === 'highly loaded'; }
+      if (good) { color='#14532d'; bg='#f0fdf4'; }
+      else if (bad) { color='#9a3412'; bg='#fff7ed'; }
+      else { color='#92400e'; bg='#fffbeb'; }
+      return '<span style="display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;background:'+bg+';color:'+color+'">'+label+'</span>';
+    }
+
+    function _svgRing(score, color) {
+      var offset = TAU6 - (Math.max(0,Math.min(100,score||0))/100)*TAU6;
+      return '<svg width="68" height="68" viewBox="0 0 68 68" style="display:block">'
+        +'<circle cx="34" cy="34" r="26" fill="none" stroke="#f0f0f0" stroke-width="5"/>'
+        +'<circle cx="34" cy="34" r="26" fill="none" stroke="'+color+'" stroke-width="5"'
+        +' stroke-linecap="round" stroke-dasharray="'+TAU6+'" stroke-dashoffset="'+offset+'"'
+        +' transform="rotate(-90 34 34)"/>'
+        +'</svg>';
     }
 
     var dims6 = [
-      { key:'politicalLean',   d: dim.politicalLean   },
-      { key:'factualDensity',  d: dim.factualDensity  },
-      { key:'sourceDiversity', d: dim.sourceDiversity },
-      { key:'framingPatterns', d: dim.framingPatterns },
-      { key:'hostCredibility', d: dim.hostCredibility },
-      { key:'omissionRisk',    d: dim.omissionRisk    },
+      { key:'perspectiveBalance', label:'Perspective balance', d: dim.perspectiveBalance },
+      { key:'factualDensity',     label:'Factual density',     d: dim.factualDensity     },
+      { key:'sourceDiversity',    label:'Source diversity',    d: dim.sourceDiversity    },
+      { key:'framingPatterns',    label:'Loaded language',     d: dim.framingPatterns    },
+      { key:'hostCredibility',    label:'Host credibility',    d: dim.hostCredibility    },
+      { key:'omissionRisk',       label:'Omission risk',       d: dim.omissionRisk       },
     ];
 
-    var dimLabels = {
-      politicalLean:'Political lean', factualDensity:'Factual density',
-      sourceDiversity:'Source diversity', framingPatterns:'Loaded language',
-      hostCredibility:'Host credibility', omissionRisk:'Omission risk'
-    };
-
     html += '<div class="sec"><div class="seclbl">Credibility check'
-      + (showFull ? '<span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap to see evidence</span>' : '')
+      + (showFull ? '<span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap any card for evidence</span>' : '')
       + '</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:8px">';
 
     dims6.forEach(function(row, i) {
       if (!row.d) return;
-      var color = _dimColor(row.key, row.d.label, row.d.score);
-      var isLast = i === dims6.length - 1;
-      var summary = _dimSummary(row.key, row.d);
-      var label = (row.d.label || '').toLowerCase();
-      var name = dimLabels[row.key] || row.key;
+      var color = _ringColor(row.key, row.d.label, row.d.score);
+      var verdict = _ringVerdict(row.key, row.d);
+      var badge = _ringBadge(row.key, row.d.label);
+      var score = Math.round(row.d.score || 0);
 
-      html += '<div class="v7-dim-row" onclick="toggleDimRow(this)" style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:' + (isLast ? 'none' : '0.5px solid #f0f0f0') + ';cursor:pointer">'
-        + '<div style="width:8px;height:8px;border-radius:50%;background:' + color + ';flex-shrink:0;margin-top:4px"></div>'
-        + '<div style="flex:1;min-width:0">'
-        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">'
-        + '<span style="font-size:12px;font-weight:600;color:var(--text)">' + name + ' &mdash; <span style="font-weight:400;color:' + color + '">' + label + '</span></span>'
-        + '<span style="font-size:14px;color:#ccc;transition:transform .2s" class="v7-dim-arr">›</span>'
-        + '</div>'
-        + '<div style="font-size:11px;color:var(--text3);margin-top:2px;line-height:1.5">' + summary + '</div>';
-
+      var evHtml = '';
       if (showFull && row.d.evidence && row.d.evidence.length) {
-        html += '<div class="v7-dim-evidence" style="display:none;flex-direction:column;gap:5px;margin-top:8px">'
-          + row.d.evidence.slice(0, 2).map(function(ev) {
-            return '<div style="font-size:11px;color:#555;font-style:italic;padding:5px 9px;background:#f9f9f7;border-left:2px solid ' + color + '">&ldquo;' + ev + '&rdquo;</div>';
-          }).join('')
+        evHtml = '<div class="v7-dim-ev" style="display:none;flex-direction:column;gap:5px;margin-top:10px;padding-top:10px;border-top:0.5px solid #f0f0f0">'
+          + row.d.evidence.slice(0,2).map(function(ev){
+              return '<div style="font-size:10px;color:#666;font-style:italic;padding:4px 8px;border-left:2px solid '+color+';line-height:1.5">&ldquo;'+ev+'&rdquo;</div>';
+            }).join('')
           + '</div>';
       }
 
-      html += '</div></div>';
+      html += '<div class="v7-dim-card" onclick="toggleDimCard(this)" style="background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:14px 10px;cursor:pointer;transition:border-color .15s;text-align:center">'
+        + '<div style="position:relative;width:68px;height:68px;margin:0 auto 10px">'
+        + _svgRing(score, color)
+        + '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">'
+        + '<span style="font-size:15px;font-weight:500;color:'+color+';line-height:1">'+score+'</span>'
+        + '<span style="font-size:9px;color:var(--text3);margin-top:1px">/100</span>'
+        + '</div></div>'
+        + '<div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:3px">'+row.label+'</div>'
+        + '<div style="font-size:10px;color:var(--text3);line-height:1.4;margin-bottom:6px">'+verdict+'</div>'
+        + badge
+        + evHtml
+        + '</div>';
     });
 
+    html += '</div>';
+
     if (!showFull) {
-      html += '<div class="upbar" style="margin-top:8px"><span class="uptxt">Evidence unlocks with Starter Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade →</button></div>';
+      html += '<div class="upbar"><span class="uptxt">Evidence unlocks with Starter Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade →</button></div>';
     }
 
     html += '</div>';

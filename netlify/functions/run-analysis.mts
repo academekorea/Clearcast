@@ -8,10 +8,10 @@ Analyze the transcript and return a JSON object with this EXACT structure — no
   "biasScore": <number -100 (far left) to +100 (far right)>,
   "biasLabel": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
   "dimensions": {
-    "politicalLean": {
-      "score": <-100 to +100>,
-      "label": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
-      "evidence": [<up to 2 short transcript quotes that show this lean, each under 25 words>]
+    "perspectiveBalance": {
+      "score": <0 to 100, where 100 = all major perspectives represented equally>,
+      "label": <"Strong" | "Moderate" | "Weak">,
+      "evidence": [<up to 2 examples of perspectives that were present or notably absent>]
     },
     "factualDensity": {
       "score": <0 to 100, where 100 = all claims sourced>,
@@ -203,7 +203,7 @@ export default async (req: Request) => {
           bias_label: result.biasLabel || null,
           factuality_label: result.factualityLabel || null,
           host_trust_score: result.hostTrustScore ?? null,
-          dim_political_lean: result.dimensions?.politicalLean?.score ?? null,
+          dim_perspective_balance: result.dimensions?.perspectiveBalance?.score ?? null,
           dim_factual_density: result.dimensions?.factualDensity?.score ?? null,
           dim_source_diversity: result.dimensions?.sourceDiversity?.score ?? null,
           dim_framing_patterns: result.dimensions?.framingPatterns?.score ?? null,
