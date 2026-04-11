@@ -4,13 +4,14 @@ import Stripe from "stripe";
 
 // Maps plan+billing keys → Netlify env var names holding the Stripe price IDs.
 // After creating products in Stripe, set these in Netlify → Site config → Env vars.
-const PRICE_ENV_MAP: Record<string, string> = {
-  creator_monthly:  "STRIPE_STARTER_MONTHLY_ID",
-  creator_annual:   "STRIPE_STARTER_ANNUAL_ID",
-  operator_monthly: "STRIPE_PRO_MONTHLY_ID",
-  operator_annual:  "STRIPE_PRO_ANNUAL_ID",
-  studio_monthly:   "STRIPE_OPERATOR_MONTHLY_ID",
-  studio_annual:    "STRIPE_OPERATOR_ANNUAL_ID",
+// Maps plan+billing → env var name → fallback price ID
+const PRICE_MAP: Record<string, string> = {
+  creator_monthly:  Netlify.env.get("STRIPE_STARTER_MONTHLY_ID")  || "price_1TIpsgRrzq6bX9wpo0rps1RP",
+  creator_annual:   Netlify.env.get("STRIPE_STARTER_ANNUAL_ID")   || "price_1TIptTRrzq6bX9wpUGs4qpIf",
+  operator_monthly: Netlify.env.get("STRIPE_PRO_MONTHLY_ID")      || "price_1TIpuCRrzq6bX9wpJkfWm1Kg",
+  operator_annual:  Netlify.env.get("STRIPE_PRO_ANNUAL_ID")       || "price_1TIpzpRrzq6bX9wpor5U7uJS",
+  studio_monthly:   Netlify.env.get("STRIPE_OPERATOR_MONTHLY_ID") || "price_1TIq6eRrzq6bX9wppzyt3rps",
+  studio_annual:    Netlify.env.get("STRIPE_OPERATOR_ANNUAL_ID")  || "price_1TIq7BRrzq6bX9wp7X9wytJc",
 };
 
 // Human-readable plan names for metadata
@@ -41,8 +42,7 @@ export default async (req: Request) => {
 
     // Resolve priceId from env var if not provided directly
     if (!priceId && planName && billing) {
-      const envKey = PRICE_ENV_MAP[`${planName}_${billing}`];
-      if (envKey) priceId = Netlify.env.get(envKey) || "";
+      priceId = PRICE_MAP[`${planName}_${billing}`] || "";
     }
 
     if (!priceId || !userEmail || !userId) {
