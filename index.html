@@ -5789,7 +5789,7 @@ function discSearch(q, isLive) {
       return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
         +'<div class="disc-ep-art" style="background:'+bgs[i%3]+'">'+artHtml+'</div>'
         +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div><div class="disc-ep-title">'+s.name+'</div><div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
-        +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button>'
+        +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">Pick episode</button>'
         +'<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="padding:5px 10px;background:none;border:0.5px solid var(--border2);border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
         +'<button class="ep-like-btn" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 8px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:var(--text3)">♡</button>'
         +'</div></div>';
@@ -6020,9 +6020,10 @@ var TOPIC_HEROES = {
 
 var _discDefaultHero = {
   eye:'For you', title:'Jensen Huang &mdash; NVIDIA &amp; the AI Revolution',
-  host:'Lex Fridman Podcast &middot; 2h 18m',
+  show:'Lex Fridman Podcast', host:'Lex Fridman Podcast &middot; 2h 18m',
   url:'https://www.youtube.com/watch?v=vif8NQcjVf0', ytId:'vif8NQcjVf0'
 };
+var _discCurrentHeroUrl = _discDefaultHero.url;
 
 function discTopicHero(topic) {
   var hero = TOPIC_HEROES[topic];
@@ -6067,8 +6068,9 @@ function discTopicHero(topic) {
     }
   }
 
-  // Update buttons
-  if (playBtn) { playBtn.onclick = function(){ var inp=document.getElementById('url-input');if(inp)inp.value=hero.url;showView('analyze');setTimeout(function(){startAnalysis(hero.url);},300); }; }
+  // Track current hero URL so discHeroPlay() always uses the right one
+  _discCurrentHeroUrl = hero.url;
+  if (playBtn) { playBtn.onclick = discHeroPlay; }
   if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,hero.url,hero.title,hero.show); }; }
 
   // Show related episodes shelf
@@ -6112,8 +6114,9 @@ function discResetHero() {
   if (titleEl) titleEl.innerHTML = d.title;
   if (hostEl) hostEl.textContent = d.host;
   if (videoEl) videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+d.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
+  _discCurrentHeroUrl = _discDefaultHero.url;
   if (playBtn) playBtn.onclick = discHeroPlay;
-  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,'https://www.youtube.com/watch?v=vif8NQcjVf0','Jensen Huang — NVIDIA & the AI Revolution','Lex Fridman Podcast'); }; }
+  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,_discDefaultHero.url,_discDefaultHero.title,_discDefaultHero.show); }; }
   if (relatedShelf) relatedShelf.style.display = 'none';
   // Reset shows/episodes
   discRenderShows();
@@ -6121,12 +6124,10 @@ function discResetHero() {
 }
 
 function discHeroPlay() {
-  // Auto-fill the analyze input with the featured episode URL and start analysis
-  var url = 'https://www.youtube.com/watch?v=vif8NQcjVf0';
+  var url = _discCurrentHeroUrl || _discDefaultHero.url;
   var inp = document.getElementById('url-input');
   if (inp) inp.value = url;
   showView('analyze');
-  // Small delay so the view transitions first
   setTimeout(function() { startAnalysis(url); }, 300);
 }
 
