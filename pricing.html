@@ -94,6 +94,10 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .pf.dim .pf-check{color:var(--text3)}
 .plan-btn{display:block;width:100%;padding:11px;text-align:center;font-size:13px;font-weight:600;border:1.5px solid var(--navy);color:var(--navy);border-radius:8px;cursor:pointer;background:transparent;font-family:var(--ff);transition:all .15s;text-decoration:none}
 .plan-btn:hover{background:var(--navy);color:#fff}
+[data-theme="dark"] .plan-btn{border-color:var(--border2);color:var(--text)}
+[data-theme="dark"] .plan-btn:hover{background:var(--text);color:var(--bg)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .plan-btn{border-color:rgba(255,255,255,.25);color:#FAF9F6}
+:root:not([data-theme="light"]) .plan-btn:hover{background:#FAF9F6;color:#0D0D0D}}
 
 .compare{max-width:900px;margin:40px auto 80px;padding:0 24px}
 .compare h2{font-family:var(--ffs);font-size:28px;font-weight:600;margin-bottom:24px;text-align:center;letter-spacing:-.01em}

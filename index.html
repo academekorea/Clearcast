@@ -4349,6 +4349,19 @@ function doLogout() {
 }
 
 function finishOnboarding() {
+  // Save interests to Supabase so they persist across devices
+  var u = plUser();
+  if (u && u.id && (_onbCats.length || u.podcastUrl)) {
+    safeFetch('/api/update-settings', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        userId: u.id,
+        interests: _onbCats.length ? _onbCats : (u.categories || []),
+        podcastUrl: u.podcastUrl || ''
+      })
+    }).catch(function(){});
+  }
   closeModal('onboarding');
   showHome();
 }
@@ -4367,7 +4380,7 @@ function showOnbStep(n) {
 }
 function onbNext(step) {
   if (step === 1) {
-    var u = plUser(); if (u) { u.categories = _onbCats; setPlUser(u); }
+    var u = plUser(); if (u) { u.categories = _onbCats; u.interests = _onbCats; setPlUser(u); }
     showOnbStep(2);
   } else if (step === 2) {
     var podUrl = (document.getElementById('onb-podcast-url').value || '').trim();
@@ -7572,7 +7585,10 @@ function toggleAudioSummary(jobId, script) {
   if (_audioBlobUrls[jobId]) { _playFromUrl(_audioBlobUrls[jobId]); return; }
 
   var lang = (_settings&&_settings.lang==='ko') ? 'ko' : 'en';
-  var voiceId = localStorage.getItem('pl_voice_id') || '';
+  // Clear stale Rachel voice ID (21m00Tcm) — Bill (pqHfZKP7) is the default
+  var _storedVoice = localStorage.getItem('pl_voice_id') || '';
+  if (_storedVoice === '21m00Tcm4TlvDq8ikWAM') { localStorage.removeItem('pl_voice_id'); _storedVoice = ''; }
+  var voiceId = _storedVoice;
   var decodedScript=script.replace(/&#39;/g,"'").replace(/&quot;/g,'"');
   fetch('/api/audio-briefing', {
     method:'POST',

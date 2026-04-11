@@ -108,11 +108,14 @@ export default async (req: Request) => {
       success_url: "https://podlens.app/account?upgraded=true&session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "https://podlens.app/pricing?cancelled=true",
       metadata: { userId, planName: planName || "", displayName },
-      allow_promotion_codes: discounts.length === 0,
     };
 
+    // Stripe does not allow both allow_promotion_codes and discounts simultaneously
     if (discounts.length > 0) {
       (sessionParams as any).discounts = discounts;
+      // allow_promotion_codes must NOT be set when discounts is used
+    } else {
+      (sessionParams as any).allow_promotion_codes = true;
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);

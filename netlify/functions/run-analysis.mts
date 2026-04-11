@@ -58,7 +58,10 @@ Analyze the transcript and return a JSON object with this EXACT structure — no
   "guest": {
     "name": <string — the main guest or interviewee full name, null if none>,
     "title": <string — their role or title e.g. "CEO, NVIDIA", null if unknown>,
-    "organization": <string — their company or organization, null if unknown>
+    "organization": <string — their company or organization, null if unknown>,
+    "twitter": <string — Twitter/X handle without @ if known from your training data, null if unknown>,
+    "website": <string — personal or company website URL if known, null if unknown>,
+    "lean": <string — e.g. "Tech-optimist lean", "Conservative-leaning" — based on public statements, null if unclear>
   },
   "hostTrustScore": <0 to 100 — overall host credibility score>,
   "keyFindings": [

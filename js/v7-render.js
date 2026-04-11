@@ -233,7 +233,7 @@ function renderResults(data) {
     + (guest.instagram ? '<a class="sl" href="https://instagram.com/'+guest.instagram+'" target="_blank" rel="noopener">&#128247; @'+guest.instagram+'</a>' : '')
     + (guest.linkedin  ? '<a class="sl" href="'+guest.linkedin+'" target="_blank" rel="noopener">in LinkedIn</a>' : '')
     + (guest.website   ? '<a class="sl" href="'+guest.website+'" target="_blank" rel="noopener">&#127760; '+guest.website.replace(/^https?:\/\//,'').split('/')[0]+'</a>' : '')
-    + '<a class="sl sl-podlens" href="#">&#127897; PodLens profile</a>'
+    + (showName ? '<a class="sl sl-podlens" onclick="showView(\'show\');loadShowProfile(\''+showName.toLowerCase().replace(/[^a-z0-9]+/g,\'-\')+\'\',null);return false" href="#">&#127897; Show profile</a>' : '')
     + '</div></div>';
 
   // Build a rich ~90 second audio briefing script from the full analysis
@@ -571,7 +571,7 @@ function renderResults(data) {
           if (chipsEl) chipsEl.innerHTML = trackCount ? '<div class="lchip">'+trackCount+'</div>' : '';
           if (linksEl) linksEl.innerHTML =
             (appleUrl ? '<a class="sl" href="'+appleUrl+'" target="_blank" rel="noopener">&#9654; Apple Podcasts</a>' : '')
-            + '<a class="sl sl-podlens" href="#">&#127897; PodLens profile</a>';
+            + (showName ? '<a class="sl sl-podlens" onclick="showView(\'show\');loadShowProfile(\''+showName.toLowerCase().replace(/[^a-z0-9]+/g,\'-\')+\'\',null);return false" href="#">&#127897; Show profile</a>' : '');
         }
       }).catch(function(){});
   }

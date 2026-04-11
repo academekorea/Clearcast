@@ -120,6 +120,29 @@ export default async (req: Request) => {
 
     try { await store.setJSON(cacheKey, result); } catch {}
 
+    // Write followed shows to Supabase for persistence + smart queue
+    try {
+      const supabaseUrl = Netlify.env.get("SUPABASE_URL");
+      const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+      if (supabaseUrl && supabaseKey && userId) {
+        const { createClient } = await import("@supabase/supabase-js");
+        const sb = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+        // Upsert each followed show
+        for (const show of showResults.slice(0, 20)) {
+          await sb.from("followed_shows").upsert({
+            user_id: userId,
+            show_name: show.name,
+            artwork: show.artwork || null,
+            spotify_id: show.spotifyId || null,
+            spotify_url: show.spotifyUrl || null,
+            followed_at: new Date().toISOString(),
+          }, { onConflict: "user_id,show_name" }).catch(() => {});
+        }
+      }
+    } catch (sbErr) {
+      console.warn("[spotify-import] Supabase write failed:", sbErr);
+    }
+
     return json(result);
   } catch (e: any) {
     return json({ error: "Import failed", details: e?.message || "unknown" }, 500);
