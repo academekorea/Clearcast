@@ -13,10 +13,10 @@ Analyze the transcript and return a JSON object with this EXACT structure — no
   "summary": <2-3 sentence plain English summary of the episode and how it leans>,
   "biasReason": <1-2 sentences on specific language/framing choices that drove the score>,
   "dimensions": {
-    "politicalLean": {
-      "score": <-100 to +100>,
-      "label": <"Far left" | "Lean left" | "Center" | "Lean right" | "Far right">,
-      "note": <1 sentence: what specific framing drove this score>
+    "perspectiveBalance": {
+      "score": <0 to 100, where 100 = all perspectives fairly represented>,
+      "label": <"Strong" | "Moderate" | "Weak">,
+      "note": <1 sentence: how balanced were the perspectives presented>
     },
     "factualDensity": {
       "score": <0 to 100, where 100 = every claim sourced>,

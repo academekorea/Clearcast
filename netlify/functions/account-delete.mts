@@ -7,7 +7,7 @@ const SB_URL = "https://suqjdctajnitxivczjtg.supabase.co";
 const STRIPE_SECRET = () => Netlify.env.get("STRIPE_SECRET_KEY") || "";
 
 function sbHeaders(): HeadersInit {
-  const key = Netlify.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+  const key = Netlify.env.get("SUPABASE_SERVICE_KEY") || "";
   return { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
 }
 

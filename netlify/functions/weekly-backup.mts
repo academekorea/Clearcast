@@ -6,7 +6,7 @@ const SUPER_ADMIN_EMAIL = "academekorea@gmail.com";
 const MAX_BACKUPS = 4;
 
 function sbHeaders(): HeadersInit {
-  const key = Netlify.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+  const key = Netlify.env.get("SUPABASE_SERVICE_KEY") || "";
   return { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
 }
 
@@ -34,7 +34,7 @@ async function exportTable(table: string, select = "*", order = "created_at.desc
 
 async function logBackup(dateKey: string, summary: Record<string, number>, success: boolean, errorMsg?: string) {
   try {
-    const key = Netlify.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    const key = Netlify.env.get("SUPABASE_SERVICE_KEY") || "";
     await fetch(`${SB_URL}/rest/v1/backup_log`, {
       method: "POST",
       headers: { ...sbHeaders(), Prefer: "return=minimal" },
