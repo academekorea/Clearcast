@@ -606,7 +606,7 @@ export default async (req: Request, context: Context) => {
               headers: { "authorization": aaiKey, "content-type": "application/json" },
               body: JSON.stringify({
                 audio_url: upload_url,
-                speech_models: ["best"],
+                speech_models: ["universal-2"],
                 // Store word-level timestamps for transcript seek (Priority 4)
                 // words_json: true is the default — explicitly request it
               }),
@@ -830,7 +830,7 @@ export default async (req: Request, context: Context) => {
     headers: { authorization: assemblyKey, "content-type": "application/json" },
     body: JSON.stringify({
       audio_url: resolvedAudioUrl,
-      speech_models: ["best"],
+      speech_models: ["universal-2"],
       // word_boost not needed — default word-level timestamps are always returned
     }),
     signal: AbortSignal.timeout(30000),
