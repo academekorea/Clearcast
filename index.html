@@ -2584,7 +2584,7 @@ body.light-mode,[data-theme="light"]{
     <span style="color:#92400E;font-size:13px;font-weight:600">Founding Member Pricing — 33% off forever</span>
     <span style="color:#92400E;font-size:12px;opacity:.8;margin-left:4px">Only available during our launch period →</span>
   </a>
-  <button onclick="event.stopPropagation();var _fb=document.getElementById('founding-banner');if(_fb)_fb.style.display='none';try{try{sessionStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:#92400E;opacity:.6;padding:4px 8px" aria-label="Dismiss">&times;</button>
+  <button onclick="var _fb=document.getElementById('founding-banner');if(_fb)_fb.style.display='none';try{sessionStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:#92400E;opacity:.6;padding:4px 8px;z-index:10000" aria-label="Dismiss">&times;</button>
 </div>
 
 <script>(function(){
