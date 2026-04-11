@@ -4864,8 +4864,13 @@ function _isRawJobId(t) {
 }
 
 function renderDashRecent() {
+  var seen = {};
   var recent = getRecent().filter(function(r) {
-    return r.title && !_isRawJobId(r.title);
+    if (!r.title || _isRawJobId(r.title)) return false;
+    var key = (r.url || r.jobId || r.title).toLowerCase();
+    if (seen[key]) return false;
+    seen[key] = true;
+    return true;
   });
   var el = document.getElementById('dash-recent-list');
   if (!el) return;
