@@ -3245,7 +3245,7 @@ body.light-mode,[data-theme="light"]{
   <div class="disc-wrap">
     <div class="disc-nav" id="disc-nav">
       <div class="disc-nav-lbl">Browse</div>
-      <button class="disc-nav-btn" onclick="showHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
+      <button class="disc-nav-btn" onclick="navHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
       <button class="disc-nav-btn on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
       <button class="disc-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
 
@@ -3525,7 +3525,7 @@ body.light-mode,[data-theme="light"]{
     <div>
       <div class="footer-col-title">DISCOVER</div>
       <div class="footer-links">
-        <a href="/" onclick="showHome();return false">Home</a>
+        <a href="/" onclick="navHome();return false">Home</a>
         <button onclick="showView('discover')">Trending</button>
         <a href="/pricing.html">Unheard</a>
         <button onclick="showView('analyze')">Analyze a show</button>
@@ -3572,7 +3572,7 @@ body.light-mode,[data-theme="light"]{
 
 <!-- MOBILE NAV -->
 <div class="mob-nav" id="mob-nav">
-  <button class="mob-btn on" id="mob-home" onclick="showHome()"><span class="mob-icon">&#127968;</span>Home</button>
+  <button class="mob-btn on" id="mob-home" onclick="navHome()"><span class="mob-icon">&#127968;</span>Home</button>
   <button class="mob-btn" id="mob-discover" onclick="showView('discover')"><span class="mob-icon">&#128269;</span>Discover</button>
   <button class="mob-btn" id="mob-analyze" onclick="showView('analyze')"><span class="mob-icon">&#127897;</span>Analyze</button>
 </div>
@@ -5379,6 +5379,21 @@ function handleDiscCompare() {
   if (!a.trim() || !b.trim()) return;
   showView('show');
   loadShowProfile(a.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-'), a.trim().startsWith('http')?a.trim():null);
+}
+
+// ── NAV HOME — intercepts for logged-out users ──────────────────────────────
+function navHome() {
+  var u = plUser();
+  if (u && u.id) {
+    showHome();
+    return;
+  }
+  // Logged-out: show sign-in/up prompt with dashboard context
+  var h = document.getElementById('signup-heading');
+  var s = document.getElementById('signup-subtext');
+  if (h) h.textContent = 'Your personalized Home dashboard';
+  if (s) s.innerHTML = 'Sign in to unlock your personalized dashboard &mdash; analysis history, bias fingerprint, followed shows, and weekly insights, all in one place.';
+  openModal('signup');
 }
 
 function showHome() {
@@ -8211,7 +8226,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     var navHtml = '<div class="sp-3col-nav">'
       + '<div>'
       + '<div class="sp-3col-nav-lbl">Menu</div>'
-      + '<button class="sp-3col-nav-btn" onclick="showHome()"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>'
+      + '<button class="sp-3col-nav-btn" onclick="navHome()"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>'
       + '<button class="sp-3col-nav-btn" onclick="showView(\'discover\')"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>'
       + '<button class="sp-3col-nav-btn" onclick="showView(\'analyze\')"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>'
       + '</div>'
