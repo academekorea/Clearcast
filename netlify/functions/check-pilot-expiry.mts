@@ -7,7 +7,7 @@ import { sendEmail, pilotExpiryEmail } from "./lib/email.js";
 // Phase 2: KRW pricing deferred — international USD only
 // Founding prices shown (33% off normal)
 const TIER_PRICES: Record<string, { creator: string; operator: string }> = {
-  USD: { creator: '$4.69/mo (Starter Lens)', operator: '$12.73/mo (Pro Lens)' },
+  USD: { creator: '$4.69/mo founding ($7 normally) — Starter Lens', operator: '$12.73/mo founding ($19 normally) — Pro Lens' },
 };
 
 export default async (req: Request) => {

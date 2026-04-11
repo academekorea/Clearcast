@@ -3615,7 +3615,7 @@ body.light-mode,[data-theme="light"]{
         <hr class="tcard-divider">
         <div class="tcard-feats">
           <div class="tf"><span class="tf-y">✓</span>Browse pre-analyzed episodes with bias bars</div>
-          <div class="tf"><span class="tf-y">✓</span>3 analyses per month</div>
+          <div class="tf"><span class="tf-y">✓</span>4 analyses per month</div>
           <div class="tf"><span class="tf-y">✓</span>Basic bias label &amp; lean bar</div>
           <div class="tf"><span class="tf-y">✓</span>Follow shows (read-only feed)</div>
           <div class="tf"><span class="tf-y">✓</span>Profile stays forever</div>
@@ -4376,7 +4376,7 @@ function showAnalysisLimitBanner(u, monthLimit) {
     + '<div class="limit-banner-sub">Your analyses reset in ' + resetDays + ' day' + (resetDays !== 1 ? 's' : '') + '. '
     + (isFree ? 'Upgrade to Starter Lens for 25/month \u2014 $4.69/mo founding price.' : 'Upgrade to Pro Lens for unlimited analyses.') + '</div>'
     + '<div class="limit-banner-btns">'
-    + '<button class="lb-upgrade" onclick="showUpgrade()">' + (isFree ? 'Upgrade to Starter Lens \u2014 $4.69/mo \u2192' : 'Upgrade to Pro Lens \u2014 $12.73/mo \u2192') + '</button>'
+    + '<button class="lb-upgrade" onclick="showUpgrade()">' + (isFree ? 'Upgrade to Starter Lens \u2014 from $4.69/mo \u2192' : 'Upgrade to Pro Lens \u2014 from $12.73/mo \u2192') + '</button>'
     + '<button class="lb-later" onclick="this.closest(\'.limit-banner\').remove()">Maybe later</button>'
     + '</div></div>';
 }
@@ -4400,7 +4400,7 @@ function showTrialDay6Banner(u) {
     + '<div class="tdb-sub">You\'ve analyzed ' + epCount + ' episode' + (epCount !== 1 ? 's' : '')
     + (leanLabel ? '. Your listening leans <strong>' + leanLabel + '</strong>' : '') + '.</div>'
     + '<div class="tdb-btns">'
-    + '<button class="tdb-upgrade" onclick="showUpgrade()">Keep full access \u2014 $12.73/mo founding</button>'
+    + '<button class="tdb-upgrade" onclick="showUpgrade()">Keep full access \u2014 from $12.73/mo</button>'
     + '<button class="tdb-later" onclick="document.getElementById(\'trial-day6-banner\').style.display=\'none\'">See what changes</button>'
     + '</div></div></div>';
 }
@@ -4423,14 +4423,14 @@ function showTrialExpiryRecap(u) {
     + (leanLabel ? '<div class="recap-stat"><span>Your listening leans</span><span class="recap-stat-val">' + leanLabel + '</span></div>' : '')
     + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:16px 0 8px">What stays free</div>'
     + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> Your profile, history &amp; bias fingerprint</div>'
-    + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> 3 analyses per month</div>'
+    + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> 4 analyses per month</div>'
     + '<div class="recap-change-row"><span class="recap-keep">\u2713</span> Browse trending shows and episodes</div>'
     + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:16px 0 8px">What\'s now locked</div>'
     + '<div class="recap-change-row"><span class="recap-lose">\u2193</span> Unlimited analyses</div>'
     + '<div class="recap-change-row"><span class="recap-lose">\u2193</span> Deep analysis &amp; source citations</div>'
     + '<div class="recap-change-row"><span class="recap-lose">\u2193</span> The Unheard report</div>'
     + '<div style="display:flex;gap:8px;margin-top:24px">'
-    + '<button style="flex:1;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)" onclick="showUpgrade();document.getElementById(\'modal-trial-expiry\').classList.remove(\'on\')">Upgrade to Pro Lens \u2014 $12.73/mo</button>'
+    + '<button style="flex:1;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--ff)" onclick="showUpgrade();document.getElementById(\'modal-trial-expiry\').classList.remove(\'on\')">Upgrade to Pro Lens \u2014 from $12.73/mo</button>'
     + '<button style="padding:12px 16px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;font-size:13px;font-family:var(--ff)" onclick="document.getElementById(\'modal-trial-expiry\').classList.remove(\'on\')">Continue free</button>'
     + '</div>';
   modal.classList.add('on');
@@ -6721,7 +6721,7 @@ function _showAnalysisAuthGate(url, epTitle, showName) {
     + '<div style="background:var(--bg3,#f5f5f3);border-radius:8px;padding:12px 16px;margin-bottom:20px;text-align:left">'
     + '<div style="font-size:12px;font-weight:600;color:var(--text2,#555);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Free account includes</div>'
     + '<div style="font-size:13px;color:var(--text,#1a1a1a);line-height:1.9">'
-    + '✓ &nbsp;3 analyses per month<br>'
+    + '✓ &nbsp;4 analyses per month<br>'
     + '✓ &nbsp;Full bias report &amp; key findings<br>'
     + '✓ &nbsp;Personal bias fingerprint<br>'
     + '✓ &nbsp;Follow shows &amp; get alerts'
@@ -8739,37 +8739,37 @@ var _upgradeMessages = {
   key_findings: {
     title: 'Unlock all key findings',
     desc: 'See every insight Podlens found \u2014 not just the first one.',
-    tier: "Starter Lens", price: "$4.69/mo"
+    tier: "Starter Lens", price: "from $4.69/mo"
   },
   host_trust: {
     title: 'See the host trust score',
     desc: 'Know how much influence this host has on their audience.',
-    tier: "Starter Lens", price: "$4.69/mo"
+    tier: "Starter Lens", price: "from $4.69/mo"
   },
   source_citations: {
     title: 'See source citations',
     desc: 'Verify every claim with the original sources Podlens found.',
-    tier: "Starter Lens", price: "$4.69/mo"
+    tier: "Starter Lens", price: "from $4.69/mo"
   },
   audio_briefing: {
     title: 'Listen to your briefing',
     desc: 'Get an AI-narrated audio summary of this analysis.',
-    tier: "Starter Lens", price: "$4.69/mo"
+    tier: "Starter Lens", price: "from $4.69/mo"
   },
   full_scores: {
     title: 'Unlock full bias scores',
     desc: 'See the exact percentages and what drove the lean.',
-    tier: "Starter Lens", price: "$4.69/mo"
+    tier: "Starter Lens", price: "from $4.69/mo"
   },
   transcript: {
     title: 'Read the full transcript',
     desc: 'Access the complete word-for-word transcript of this episode.',
-    tier: "Pro Lens", price: "$12.73/mo"
+    tier: "Pro Lens", price: "from $12.73/mo"
   }
 };
 
 function showUpgradeModal(feature) {
-  var msg = _upgradeMessages[feature] || { title: 'Unlock this feature', desc: 'Upgrade your plan to access this.', tier: "Starter Lens", price: "$4.69/mo" };
+  var msg = _upgradeMessages[feature] || { title: 'Unlock this feature', desc: 'Upgrade your plan to access this.', tier: "Starter Lens", price: "from $4.69/mo" };
   var existing = document.getElementById('upgrade-trigger-modal');
   if (existing) existing.remove();
   var el = document.createElement('div');
