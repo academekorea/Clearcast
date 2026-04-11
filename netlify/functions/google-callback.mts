@@ -257,7 +257,16 @@ export default async (req: Request) => {
       last_seen_at: new Date().toISOString(),
     };
     if (isSuperAdmin(googleEmail)) Object.assign(supaFields, superAdminSupabaseFields());
-    sb.from('users').upsert(supaFields, { onConflict: 'id' }).then(() => {}).catch(() => {});
+    try {
+      const { error: sbErr } = await sb.from('users').upsert(supaFields, { onConflict: 'id' });
+      if (sbErr) {
+        console.error('[google-callback] Supabase users upsert failed:', JSON.stringify(sbErr));
+      } else {
+        console.log('[google-callback] Supabase users upsert OK for:', googleEmail);
+      }
+    } catch (e: any) {
+      console.error('[google-callback] Supabase users upsert exception:', e?.message);
+    }
   }
 
   // Successful auth — clear any lockout
