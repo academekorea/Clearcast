@@ -199,3 +199,25 @@ CREATE TRIGGER enforce_smart_queue_limit
   FOR EACH ROW EXECUTE FUNCTION check_smart_queue_limit();
 
 SELECT 'Migration v2 complete ✅' as status;
+
+-- ── Subscriptions table — add missing amount column ──────────────────────────
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='subscriptions' AND column_name='amount') THEN
+    ALTER TABLE subscriptions ADD COLUMN amount integer DEFAULT 0;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='subscriptions' AND column_name='founding_discount') THEN
+    ALTER TABLE subscriptions ADD COLUMN founding_discount boolean DEFAULT false;
+  END IF;
+END $$;
+
+-- Manual fix: update existing subscription with correct amount
+-- Pro Lens with 33% founding discount = $12.73/mo = 1273 cents
+UPDATE subscriptions 
+SET amount = 1273, founding_discount = true
+WHERE plan = 'operator' AND amount = 0;
+
+UPDATE subscriptions 
+SET amount = 469
+WHERE plan = 'creator' AND amount = 0 AND founding_discount = false;
+
+SELECT 'Subscriptions migration complete ✅' as status;

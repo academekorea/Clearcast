@@ -83,6 +83,14 @@ export default async (req: Request) => {
         });
 
         // Supabase subscriptions table
+        // Calculate monthly amount in cents for MRR
+        const planAmounts: Record<string, number> = {
+          creator: 469, operator: 1273, studio: 3283
+        };
+        const planAmountCents = foundingApplied
+          ? Math.round((planAmounts[planName] || 0) * 0.67)  // 33% founding discount
+          : (planAmounts[planName] || 0);
+
         sbUpsert('subscriptions', {
           user_id: userId,
           stripe_customer_id: customerId,
@@ -90,6 +98,7 @@ export default async (req: Request) => {
           plan: planName,
           billing_period: subscription?.items?.data?.[0]?.price?.recurring?.interval || 'month',
           status: 'active',
+          amount: planAmountCents,
           current_period_start: subscription?.current_period_start
             ? new Date(subscription.current_period_start * 1000).toISOString() : null,
           current_period_end: periodEnd,
@@ -154,11 +163,15 @@ export default async (req: Request) => {
           isActive, updatedAt: Date.now(),
         });
 
+        const updPlanAmounts: Record<string, number> = { creator: 469, operator: 1273, studio: 3283 };
+        const updAmount = isActive ? (updPlanAmounts[planName] || 0) : 0;
+
         sbUpsert('subscriptions', {
           user_id: userId,
           stripe_subscription_id: sub.id,
           plan: isActive ? planName : 'free',
           status: sub.status,
+          amount: updAmount,
           current_period_end: periodEnd,
           updated_at: new Date().toISOString(),
         }).catch(() => {});
