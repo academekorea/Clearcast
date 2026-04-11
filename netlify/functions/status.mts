@@ -352,7 +352,7 @@ export default async (req: Request) => {
   // Writes to analyses table for trend charts, echo chamber, fingerprints.
   // Non-blocking — never fails the response if Supabase is down.
   const supabaseUrl = Netlify.env.get("SUPABASE_URL");
-  const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
   if (supabaseUrl && supabaseKey) {
     try {
       const supabase = createClient(supabaseUrl, supabaseKey, {
@@ -382,6 +382,7 @@ export default async (req: Request) => {
         dim_host_credibility: dim.hostCredibility?.score ?? null,
         dim_omission_risk:    dim.omissionRisk?.score    ?? null,
         analyzed_at:          new Date().toISOString(),
+        user_id:              job.userId || null,
       }, { onConflict: "canonical_key" });
 
       // Log the analysis event for per-user data flywheel

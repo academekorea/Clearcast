@@ -380,15 +380,17 @@ function renderResults(data) {
     + (showFull ? '<span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">\u00b7 tap any finding to expand</span>' : '')
     + '</div><div class="findings-wrap">'+kfRows+'</div></div>';
 
-  // Source citations
+  // Source citations (Pro Lens+)
   html += '<div class="sec"><div class="seclbl">Source citations</div>';
-  if (showFull && cits.length) {
-    html += cits.map(function(x,i){ return '<div class="cit"><div class="cnum">'+(i+1)+'</div><div><div class="ctitle2">'+x.t+'</div>'+(x.s?'<div class="csrc">'+x.s+'</div>':'')+'</div></div>'; }).join('');
-  } else if (showFull) {
-    html += '<div style="font-size:11px;color:#bbb;padding:6px 0">No citations available.</div>';
+  if (o && cits.length) {
+    html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;overflow:hidden">'
+      + cits.map(function(x,i){ return '<div class="cit"><div class="cnum">'+(i+1)+'</div><div><div class="ctitle2">'+x.t+'</div>'+(x.s?'<div class="csrc">'+x.s+'</div>':'')+'</div></div>'; }).join('')
+      + '</div>';
+  } else if (o) {
+    html += '<div style="font-size:11px;color:#bbb;padding:6px 0">No citations detected in this episode.</div>';
   } else {
     html += '<div class="blur-r"><div class="btext"></div><span class="lock">\uD83D\uDD12</span></div>'
-      + '<div class="upbar"><span class="uptxt">Citations unlock with Starter Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div>';
+      + '<div class="upbar"><span class="uptxt">Source citations unlock with Pro Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div>';
   }
   html += '</div>';
 

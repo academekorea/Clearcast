@@ -141,7 +141,7 @@ export default async (req: Request) => {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1700,
+        max_tokens: 3000,
         messages: [
           {
             role: "user",
@@ -185,6 +185,47 @@ export default async (req: Request) => {
     };
 
     await store.setJSON(transcriptId, result);
+
+    // ── Supabase dual-write ────────────────────────────────────────────────
+    // Write to analyses table for: usage counting, trend charts, bias dataset
+    try {
+      const { getSupabaseAdmin } = await import("./lib/supabase.js");
+      const sb = getSupabaseAdmin();
+      if (sb && job.userId) {
+        await sb.from("analyses").insert({
+          user_id: job.userId,
+          job_id: transcriptId,
+          url: job.url,
+          canonical_key: job.canonicalKey || null,
+          episode_title: result.episodeTitle || null,
+          show_name: result.showName || null,
+          bias_score: result.biasScore ?? null,
+          bias_label: result.biasLabel || null,
+          factuality_label: result.factualityLabel || null,
+          host_trust_score: result.hostTrustScore ?? null,
+          dim_political_lean: result.dimensions?.politicalLean?.score ?? null,
+          dim_factual_density: result.dimensions?.factualDensity?.score ?? null,
+          dim_source_diversity: result.dimensions?.sourceDiversity?.score ?? null,
+          dim_framing_patterns: result.dimensions?.framingPatterns?.score ?? null,
+          dim_host_credibility: result.dimensions?.hostCredibility?.score ?? null,
+          dim_omission_risk: result.dimensions?.omissionRisk?.score ?? null,
+          created_at: new Date().toISOString(),
+        });
+
+        // Also write to community cache (canon key) for instant future lookups
+        if (job.canonicalKey) {
+          const canonKey = \`canon:\${job.canonicalKey}\`;
+          await store.setJSON(canonKey, {
+            ...result,
+            analyzeCount: 1,
+            cachedAt: Date.now(),
+          }).catch(() => {});
+        }
+      }
+    } catch (sbErr: any) {
+      // Supabase write failure should never block the analysis result
+      console.warn("[run-analysis] Supabase write failed:", sbErr?.message);
+    }
 
   } catch (err: any) {
     await store.setJSON(transcriptId, {
