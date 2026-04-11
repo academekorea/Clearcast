@@ -502,12 +502,16 @@ export default async (req: Request, context: Context) => {
                   const normTitle = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
                   const normYt = normTitle(resolvedEpisodeTitle);
                   const items = feedXml.match(/<item[\s\S]*?<\/item>/g) || [];
-                  for (const item of items.slice(0, 20)) {
+                  for (const item of items.slice(0, 30)) {
                     const tMatch = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/);
                     const epTitle = tMatch?.[1]?.trim() || "";
                     const normEp = normTitle(epTitle);
-                    // Match if either title contains the other (handles truncation/subtitle differences)
-                    if (normEp && normYt && (normEp.includes(normYt.slice(0, 20)) || normYt.includes(normEp.slice(0, 20)))) {
+                    // Match using first 40 chars or shared 8-char substring (handles show branding appended to YouTube titles)
+                    const ytPrefix = normYt.slice(0, 40);
+                    const epPrefix = normEp.slice(0, 40);
+                    const hasMatch = normEp.includes(ytPrefix) || normYt.includes(epPrefix) ||
+                      (normEp.length > 8 && normYt.includes(normEp.slice(0, Math.min(normEp.length, 40))));
+                    if (normEp && normYt && hasMatch) {
                       const enclosure = item.match(/<enclosure[^>]+url=["']([^"']+)["']/i);
                       const audioUrl = enclosure?.[1] || "";
                       if (audioUrl) {
@@ -663,6 +667,56 @@ export default async (req: Request, context: Context) => {
 
             if (best?.feedUrl) {
               console.log(`[analyze] iTunes fallback found: ${best.collectionName} → ${best.feedUrl}`);
+              // Try auto-match before showing picker
+              let postRailwayAudioUrl: string | null = null;
+              if (resolvedEpisodeTitle) {
+                try {
+                  const feedRes2 = await fetch(best.feedUrl, { headers: { "User-Agent": "Podlens/1.0 (+https://podlens.app)" }, signal: AbortSignal.timeout(8000) });
+                  if (feedRes2.ok) {
+                    const feedXml2 = await feedRes2.text();
+                    const normT = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+                    const normYt2 = normT(resolvedEpisodeTitle);
+                    const items2 = feedXml2.match(/<item[\s\S]*?<\/item>/g) || [];
+                    for (const item2 of items2.slice(0, 30)) {
+                      const tMatch2 = item2.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/);
+                      const epTitle2 = tMatch2?.[1]?.trim() || "";
+                      const normEp2 = normT(epTitle2);
+                      const hasMatch2 = normEp2.includes(normYt2.slice(0, 40)) || normYt2.includes(normEp2.slice(0, 40)) ||
+                        (normEp2.length > 8 && normYt2.includes(normEp2.slice(0, Math.min(normEp2.length, 40))));
+                      if (normEp2 && normYt2 && hasMatch2) {
+                        const enc2 = item2.match(/<enclosure[^>]+url=["']([^"']+)["']/i);
+                        if (enc2?.[1]) { postRailwayAudioUrl = enc2[1]; break; }
+                      }
+                    }
+                  }
+                } catch {}
+              }
+              if (postRailwayAudioUrl) {
+                // Auto-matched — submit directly to AssemblyAI from within background job
+                const aaiKeyBg = Netlify.env.get("ASSEMBLYAI_API_KEY");
+                if (aaiKeyBg) {
+                  const aaiResBg = await fetch("https://api.assemblyai.com/v2/transcript", {
+                    method: "POST",
+                    headers: { authorization: aaiKeyBg, "content-type": "application/json" },
+                    body: JSON.stringify({ audio_url: postRailwayAudioUrl, speech_models: ["universal-2"] }),
+                    signal: AbortSignal.timeout(30000),
+                  });
+                  if (aaiResBg.ok) {
+                    const aaiDataBg = await aaiResBg.json() as any;
+                    if (aaiDataBg.id) {
+                      await store.setJSON(jobId, {
+                        status: "transcribing", jobId, url, canonicalKey: canonical,
+                        episodeTitle: resolvedEpisodeTitle,
+                        showName: resolvedShowName || best.collectionName || channelName,
+                        transcriptId: aaiDataBg.id,
+                        createdAt: Date.now(),
+                        pendingTimeoutAt: Date.now() + TIMEOUT_MS,
+                      });
+                      return;
+                    }
+                  }
+                }
+              }
               await store.setJSON(jobId, {
                 status: "error", jobId,
                 error: "youtube_fallback_found",
