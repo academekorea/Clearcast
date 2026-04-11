@@ -110,7 +110,7 @@ export default async (req: Request) => {
   // Verify internal trigger — reject if secret not configured or doesn't match
   const secret = Netlify.env.get("YOUTUBE_SERVICE_SECRET") || "";
   const provided = req.headers.get("x-internal-trigger") || req.headers.get("x-internal-secret") || "";
-  if (!secret || (provided !== secret && provided !== "admin")) {
+  if (!secret || provided !== secret) {
     console.warn("[seed-analyses] Unauthorized trigger attempt");
     return; // Background functions return void — just exit silently
   }

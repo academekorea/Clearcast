@@ -28,12 +28,14 @@ export default async (req: Request) => {
 
   const siteUrl = Netlify.env.get("URL") || "https://podlens.app";
 
-  // Fire background function
+  const secret = Netlify.env.get("YOUTUBE_SERVICE_SECRET") || "";
+
+  // Fire background function using real secret
   fetch(`${siteUrl}/.netlify/functions/seed-analyses-background`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-internal-trigger": "admin",
+      "x-internal-secret": secret,
     },
     body: JSON.stringify({ trigger: "manual" }),
   }).catch(() => {});
