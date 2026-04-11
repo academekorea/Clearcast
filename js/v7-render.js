@@ -258,7 +258,7 @@ function renderResults(data) {
     + (guest.instagram ? '<a class="sl" href="https://instagram.com/'+guest.instagram+'" target="_blank" rel="noopener">&#128247; @'+guest.instagram+'</a>' : '')
     + (guest.linkedin  ? '<a class="sl" href="'+guest.linkedin+'" target="_blank" rel="noopener">in LinkedIn</a>' : '')
     + (guest.website   ? '<a class="sl" href="'+guest.website+'" target="_blank" rel="noopener">&#127760; '+guest.website.replace(/^https?:\/\//,'').split('/')[0]+'</a>' : '')
-    + (showName ? '<a class="sl sl-podlens" onclick="showView(\'show\');loadShowProfile(\''+showName.toLowerCase().replace(/[^a-z0-9]+/g,\'-\')+\'\',null);return false" href="javascript:void(0)">&#127897; Show profile</a>' : '')
+    + (showName ? '<a class="sl sl-podlens" onclick="showView(\'show\');loadShowProfile(\''+_showSlug+'\',' + 'null);return false" href="javascript:void(0)">&#127897; Show profile</a>' : '')
     + '</div></div>';
 
   // Build bias-intelligence-first audio briefing — tells listener what to watch for
@@ -336,6 +336,7 @@ function renderResults(data) {
     return parts.join(' ').replace(/'/g, '\u2019').replace(/"/g, '');
   }
 
+  var _showSlug = showName ? showName.toLowerCase().split('').map(function(ch){return /[a-z0-9]/.test(ch)?ch:'-';}).join('').replace(/-+/g,'-') : '';
   var briefingScript = data.jobId === 'demo'
     ? 'Before you press play \u2014 here is what Podlens found about this episode with Jensen Huang from Lex Fridman Podcast. The episode has a mild left lean. About 38 percent of the framing uses progressive regulatory language, while 21 percent pushes back with free-market arguments. Host credibility is strong overall, but Lex Fridman rarely challenged Jensen\u2019s self-reported market share figures. Key stat: Jensen claimed over 80 percent of AI training compute \u2014 independent estimates put it at 65 to 70 percent. That was never questioned. Omission risk is high. NVIDIA\u2019s active antitrust scrutiny in the EU and US is never mentioned. The 40 billion dollar ARM acquisition failure is also absent, despite a full discussion of NVIDIA\u2019s strategic bets. Three sponsor segments are editorially integrated rather than clearly separated from content. Two things to watch for as you listen: First, when market share figures are cited, they are not sourced. Second, government regulation is framed as necessary without presenting the counterargument. Now you know what to listen for. Stay critical.'
     : buildBriefingScript(data);
@@ -644,7 +645,7 @@ function renderResults(data) {
           if (chipsEl) chipsEl.innerHTML = trackCount ? '<div class="lchip">'+trackCount+'</div>' : '';
           if (linksEl) linksEl.innerHTML =
             (appleUrl ? '<a class="sl" href="'+appleUrl+'" target="_blank" rel="noopener">&#9654; Apple Podcasts</a>' : '')
-            + (showName ? '<a class="sl sl-podlens" onclick="showView(\'show\');loadShowProfile(\''+showName.toLowerCase().replace(/[^a-z0-9]+/g,\'-\')+\'\',null);return false" href="javascript:void(0)">&#127897; Show profile</a>' : '');
+            + (showName ? '<a class="sl sl-podlens" onclick="showView(\'show\');loadShowProfile(\''+_showSlug+'\',' + 'null);return false" href="javascript:void(0)">&#127897; Show profile</a>' : '');
         }
       }).catch(function(){});
   }
@@ -702,6 +703,13 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
     + '<div class="pl-afill" id="v7-afill" style="width:0%"></div>'
     + '<div class="pl-athumb" id="v7-athumb" style="left:0%"></div>'
     + '</div></div>';
+  // Bias skeleton in left column (2nd item)
+  html += '<div class="pl-card" style="margin-top:10px">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+    + '<div class="lbl" style="margin-bottom:0">Political lean</div>'
+    + '<div style="font-size:10px;color:#d97706">Calculating\u2026</div></div>'
+    + '<div style="height:7px;background:#f0f0f0;border-radius:4px;margin:6px 0 4px;animation:shimmer 1.5s infinite"></div>'
+    + '<div style="font-size:10px;color:#bbb">Lean appears in ~90 seconds</div></div>';
   html += '</div>';
 
   html += '<div class="rc">'
@@ -711,10 +719,6 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
     + '<div class="pl-card"><div class="lbl">Audio briefing \u00b7 Before you listen</div>'
     + '<div class="bdesc" style="color:#bbb">Ready when analysis completes \u2014 play while you wait</div>'
     + '<button class="bbtn" style="margin-top:8px;opacity:.5;cursor:default" disabled>\u25b6 Play briefing</button></div>'
-    + '<div class="pl-card"><div class="biasrow">'
-    + '<div class="lbl" style="margin-bottom:0">Political lean \u2014 how this episode frames issues</div>'
-    + '<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#d97706"><div class="pdot"></div>Calculating</div></div>'
-    + '<div class="enote" style="margin-top:8px">Analyzing transcript \u2014 lean appears in ~90 seconds</div></div>'
     + '</div>';
 
   html += '</div>'; // end trow
