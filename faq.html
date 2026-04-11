@@ -18,6 +18,18 @@
 <meta name="theme-color" content="#0f2027">
 <link rel="canonical" href="https://podlens.app/faq">
 <style>
+/* ── NAV ── */
+nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:200;gap:0;box-sizing:border-box}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--navy);font-family:var(--ffs);font-weight:700;font-size:18px;margin-right:auto;flex-shrink:0}
+.nav-logo img{width:28px;height:28px;border-radius:6px;flex-shrink:0}
+.nav-logo-text{font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--navy);letter-spacing:0}
+[data-theme="dark"] .nav-logo-text{color:var(--text)}
+.nav-link{padding:8px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:4px;transition:background .15s,color .15s;font-weight:400;border:none;background:none;cursor:pointer;font-family:var(--ff)}
+.nav-link:hover{background:var(--bg3);color:var(--text)}
+.nav-btn-signin{margin-left:8px;padding:8px 20px;background:var(--navy);color:#fff;text-decoration:none;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;transition:opacity .15s;display:inline-block;border:none;cursor:pointer;font-family:var(--ff)}
+.nav-btn-signin:hover{opacity:.85}
+@media(max-width:640px){nav{padding:0 16px}.nav-link{display:none}.nav-logo-text{display:none}}
+
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--text:#1a1a1a;--text2:#555;--text3:#999;--navy:#0f2027;--border:rgba(0,0,0,0.1);--ff:'Inter',-apple-system,sans-serif;--ffs:'Playfair Display',Georgia,serif;--r:4px}
 @media(prefers-color-scheme:dark){:root{--bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--text:#FAF9F6;--text2:#888;--text3:#555;--border:rgba(255,255,255,0.08)}}
@@ -26,14 +38,14 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.7}
 a{color:var(--navy)}[data-theme="dark"] a{color:#90b8f8}
-nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
-.nav-logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;margin-right:auto}
-.nav-logo img{width:28px;height:28px;border-radius:6px}
-.nav-logo-text{font-family:var(--ffs);font-size:18px;color:var(--navy)}
-.nav-logo-text span{font-weight:700}[data-theme="dark"] .nav-logo-text{color:var(--text)}
-.nav-link{padding:8px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:4px;transition:background .15s,color .15s}
-.nav-link:hover{background:var(--bg3);color:var(--text)}
-.nav-cta{padding:8px 18px;background:var(--navy);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);text-decoration:none}
+
+
+
+
+[data-theme="dark"] 
+
+
+
 main{max-width:760px;margin:0 auto;padding:64px 24px 96px}
 .page-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
 .page-title{font-family:var(--ffs);font-size:clamp(32px,4vw,48px);font-weight:700;line-height:1.15;margin-bottom:16px}
@@ -73,13 +85,13 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 </head>
 <body>
 <nav>
-  <a class="nav-logo" href="/">
-    <img src="/favicon.svg" alt="Podlens">
-    <span class="nav-logo-text">POD<span>LENS</span></span>
+  <a href="/" class="nav-logo">
+    <img src="/favicon-32x32.png" alt="Podlens" width="28" height="28">
+    <span class="nav-logo-text"><span style="font-weight:400">POD</span>LENS</span>
   </a>
   <a href="/how-it-works.html" class="nav-link">How it works</a>
   <a href="/pricing.html" class="nav-link">Pricing</a>
-  <a href="/" class="nav-cta">Launch app</a>
+  <a href="/" class="nav-btn-signin">Sign in / up</a>
 </nav>
 
 <main>
@@ -243,7 +255,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
     <div>
       <div class="footer-col-title">HELP</div>
       <div class="footer-links">
-        <a href="mailto:hello@podlens.app">Contact</a>
+        <a href="/contact.html">Contact</a>
         <a href="/faq.html">FAQ</a>
         <a href="/privacy.html">Privacy Policy</a>
         <a href="/terms.html">Terms of Service</a>
