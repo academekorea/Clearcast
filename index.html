@@ -5702,7 +5702,7 @@ function discSearch(q, isLive) {
     return s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || (s.cat||'').toLowerCase().includes(lower);
   });
   // Also hit iTunes Search API for real results
-  var itunesUrl = 'https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=podcast&limit=8&entity=podcast';
+  var itunesUrl = '/api/podcast-search?q='+encodeURIComponent(q);
   if (el && !matches.length) {
     el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:12px 0">Searching iTunes…</div>';
   }
@@ -5713,7 +5713,8 @@ function discSearch(q, isLive) {
         if (el && !matches.length) el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:12px 0">No results for "'+_escHtml(q)+'"</div>';
         return;
       }
-      var results = d.results.map(function(r){
+      var items = d.results || d.results || [];
+    var results = items.map(function(r){
         return { name: r.collectionName||r.trackName||'', artist: r.artistName||'', artwork: r.artworkUrl600||r.artworkUrl100||'', feedUrl: r.feedUrl||'', bias: null };
       }).filter(function(r){ return r.name && r.feedUrl; });
       // Merge curated (with bias data) + iTunes results (deduped)
@@ -10752,8 +10753,21 @@ function renderSpotifyConnected(data, u) {
   }
   html += '</div>';
 
-  // Suggestions
-  if (suggestions.length) {
+  // Recently played episodes — now available from Spotify import
+  var recentEps = data.recentEpisodes || [];
+  if (recentEps.length) {
+    html += '<div class="sp-suggestions"><h4>Recently played — ready to analyze</h4><div class="sp-sug-list">';
+    recentEps.slice(0,4).forEach(function(ep) {
+      var artHtml = ep.artworkUrl
+        ? '<img class="sp-sug-art" src="' + ep.artworkUrl + '" alt="" onerror="this.style.display=\'none\'">'
+        : '<div class="sp-sug-art" style="display:flex;align-items:center;justify-content:center">&#127897;</div>';
+      html += '<div class="sp-sug-item">' + artHtml
+        + '<div class="sp-sug-name"><div style="font-size:11px;font-weight:600;color:var(--text)">' + _escHtml(ep.episodeTitle || ep.showName || 'Episode') + '</div><div style="font-size:10px;color:var(--text3)">' + _escHtml(ep.showName || '') + '</div></div>'
+        + '<button class="sp-sug-btn" onclick="document.getElementById(\'url-input\').value=\''+ep.spotifyUrl+'\';document.getElementById(\'modal-spotify-connected\').classList.remove(\'on\');showView(\'analyze\');">Analyze &rarr;</button>'
+        + '</div>';
+    });
+    html += '</div></div>';
+  } else if (suggestions.length) {
     html += '<div class="sp-suggestions"><h4>Analyze these shows from your library</h4><div class="sp-sug-list">';
     suggestions.forEach(function(s) {
       var artHtml = s.artwork

@@ -53,10 +53,26 @@ export default async (req: Request) => {
     }
 
     const recentShowNames = new Set<string>();
+    const recentEpisodes: any[] = [];
     if (recentRes.status === "fulfilled" && recentRes.value.ok) {
       const data = await recentRes.value.json();
       for (const item of (data.items || [])) {
-        if (item.track?.show?.name) recentShowNames.add(item.track.show.name);
+        // item.track can be an episode object on Spotify
+        const ep = item.track;
+        if (!ep) continue;
+        const showName = ep.show?.name || ep.podcast?.name || "";
+        if (showName) recentShowNames.add(showName);
+        // Extract episode-level data for smart queue seeding
+        if (ep.type === "episode" && ep.external_urls?.spotify) {
+          recentEpisodes.push({
+            episodeTitle: ep.name || "",
+            showName: showName,
+            spotifyUrl: ep.external_urls.spotify,
+            durationMs: ep.duration_ms || 0,
+            playedAt: item.played_at || null,
+            artworkUrl: ep.images?.[0]?.url || ep.show?.images?.[0]?.url || "",
+          });
+        }
       }
     }
 
@@ -115,6 +131,7 @@ export default async (req: Request) => {
       suggestedAnalyses,
       totalFollowed: followedShows.length,
       recentShowCount: recentShowNames.size,
+      recentEpisodes: recentEpisodes.slice(0, 10),
       cachedAt: Date.now(),
     };
 
