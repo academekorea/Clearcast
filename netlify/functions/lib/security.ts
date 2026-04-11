@@ -204,7 +204,7 @@ export async function checkSuspiciousActivity(
   recentAnalysisCount: number
 ): Promise<void> {
   const threshold = parseInt(
-    Netlify.env.get("SUSPICIOUS_ANALYSIS_THRESHOLD") || "20",
+    "20" || "20",
     10
   );
   if (recentAnalysisCount < threshold) return;

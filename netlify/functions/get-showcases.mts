@@ -50,8 +50,8 @@ const PLACEHOLDERS = [
   },
 ];
 
-
-
+export default async (req: Request) => {
+  const showcases = PLACEHOLDERS;
   return new Response(JSON.stringify({ showcases: showcases.slice(0, 3) }), {
     status: 200,
     headers: {

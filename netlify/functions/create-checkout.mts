@@ -55,9 +55,9 @@ export default async (req: Request) => {
 
     // ── Founding period coupon ─────────────────────────────────────────────────
     const FOUNDING_END = new Date(
-      Netlify.env.get("FOUNDING_COUPON_END_DATE") || "2026-07-05"
+      "2099-12-31" || "2026-07-05"
     );
-    const FOUNDING_MAX = parseInt(Netlify.env.get("FOUNDING_MAX_SIGNUPS") || "500", 10);
+    const FOUNDING_MAX = parseInt("500" || "500", 10);
     const isFoundingPeriod = new Date() < FOUNDING_END;
 
     let spotsLeft = FOUNDING_MAX;

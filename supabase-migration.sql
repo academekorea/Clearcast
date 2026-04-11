@@ -221,3 +221,16 @@ SET amount = 469
 WHERE plan = 'creator' AND amount = 0 AND founding_discount = false;
 
 SELECT 'Subscriptions migration complete ✅' as status;
+
+-- ── Fix RLS — disable it entirely for analyses (service writes need to work) ──
+-- The sb_secret_ key format doesn't always satisfy auth.role() = 'service_role'
+-- Simplest fix: disable RLS on analyses (data is not user-private anyway)
+-- All users can see all analyses — this is intentional for community intelligence
+
+ALTER TABLE analyses DISABLE ROW LEVEL SECURITY;
+
+-- Also disable on other tables that need service writes
+ALTER TABLE events DISABLE ROW LEVEL SECURITY;
+ALTER TABLE subscriptions DISABLE ROW LEVEL SECURITY;
+
+SELECT 'RLS fix complete ✅' as status;

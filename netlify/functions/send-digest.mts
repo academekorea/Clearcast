@@ -33,10 +33,11 @@ export default async (req: Request) => {
     if (sb) {
       // Query Supabase: users with analyses in last 7 days
       const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      // Include all tiers — pricing promises weekly digest to all users
       const { data: userRows } = await sb
         .from('users')
         .select('id,email,name,tier')
-        .in('tier', ['creator', 'operator', 'studio']);
+        .not('email', 'is', null);
 
       if (userRows) {
         for (const user of userRows) {

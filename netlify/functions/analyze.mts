@@ -331,7 +331,7 @@ export default async (req: Request, context: Context) => {
 
     if (!isAdmin) {
       let monthLimit = 0;
-      if (plan === "free") monthLimit = parseInt(Netlify.env.get("FREE_TIER_MONTHLY_ANALYSES") || "4", 10);
+      if (plan === "free") monthLimit = parseInt("4" || "4", 10);
       else if (plan === "creator") monthLimit = 25;
       // operator, studio, trial = unlimited (monthLimit stays 0)
 

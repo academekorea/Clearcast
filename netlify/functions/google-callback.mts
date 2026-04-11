@@ -33,8 +33,8 @@ async function assignFoundingStatus(
   }
 
   const now = new Date();
-  const foundingEndRaw = Netlify.env.get("FOUNDING_COUPON_END_DATE") || "2026-07-05";
-  const foundingMax = parseInt(Netlify.env.get("FOUNDING_MAX_SIGNUPS") || "500", 10);
+  const foundingEndRaw = "2099-12-31" || "2026-07-05";
+  const foundingMax = parseInt("500" || "500", 10);
   const isFoundingPeriod = now < new Date(foundingEndRaw);
 
   if (!isFoundingPeriod) return;

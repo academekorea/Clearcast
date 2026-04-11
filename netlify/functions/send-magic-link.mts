@@ -26,7 +26,7 @@ export default async (req: Request) => {
     });
   }
 
-  const expiryMinutes = parseInt(Netlify.env.get("MAGIC_LINK_EXPIRY_MINUTES") || "15", 10);
+  const expiryMinutes = parseInt("15" || "15", 10);
   const store = getStore("podlens-auth");
   const emailHash = await sha256hex(email);
 
