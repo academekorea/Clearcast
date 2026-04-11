@@ -139,8 +139,8 @@ export default async (req: Request) => {
               url: ep.audioUrl,
               episodeTitle: ep.title,
               showName: ep.showName,
-              userId: null, // community analysis, not attributed to a user
-              userPlan: "studio", // give full analysis
+              userId: null,     // no user — community analysis, never counts against quota
+              // userPlan intentionally omitted — bypasses quota check entirely
               isPreAnalysis: true,
             }),
             signal: AbortSignal.timeout(15000),
