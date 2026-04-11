@@ -487,22 +487,67 @@ export default async (req: Request, context: Context) => {
           });
           if (bestQuick?.feedUrl) {
             console.log(`[analyze] iTunes quick-path found before Railway: ${bestQuick.collectionName}`);
-            // Found a podcast RSS — return episode picker immediately (much faster than yt-dlp)
-            await store.setJSON(jobId, {
-              status: "error", jobId,
-              error: "youtube_fallback_found",
-              code: "YOUTUBE_FALLBACK",
-              feedUrl: bestQuick.feedUrl,
-              showName: bestQuick.collectionName || channelForItunes,
-              showArtwork: bestQuick.artworkUrl600 || bestQuick.artworkUrl100 || "",
-              channelName: channelForItunes,
-              suggestion: "episode_picker",
-            });
-            return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+            // Try to auto-match the YouTube video title to an episode in the RSS feed
+            const showNameForFallback = bestQuick.collectionName || channelForItunes;
+            const showArtworkForFallback = bestQuick.artworkUrl600 || bestQuick.artworkUrl100 || "";
+            let autoMatchedAudioUrl: string | null = null;
+            if (resolvedEpisodeTitle) {
+              try {
+                const feedRes = await fetch(bestQuick.feedUrl, {
+                  headers: { "User-Agent": "Podlens/1.0 (+https://podlens.app)" },
+                  signal: AbortSignal.timeout(8000),
+                });
+                if (feedRes.ok) {
+                  const feedXml = await feedRes.text();
+                  const normTitle = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+                  const normYt = normTitle(resolvedEpisodeTitle);
+                  const items = feedXml.match(/<item[\s\S]*?<\/item>/g) || [];
+                  for (const item of items.slice(0, 20)) {
+                    const tMatch = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/);
+                    const epTitle = tMatch?.[1]?.trim() || "";
+                    const normEp = normTitle(epTitle);
+                    // Match if either title contains the other (handles truncation/subtitle differences)
+                    if (normEp && normYt && (normEp.includes(normYt.slice(0, 20)) || normYt.includes(normEp.slice(0, 20)))) {
+                      const enclosure = item.match(/<enclosure[^>]+url=["']([^"']+)["']/i);
+                      const audioUrl = enclosure?.[1] || "";
+                      if (audioUrl) {
+                        autoMatchedAudioUrl = audioUrl;
+                        if (!resolvedEpisodeTitle) resolvedEpisodeTitle = epTitle;
+                        console.log(`[analyze] iTunes auto-matched episode: ${epTitle}`);
+                        break;
+                      }
+                    }
+                  }
+                }
+              } catch {}
+            }
+            if (autoMatchedAudioUrl) {
+              // Proceed directly to transcription — no picker needed
+              resolvedAudioUrl = autoMatchedAudioUrl;
+              resolvedShowName = resolvedShowName || showNameForFallback;
+            } else {
+              // No auto-match — show episode picker
+              await store.setJSON(jobId, {
+                status: "error", jobId,
+                error: "youtube_fallback_found",
+                code: "YOUTUBE_FALLBACK",
+                feedUrl: bestQuick.feedUrl,
+                showName: showNameForFallback,
+                showArtwork: showArtworkForFallback,
+                channelName: channelForItunes,
+                suggestion: "episode_picker",
+              });
+              return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+            }
           }
         }
       } catch {}
     }
+
+    // If auto-matched from RSS, skip Railway entirely and fall through to AssemblyAI
+    if (resolvedAudioUrl) {
+      // continue below to section 8 (AssemblyAI)
+    } else {
 
     // L3: Railway yt-dlp (client rotation: ios → android → web → mweb)
     const audioServiceUrl = Netlify.env.get("AUDIO_SERVICE_URL");
@@ -561,7 +606,7 @@ export default async (req: Request, context: Context) => {
               headers: { "authorization": aaiKey, "content-type": "application/json" },
               body: JSON.stringify({
                 audio_url: upload_url,
-                speech_models: "best",
+                speech_models: ["best"],
                 // Store word-level timestamps for transcript seek (Priority 4)
                 // words_json: true is the default — explicitly request it
               }),
@@ -655,6 +700,7 @@ export default async (req: Request, context: Context) => {
 
     context.waitUntil(railwayWork);
     return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+    } // end else (Railway path)
   }
 
   // ── 3b. Spotify episode path ──────────────────────────────────────────────
@@ -784,7 +830,7 @@ export default async (req: Request, context: Context) => {
     headers: { authorization: assemblyKey, "content-type": "application/json" },
     body: JSON.stringify({
       audio_url: resolvedAudioUrl,
-      speech_models: "best",
+      speech_models: ["best"],
       // word_boost not needed — default word-level timestamps are always returned
     }),
     signal: AbortSignal.timeout(30000),
