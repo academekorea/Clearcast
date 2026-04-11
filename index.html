@@ -9317,7 +9317,7 @@ function _urlInputHint(val) {
   // Spotify show — we'll find latest episode
   } else if (/open\.spotify\.com\/show\//.test(val)) {
     icon = '◎'; color = '#185FA5';
-    hint = 'Spotify show URL — we'll analyze the latest episode. To pick a specific one, paste the episode URL.';
+    hint = "Spotify show URL — we'll analyze the latest episode. To pick a specific one, paste the episode URL.";
 
   // Apple Podcasts episode
   } else if (/podcasts\.apple\.com/.test(val) && /\?i=/.test(val)) {
@@ -9327,12 +9327,12 @@ function _urlInputHint(val) {
   // Apple Podcasts show
   } else if (/podcasts\.apple\.com/.test(val)) {
     icon = '◎'; color = '#185FA5';
-    hint = 'Apple Podcasts show — we'll pick the latest episode. Paste a specific episode URL to choose one.';
+    hint = "Apple Podcasts show — we'll pick the latest episode. Paste a specific episode URL to choose one.";
 
   // RSS feed
   } else if (/\.xml$|\/feed|\/rss|simplecast\.com|megaphone\.fm|feeds\.npr\.org|anchor\.fm\/s/.test(val)) {
     icon = '✓'; color = '#16a34a';
-    hint = 'RSS feed — works great. We'll analyze the latest episode.';
+    hint = "RSS feed — works great. We'll analyze the latest episode.";
 
   // Direct MP3/audio file
   } else if (/\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(val)) {
@@ -9342,7 +9342,7 @@ function _urlInputHint(val) {
   // Looks like a URL but unrecognized
   } else if (/^https?:\/\//.test(val)) {
     icon = '?'; color = '#d97706';
-    hint = 'Unrecognized URL — we'll try to resolve it. If it fails, try finding the RSS feed or a direct episode link.';
+    hint = "Unrecognized URL — we'll try to resolve it. If it fails, try finding the RSS feed or a direct episode link.";
 
   // Not a URL yet
   } else if (val.length > 3) {
