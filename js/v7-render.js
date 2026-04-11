@@ -189,7 +189,7 @@ function renderResults(data) {
   }
 
   // Two-column row
-  html += '<div class="trow" style="grid-template-columns:260px 1fr;gap:0;align-items:start">';
+  html += '<div class="trow">';
 
   // Left column
   html += '<div>';
@@ -240,7 +240,7 @@ function renderResults(data) {
   html += '</div>';
 
   // Right column
-  html += '<div class="rc" style="padding:16px;border-left:0.5px solid var(--border)">';
+  html += '<div class="rc">';
 
   // Guest card — id="pl-guest-card" so iTunes fetch can update artwork after render
   html += '<div class="pl-card" id="pl-guest-card">'
@@ -679,7 +679,7 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
     + '<div style="font-size:10px;color:#b58a40;margin-top:2px">Play while you wait \u00b7 <strong style="color:#b45309">\u26A1 Analyzed once? Loads instantly next time</strong></div></div>'
     + '<div id="ar-eta-pct" style="font-size:10px;color:#b58a40">0% complete</div></div></div>';
 
-  html += '<div class="trow" style="grid-template-columns:260px 1fr;gap:0;align-items:start"><div style="padding:16px;border-right:0.5px solid var(--border)">';
+  html += '<div class="trow"><div>';
   if (vid) {
     html += '<div class="artwork" style="aspect-ratio:16/9;position:relative">'
       + '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&modestbranding=1&enablejsapi=1" id="v7-yt-player"'
