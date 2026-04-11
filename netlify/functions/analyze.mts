@@ -561,7 +561,7 @@ export default async (req: Request, context: Context) => {
               headers: { "authorization": aaiKey, "content-type": "application/json" },
               body: JSON.stringify({
                 audio_url: upload_url,
-                speech_model: "best",
+                speech_models: "best",
                 // Store word-level timestamps for transcript seek (Priority 4)
                 // words_json: true is the default — explicitly request it
               }),
@@ -620,7 +620,7 @@ export default async (req: Request, context: Context) => {
               console.log(`[analyze] iTunes fallback found: ${best.collectionName} → ${best.feedUrl}`);
               await store.setJSON(jobId, {
                 status: "error", jobId,
-                error: `youtube_fallback_found`,
+                error: "youtube_fallback_found",
                 code: "YOUTUBE_FALLBACK",
                 feedUrl: best.feedUrl,
                 showName: best.collectionName || channelName,
@@ -784,7 +784,7 @@ export default async (req: Request, context: Context) => {
     headers: { authorization: assemblyKey, "content-type": "application/json" },
     body: JSON.stringify({
       audio_url: resolvedAudioUrl,
-      speech_model: "best",
+      speech_models: "best",
       // word_boost not needed — default word-level timestamps are always returned
     }),
     signal: AbortSignal.timeout(30000),
