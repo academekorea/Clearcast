@@ -99,10 +99,17 @@
       ? ' <span style="font-size:9px;font-weight:700;text-transform:uppercase;background:var(--bg3,#F0EFE9);color:var(--text3,#999);padding:1px 5px;border-radius:2px;letter-spacing:.04em;margin-left:4px">' + u.plan + '</span>'
       : '';
 
+    // Admin indicator — only for super admin, completely hidden from normal users
+    var adminLink = isSuperAdmin
+      ? '<a href="/account?tab=admin" class="nav-link" style="color:#dc2626;font-weight:600">🔴 Admin</a>'
+      : '';
+
     navLinks.innerHTML =
-      '<a href="/" class="nav-link' + (_isActive('/', path) ? ' active' : '') + '" onclick="if(typeof showHome===\'function\'){showHome();return false}">Home</a>'
+      adminLink
+      + '<a href="/" class="nav-link' + (_isActive('/', path) ? ' active' : '') + '" onclick="if(typeof showHome===\'function\'){showHome();return false}">Home</a>'
       + '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'discover\');return false}">Discover</a>'
       + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'analyze\');return false}">Analyze</a>'
+      + '<a href="/library" class="nav-link' + (_isActive('/library', path) ? ' active' : '') + '">Library</a>'
       + '<button class="nav-theme" id="nav-theme-btn" aria-label="Toggle theme">' + (isDark ? '🌙' : '☀️') + '</button>'
       + '<div class="nav-dd-wrap">'
       + '<button class="nav-avatar-btn" id="nav-avatar-btn" aria-label="Profile menu">' + avatarInner + '</button>'
