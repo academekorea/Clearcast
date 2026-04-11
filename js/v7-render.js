@@ -217,6 +217,26 @@ function renderResults(data) {
     + '<div class="pl-afill" id="v7-afill" style="width:0%"></div>'
     + '<div class="pl-athumb" id="v7-athumb" style="left:0%"></div>'
     + '</div></div>';
+  // Bias bar — 2nd visible item in left column (early signal)
+  html += '<div class="pl-card" style="margin-top:10px" id="pl-bias-left">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+    + '<div class="lbl" style="margin-bottom:0">Political lean</div>'
+    + '<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#d97706">'
+    + '<div class="pdot"></div>'+(isPartial||data.jobId==='demo' ? 'Early signal' : 'Final')
+    + '</div></div>'
+    + '<div class="bverdict">'+(data.biasLabel||'Mostly balanced')
+    + (data.biasDirection ? '<span style="font-size:10px;font-weight:400;opacity:.65;margin-left:6px">('+data.biasDirection+')</span>' : '')
+    + '</div>'
+    + '<div style="position:relative"><div class="bias-bar-wrap">'
+    + '<div class="bias-seg-left" style="width:'+segs.lp+'%"></div>'
+    + '<div class="bias-seg-center" style="width:'+segs.cp+'%"></div>'
+    + '<div class="bias-seg-right" style="width:'+segs.rp+'%"></div>'
+    + '</div></div>'
+    + '<div class="bpcts">'
+    + '<span style="color:#e0352b">&#9679; '+segs.lp+'% left</span>'
+    + '<span style="color:#999">&#9642; '+segs.cp+'% center</span>'
+    + '<span style="color:#378ADD">&#9679; '+segs.rp+'% right</span>'
+    + '</div></div>';
   html += '</div>';
 
   // Right column
@@ -329,28 +349,7 @@ function renderResults(data) {
     + (showFull ? '<span class="bdur">~2 min</span>' : '<span class="bdur" style="color:#bbb">10 sec preview</span>')
     + '</div></div>';
 
-  // Bias card
-  html += '<div class="pl-card">'
-    + '<div class="biasrow">'
-    + '<div class="lbl" style="margin-bottom:0">Political lean \u2014 how this episode frames issues</div>'
-    + '<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#d97706"><div class="pdot"></div>'+(isPartial||data.jobId==='demo' ? 'Early signal' : 'Final')+'</div>'
-    + '</div>'
-    + '<div style="position:relative"><div class="bias-bar-wrap">'
-    + '<div class="bias-seg-left" style="width:'+segs.lp+'%"></div>'
-    + '<div class="bias-seg-center" style="width:'+segs.cp+'%"></div>'
-    + '<div class="bias-seg-right" style="width:'+segs.rp+'%"></div>'
-    + '<div class="bias-marker" style="left:'+segs.lp+'%"></div>'
-    + '</div></div>'
-    + '<div class="bpcts">'
-    + '<span style="color:#e0352b">\u25cf '+segs.lp+'% left</span>'
-    + '<span style="color:#999">\u25aa '+segs.cp+'% center</span>'
-    + '<span style="color:#378ADD">\u25cf '+segs.rp+'% right</span>'
-    + '</div>'
-    + '<div class="bverdict">'+(data.biasLabel||'Mostly balanced')
-    + (data.biasDirection ? '<span style="font-size:10px;font-weight:400;opacity:.65;margin-left:6px">('+data.biasDirection+')</span>' : '')
-    + '</div>'
-    + (isPartial||data.jobId==='demo' ? '<div class="enote">Based on first 30 min \u00b7 updating as analysis continues</div>' : '')
-    + '</div>';
+  // Bias card moved to left column (see above)
 
   html += '</div>'; // end rc
   html += '</div>'; // end trow
@@ -499,6 +498,29 @@ function renderResults(data) {
       + '<div class="mc"><div class="mv">'+tv+'</div><div class="ml">Host trust</div><div class="ms" style="color:'+tc+'">'+tl+'</div></div>'
       + '<div class="mc"><div class="mv">6.1</div><div class="ml">Source quality</div><div class="ms" style="color:#d97706">Moderate</div></div>'
       + '<div class="mc"><div class="mv">4.8</div><div class="ml">Guest balance</div><div class="ms" style="color:#ea580c">Low</div></div>'
+      + '</div></div>';
+  }
+
+  // Unheard section — what was left out
+  var unheardFlags = (data.flags || []).filter(function(f) { return f.type === 'omission'; });
+  var unheardText = data.unheardSummary || (unheardFlags.length > 0
+    ? unheardFlags.slice(0,2).map(function(f){ return f.detail || f.title || ''; }).join(' ')
+    : null);
+  if (unheardText || unheardFlags.length > 0) {
+    var unheardCount = unheardFlags.length;
+    var unheardTopics = unheardFlags.slice(0,3).map(function(f){ return f.title || ''; }).filter(Boolean).join(' \u00b7 ');
+    html += '<div class="sec">'
+      + '<div class="seclbl">Unheard <span style="font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">\u00b7 what this episode left out</span></div>'
+      + '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;overflow:hidden">'
+      + '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:0.5px solid var(--border)">'
+      + '<div style="width:22px;height:22px;border-radius:4px;background:#fff1f0;display:flex;align-items:center;justify-content:center;flex-shrink:0">'
+      + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9a3412" stroke-width="2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>'
+      + '</div>'
+      + '<div>'
+      + '<div style="font-size:12px;font-weight:600;color:var(--text)">'+(unheardCount > 0 ? unheardCount + ' perspective'+(unheardCount!==1?'s':'')+' missing from this episode' : 'Perspectives missing from this episode')+'</div>'
+      + (unheardTopics ? '<div style="font-size:10px;color:var(--text3);margin-top:2px">'+unheardTopics+'</div>' : '')
+      + '</div></div>'
+      + '<div style="padding:10px 12px 10px 15px;border-left:3px solid #e24b4a;font-size:11px;color:var(--text2);line-height:1.6">'+(unheardText||'Important context was absent from this episode.')+'</div>'
       + '</div></div>';
   }
 

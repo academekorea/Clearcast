@@ -41,6 +41,7 @@ Analyze the transcript and return a JSON object with this EXACT structure — no
   },
   "factualityLabel": <"Mostly factual" | "Mixed factuality" | "Unreliable">,
   "summary": <2-3 sentence plain English summary of what this episode is about and how it leans>,
+  "unheardSummary": <1-2 sentences: what perspectives, facts, or context are absent from this episode that a listener needs to form a complete picture. This is the "Unheard" section — what the episode left out>,
   "flags": [
     {
       "type": <"fact-check" | "framing" | "omission" | "sponsor-note" | "context">,
