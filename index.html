@@ -2971,7 +2971,7 @@ body.light-mode,[data-theme="light"]{
 
 
     <!-- HOW IT WORKS -->
-    <section class="hiw-section">
+    <section class="hiw-section show-logged-out">
       <div class="section-eyebrow">How it works</div>
       <h2 class="section-h">From podcast URL to full intelligence report</h2>
       <p class="section-sub">Paste any episode. Get bias scores, source citations, and missing voices in under 60 seconds.</p>
@@ -2995,7 +2995,7 @@ body.light-mode,[data-theme="light"]{
     </section>
 
     <!-- UNHEARD TEASER -->
-    <section class="unheard-section">
+    <section class="unheard-section show-logged-out">
       <div class="section-eyebrow">Unheard</div>
       <h2 class="section-h">Stories your feeds are skipping</h2>
       <p class="section-sub">Every week, Podlens surfaces 5 important stories that major podcast networks are ignoring. Pro feature.</p>
@@ -3039,7 +3039,7 @@ body.light-mode,[data-theme="light"]{
     </section>
 
     <!-- FINAL CTA -->
-    <section class="fp-cta-section">
+    <section class="fp-cta-section show-logged-out">
       <div class="fp-cta-inner">
         <div class="fp-cta-title">Start knowing what you&rsquo;re actually listening to.</div>
         <div class="fp-cta-sub">Free forever. No credit card. Analyze your first episode in under a minute.</div>
@@ -3066,7 +3066,12 @@ body.light-mode,[data-theme="light"]{
           <button class="dash-nav-btn" data-section="analyzed" onclick="showDashSection('analyzed')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
           <button class="dash-nav-btn" data-section="intelligence" onclick="showDashSection('intelligence')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My Intelligence</button>
           <button class="dash-nav-btn" data-section="fingerprint" onclick="showDashSection('fingerprint')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
-        </div>
+          <!-- Bulk Scanner — Operator Lens only, shown via JS -->
+          <div id="nav-bulk-scanner-wrap" style="display:none">
+            <div class="dash-nav-div"></div>
+            <div class="dash-nav-lbl">Operator tools</div>
+            <a class="dash-nav-btn" href="/bulk-scan.html" style="text-decoration:none;color:inherit"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Bulk Scanner</a>
+          </div>
 
       <!-- MAIN CONTENT — sections switch via showDashSection() -->
       <div class="dash-main dash-main-content">

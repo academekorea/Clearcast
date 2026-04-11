@@ -1,5 +1,5 @@
 // Podlens Service Worker — v1
-const CACHE_NAME = 'podlens-v8';
+const CACHE_NAME = 'podlens-v9';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
