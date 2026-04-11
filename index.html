@@ -5733,7 +5733,8 @@ function discSearch(q, isLive) {
           var slug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
           var safeUrl = (s.feedUrl||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
           var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-show-art"></div>';
-          return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+_escHtml(s.name)+'</div><div class="disc-show-sub">'+_escHtml(s.artist||'')+'</div>'+_biasMini(s.bias||null)+'</div>';
+          var safeName2 = (s.name||'').replace(/"/g,'').replace(/'/g,'');
+          return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+_escHtml(s.name)+'</div><div class="disc-show-sub">'+_escHtml(s.artist||'')+'</div>'+_biasMini(s.bias||null)+'<button data-follow-name="'+safeName2+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName2+'\',\''+safeUrl+'\',\''+(s.artwork||'')+'\',this)" style="margin-top:8px;width:100%;padding:5px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button></div>';
         }).join('');
       }
     }).catch(function(){}); // silently keep curated results on error
