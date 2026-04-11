@@ -106,7 +106,6 @@
 
     navLinks.innerHTML =
       adminLink
-      + '<a href="/" class="nav-link' + (_isActive('/', path) ? ' active' : '') + '" onclick="if(typeof showHome===\'function\'){showHome();return false}">Home</a>'
       + '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'discover\');return false}">Discover</a>'
       + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'analyze\');return false}">Analyze</a>'
       + '<a href="/library" class="nav-link' + (_isActive('/library', path) ? ' active' : '') + '">Library</a>'
