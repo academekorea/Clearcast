@@ -4913,11 +4913,17 @@ function toggleFollowShow(name, feedUrl, artwork, btn) {
     u.followedShows = followed;
     setPlUser(u);
     plToast('Unfollowed ' + name, 2000);
+    // Remove from Supabase
+    safeFetch('/api/follow-show', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: u.id, action: 'unfollow', showName: name, feedUrl: feedUrl || '' }) }).catch(function(){});
   } else {
     followed.push({ name: name, feedUrl: feedUrl || '', artwork: artwork || '', addedAt: new Date().toISOString() });
     u.followedShows = followed;
     setPlUser(u);
     plToast('Following ' + name, 2500);
+    // Save to Supabase
+    safeFetch('/api/follow-show', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: u.id, action: 'follow', showName: name, feedUrl: feedUrl || '', artwork: artwork || '' }) }).catch(function(){});
   }
   // Refresh ALL follow buttons on the page for this show
   document.querySelectorAll('[data-follow-name]').forEach(function(b) {
@@ -9265,6 +9271,27 @@ function restoreConnections(u) {
     }).catch(function(){});
 }
 
+
+function syncFollowedShowsFromServer(u) {
+  if (!u || !u.id) return;
+  // Fetch followed shows from Supabase via a lightweight endpoint
+  fetch('/api/get-followed-shows?userId=' + encodeURIComponent(u.id))
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){
+      if (!d) return;
+      // Override localStorage with server state (source of truth)
+      var fresh = d.shows || [];
+      u.followedShows = fresh;
+      setPlUser(u);
+      // Refresh all follow buttons on page
+      document.querySelectorAll('[data-follow-name]').forEach(function(btn) {
+        var name = (btn.dataset.followName || '').toLowerCase();
+        var isFollowing = fresh.some(function(s){ return (s.name||'').toLowerCase() === name; });
+        btn.textContent = isFollowing ? '✓ Following' : '+ Follow';
+      });
+    }).catch(function(){});
+}
+
 function syncPlanFromStripe(u) {
   if (!u || !u.id) return;
   fetch('/api/get-plan?userId=' + encodeURIComponent(u.id))
@@ -9279,6 +9306,8 @@ function syncPlanFromStripe(u) {
       }
       // Restore platform connections from server
       restoreConnections(u);
+      // Sync followed shows from Supabase — clears stale localStorage test data
+      syncFollowedShowsFromServer(u);
       // Show payment grace period banner if needed
       if (d.graceMode && d.graceUntil) {
         showGraceBanner(d.graceUntil);
