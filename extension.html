@@ -105,12 +105,6 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .footer-copy,.footer-made{font-size:.75rem;color:var(--text3)}
 @media(max-width:720px){.footer-inner{grid-template-columns:1fr 1fr;gap:20px}.footer-brand{grid-column:1/-1}}
 
-
-/* ── NAV LINKS ── */
-.nav-link{padding:8px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:4px;transition:background .15s,color .15s;font-weight:400;border:none;background:none;cursor:pointer;font-family:var(--ff)}
-.nav-link:hover{background:var(--bg3);color:var(--text)}
-.nav-cta{padding:8px 20px;background:var(--navy);color:#fff;border:none;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);text-decoration:none;display:inline-block;transition:opacity .15s;margin-left:8px}
-.nav-cta:hover{opacity:.85}
 </style>
 <link rel="canonical" href="https://podlens.app/extension">
 <script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()</script>
@@ -128,10 +122,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
       <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
     </span>
   </a>
-    <a href="/" class="nav-link">Discover</a>
-  <a href="/how-it-works.html" class="nav-link">How it works</a>
-  <a href="/pricing.html" class="nav-link">Pricing</a>
-  <a href="/" class="nav-cta">Sign in / up</a>
+  <div class="nav-links" id="nav-links"></div>
 </nav>
 
 <div class="hero">
