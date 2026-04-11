@@ -3,13 +3,27 @@ import type { Config } from "@netlify/functions";
 // Admin-only endpoint to manually trigger pre-analysis seeding
 // POST /api/trigger-seed with x-internal-secret header
 export default async (req: Request) => {
-  const secret = Netlify.env.get("YOUTUBE_SERVICE_SECRET") || "";
-  const provided = req.headers.get("x-internal-secret") || "";
+  const adminUserId = req.headers.get("x-admin-userid") || "";
+  const superAdminEmail = Netlify.env.get("SUPER_ADMIN_EMAIL") || "";
 
-  if (!secret || provided !== secret) {
+  if (!adminUserId) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401, headers: { "Content-Type": "application/json" }
     });
+  }
+
+  // Verify user is super admin via Supabase
+  const sbUrl = Netlify.env.get("SUPABASE_URL");
+  const sbKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+  if (sbUrl && sbKey) {
+    const { createClient } = await import("@supabase/supabase-js");
+    const sb = createClient(sbUrl, sbKey, { auth: { persistSession: false } });
+    const { data: user } = await sb.from("users").select("email").eq("id", adminUserId).single();
+    if (!user || user.email !== superAdminEmail) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { "Content-Type": "application/json" }
+      });
+    }
   }
 
   const siteUrl = Netlify.env.get("URL") || "https://podlens.app";
@@ -19,7 +33,7 @@ export default async (req: Request) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-internal-secret": secret,
+      "x-internal-trigger": "admin",
     },
     body: JSON.stringify({ trigger: "manual" }),
   }).catch(() => {});

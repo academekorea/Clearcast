@@ -12500,7 +12500,7 @@ function _admTriggerSeed() {
   if (statusEl) statusEl.textContent = 'Triggering pre-analysis... (runs in background, check logs)';
   fetch('/api/trigger-seed', {
     method: 'POST',
-    headers: { 'x-internal-secret': '__INTERNAL__' }
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-userid': (plUser()||{}).id || '' }
   }).then(function(r) { return r.json(); })
   .then(function(d) {
     if (statusEl) statusEl.innerHTML = '✅ ' + (d.message || 'Seeding started') + ' — ' + (d.shows||0) + ' shows, ~' + (d.estimatedMinutes||6) + ' min';
