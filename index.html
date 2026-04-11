@@ -8989,7 +8989,7 @@ function startCheckout(planName, billing) {
   fetch('/api/create-checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName })
+    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName, couponCode: (window._pilotCode || '').toUpperCase() || undefined })
   })
   .then(function(r){ return r.json(); })
   .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })

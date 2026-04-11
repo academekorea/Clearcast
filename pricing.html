@@ -290,6 +290,17 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 
 <p class="trial-note">No credit card required to start free. &nbsp;&middot;&nbsp; No ads. No conflicts of interest. Ever.</p>
 
+<div style="text-align:center;margin:20px 0 0">
+  <div style="display:inline-flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 16px">
+    <span style="font-size:12px;color:var(--text3)">Have a pilot code?</span>
+    <input id="pilot-code-input" type="text" placeholder="Enter code (e.g. PILOT2026)" maxlength="20"
+      style="font-size:13px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none;width:200px;text-transform:uppercase"
+      oninput="this.value=this.value.toUpperCase()"
+    />
+    <span id="pilot-code-status" style="font-size:11px;color:var(--text3)"></span>
+  </div>
+</div>
+
 <!-- ALWAYS FREE SECTION -->
 <div class="always-free-section">
   <h2>Always free, no matter your plan</h2>
@@ -512,7 +523,7 @@ function startCheckout(planName) {
   fetch('/api/create-checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName }),
+    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName, couponCode: (document.getElementById('pilot-code-input') ? document.getElementById('pilot-code-input').value.trim().toUpperCase() : '') || undefined }),
   })
   .then(function(r){ return r.json(); })
   .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })

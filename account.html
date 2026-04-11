@@ -594,7 +594,7 @@ async function startCheckout(planKey) {
     var res = await fetch('/api/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planKey }),
+      body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planKey, couponCode: undefined }),
     });
     var data = await res.json();
     if (data.url) {
