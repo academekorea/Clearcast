@@ -5703,54 +5703,40 @@ function discSearch(q, isLive) {
     return s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || (s.cat||'').toLowerCase().includes(lower);
   });
   // Also hit iTunes Search API for real results
-  var itunesUrl = '/api/podcast-search?q='+encodeURIComponent(q);
-  if (el && !matches.length) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:12px 0">Searching iTunes…</div>';
+  // Show curated matches instantly while API loads
+  if (el) {
+    if (matches.length) {
+      el.innerHTML = matches.slice(0,4).map(function(s) {
+        var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+        var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
+        var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
+        return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'</div>';
+      }).join('');
+    } else {
+      el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:12px 0">Searching…</div>';
+    }
   }
-  fetch(itunesUrl)
+
+  // Then fetch from backend and merge results
+  fetch('/api/podcast-search?q='+encodeURIComponent(q))
     .then(function(r){ return r.json(); })
     .then(function(d){
-      if (!d.results || !d.results.length) {
-        if (el && !matches.length) el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:12px 0">No results for "'+_escHtml(q)+'"</div>';
-        return;
-      }
-      var items = d.results || d.results || [];
-    var results = items.map(function(r){
-        return { name: r.collectionName||r.trackName||'', artist: r.artistName||'', artwork: r.artworkUrl600||r.artworkUrl100||'', feedUrl: r.feedUrl||'', bias: null };
-      }).filter(function(r){ return r.name && r.feedUrl; });
-      // Merge curated (with bias data) + iTunes results (deduped)
+      if (!d.results || !d.results.length) return; // keep curated results showing
+      // Backend already normalizes fields: name, artist, artwork, feedUrl
+      var apiResults = d.results.filter(function(r){ return r.name && r.feedUrl; });
       var curatedNames = matches.map(function(s){ return s.name.toLowerCase(); });
-      var itunesOnly = results.filter(function(r){ return !curatedNames.includes(r.name.toLowerCase()); });
-      var merged = matches.concat(itunesOnly).slice(0,6);
-      if (el) {
+      var apiOnly = apiResults.filter(function(r){ return !curatedNames.includes((r.name||'').toLowerCase()); });
+      var merged = matches.concat(apiOnly).slice(0,8);
+      if (el && merged.length) {
         el.innerHTML = merged.map(function(s) {
-          var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+          var slug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
           var safeUrl = (s.feedUrl||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
           var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-show-art"></div>';
-          return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+_escHtml(s.name)+'</div><div class="disc-show-sub">'+_escHtml(s.artist)+'</div>'+_biasMini(s.bias)+'</div>';
+          return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+_escHtml(s.name)+'</div><div class="disc-show-sub">'+_escHtml(s.artist||'')+'</div>'+_biasMini(s.bias||null)+'</div>';
         }).join('');
       }
-    }).catch(function(){
-      // iTunes failed — fall back to curated only
-      if (el && matches.length) {
-        el.innerHTML = matches.slice(0,4).map(function(s) {
-          var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-          var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
-          var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
-          return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'</div>';
-        }).join('');
-      }
-    });
-  if (matches.length === 0) matches = CURATED_SHOWS.slice(0,4);
-  if (el) {
-    el.innerHTML = matches.slice(0,4).map(function(s) {
-      var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-      var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
-      var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
-      var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
-      return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="margin-top:10px;width:100%;padding:6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button></div>';
-    }).join('');
-  }
+    }).catch(function(){}); // silently keep curated results on error
   if (epEl) {
     var epMatches = CURATED_SHOWS.filter(function(s){
       return s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || s.cat.toLowerCase().includes(lower);
