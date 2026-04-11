@@ -321,38 +321,7 @@ export default async (req: Request, context: Context) => {
   const usersStore = getStore("podlens-users");
   const { getSupabaseAdmin } = await import("./lib/supabase.js");
 
-  // ── 0. Community cache check (BEFORE quota — cache hits are free for users) (community-wide, permanent) ──────────────────
-  const canonical = canonicalKey(url);
-  const canonKey = `canon:${canonical}`;
-  try {
-    const cached = await store.get(canonKey, { type: "json" }) as any;
-    if (cached?.status === "complete" && cached?.biasScore !== undefined) {
-      console.log("[analyze] community cache hit:", canonical);
-      const newCount = (cached.analyzeCount || 0) + 1;
-      // Increment community counter in Blobs
-      try {
-        await store.setJSON(canonKey, { ...cached, analyzeCount: newCount, lastRequestedAt: Date.now() });
-      } catch {}
-      // Increment analyze_count in Supabase (non-blocking)
-      try {
-        const sbUrl = Netlify.env.get("SUPABASE_URL");
-        const sbKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
-        if (sbUrl && sbKey) {
-          const { createClient } = await import("@supabase/supabase-js");
-          const sb = createClient(sbUrl, sbKey, { auth: { persistSession: false } });
-          await sb.from("analyses").update({
-            analyze_count: newCount,
-            last_analyzed_at: new Date().toISOString(),
-          }).eq("canonical_key", canonical);
-        }
-      } catch {}
-      return new Response(JSON.stringify({ jobId: cached.jobId, fromCache: true, communityCount: newCount }), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
-    }
-  } catch {}
-
-  // ── 1. Server-side analysis limit enforcement (only for new analyses, not cache hits) ─────────────────────────────
+  // ── 0. Server-side analysis limit enforcement ─────────────────────────────
   // Prevents bypassing frontend limits by calling API directly
   const { userId: limitUserId, userPlan } = body;
   if (limitUserId && userPlan !== undefined) {
@@ -395,6 +364,37 @@ export default async (req: Request, context: Context) => {
       }
     }
   }
+
+  // ── 1. Community cache check (speed optimization — instant results, quota still counted) (community-wide, permanent) ──────────────────
+  const canonical = canonicalKey(url);
+  const canonKey = `canon:${canonical}`;
+  try {
+    const cached = await store.get(canonKey, { type: "json" }) as any;
+    if (cached?.status === "complete" && cached?.biasScore !== undefined) {
+      console.log("[analyze] community cache hit:", canonical);
+      const newCount = (cached.analyzeCount || 0) + 1;
+      // Increment community counter in Blobs
+      try {
+        await store.setJSON(canonKey, { ...cached, analyzeCount: newCount, lastRequestedAt: Date.now() });
+      } catch {}
+      // Increment analyze_count in Supabase (non-blocking)
+      try {
+        const sbUrl = Netlify.env.get("SUPABASE_URL");
+        const sbKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+        if (sbUrl && sbKey) {
+          const { createClient } = await import("@supabase/supabase-js");
+          const sb = createClient(sbUrl, sbKey, { auth: { persistSession: false } });
+          await sb.from("analyses").update({
+            analyze_count: newCount,
+            last_analyzed_at: new Date().toISOString(),
+          }).eq("canonical_key", canonical);
+        }
+      } catch {}
+      return new Response(JSON.stringify({ jobId: cached.jobId, fromCache: true, communityCount: newCount }), {
+        status: 200, headers: { "Content-Type": "application/json" },
+      });
+    }
+  } catch {}
 
   // ── 2. Detect URL type and resolve to canonical audio/transcript ──────────
   const urlType = detectUrlType(url);
