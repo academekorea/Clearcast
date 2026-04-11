@@ -241,7 +241,7 @@ export default async (req: Request) => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-3-5-sonnet-20241022",
           max_tokens: 2000,
           messages: [{ role: "user", content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${sampledTranscript}` }],
         }),
