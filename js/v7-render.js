@@ -70,6 +70,11 @@ function renderResults(data) {
   if (data.jobId && data.jobId !== 'demo') _currentJobId = data.jobId;
   window._lastAnalysisResult = data;
 
+  // ── Freshness check (7-day flag) ─────────────────────────────────────────
+  var _analyzedAt = data.firstAnalyzedAt || data.analyzedAt || data.cachedAt;
+  var _daysSince = _analyzedAt ? Math.floor((Date.now() - _analyzedAt) / (1000*60*60*24)) : 0;
+  var _isStale = _daysSince >= 7;
+
   var u = plUser();
   var isAdmin = u && (u.email === 'academekorea@gmail.com' || u.isSuperAdmin);
 
@@ -530,6 +535,17 @@ function renderResults(data) {
   } else if (c) {
     html += '<div class="sec"><div class="seclbl">Full transcript</div>'
       + '<div class="upbar"><span class="uptxt">Full transcript unlocks with Pro Lens</span><button class="upbtn" onclick="showUpgrade()">Upgrade \u2192</button></div></div>';
+  }
+
+  // Freshness flag — quiet note if analysis is 7+ days old
+  if (_isStale) {
+    html += '<div style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:6px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">'
+      + '<div style="flex:1">'
+      + '<div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:2px">Analysis from ' + _daysSince + ' days ago</div>'
+      + '<div style="font-size:11px;color:var(--text3);line-height:1.4">Some details may have changed since this was analyzed. Re-analyzing is free.</div>'
+      + '</div>'
+      + '<button onclick="reRunAnalysis()" style="flex-shrink:0;padding:6px 12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff)">Re-analyze free →</button>'
+      + '</div>';
   }
 
   // Deep report bar

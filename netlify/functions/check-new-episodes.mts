@@ -156,14 +156,14 @@ async function checkShowForSmartQueue(sb: any, user: any, show: any): Promise<vo
         .eq("user_id", user.id)
         .in("status", ["pending", "processing", "complete"])
         .gte("queued_at", startOfMonth.toISOString());
-      const monthlyLimit = 25;
+      const tierLimits: Record<string, number> = { free: 4, creator: 25 };
+      const monthlyLimit = tierLimits[user.tier || "free"] ?? 999999; // operator/studio = unlimited
       if ((count || 0) >= monthlyLimit) {
-        // Notify user they're at limit (in-app only to avoid email spam)
         await sb.from("notifications").insert({
           user_id: user.id,
           type: "smart_queue_limit",
           title: "Smart Queue paused — monthly limit reached",
-          body: `New ${show.show_name} episode found but you've used all ${monthlyLimit} analyses this month. Upgrade to Pro Lens for unlimited.`,
+          body: `New ${show.show_name} episode found but you've used all ${monthlyLimit} analyses this month. Upgrade for more.`,
           url: "/pricing.html",
           read: false,
           created_at: new Date().toISOString(),
@@ -265,7 +265,7 @@ async function runSmartQueueCheck(): Promise<{ sqQueued: number; sqErrors: numbe
     console.log(`[smart-queue] Checking ${sqUsers.length} users`);
 
     for (const user of sqUsers) {
-      const maxShows = user.tier === "creator" ? 5 : user.tier === "operator" ? 20 : 999;
+      const maxShows = 5; // All tiers capped at 5 smart queue shows to protect platform performance
 
       const { data: shows } = await sb
         .from("followed_shows")
@@ -312,4 +312,4 @@ export default async (_req: Request) => {
   });
 };
 
-export const config: Config = { schedule: "0 */6 * * *" };
+export const config: Config = { schedule: "0 * * * *"  // Hourly — checks smart queue shows for new episodes };

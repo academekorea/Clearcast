@@ -146,3 +146,56 @@ CREATE POLICY "Service role can write analyses"
   USING (auth.role() = 'service_role');
 
 SELECT 'Migration complete ✅' as status;
+
+-- ── Smart queue table additions ──────────────────────────────────────────────
+DO $$ BEGIN
+  -- Cap smart queue at 5 shows per user (enforced in code + DB)
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='followed_shows' AND column_name='smart_queue') THEN
+    ALTER TABLE followed_shows ADD COLUMN smart_queue boolean DEFAULT false;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='followed_shows' AND column_name='last_episode_id') THEN
+    ALTER TABLE followed_shows ADD COLUMN last_episode_id text;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='followed_shows' AND column_name='last_episode_guid') THEN
+    ALTER TABLE followed_shows ADD COLUMN last_episode_guid text;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='followed_shows' AND column_name='show_slug') THEN
+    ALTER TABLE followed_shows ADD COLUMN show_slug text;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='followed_shows' AND column_name='show_artwork') THEN
+    ALTER TABLE followed_shows ADD COLUMN show_artwork text;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='followed_shows' AND column_name='last_checked_at') THEN
+    ALTER TABLE followed_shows ADD COLUMN last_checked_at timestamptz;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='followed_shows' AND column_name='created_at') THEN
+    ALTER TABLE followed_shows ADD COLUMN created_at timestamptz DEFAULT now();
+  END IF;
+
+  -- Users table: smart queue enabled flag
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='smart_queue_enabled') THEN
+    ALTER TABLE users ADD COLUMN smart_queue_enabled boolean DEFAULT false;
+  END IF;
+END $$;
+
+-- Max 5 shows per user in smart queue (database-level constraint)
+-- This function enforces the cap when toggling smart_queue = true
+CREATE OR REPLACE FUNCTION check_smart_queue_limit()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.smart_queue = true AND OLD.smart_queue IS DISTINCT FROM true THEN
+    IF (SELECT COUNT(*) FROM followed_shows
+        WHERE user_id = NEW.user_id AND smart_queue = true) >= 5 THEN
+      RAISE EXCEPTION 'Smart queue limited to 5 shows per user';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS enforce_smart_queue_limit ON followed_shows;
+CREATE TRIGGER enforce_smart_queue_limit
+  BEFORE UPDATE ON followed_shows
+  FOR EACH ROW EXECUTE FUNCTION check_smart_queue_limit();
+
+SELECT 'Migration v2 complete ✅' as status;

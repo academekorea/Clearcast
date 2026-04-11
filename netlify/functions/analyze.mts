@@ -310,7 +310,7 @@ export default async (req: Request, context: Context) => {
   }
 
   const body = await req.json();
-  const { url, episodeTitle: epTitleRaw, showName: showNameRaw, userId, userEmail } = body;
+  const { url, episodeTitle: epTitleRaw, showName: showNameRaw, userId, userEmail, isReRun } = body;
   if (!url) {
     return new Response(JSON.stringify({ error: "URL is required" }), {
       status: 400, headers: { "Content-Type": "application/json" },

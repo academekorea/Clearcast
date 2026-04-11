@@ -39,12 +39,14 @@ export default async (req: Request): Promise<Response> => {
         .eq("id", userId)
         .maybeSingle();
 
-      // Followed shows with smart_queue flag
+      // Followed shows with smart_queue flag (max 5 in smart queue)
       const { data: shows } = await sb
         .from("followed_shows")
         .select("id, show_slug, show_name, show_artwork, feed_url, smart_queue, last_checked_at")
         .eq("user_id", userId)
         .order("created_at", { ascending: true });
+      
+      const MAX_SMART_QUEUE_SHOWS = 5;
 
       const pending = (items || []).filter(i => i.status === "pending" || i.status === "processing");
       const completed = (items || []).filter(i => i.status === "complete").slice(0, 5);

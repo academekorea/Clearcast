@@ -3187,6 +3187,7 @@ body.light-mode,[data-theme="light"]{
           <div class="dash-greeting-wrap">
             <div class="dashboard-greeting" id="dash-greeting">Good morning.</div>
             <div id="dash-plan-badge" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)"></div>
+          <div id="dash-quota-display"></div>
           </div>
           <div class="analyze-bar">
             <input type="text" id="dash-url-input-b" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL…" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
@@ -4649,6 +4650,27 @@ function renderHomeState() {
       var planNames = { free: 'Free', trial: 'Trial', creator: 'Starter Lens', operator: 'Pro Lens', studio: 'Operator Lens' };
       var displayPlan = planNames[planLabel] || (planLabel.charAt(0).toUpperCase() + planLabel.slice(1));
       planBadge.innerHTML = '<span style="width:7px;height:7px;border-radius:50%;background:' + (planColors[planLabel] || '#999') + ';flex-shrink:0"></span>' + displayPlan + ' plan';
+    }
+    // Quota display below plan badge
+    var quotaEl = document.getElementById('dash-quota-display');
+    if (quotaEl) {
+      var quotaLimits = { free: 4, creator: 25 };
+      var planKey = String(u.plan || 'free').toLowerCase();
+      if (quotaLimits[planKey] !== undefined) {
+        var limit = quotaLimits[planKey];
+        var used = u.analysesThisMonth || 0;
+        var remaining = Math.max(0, limit - used);
+        var pct = Math.min(100, Math.round((used / limit) * 100));
+        var barColor = remaining === 0 ? '#dc2626' : remaining <= 2 ? '#d97706' : '#16a34a';
+        quotaEl.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-top:4px">'
+          + '<span style="color:var(--text2);font-weight:500">' + remaining + ' of ' + limit + '</span>'
+          + ' analyses left this month'
+          + '<div style="height:3px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden">'
+          + '<div style="width:' + pct + '%;height:100%;background:' + barColor + ';border-radius:2px"></div>'
+          + '</div></div>';
+      } else if (planKey === 'operator' || planKey === 'studio') {
+        quotaEl.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-top:4px">Unlimited analyses</div>';
+      }
     }
     // Show connect CTAs for new users, recent list for returning
     var newUserCta = document.getElementById('dash-new-user-cta');
@@ -7004,8 +7026,21 @@ function startAnalysis(audioUrl, epTitle, showName) {
     // Feed enclosure might not have extension — init anyway
     setTimeout(function() { _arInitNativeAudio(resolvedUrl, {}); }, 50);
   }
-  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:resolvedTitle||undefined,showName:resolvedShow||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined})})
+  // Proactive cache check — tell user before loading if we've seen this before
+  safeFetch('/api/community-bias?url=' + encodeURIComponent(resolvedUrl)).then(function(cacheCheck) {
+    if (cacheCheck && cacheCheck.found) {
+      var analyzedDate = cacheCheck.analyzedAt ? new Date(cacheCheck.analyzedAt) : null;
+      var daysSince = analyzedDate ? Math.floor((Date.now() - analyzedDate.getTime()) / (1000*60*60*24)) : 0;
+      var msg = daysSince >= 7
+        ? 'This episode was analyzed ' + daysSince + ' days ago — we\'re refreshing the analysis to make sure it\'s still accurate.'
+        : 'This episode has been analyzed before — we\'re quickly verifying it\'s still current.';
+      plToast(msg, 6000);
+    }
+  }).catch(function(){});
+
+  safeFetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:resolvedUrl,episodeTitle:resolvedTitle||undefined,showName:resolvedShow||undefined,userId:_analyzeUser.id||undefined,userPlan:_analyzeUser.plan||'free',userEmail:_analyzeUser.email||undefined,isReRun:!!window._isReRun})})
     .then(function(d){
+      window._isReRun = false; // clear re-run flag
       // Handle server-side analysis limit (429)
       if (d.code === 'ANALYSIS_LIMIT') {
         resetBtn();
@@ -9190,6 +9225,18 @@ function siaSwitchTab(name, el) {
 }
 
 // For real analysis results in v7-render.js
+
+// ── Free re-run for stale analyses ───────────────────────────────────────────
+function reRunAnalysis() {
+  var data = window._lastAnalysisResult;
+  if (!data || !data.url) return;
+  // Flag as free re-run — backend skips quota check
+  window._isReRun = true;
+  showView('analyze');
+  document.getElementById('url-input').value = data.url;
+  startAnalysis(data.url, data.episodeTitle || '', data.showName || '');
+}
+
 function toggleDimCard(card) {
   var ev = card.querySelector('.v7-dim-ev');
   if (!ev) return;
