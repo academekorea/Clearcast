@@ -735,6 +735,10 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     document.querySelectorAll('.lib-panel').forEach(function (p) {
       p.classList.toggle('active', p.id === 'panel-' + tab);
     });
+    // Sync sidebar nav active state
+    document.querySelectorAll('.lib-nav-btn').forEach(function(b) {
+      b.classList.toggle('active', b.id === 'nav-' + tab);
+    });
     if (tab === 'myshows') renderMyShows();
   };
 
