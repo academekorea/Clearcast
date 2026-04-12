@@ -41,7 +41,7 @@ Apply this tone to: results, errors, upgrade prompts, empty states, onboarding, 
 | Edge Functions | netlify/edge-functions/ (geo/language detection) |
 | Storage | Netlify Blobs (→ Supabase Phase 3) |
 | AI Analysis | Claude API (claude-sonnet-4-20250514) |
-| Transcription | AssemblyAI v2 (speech_model: best) |
+| Transcription | AssemblyAI v2 (speech_models: ["universal-3-pro"]) |
 | Podcast data | YouTube Data API + iTunes/Apple Podcasts API |
 | Audio fallback | Railway yt-dlp service (AUDIO_SERVICE_URL) |
 | Payments | Stripe (live mode — subscription billing) |

@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { submitTranscription } from "./lib/assemblyai.js";
 
 async function getYouTubeAudioUrl(videoId: string): Promise<string | null> {
   try {
@@ -84,25 +85,12 @@ export default async (req: Request) => {
       });
     }
 
-    const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
-      method: "POST",
-      headers: { "authorization": assemblyKey, "content-type": "application/json" },
-      body: JSON.stringify({ audio_url: audioUrl, speech_model: "best" }),
-    });
-
-    if (!aaiRes.ok) {
-      const errText = await aaiRes.text();
-      let errMsg = "Transcription service error. Please try again.";
-      try { const j = JSON.parse(errText); if (j.error) errMsg = j.error; } catch { /**/ }
-      return new Response(JSON.stringify({ error: errMsg }), {
-        status: 500, headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const aaiData = await aaiRes.json();
-    const transcriptId = aaiData.id;
-    if (!transcriptId) {
-      return new Response(JSON.stringify({ error: "Failed to start transcription. Please try again." }), {
+    let transcriptId: string;
+    try {
+      const aaiData = await submitTranscription(assemblyKey, audioUrl);
+      transcriptId = aaiData.id;
+    } catch (e: any) {
+      return new Response(JSON.stringify({ error: e.message || "Transcription service error. Please try again." }), {
         status: 500, headers: { "Content-Type": "application/json" },
       });
     }

@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { uploadAndTranscribe } from "./lib/assemblyai.js";
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -141,37 +142,19 @@ export default async (req: Request) => {
     }
     const audioBuffer = Buffer.from(extractData.audioData, "base64");
 
-    // Step 3: Upload audio buffer to AssemblyAI
-    const uploadRes = await fetch("https://api.assemblyai.com/v2/upload", {
-      method: "POST",
-      headers: { "authorization": assemblyKey },
-      body: audioBuffer,
-    });
-    if (!uploadRes.ok) {
-      const msg = "Failed to upload audio to transcription service";
+    // Step 3+4: Upload audio buffer to AssemblyAI and submit transcript job
+    let transcriptId: string;
+    try {
+      const aaiResult = await uploadAndTranscribe(assemblyKey, audioBuffer);
+      transcriptId = aaiResult.id;
+    } catch (e: any) {
+      const msg = e.message || "Failed to start transcription job";
       await transcripts.setJSON(jobId, { status: "error", message: msg });
       await jobs.setJSON(jobId, { status: "error", error: msg });
       return new Response(JSON.stringify({ error: msg }), {
         status: 502, headers: { "Content-Type": "application/json" },
       });
     }
-    const { upload_url } = await uploadRes.json();
-
-    // Step 4: Submit transcript job
-    const transcriptRes = await fetch("https://api.assemblyai.com/v2/transcript", {
-      method: "POST",
-      headers: { "authorization": assemblyKey, "content-type": "application/json" },
-      body: JSON.stringify({ audio_url: upload_url }),
-    });
-    if (!transcriptRes.ok) {
-      const msg = "Failed to start transcription job";
-      await transcripts.setJSON(jobId, { status: "error", message: msg });
-      await jobs.setJSON(jobId, { status: "error", error: msg });
-      return new Response(JSON.stringify({ error: msg }), {
-        status: 502, headers: { "Content-Type": "application/json" },
-      });
-    }
-    const { id: transcriptId, audio_duration } = await transcriptRes.json();
 
     // Step 5: Poll until completed or error
     while (true) {
@@ -182,7 +165,7 @@ export default async (req: Request) => {
       const poll = await pollRes.json();
 
       if (poll.status === "completed") {
-        const duration = audio_duration ? `${Math.round(audio_duration / 60)} min` : "";
+        const duration = poll.audio_duration ? `${Math.round(poll.audio_duration / 60)} min` : "";
 
         // Step 6: Save job result
         await transcripts.setJSON(jobId, { status: "complete", transcript: poll.text });

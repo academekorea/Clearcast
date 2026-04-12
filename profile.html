@@ -219,9 +219,19 @@ function renderAvatarPreview(u) {
 
 function renderConnectedAccounts(u) {
   var el = document.getElementById('connected-accounts');
+  var SPOTIFY_CLIENT_ID = '1eb72bc291654bfba6cd9ce1679c5774';
+  var SPOTIFY_REDIRECT_URI = 'https://podlens.app/auth/spotify/callback';
+  var spotifyParams = new URLSearchParams({
+    client_id: SPOTIFY_CLIENT_ID,
+    response_type: 'code',
+    redirect_uri: SPOTIFY_REDIRECT_URI,
+    scope: 'user-read-email user-read-recently-played user-library-read user-follow-read',
+    state: u.id || '',
+    show_dialog: 'true',
+  });
   var accounts = [
     { key: 'google', icon: '🔵', label: 'Google / YouTube', desc: 'Enables YouTube caption analysis without bot detection', connected: !!(u.googleId || u.youtubeConnected), connectUrl: '/api/connect-youtube?userId=' + (u.id||'') },
-    { key: 'spotify', icon: '🟢', label: 'Spotify', desc: 'Access your listening history and podcast subscriptions', connected: !!(u.spotifyConnected || u.spotifyId), connectUrl: '/api/connect-spotify?userId=' + (u.id||'') },
+    { key: 'spotify', icon: '🟢', label: 'Spotify', desc: 'Access your listening history and podcast subscriptions', connected: !!(u.spotifyConnected || u.spotifyId), connectUrl: 'https://accounts.spotify.com/authorize?' + spotifyParams.toString() },
   ];
 
   el.innerHTML = accounts.map(function(a) {

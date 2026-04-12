@@ -1,5 +1,6 @@
 import type { Config, Context } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { submitTranscription, uploadAndTranscribe } from "./lib/assemblyai.js";
 
 // ── CANONICAL URL NORMALIZER ──────────────────────────────────────────────────
 // Returns a stable canonical key regardless of URL variant.
@@ -595,25 +596,7 @@ export default async (req: Request, context: Context) => {
           if (extracted.success && extracted.audioData) {
             console.log(`[analyze] audio success client=${client}, uploading to AssemblyAI`);
             const aaiKey = Netlify.env.get("ASSEMBLYAI_API_KEY") || "";
-            const uploadRes = await fetch("https://api.assemblyai.com/v2/upload", {
-              method: "POST",
-              headers: { "authorization": aaiKey, "content-type": "application/octet-stream" },
-              body: Buffer.from(extracted.audioData, "base64"),
-            });
-            if (!uploadRes.ok) {
-              console.error(`[analyze] AssemblyAI upload failed: ${uploadRes.status}`);
-              continue;
-            }
-            const { upload_url } = await uploadRes.json() as any;
-            const transcriptRes = await fetch("https://api.assemblyai.com/v2/transcript", {
-              method: "POST",
-              headers: { "authorization": aaiKey, "content-type": "application/json" },
-              body: JSON.stringify({
-                audio_url: upload_url,
-                speech_model: "best",
-              }),
-            });
-            const { id: transcriptId } = await transcriptRes.json() as any;
+            const { id: transcriptId } = await uploadAndTranscribe(aaiKey, Buffer.from(extracted.audioData, "base64"));
             await store.setJSON(jobId, {
               status: "transcribing", jobId, url, canonicalKey: canonical,
               episodeTitle: resolvedEpisodeTitle || extracted.metadata?.title || "",
@@ -693,26 +676,18 @@ export default async (req: Request, context: Context) => {
                 // Auto-matched — submit directly to AssemblyAI from within background job
                 const aaiKeyBg = Netlify.env.get("ASSEMBLYAI_API_KEY");
                 if (aaiKeyBg) {
-                  const aaiResBg = await fetch("https://api.assemblyai.com/v2/transcript", {
-                    method: "POST",
-                    headers: { authorization: aaiKeyBg, "content-type": "application/json" },
-                    body: JSON.stringify({ audio_url: postRailwayAudioUrl, speech_model: "best" }),
-                    signal: AbortSignal.timeout(30000),
-                  });
-                  if (aaiResBg.ok) {
-                    const aaiDataBg = await aaiResBg.json() as any;
-                    if (aaiDataBg.id) {
-                      await store.setJSON(jobId, {
-                        status: "transcribing", jobId, url, canonicalKey: canonical,
-                        episodeTitle: resolvedEpisodeTitle,
-                        showName: resolvedShowName || best.collectionName || channelName,
-                        transcriptId: aaiDataBg.id,
-                        createdAt: Date.now(),
-                        pendingTimeoutAt: Date.now() + TIMEOUT_MS,
-                      });
-                      return;
-                    }
-                  }
+                  try {
+                    const { id: bgTranscriptId } = await submitTranscription(aaiKeyBg, postRailwayAudioUrl, { timeout: 30000 });
+                    await store.setJSON(jobId, {
+                      status: "transcribing", jobId, url, canonicalKey: canonical,
+                      episodeTitle: resolvedEpisodeTitle,
+                      showName: resolvedShowName || best.collectionName || channelName,
+                      transcriptId: bgTranscriptId,
+                      createdAt: Date.now(),
+                      pendingTimeoutAt: Date.now() + TIMEOUT_MS,
+                    });
+                    return;
+                  } catch {}
                 }
               }
               await store.setJSON(jobId, {
@@ -877,26 +852,11 @@ export default async (req: Request, context: Context) => {
     return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
-  const aaiRes = await fetch("https://api.assemblyai.com/v2/transcript", {
-    method: "POST",
-    headers: { authorization: assemblyKey, "content-type": "application/json" },
-    body: JSON.stringify({
-      audio_url: resolvedAudioUrl,
-      speech_model: "best",
-      // word_boost not needed — default word-level timestamps are always returned
-    }),
-    signal: AbortSignal.timeout(30000),
-  });
-
-  if (!aaiRes.ok) {
-    const err = await aaiRes.text().catch(() => String(aaiRes.status));
-    await store.setJSON(jobId, { status: "error", jobId, error: "Transcription service error: " + err });
-    return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
-  }
-
-  const aaiData = await aaiRes.json();
-  if (!aaiData.id) {
-    await store.setJSON(jobId, { status: "error", jobId, error: "Transcription service returned no job ID." });
+  let aaiData: { id: string };
+  try {
+    aaiData = await submitTranscription(assemblyKey, resolvedAudioUrl, { timeout: 30000 });
+  } catch (e: any) {
+    await store.setJSON(jobId, { status: "error", jobId, error: e.message || "Transcription service error" });
     return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
