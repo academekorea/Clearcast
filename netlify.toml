@@ -95,7 +95,7 @@
 
 [[redirects]]
   from = "/library"
-  to = "/library.html"
+  to = "/index.html"
   status = 200
 
 [[redirects]]
