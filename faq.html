@@ -43,7 +43,7 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .nav-logo-text span{font-weight:700}[data-theme="dark"] .nav-logo-text{color:var(--text)}
 .nav-link{padding:8px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:4px;transition:background .15s,color .15s}
 .nav-link:hover{background:var(--bg3);color:var(--text)}
-.nav-cta{padding:8px 18px;background:var(--navy);color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);text-decoration:none}
+
 main{max-width:760px;margin:0 auto;padding:64px 24px 96px}
 .page-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
 .page-title{font-family:var(--ffs);font-size:clamp(32px,4vw,48px);font-weight:700;line-height:1.15;margin-bottom:16px}
@@ -91,9 +91,12 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
       <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
     </span>
   </a>
-  <a href="/how-it-works.html" class="nav-link">How it works</a>
-  <a href="/pricing.html" class="nav-link">Pricing</a>
-  <a href="/" class="nav-cta">Launch app</a>
+  <div class="nav-links-logged-out">
+    <a href="/how-it-works.html" class="nav-link">How it works</a>
+    <a href="/pricing.html" class="nav-link">Pricing</a>
+    <button class="nav-link" onclick="toggleMode()" aria-label="Toggle dark/light mode">☀️</button>
+    <button class="nav-btn-signin" onclick="window.location='/'">Sign in / up</button>
+  </div>
 </nav>
 
 <main>
