@@ -100,17 +100,17 @@
 
 [[redirects]]
   from = "/account"
-  to = "/account.html"
+  to = "/index.html"
   status = 200
 
 [[redirects]]
   from = "/profile"
-  to = "/profile.html"
+  to = "/index.html"
   status = 200
 
 [[redirects]]
   from = "/settings"
-  to = "/settings.html"
+  to = "/index.html"
   status = 200
 
 [[redirects]]
