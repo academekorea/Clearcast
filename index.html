@@ -3487,8 +3487,8 @@ body.light-mode,[data-theme="light"]{
       <div class="disc-nav-lbl">Menu</div>
       <button class="disc-nav-btn" onclick="var d=document.getElementById('disc-home-drop');var a=document.getElementById('disc-home-arr');if(d){var o=d.style.display==='flex';d.style.display=o?'none':'flex';if(a)a.style.transform=o?'':'rotate(90deg)'}"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home<span id="disc-home-arr" style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.2);transition:transform .15s;transform:rotate(90deg)">&rsaquo;</span></button>
       <div id="disc-home-drop" style="display:flex;flex-direction:column">
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');setTimeout(function(){if(typeof showDashSection==='function')showDashSection('intelligence')},0)"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</button>
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');setTimeout(function(){if(typeof showDashSection==='function')showDashSection('queue')},0)"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
+        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');if(typeof showDashSection==='function')showDashSection('intelligence')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</button>
+        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');if(typeof showDashSection==='function')showDashSection('queue')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
       </div>
       <button class="disc-nav-btn on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
       <button class="disc-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
@@ -3595,8 +3595,8 @@ body.light-mode,[data-theme="light"]{
       <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;padding:16px 20px 8px;color:#fff">Menu</div>
       <button onclick="var d=document.getElementById('ana-home-drop');var a=document.getElementById('ana-home-arr');if(d){var o=d.style.display==='flex';d.style.display=o?'none':'flex';if(a)a.style.transform=o?'':'rotate(90deg)'}" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home<span id="ana-home-arr" style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.2);transition:transform .15s;transform:rotate(90deg)">&rsaquo;</span></button>
       <div id="ana-home-drop" style="display:flex;flex-direction:column">
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');setTimeout(function(){if(typeof showDashSection==='function')showDashSection('intelligence')},0)"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</button>
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');setTimeout(function(){if(typeof showDashSection==='function')showDashSection('queue')},0)"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
+        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');if(typeof showDashSection==='function')showDashSection('intelligence')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</button>
+        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');if(typeof showDashSection==='function')showDashSection('queue')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
       </div>
       <button onclick="showView('discover')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
       <button onclick="showView('analyze')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:rgba(255,255,255,.13);width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
@@ -6034,10 +6034,10 @@ function _renderDashQueueSection(u) {
   }
 }
 
-function discShowFollowing() { showHome(); setTimeout(function(){ showDashSection('following'); }, 200); }
-function discShowFingerprint() { showHome(); setTimeout(function(){ showDashSection('fingerprint'); }, 200); }
-function discShowAnalyzed() { showHome(); setTimeout(function(){ showDashSection('analyzed'); }, 200); }
-function discShowSmartQueue() { showHome(); setTimeout(function(){ showDashSection('queue'); }, 200); }
+function discShowFollowing() { showView('home'); showDashSection('following'); }
+function discShowFingerprint() { showView('home'); showDashSection('fingerprint'); }
+function discShowAnalyzed() { showView('home'); showDashSection('analyzed'); }
+function discShowSmartQueue() { showView('home'); showDashSection('queue'); }
 
 function handleDiscCompare() {
   var a = (document.getElementById('disc-compare-a')||{}).value||'';
@@ -8719,7 +8719,7 @@ function handleUrlRouting() {
   if (path.startsWith('/dashboard/')) {
     var sec = path.replace('/dashboard/', '');
     showView('home');
-    setTimeout(function(){ showDashSection(sec); }, 50);
+    showDashSection(sec);
     return true;
   }
   if (path === '/discover') {
@@ -12698,7 +12698,7 @@ window.addEventListener('popstate', function(e) {
   if (view === 'home') {
     var sec = e.state && e.state.section;
     showHome();
-    if (sec) setTimeout(function(){ showDashSection(sec); }, 50);
+    if (sec) showDashSection(sec);
   } else {
     showView(view);
   }

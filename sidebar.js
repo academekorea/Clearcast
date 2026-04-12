@@ -67,7 +67,7 @@
 
     function homeSubItem(id, icon, label, badge) {
       var badgeHtml = badge ? '<span class="sb-badge">' + badge + '</span>' : '';
-      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="if(typeof showView===\'function\')showView(\'home\');setTimeout(function(){if(typeof showDashSection===\'function\')showDashSection(\'' + id + '\')},0)">' + icon + label + badgeHtml + '</button>';
+      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="if(typeof showView===\'function\')showView(\'home\');if(typeof showDashSection===\'function\')showDashSection(\'' + id + '\')">' + icon + label + badgeHtml + '</button>';
     }
 
     function topNavItem(id, icon, label) {
