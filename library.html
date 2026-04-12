@@ -75,17 +75,6 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .lib-search-input:focus{border-color:var(--navy)}
 .lib-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
 
-/* ── TABS ── */
-.lib-tabs{display:none}
-.lib-tabs::-webkit-scrollbar{display:none}
-.lib-tab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;font-family:var(--ff);border-bottom:2px solid transparent;white-space:nowrap;transition:color .12s,border-color .12s;margin-bottom:-1px;position:relative;top:1px}
-.lib-tab:hover{color:var(--text)}
-.lib-tab.active{color:var(--navy);font-weight:600;border-bottom-color:var(--navy)}
-[data-theme="dark"] .lib-tab.active{color:var(--text);border-bottom-color:var(--text)}
-.lib-tab .tab-count{font-size:10px;font-weight:600;background:var(--bg3);color:var(--text3);padding:1px 5px;border-radius:10px;margin-left:5px;font-family:var(--ff)}
-.lib-tab.active .tab-count{background:var(--navy);color:#fff}
-[data-theme="dark"] .lib-tab.active .tab-count{background:var(--text);color:var(--bg)}
-
 /* ── TAB PANELS ── */
 .lib-panel{display:none;animation:fadeIn .18s ease}
 .lib-panel.active{display:block}
@@ -96,9 +85,8 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .skel{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:800px 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--r)}
 
 /* ── FOLLOWING GRID ── */
-.following-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-@media(max-width:900px){.following-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.following-grid{grid-template-columns:1fr}}
+@media(max-width:900px){}
+@media(max-width:520px){}
 
 .show-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;position:relative;transition:border-color .12s,box-shadow .12s}
 .show-card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
@@ -157,40 +145,6 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .btn-reanalyze{padding:6px 12px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);font-size:11px;cursor:pointer;font-family:var(--ff);white-space:nowrap;transition:all .1s}
 .btn-reanalyze:hover{border-color:var(--navy);color:var(--navy)}
 
-/* ── SAVED GRID ── */
-.saved-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-@media(max-width:900px){.saved-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.saved-grid{grid-template-columns:1fr}}
-.saved-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;gap:12px;align-items:flex-start;transition:border-color .1s}
-.saved-card:hover{border-color:var(--border2)}
-.saved-art{width:56px;height:56px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
-.saved-art-ph{width:56px;height:56px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;font-family:var(--ffs);flex-shrink:0}
-.saved-info{flex:1;min-width:0}
-.saved-show{font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
-.saved-title{font-size:12px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
-.saved-card-actions{display:flex;gap:6px}
-.btn-remove{padding:4px 8px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--r);font-size:10px;cursor:pointer;font-family:var(--ff);transition:all .1s}
-.btn-remove:hover{color:#dc2626;border-color:#dc2626}
-
-/* ── DOWNLOADS ── */
-.dl-list{display:flex;flex-direction:column;gap:8px}
-.dl-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px}
-.dl-art{width:44px;height:44px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
-.dl-body{flex:1;min-width:0}
-.dl-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-.dl-meta{font-size:11px;color:var(--text3)}
-.dl-player{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.dl-play-btn{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:opacity .15s}
-.dl-play-btn:hover{opacity:.85}
-.btn-del{padding:5px 10px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--r);font-size:11px;cursor:pointer;font-family:var(--ff);transition:all .1s}
-.btn-del:hover{color:#dc2626;border-color:#dc2626}
-.upgrade-gate{text-align:center;padding:60px 24px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r)}
-.upgrade-gate-icon{font-size:36px;margin-bottom:12px}
-.upgrade-gate-title{font-size:16px;font-weight:600;margin-bottom:8px}
-.upgrade-gate-sub{font-size:13px;color:var(--text2);margin-bottom:20px;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.6}
-.btn-upgrade{display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none}
-.btn-upgrade:hover{opacity:.85;color:#fff}
-
 /* ── EMPTY STATES ── */
 .empty-state{text-align:center;padding:64px 24px}
 .empty-icon{font-size:40px;margin-bottom:14px}
@@ -208,44 +162,6 @@ footer{border-top:1px solid var(--border);padding:32px 24px;background:var(--bg2
 footer a{color:var(--text3)}footer a:hover{color:var(--text)}
 
 /* ── YOUR SHOWS (platform-connected) ── */
-.platform-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.04em;flex-shrink:0}
-.platform-badge.spotify{background:#1DB954;color:#fff}
-.platform-badge.youtube{background:#FF0000;color:#fff}
-.platform-section-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;margin-top:4px}
-.platform-section-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
-.myshows-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
-@media(max-width:900px){.myshows-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.myshows-grid{grid-template-columns:1fr}}
-.myshow-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;position:relative;transition:border-color .12s,box-shadow .12s}
-.myshow-card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
-.myshow-card-top{display:flex;gap:12px;align-items:flex-start}
-.new-ep-badge{position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 2px var(--bg2)}
-.myshow-card-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.myshow-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.rss-fallback{margin-top:6px}
-.rss-fallback-hint{font-size:11px;color:var(--text3);margin-bottom:4px}
-.rss-fallback-wrap{display:flex;gap:6px}
-.rss-fallback-input{flex:1;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--r);font-size:11px;background:var(--bg);color:var(--text);font-family:var(--ff);outline:none}
-.rss-fallback-input:focus{border-color:var(--navy)}
-.btn-rss-save{padding:6px 10px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap}
-.myshows-connect-prompt{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:48px 24px;text-align:center}
-.myshows-connect-prompt h3{font-size:17px;font-weight:600;margin-bottom:8px}
-.myshows-connect-prompt p{font-size:13px;color:var(--text2);margin-bottom:24px;max-width:340px;margin-left:auto;margin-right:auto;line-height:1.6}
-.myshows-connect-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.btn-connect-platform{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);text-decoration:none;transition:opacity .15s}
-.btn-connect-platform.spotify{background:#1DB954;color:#fff}
-.btn-connect-platform.youtube{background:#FF0000;color:#fff}
-.btn-connect-platform:hover{opacity:.85;color:#fff}
-.myshows-loading{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-@media(max-width:900px){.myshows-loading{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.myshows-loading{grid-template-columns:1fr}}
-.skel-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;gap:12px}
-.skel-art{width:72px;height:72px;border-radius:6px;flex-shrink:0}
-.skel-lines{flex:1;display:flex;flex-direction:column;gap:8px;padding-top:4px}
-.skel-line{height:12px;border-radius:4px}
-.skel-line.w80{width:80%}
-.skel-line.w60{width:60%}
-.skel-line.w40{width:40%}
 
 /* ── SIDEBAR DROPDOWN ── */
 .lib-nav-sub{display:none;flex-direction:column}
@@ -298,6 +214,21 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
 .hr-lean{text-align:right}
 .hr-score{font-size:11px;color:var(--text3);text-align:right;font-weight:500}
 
+
+/* ── LIKED / PLAYLISTS GRID ── */
+.saved-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.saved-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.saved-grid{grid-template-columns:1fr}}
+.saved-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;gap:12px;align-items:flex-start;transition:border-color .1s}
+.saved-card:hover{border-color:var(--border2)}
+.saved-art{width:56px;height:56px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.saved-art-ph{width:56px;height:56px;border-radius:4px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;font-family:var(--ffs);flex-shrink:0}
+.saved-info{flex:1;min-width:0}
+.saved-show{font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.saved-title{font-size:12px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
+.saved-card-actions{display:flex;gap:6px}
+.btn-remove{padding:4px 8px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--r);font-size:10px;cursor:pointer;font-family:var(--ff);transition:all .1s}
+.btn-remove:hover{color:#dc2626;border-color:#dc2626}
 </style>
 </head>
 <body>
@@ -367,10 +298,6 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     <div id="usage-meter-wrap"></div>
     <div id="analyzed-content"></div>
   </div>
-
-  <!-- Saved Panel -->
-  <div class="lib-panel" id="panel-saved">
-    <div id="saved-content"></div>
   </div>
 
   <!-- Downloads Panel -->
@@ -434,8 +361,6 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   var u = plUser();
   var follows = [];
   var analyses = [];
-  var saved = [];
-  var downloads = [];
   var activeTab = 'following';
   var searchQuery = '';
 
@@ -464,14 +389,10 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
         return new Date(b.analyzedAt || 0) - new Date(a.analyzedAt || 0);
       });
     } catch (e) { }
-    try { saved = JSON.parse(localStorage.getItem('pl-saved-episodes') || '[]'); } catch (e) { saved = []; }
-    try { downloads = JSON.parse(localStorage.getItem('pl-downloads') || '[]'); } catch (e) { downloads = []; }
 
     // Update tab counts
     document.getElementById('tc-following').textContent = follows.length;
     document.getElementById('tc-analyzed').textContent = analyses.length;
-    document.getElementById('tc-saved').textContent = saved.length;
-    document.getElementById('tc-downloads').textContent = downloads.length;
     // Update sidebar nav counts
     var cntF = document.getElementById('lib-count-following');
     var cntA = document.getElementById('lib-count-analyzed');
@@ -492,8 +413,6 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     renderLiked();
     renderPlaylists();
     renderAnalyzed();
-    renderSaved();
-    renderDownloads();
   }
 
   function applySearch(arr, fields) {
@@ -838,73 +757,6 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     el.innerHTML = html;
   }
 
-  /* Saved */
-  function renderSaved() {
-    var el = document.getElementById('saved-content');
-    var items = applySearch(saved, ['episode_title', 'show_name']);
-    if (!items.length) {
-      el.innerHTML = '<div class="empty-state">'
-        + '<div class="empty-icon">🔖</div>'
-        + '<div class="empty-title">' + (saved.length ? 'No matching saved episodes' : 'Nothing saved yet') + '</div>'
-        + '<div class="empty-sub">Save episodes from any show profile to analyze them later.</div>'
-        + '</div>';
-      return;
-    }
-    el.innerHTML = '<div class="saved-grid">' + items.map(function (ep, i) {
-      var analyzeUrl = ep.episode_url || '';
-      return '<div class="saved-card">'
-        + artHtml(ep.artwork_url, ep.show_name, 'saved-art')
-        + '<div class="saved-info">'
-        + '<div class="saved-show">' + esc(ep.show_name || '') + '</div>'
-        + '<div class="saved-title">' + esc(ep.episode_title || 'Episode') + '</div>'
-        + '<div class="saved-card-actions">'
-        + (analyzeUrl ? '<button class="btn-analyze" onclick="analyzeLatest(\'' + esc(analyzeUrl) + '\',\'' + esc(ep.show_name || '') + '\')">Analyze now →</button>' : '')
-        + '<button class="btn-remove" onclick="removeSaved(' + i + ')">Remove</button>'
-        + '</div>'
-        + '</div>'
-        + '</div>';
-    }).join('') + '</div>';
-  }
-
-  /* Downloads */
-  function renderDownloads() {
-    var el = document.getElementById('downloads-content');
-    var plan = u.plan || 'free';
-    var hasAccess = ['creator', 'operator', 'studio', 'trial'].includes(plan);
-    if (!hasAccess) {
-      el.innerHTML = '<div class="upgrade-gate">'
-        + '<div class="upgrade-gate-icon">🎧</div>'
-        + '<div class="upgrade-gate-title">Audio briefings are available on Starter Lens and above</div>'
-        + '<div class="upgrade-gate-sub">Get 90-second spoken summaries of every episode you analyze, playable offline.</div>'
-        + '<a href="/pricing.html" class="btn-upgrade">Upgrade to Starter Lens →</a>'
-        + '</div>';
-      return;
-    }
-    var items = applySearch(downloads, ['title', 'show_name']);
-    if (!items.length) {
-      el.innerHTML = '<div class="empty-state">'
-        + '<div class="empty-icon">📥</div>'
-        + '<div class="empty-title">' + (downloads.length ? 'No matching downloads' : 'No downloads yet') + '</div>'
-        + '<div class="empty-sub">Audio briefings you download will appear here.</div>'
-        + '</div>';
-      return;
-    }
-    el.innerHTML = '<div class="dl-list">' + items.map(function (dl, i) {
-      return '<div class="dl-row">'
-        + (dl.artwork ? '<img class="dl-art" src="' + esc(dl.artwork) + '" alt="">' : '<div class="dl-art" style="background:var(--navy)"></div>')
-        + '<div class="dl-body">'
-        + '<div class="dl-title">' + esc(dl.title || 'Audio Briefing') + '</div>'
-        + '<div class="dl-meta">' + (dl.duration || '') + (dl.downloaded_at ? ' &middot; Downloaded ' + timeAgo(dl.downloaded_at) : '') + '</div>'
-        + '</div>'
-        + '<div class="dl-player">'
-        + (dl.audio_url ? '<button class="dl-play-btn" onclick="playDownload(\'' + esc(dl.audio_url) + '\')">▶</button>' : '')
-        + '<button class="btn-del" onclick="deleteDownload(' + i + ')">Delete</button>'
-        + '</div>'
-        + '</div>';
-    }).join('') + '</div>';
-  }
-
-  /* ── TAB SWITCHING ── */
   /* Liked episodes */
   var PL_LIKED_KEY = 'pl_liked_episodes';
   var PL_PLAYLISTS_KEY = 'pl_playlists';
@@ -1056,7 +908,6 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     // Keep My Library button highlighted for all library sections
     var libHome = document.getElementById('nav-library-home');
     if (libHome) libHome.classList.add('active');
-    if (tab === 'myshows') renderMyShows();
   };
 
   /* ── SEARCH ── */
@@ -1066,7 +917,6 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     else if (activeTab === 'liked') renderLiked();
     else if (activeTab === 'playlists') { window._activePl = null; renderPlaylists(); }
     else if (activeTab === 'analyzed') renderAnalyzed();
-    else if (activeTab === 'myshows') renderMyShows();
     else if (activeTab === 'saved') renderSaved();
     else renderDownloads();
   };
@@ -1099,15 +949,11 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   window.removeSaved = function (idx) {
     saved.splice(idx, 1);
     localStorage.setItem('pl-saved-episodes', JSON.stringify(saved));
-    document.getElementById('tc-saved').textContent = saved.length;
-    renderSaved();
   };
 
   window.deleteDownload = function (idx) {
     downloads.splice(idx, 1);
     localStorage.setItem('pl-downloads', JSON.stringify(downloads));
-    document.getElementById('tc-downloads').textContent = downloads.length;
-    renderDownloads();
   };
 
   window.playDownload = function (url) {
@@ -1115,195 +961,7 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     audio.play().catch(function () { });
   };
 
-  /* ── YOUR SHOWS ── */
-  var myShowsLoaded = false;
-  var myShowsData = null; // { spotify, youtube }
 
-  // Local override store: { [showId]: rssUrl } saved by user manually
-  function getManualFeeds() {
-    try { return JSON.parse(localStorage.getItem('pl-manual-feeds') || '{}'); } catch { return {}; }
-  }
-  function saveManualFeed(showId, feedUrl) {
-    var m = getManualFeeds();
-    m[showId] = feedUrl;
-    localStorage.setItem('pl-manual-feeds', JSON.stringify(m));
-  }
-
-  function renderMyShowsSkeleton() {
-    var el = document.getElementById('myshows-content');
-    var cards = '';
-    for (var i = 0; i < 6; i++) {
-      cards += '<div class="skel-card"><div class="skel skel-art"></div><div class="skel-lines"><div class="skel skel-line w80"></div><div class="skel skel-line w60"></div><div class="skel skel-line w40"></div></div></div>';
-    }
-    el.innerHTML = '<div class="myshows-loading">' + cards + '</div>';
-  }
-
-  function renderMyShows() {
-    var el = document.getElementById('myshows-content');
-    if (!el) return;
-
-    if (!myShowsLoaded) {
-      renderMyShowsSkeleton();
-      loadMyShows();
-      return;
-    }
-
-    if (!myShowsData) {
-      el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠</div><div class="empty-title">Couldn\'t load your shows</div><div class="empty-sub">Try refreshing the page.</div></div>';
-      return;
-    }
-
-    var spotify = myShowsData.spotify || {};
-    var youtube = myShowsData.youtube || {};
-    var manualFeeds = getManualFeeds();
-
-    var hasSpotify = spotify.connected && (spotify.shows || []).length > 0;
-    var hasYouTube = youtube.connected && (youtube.shows || []).length > 0;
-
-    // Handle auth expiry gracefully
-    if (spotify.error === 'auth_expired' || youtube.error === 'auth_expired') {
-      var msg = '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:var(--r);padding:12px 16px;font-size:13px;margin-bottom:20px">Your platform connection has expired. <a href="/settings.html#connected" style="color:var(--navy);font-weight:600">Reconnect in Settings →</a></div>';
-      if (!hasSpotify && !hasYouTube) {
-        el.innerHTML = msg + renderConnectPrompt();
-        return;
-      }
-      el.innerHTML = msg;
-    } else {
-      el.innerHTML = '';
-    }
-
-    if (!spotify.connected && !youtube.connected) {
-      el.innerHTML = renderConnectPrompt();
-      return;
-    }
-
-    var html = el.innerHTML;
-    var totalCount = 0;
-
-    // Spotify section
-    if (spotify.connected) {
-      if ((spotify.shows || []).length === 0 && !spotify.error) {
-        html += '<div class="platform-section-head"><span class="platform-badge spotify">Spotify</span><span class="platform-section-label">No followed podcasts found</span></div>';
-      } else if ((spotify.shows || []).length > 0) {
-        html += '<div class="platform-section-head"><span class="platform-badge spotify">Spotify</span><span class="platform-section-label">' + spotify.shows.length + ' followed show' + (spotify.shows.length !== 1 ? 's' : '') + '</span></div>';
-        html += '<div class="myshows-grid">';
-        for (var si = 0; si < spotify.shows.length; si++) {
-          html += renderMyShowCard(spotify.shows[si], 'spotify', manualFeeds);
-          totalCount++;
-        }
-        html += '</div>';
-      }
-    }
-
-    // YouTube section
-    if (youtube.connected) {
-      if ((youtube.shows || []).length === 0 && !youtube.error) {
-        html += '<div class="platform-section-head" style="margin-top:8px"><span class="platform-badge youtube">YouTube</span><span class="platform-section-label">No subscriptions imported yet</span></div>';
-      } else if ((youtube.shows || []).length > 0) {
-        html += '<div class="platform-section-head" style="margin-top:8px"><span class="platform-badge youtube">YouTube</span><span class="platform-section-label">' + youtube.shows.length + ' subscriptions</span></div>';
-        html += '<div class="myshows-grid">';
-        for (var yi = 0; yi < youtube.shows.length; yi++) {
-          html += renderMyShowCard(youtube.shows[yi], 'youtube', manualFeeds);
-          totalCount++;
-        }
-        html += '</div>';
-      }
-    }
-
-    el.innerHTML = html;
-    document.getElementById('tc-myshows').textContent = totalCount ? String(totalCount) : '';
-  }
-
-  function renderConnectPrompt() {
-    return '<div class="myshows-connect-prompt">'
-      + '<div class="empty-icon">🎧</div>'
-      + '<h3>Connect your listening platforms</h3>'
-      + '<p>Link Spotify or YouTube to see all your followed shows in one place — and analyze any episode in one click.</p>'
-      + '<div class="myshows-connect-btns">'
-      + '<a href="/settings.html" class="btn-connect-platform spotify">Connect Spotify</a>'
-      + '<a href="/settings.html" class="btn-connect-platform youtube">Connect YouTube</a>'
-      + '</div>'
-      + '</div>';
-  }
-
-  function renderMyShowCard(show, platform, manualFeeds) {
-    var feedUrl = show.feedUrl || manualFeeds[show.id] || null;
-    var needsRss = !feedUrl && show.needsRss !== false;
-    var artwork = show.artwork || '';
-    var name = esc(show.name || '');
-    var publisher = esc(show.publisher || show.channelId || '');
-
-    var artHtml2 = artwork
-      ? '<img class="show-art-lg" src="' + esc(artwork) + '" alt="" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;show-art-lg-ph&quot;>' + (show.name || 'P').charAt(0).toUpperCase() + '</div>\'">'
-      : '<div class="show-art-lg-ph">' + (show.name || 'P').charAt(0).toUpperCase() + '</div>';
-
-    var sqKey = 'pl-sq-myshow-' + show.id;
-    var sqChecked = localStorage.getItem(sqKey) === '1' ? 'checked' : '';
-    var plan = u ? (u.plan || 'free') : 'free';
-    var showSQ = ['creator', 'operator', 'studio', 'trial'].includes(plan);
-    var sqHtml = showSQ
-      ? '<div class="sq-toggle-wrap" title="Smart Queue — auto-analyze new episodes"><span class="sq-label">SQ</span><label class="sq-toggle"><input type="checkbox" ' + sqChecked + ' onchange="toggleMyShowSQ(\'' + esc(show.id) + '\',this.checked)"><span class="sq-slider"></span></label></div>'
-      : '';
-
-    var analyzeBtn = feedUrl
-      ? '<button class="btn-analyze" onclick="analyzeLatest(\'' + esc(feedUrl) + '\',\'' + esc(show.name || '') + '\')">Analyze latest →</button>'
-      : '';
-
-    var rssSection = needsRss
-      ? '<div class="rss-fallback">'
-        + '<div class="rss-fallback-hint">RSS not found — paste URL to analyze:</div>'
-        + '<div class="rss-fallback-wrap">'
-        + '<input class="rss-fallback-input" placeholder="https://... or podcast URL" id="rss-' + esc(show.id) + '">'
-        + '<button class="btn-rss-save" onclick="saveRssFallback(\'' + esc(show.id) + '\',\'' + esc(show.name || '') + '\')">Analyze</button>'
-        + '</div>'
-        + '</div>'
-      : '';
-
-    return '<div class="myshow-card">'
-      + '<div class="myshow-card-top">'
-      + artHtml2
-      + '<div class="show-info">'
-      + '<div class="show-name">' + name + '</div>'
-      + (publisher ? '<div class="show-host">' + publisher + '</div>' : '')
-      + '</div>'
-      + '</div>'
-      + '<div class="myshow-card-footer">'
-      + '<span class="platform-badge ' + platform + '">' + (platform === 'spotify' ? 'Spotify' : 'YouTube') + '</span>'
-      + sqHtml
-      + '</div>'
-      + '<div class="myshow-actions">'
-      + analyzeBtn
-      + '</div>'
-      + rssSection
-      + '</div>';
-  }
-
-  function loadMyShows() {
-    if (!u || !u.id) return;
-    fetch('/api/my-shows?userId=' + encodeURIComponent(u.id))
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function (data) {
-        myShowsData = data;
-        myShowsLoaded = true;
-          })
-      .catch(function () {
-        myShowsLoaded = true;
-        myShowsData = null;
-          });
-  }
-
-  window.toggleMyShowSQ = function (showId, val) {
-    localStorage.setItem('pl-sq-myshow-' + showId, val ? '1' : '0');
-  };
-
-  window.saveRssFallback = function (showId, showName) {
-    var input = document.getElementById('rss-' + showId);
-    if (!input) return;
-    var url = (input.value || '').trim();
-    if (!url) return;
-    saveManualFeed(showId, url);
-    analyzeLatest(url, showName);
-  };
 
   loadData();
 })();
