@@ -116,11 +116,11 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
       <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
     </span>
   </a>
-  <div class="nav-links-logged-out">
-    <a href="/how-it-works.html" class="nav-link">How it works</a>
-    <a href="/pricing.html" class="nav-link">Pricing</a>
-    <button class="nav-link" onclick="toggleMode()" aria-label="Toggle dark/light mode">☀️</button>
-    <button class="nav-btn-signin" onclick="window.location='/'">Sign in / up</button>
+  <div style="display:flex;align-items:center;gap:4px;margin-left:auto">
+    <a href="/how-it-works.html" style="padding:7px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:6px;font-weight:500;font-family:var(--ff);transition:background .15s,color .15s">How it works</a>
+    <a href="/pricing.html" style="padding:7px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:6px;font-weight:500;font-family:var(--ff);transition:background .15s,color .15s">Pricing</a>
+    <button onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" style="padding:7px 10px;background:none;border:none;cursor:pointer;font-size:14px;border-radius:6px">☀️</button>
+    <a href="/" style="margin-left:6px;padding:8px 20px;background:var(--navy);color:#fff;text-decoration:none;border-radius:999px;font-size:13px;font-weight:600;font-family:var(--ff);letter-spacing:.01em;white-space:nowrap">Sign in / up</a>
   </div>
 </nav>
 
