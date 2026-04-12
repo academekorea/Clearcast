@@ -1636,7 +1636,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-tab-pro{font-size:9px;font-weight:700;background:var(--bg3);color:var(--text3);padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle}
 .metric-q-wrap{position:relative;display:inline-flex;align-items:center}
 .metric-q-wrap:hover .metric-q-tip{opacity:1;pointer-events:auto;transform:translateY(0)}
-.metric-q-tip{position:absolute;bottom:calc(100% + 6px);right:0;background:var(--navy);color:#fff;font-size:11px;padding:6px 10px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .15s,transform .15s;z-index:9999;font-family:var(--ff);font-weight:400;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.metric-q-tip{position:absolute;bottom:calc(100% + 6px);right:0;background:var(--navy);color:#fff;font-size:11px;padding:6px 10px;border-radius:6px;white-space:normal;width:220px;line-height:1.5;opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .15s,transform .15s;z-index:9999;font-family:var(--ff);font-weight:400;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .metric-q-tip::after{content:'';position:absolute;top:100%;right:8px;border:5px solid transparent;border-top-color:var(--navy)}
 .disc-rc{background:var(--bg2);border-left:0.5px solid var(--border);padding:20px 16px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px)}
 .disc-rc-block{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:14px}
@@ -9296,7 +9296,7 @@ function spShowSection(section, btn) {
 function spMetric(label,val,sub,barPct,barColor) {
   var mkeys={'Bias label':'bias','Host trust':'trust','Consistency':'consistency','Factual rate':'factual','Sponsor rate':'sponsor','Episodes analyzed':null};
   var qk=mkeys[label]!==undefined?mkeys[label]:null;
-  var qb=qk?'<button onclick="event.stopPropagation();showMetricExplainer(\''+qk+'\')" style="width:14px;height:14px;border-radius:50%;border:1px solid var(--border2);background:none;cursor:pointer;font-size:9px;font-weight:700;color:var(--text3);font-family:var(--ff);display:inline-flex;align-items:center;justify-content:center;padding:0;vertical-align:middle;margin-left:4px">?</button>':'';
+  var qb=qk?_metricQ(qk):'';
   return '<div class="sp-metric"><div class="sp-metric-lbl">'+label+qb+'</div><div class="sp-metric-val">'+val+'</div><div class="sp-metric-sub">'+sub+'</div><div class="sp-metric-bar"><div class="sp-metric-fill" style="width:'+Math.min(100,Math.max(0,barPct))+'%;background:'+barColor+'"></div></div></div>';
 }
 function buildDriftSvg(driftData) {
