@@ -2721,6 +2721,198 @@ body.light-mode,[data-theme="light"]{
 .saved-card-actions{display:flex;gap:6px}
 .btn-remove{padding:4px 8px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--r);font-size:10px;cursor:pointer;font-family:var(--ff);transition:all .1s}
 .btn-remove:hover{color:#dc2626;border-color:#dc2626}
+
+/* ── HOW IT WORKS VIEW (SPA) ── */
+
+#view-how-it-works .hero {padding:80px 24px 60px;max-width:720px;margin:0 auto;text-align:center}
+#view-how-it-works .hero h1 {font-family:var(--ffs);font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:20px;letter-spacing:-.02em}
+#view-how-it-works .hero p {font-size:17px;color:var(--text2);line-height:1.7}
+#view-how-it-works .steps {max-width:960px;margin:0 auto;padding:0 40px 80px;display:grid;grid-template-columns:1fr 1fr;gap:0;border:0.5px solid var(--border);border-radius:16px;overflow:hidden}
+@media(max-width:700px) {
+#view-how-it-works .steps {grid-template-columns:1fr;padding:0 24px 48px;border:none}
+}
+#view-how-it-works .step {padding:36px 32px;border-right:0.5px solid var(--border);border-bottom:0.5px solid var(--border);position:relative}
+#view-how-it-works .step:nth-child(2n) {border-right:none}
+#view-how-it-works .step:nth-child(3), #view-how-it-works .step:nth-child(4) {border-bottom:none}
+@media(max-width:700px) {
+#view-how-it-works .step {border-right:none;border-bottom:0.5px solid var(--border);padding:28px 0}
+}
+@media(max-width:700px) {
+#view-how-it-works .step:last-child {border-bottom:none}
+}
+#view-how-it-works .step-num {font-family:var(--ffs);font-size:13px;font-weight:700;color:var(--navy);background:var(--bg3);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:16px;letter-spacing:.04em}
+#view-how-it-works .step-body h3 {font-family:var(--ffs);font-size:20px;font-weight:700;margin-bottom:10px;letter-spacing:-.01em}
+#view-how-it-works .step-body p {font-size:14px;color:var(--text2);line-height:1.7}
+#view-how-it-works .divider {border:none;border-top:0.5px solid var(--border);max-width:960px;margin:0 auto 64px}
+#view-how-it-works .bias-explainer {max-width:960px;margin:0 auto;padding:0 24px 80px}
+#view-how-it-works .bias-explainer h2 {font-family:var(--ffs);font-size:32px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
+#view-how-it-works .bias-explainer>p {font-size:15px;color:var(--text2);margin-bottom:40px}
+#view-how-it-works .bias-levels {display:flex;flex-direction:column;gap:10px;margin-bottom:40px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+#view-how-it-works .bias-row {display:grid;grid-template-columns:180px 1fr 200px;gap:20px;padding:14px 20px;align-items:center;border-bottom:0.5px solid var(--border)}
+#view-how-it-works .bias-row:last-child {border-bottom:none}
+#view-how-it-works .bias-label-demo {font-size:13px;font-weight:600}
+#view-how-it-works .bias-bar-demo {height:10px;border-radius:5px;overflow:hidden;display:flex}
+#view-how-it-works .bar-l {background:#E24B4A}
+#view-how-it-works .bar-c {background:var(--bg4)}
+#view-how-it-works .bar-r {background:#378ADD}
+#view-how-it-works .bias-desc {font-size:12px;color:var(--text3);line-height:1.5}
+@media(max-width:640px) {
+#view-how-it-works .bias-row {grid-template-columns:1fr;gap:6px}
+}
+#view-how-it-works .plain-labels {display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:540px) {
+#view-how-it-works .plain-labels {grid-template-columns:1fr}
+}
+#view-how-it-works .pl-card {padding:20px;border-radius:10px;border:0.5px solid var(--border)}
+#view-how-it-works .pl-card.left {background:var(--left-bg);border-color:rgba(226,75,74,.15)}
+#view-how-it-works .pl-card.right {background:var(--right-bg);border-color:rgba(55,138,221,.15)}
+#view-how-it-works .pl-card.center {background:var(--bg3);grid-column:1/-1}
+#view-how-it-works .pl-label {font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+#view-how-it-works .pl-card.left .pl-label {color:var(--left)}
+#view-how-it-works .pl-card.right .pl-label {color:var(--right)}
+#view-how-it-works .pl-card.center .pl-label {color:var(--text3)}
+#view-how-it-works .pl-body {font-size:13px;color:var(--text2);line-height:1.6}
+#view-how-it-works .faq {max-width:720px;margin:0 auto;padding:0 24px 80px}
+#view-how-it-works .faq h2 {font-family:var(--ffs);font-size:28px;font-weight:700;margin-bottom:32px;letter-spacing:-.01em}
+#view-how-it-works .faq-item {border-bottom:0.5px solid var(--border);padding:20px 0}
+#view-how-it-works .faq-item:last-child {border-bottom:none}
+#view-how-it-works .faq-q {font-size:15px;font-weight:600;margin-bottom:8px}
+#view-how-it-works .faq-a {font-size:14px;color:var(--text2);line-height:1.7}
+#view-how-it-works .cta {background:var(--navy);padding:80px 24px;text-align:center;margin:0}
+#view-how-it-works .cta h2 {font-family:var(--ffs);font-size:32px;font-weight:700;color:#fff;margin-bottom:12px;letter-spacing:-.01em}
+#view-how-it-works .cta p {font-size:15px;color:rgba(255,255,255,.65);margin-bottom:28px}
+#view-how-it-works .cta-btn {display:inline-block;background:#fff;color:var(--navy);padding:13px 32px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer}
+#view-how-it-works .cta-btn:hover {opacity:.9}
+#view-how-it-works .footer-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:32px;max-width:960px;margin:0 auto}
+#view-how-it-works .footer-col h4 {font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px}
+#view-how-it-works .footer-col a {display:block;font-size:13px;color:var(--text2);margin-bottom:8px;text-decoration:none}
+#view-how-it-works .footer-col a:hover {color:var(--text)}
+#view-how-it-works .footer-bottom {max-width:960px;margin:24px auto 0;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+#view-how-it-works .podlens-wordmark {font-family:var(--ffs,"Playfair Display",Georgia,serif);letter-spacing:0;line-height:1;display:inline}
+#view-how-it-works .podlens-wordmark .pod {font-weight:400;color:inherit}
+#view-how-it-works .podlens-wordmark .lens {font-weight:700;color:inherit}
+#view-how-it-works /* ── FOOTER ── */
+footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);background:var(--bg2)}
+#view-how-it-works .footer-inner {max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px}
+#view-how-it-works .footer-brand {text-align:left}
+#view-how-it-works .footer-logo-link {display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:12px}
+#view-how-it-works .footer-tagline {color:var(--text3);font-size:.825rem;line-height:1.5;margin-bottom:20px;max-width:200px}
+#view-how-it-works .footer-social {display:flex;gap:14px;flex-wrap:wrap}
+#view-how-it-works .footer-social-link {color:var(--text3);transition:color .15s;display:flex;align-items:center}
+#view-how-it-works .footer-social-link:hover {color:var(--text)}
+#view-how-it-works .footer-col-title {font-size:.65rem;font-weight:700;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:16px}
+#view-how-it-works .footer-links {display:flex;flex-direction:column;gap:10px}
+#view-how-it-works .footer-links a, #view-how-it-works .footer-links button {font-size:.875rem;font-size:.875rem;color:var(--text2);text-decoration:none;background:none;border:none;cursor:pointer;font-family:var(--ff);padding:0;text-align:left}
+#view-how-it-works .footer-links a:hover, #view-how-it-works .footer-links button:hover {color:var(--text)}
+#view-how-it-works .footer-bottom-row {max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+#view-how-it-works .footer-copy, #view-how-it-works .footer-made {font-size:.75rem;color:var(--text3)}
+@media(max-width:720px) {
+#view-how-it-works .footer-inner {grid-template-columns:1fr 1fr;gap:20px}
+#view-how-it-works .footer-brand {grid-column:1/-1}
+}
+
+/* ── PRICING VIEW (SPA) ── */
+
+#view-pricing /* Founding banner */
+#view-pricing .founding-banner {background:#FFF8E7;border-bottom:1px solid #F0C040;padding:12px 24px;text-align:center;font-size:14px;color:#92600A}
+#view-pricing .founding-banner strong {font-weight:600}
+#view-pricing .founding-spots {font-size:12px;color:#B8860B;display:inline-block;margin-left:8px}
+#view-pricing .founding-progress-wrap {display:inline-block;vertical-align:middle;width:80px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden;margin:0 8px}
+#view-pricing .founding-progress-fill {height:100%;background:#F0C040;border-radius:2px}
+#view-pricing .hero {padding:80px 24px 48px;text-align:center}
+#view-pricing .hero h1 {font-family:var(--ffs);font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:16px;letter-spacing:-.02em}
+#view-pricing .hero p {font-size:17px;color:var(--text2);max-width:480px;margin:0 auto;line-height:1.7}
+#view-pricing .billing-toggle {display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:var(--bg3);border-radius:24px;padding:4px 6px}
+#view-pricing .bt-opt {font-size:13px;color:var(--text2);cursor:pointer;padding:6px 16px;border-radius:20px;transition:all .15s;font-weight:500}
+#view-pricing .bt-opt.on {background:var(--navy);color:#fff}
+#view-pricing .bt-save {font-size:11px;font-weight:600;color:#1a7a2e;background:#dcf5dc;padding:2px 8px;border-radius:10px}
+#view-pricing .plans {display:grid;grid-template-columns:repeat(4,1fr);gap:0;max-width:1200px;margin:48px auto;padding:0 24px;border:0.5px solid var(--border);border-radius:16px;overflow:hidden}
+@media(max-width:900px) {
+#view-pricing .plans {grid-template-columns:repeat(2,1fr);border-radius:12px}
+}
+@media(max-width:540px) {
+#view-pricing .plans {grid-template-columns:1fr}
+}
+#view-pricing .plan {background:var(--bg);border-right:0.5px solid var(--border);padding:32px 26px;display:flex;flex-direction:column;position:relative}
+#view-pricing .plan:last-child {border-right:none}
+@media(max-width:900px) {
+#view-pricing .plan:nth-child(2) {border-right:none}
+#view-pricing .plan:nth-child(3) {border-right:none}
+}
+#view-pricing .plan.featured {background:var(--navy);border-right-color:rgba(255,255,255,.12)}
+#view-pricing .plan.featured .plan-name, #view-pricing .plan.featured .plan-price, #view-pricing .plan.featured .plan-desc {color:#fff}
+#view-pricing .plan.featured .plan-price span {color:rgba(255,255,255,.55)}
+#view-pricing .plan.featured .pf {color:rgba(255,255,255,.8)}
+#view-pricing .plan.featured .pf-check {color:#4ade80}
+#view-pricing .plan.featured .plan-desc {border-bottom-color:rgba(255,255,255,.12)}
+#view-pricing .plan.featured .plan-founding-note {color:rgba(255,255,255,.55)}
+#view-pricing .plan.featured .plan-btn {background:#fff;color:var(--navy);border-color:#fff}
+#view-pricing .plan.featured .plan-btn:hover {background:rgba(255,255,255,.9)}
+#view-pricing .plan-badge {font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#fff;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;align-self:flex-start;margin-bottom:16px}
+#view-pricing .plan-name {font-family:var(--ffs);font-size:20px;font-weight:700;margin-bottom:8px}
+#view-pricing .plan-price-wrap {margin-bottom:4px}
+#view-pricing .plan-price-original {font-size:14px;color:var(--text3);text-decoration:line-through;display:none}
+#view-pricing .plan-price {font-size:34px;font-weight:700;letter-spacing:-.02em;font-family:var(--ffs)}
+#view-pricing .plan-price span {font-size:13px;font-weight:400;color:var(--text3)}
+#view-pricing .plan-founding-note {font-size:11px;font-weight:600;color:#1a7a2e;margin-top:2px;display:none}
+#view-pricing .plan-desc {font-size:13px;color:var(--text2);margin-top:8px;margin-bottom:20px;line-height:1.6;padding-bottom:20px;border-bottom:0.5px solid var(--border)}
+#view-pricing .plan-features {flex:1;margin-bottom:24px}
+#view-pricing .pf {display:flex;align-items:flex-start;gap:8px;margin-bottom:9px;font-size:13px;color:var(--text2)}
+#view-pricing .pf-check {color:var(--navy);font-weight:700;flex-shrink:0;margin-top:1px}
+#view-pricing .pf.dim {color:var(--text3)}
+#view-pricing .pf.dim .pf-check {color:var(--text3)}
+#view-pricing .plan-btn {display:block;width:100%;padding:11px;text-align:center;font-size:13px;font-weight:600;border:1.5px solid var(--navy);color:var(--navy);border-radius:8px;cursor:pointer;background:transparent;font-family:var(--ff);transition:all .15s;text-decoration:none}
+#view-pricing .plan-btn:hover {background:var(--navy);color:#fff}
+#view-pricing .compare {max-width:900px;margin:40px auto 80px;padding:0 24px}
+#view-pricing .compare h2 {font-family:var(--ffs);font-size:28px;font-weight:600;margin-bottom:24px;text-align:center;letter-spacing:-.01em}
+#view-pricing .compare-table {width:100%;border-collapse:collapse;font-size:13px}
+#view-pricing .compare-table th {text-align:left;padding:10px 14px;border-bottom:2px solid var(--border);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
+#view-pricing .compare-table th:first-child {width:220px}
+#view-pricing .compare-table td {padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
+#view-pricing .compare-table td:first-child {font-weight:500;color:var(--text)}
+#view-pricing .compare-table tr:last-child td {border-bottom:none}
+#view-pricing .check-y {color:var(--navy);font-weight:700}
+#view-pricing .check-n {color:var(--text3)}
+#view-pricing .trial-note {text-align:center;font-size:13px;color:var(--text3);margin-bottom:60px}
+#view-pricing .footer-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:32px;max-width:960px;margin:0 auto}
+#view-pricing .footer-col h4 {font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px}
+#view-pricing .footer-col a {display:block;font-size:13px;color:var(--text2);margin-bottom:8px;text-decoration:none}
+#view-pricing .footer-col a:hover {color:var(--text)}
+#view-pricing .footer-bottom {max-width:960px;margin:24px auto 0;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+#view-pricing .podlens-wordmark {font-family:var(--ffs,"Playfair Display",Georgia,serif);letter-spacing:0;line-height:1;display:inline}
+#view-pricing .podlens-wordmark .pod {font-weight:400;color:inherit}
+#view-pricing .podlens-wordmark .lens {font-weight:700;color:inherit}
+#view-pricing /* Always-free section */
+#view-pricing .always-free-section {max-width:860px;margin:0 auto 64px;padding:40px 32px;background:var(--bg2);border-radius:12px;border:1px solid var(--border)}
+#view-pricing .always-free-section h2 {font-family:var(--ffs);font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:8px;letter-spacing:-.01em}
+#view-pricing .always-free-section>p {text-align:center;color:var(--text2);margin-bottom:32px;font-size:14px}
+#view-pricing .free-features-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:640px) {
+#view-pricing .free-features-grid {grid-template-columns:1fr}
+}
+#view-pricing .free-feature {display:flex;gap:12px;align-items:flex-start}
+#view-pricing .free-feature-icon {font-size:1.4rem;flex-shrink:0;margin-top:2px}
+#view-pricing .free-feature strong {display:block;font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+#view-pricing .free-feature p {font-size:12px;color:var(--text2);line-height:1.5;margin:0}
+#view-pricing /* ── FOOTER ── */
+footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);background:var(--bg2)}
+#view-pricing .footer-inner {max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px}
+#view-pricing .footer-brand {text-align:left}
+#view-pricing .footer-logo-link {display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:12px}
+#view-pricing .footer-tagline {color:var(--text3);font-size:.825rem;line-height:1.5;margin-bottom:20px;max-width:200px}
+#view-pricing .footer-social {display:flex;gap:14px;flex-wrap:wrap}
+#view-pricing .footer-social-link {color:var(--text3);transition:color .15s;display:flex;align-items:center}
+#view-pricing .footer-social-link:hover {color:var(--text)}
+#view-pricing .footer-col-title {font-size:.65rem;font-weight:700;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:16px}
+#view-pricing .footer-links {display:flex;flex-direction:column;gap:10px}
+#view-pricing .footer-links a, #view-pricing .footer-links button {font-size:.875rem;font-size:.875rem;color:var(--text2);text-decoration:none;background:none;border:none;cursor:pointer;font-family:var(--ff);padding:0;text-align:left}
+#view-pricing .footer-links a:hover, #view-pricing .footer-links button:hover {color:var(--text)}
+#view-pricing .footer-bottom-row {max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+#view-pricing .footer-copy, #view-pricing .footer-made {font-size:.75rem;color:var(--text3)}
+@media(max-width:720px) {
+#view-pricing .footer-inner {grid-template-columns:1fr 1fr;gap:20px}
+#view-pricing .footer-brand {grid-column:1/-1}
+}
 </style>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 </head>
@@ -3704,6 +3896,367 @@ body.light-mode,[data-theme="light"]{
     </div><!-- /analyze-wrap inner -->
   </div><!-- /analyze 2-col -->
 </div><!-- /view-analyze -->
+
+
+<div class="view" id="view-how-it-works" style="display:none">
+  <div style="max-width:1000px;margin:0 auto;padding:0 24px 80px">
+<div class="hero">
+  <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">How it works</div>
+  <h1>From URL to full bias report<br>in under two minutes</h1>
+  <p>Here's exactly what happens when you submit a podcast or YouTube URL to Podlens &mdash; and why it works the way it does.</p>
+</div>
+
+<div class="steps">
+  <div class="step">
+    <div class="step-num">01</div>
+    <div class="step-body">
+      <h3>Paste a URL</h3>
+      <p>Works with any YouTube video or direct podcast audio link. We extract the video ID and check whether the video is public and long enough to be meaningful (typically 5+ minutes).</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">02</div>
+    <div class="step-body">
+      <h3>We transcribe the audio</h3>
+      <p>We attempt to use YouTube's built-in captions first (fastest path). If those aren't available, we fall back to Apple Podcasts and Podcast Index to find a clean audio file, then transcribe it using AI transcription. The full audio is never stored — only the transcript text.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">03</div>
+    <div class="step-body">
+      <h3>Our AI reads the transcript</h3>
+      <p>We send the transcript to our analysis engine with a detailed media literacy prompt. The model is instructed to identify loaded language, positional framing, unchallenged claims, and missing perspectives — and to ground every assessment in specific, quotable moments.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">04</div>
+    <div class="step-body">
+      <h3>Results delivered in two phases</h3>
+      <p>Phase 1 (seconds): headline metrics appear immediately — the bias bar, factuality rating, omission risk, and host trust score. Phase 2 (15–30 seconds): deep analysis fills in — topic breakdown, key quotes, missing voices, sponsor conflicts, and flags with source citations.</p>
+    </div>
+  </div>
+</div>
+
+<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin:40px 0">
+  <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">What you get in every analysis</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">⚖️</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Political lean score</div><div style="font-size:12px;color:var(--text3)">−100 to +100, grounded in transcript framing signals</div></div></div>
+    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🔬</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Factual density</div><div style="font-size:12px;color:var(--text3)">Ratio of sourced claims to total claims made</div></div></div>
+    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🌐</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Source diversity</div><div style="font-size:12px;color:var(--text3)">How many distinct, independent perspectives appear</div></div></div>
+    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🗣️</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Loaded language</div><div style="font-size:12px;color:var(--text3)">Frequency of emotionally charged or advocacy framing</div></div></div>
+    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🎙️</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Host credibility</div><div style="font-size:12px;color:var(--text3)">How rigorously the host challenges claims</div></div></div>
+    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🕳️</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Omission risk</div><div style="font-size:12px;color:var(--text3)">What important context was missing from the episode</div></div></div>
+  </div>
+  <p style="font-size:12px;color:var(--text3);margin-top:16px;margin-bottom:0">Want to understand exactly how each score is calculated? <a href="/methodology.html" style="color:var(--navy)">Read the open methodology →</a></p>
+</div>
+
+<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin:40px 0">
+  <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Your personal intelligence — builds over time</div>
+  <div style="font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.7">The more you analyze, the more PodLens tells you about <em>yourself</em> — not just the content. Two personal metrics build up across all your analyses:</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div style="padding:16px;background:var(--bg3);border-radius:10px">
+      <div style="font-size:20px;margin-bottom:8px">🧬</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px">Bias fingerprint</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6">Your cumulative lean across every episode you've analyzed. Not one episode's lean — your aggregate listening pattern over time. Updates after every analysis.</div>
+    </div>
+    <div style="padding:16px;background:var(--bg3);border-radius:10px">
+      <div style="font-size:20px;margin-bottom:8px">🔁</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px">Echo chamber score</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6">Measures how <em>diverse</em> your listening actually is. A score of 0–25 means you're hearing multiple perspectives. 75+ means you're in a bubble. Scored 0–100, visible after 3+ analyses.</div>
+    </div>
+  </div>
+  <div style="margin-top:16px;font-size:12px;color:var(--text3)">Both metrics are available on Starter Lens and above. Free users see the score prompt after 3 analyses.</div>
+</div>
+
+<hr class="divider">
+
+<div class="faq">
+  <h2>Frequently asked questions</h2>
+
+  <div class="faq-item">
+    <div class="faq-q">Is this tool politically biased itself?</div>
+    <div class="faq-a">The same criteria that detect left-leaning framing detect right-leaning framing — symmetry is a hard requirement, not an aspiration. For the full technical explanation, see our <a href="/methodology.html">open methodology</a>.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Can it analyze any podcast?</div>
+    <div class="faq-a">It works best with YouTube videos and podcast episodes with publicly available audio. Private videos, live streams, and content shorter than 5 minutes aren't currently supported.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Is my data stored?</div>
+    <div class="faq-a">Transcripts are temporarily stored for caching (7 days) so you don't have to re-transcribe the same episode. Your analysis history lives in your browser and is never sent to our servers unless you're logged in.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">How accurate is it?</div>
+    <div class="faq-a">Podlens is a starting point for critical listening — not a verdict. The AI can miss irony, satire, and specialized context. We recommend reading the source citations and making your own judgement.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Does Podlens use ads or sell data?</div>
+    <div class="faq-a">No. We're funded entirely by subscriber revenue. We have no advertising relationships and we don't sell or share user data.</div>
+  </div>
+</div>
+
+<div class="cta">
+  <h2>Try it on any episode</h2>
+  <p>Paste a YouTube URL and get your first analysis free.</p>
+  <a class="cta-btn" href="/" onclick="if(typeof showView==='function'){showView('analyze');return false}">Analyze an episode &rarr;</a>
+</div>
+
+
+
+<!-- FOOTER -->
+  </div>
+</div>
+
+<div class="view" id="view-pricing" style="display:none">
+<!-- Founding banner (shown dynamically) -->
+<div class="founding-banner" id="pricing-founding-banner" style="display:none;position:relative">
+  <strong>🎉 Founding Member Pricing</strong> — Lock in 33% off forever.
+  <button onclick="document.getElementById('pricing-founding-banner').style.display='none';try{localStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:inherit;opacity:.6;padding:4px 6px" aria-label="Dismiss">&times;</button>
+</div>
+
+<div class="hero">
+  <h1>Simple, transparent pricing</h1>
+  <p>Start free. Each tier unlocks a new level of understanding.</p>
+  <div class="billing-toggle">
+    <span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span>
+    <span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span>
+    <span class="bt-save" id="annual-save-badge" style="display:none">Save 33%</span>
+  </div>
+</div>
+
+<div class="plans">
+  <!-- Free -->
+  <div class="plan">
+    <div class="plan-name">Free</div>
+    <div class="plan-price-wrap">
+      <div class="plan-price">$0 <span>forever</span></div>
+    </div>
+    <div class="plan-desc">Start listening smarter. Discover, follow, and explore — plus 4 analyses per month, free forever.</div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-check">&#10003;</span>4 analyses per month</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>6-dimension bias scores</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Bias bar + label on every analysis</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Personal bias fingerprint</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Echo chamber score</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Discover page &mdash; browse 1M+ shows</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Follow shows + get alerts</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Weekly intelligence digest</div>
+    </div>
+    <a class="plan-btn" href="/">Get started free &rarr;</a>
+  </div>
+
+  <!-- Creator — Most Popular -->
+  <div class="plan featured">
+    <div class="plan-badge">Most Popular</div>
+    <div class="plan-name">Starter Lens</div>
+    <div class="plan-price-wrap">
+      <div class="plan-price-original" id="creator-original"></div>
+      <div class="plan-price"><span id="creator-price">$8</span> <span id="creator-period">/mo</span></div>
+      <div class="plan-founding-note" id="creator-founding-note" style="display:block">🔒 Founding price &mdash; locked in forever</div>
+    </div>
+    <div class="plan-desc">For the curious listener. Full bias scores, audio briefings, and 25 analyses per month.</div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-check">&#10003;</span>25 analyses per month</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>All 6 bias dimensions + key findings</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>2 transcript evidence quotes per dimension</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Host trust score on every analysis</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Audio briefings (AI-narrated)</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Live subtitles on any podcast</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Smart queue</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Everything in Free</div>
+    </div>
+    <button class="plan-btn" onclick="startCheckout('creator')">Start Starter Lens &rarr;</button>
+  </div>
+
+  <!-- Operator -->
+  <div class="plan">
+    <div class="plan-name">Pro Lens</div>
+    <div class="plan-price-wrap">
+      <div class="plan-price-original" id="operator-original"></div>
+      <div class="plan-price"><span id="operator-price">$26</span> <span id="operator-period">/mo</span></div>
+      <div class="plan-founding-note" id="operator-founding-note" style="display:block">🔒 Founding price &mdash; locked in forever</div>
+    </div>
+    <div class="plan-desc">For power listeners. Unlimited analyses, source citations, full transcripts, and deep research tools.</div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-check">&#10003;</span>Unlimited analyses</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Unlimited transcript evidence + timestamps</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Pre-episode audio brief</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>All 5 Unheard Stories per week</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Full searchable transcripts + timestamps</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Deep report + PDF export</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Show bias trend charts (30/90/180d)</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Voice interaction <span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:#f0f0e8;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-left:2px">Soon</span></div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Everything in Starter Lens</div>
+    </div>
+    <button class="plan-btn" onclick="startCheckout('operator')">Start Pro Lens &rarr;</button>
+  </div>
+
+  <!-- Studio -->
+  <div class="plan">
+    <div class="plan-name">Operator Lens</div>
+    <div class="plan-price-wrap">
+      <div class="plan-price-original" id="studio-original"></div>
+      <div class="plan-price"><span id="studio-price">$66</span> <span id="studio-period">/mo</span></div>
+      <div class="plan-founding-note" id="studio-founding-note" style="display:block">🔒 Founding price &mdash; locked in forever</div>
+    </div>
+    <div class="plan-desc">For teams and organizations. Everything in Pro Lens plus bulk scanning, brand monitoring, API access, and 10 team seats.</div>
+    <div class="plan-features">
+      <div class="pf"><span class="pf-check">&#10003;</span>Unlimited analyses</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>10 team seats</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Brand monitoring</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>API access</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Bulk scanner (20 URLs at once)</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>CSV export</div>
+      
+      <div class="pf"><span class="pf-check">&#10003;</span>Pre-analysis: unlimited shows</div>
+      <div class="pf"><span class="pf-check">&#10003;</span>Everything in Pro Lens</div>
+    </div>
+    <button class="plan-btn" onclick="startCheckout('studio')">Start Operator Lens &rarr;</button>
+  </div>
+</div>
+
+<p class="trial-note">No credit card required to start free. &nbsp;&middot;&nbsp; No ads. No conflicts of interest. Ever.</p>
+
+<div style="text-align:center;margin:20px 0 0">
+  <div style="display:inline-flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 16px">
+    <span style="font-size:12px;color:var(--text3)">Have a pilot code?</span>
+    <input id="pilot-code-input" type="text" placeholder="Enter code (e.g. PILOT2026)" maxlength="20"
+      style="font-size:13px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none;width:200px;text-transform:uppercase"
+      oninput="this.value=this.value.toUpperCase()"
+    />
+    <span id="pilot-code-status" style="font-size:11px;color:var(--text3)"></span>
+  </div>
+</div>
+
+<!-- ALWAYS FREE SECTION -->
+<div class="always-free-section">
+  <h2>Always free, no matter your plan</h2>
+  <p>These features are available to every Podlens account &mdash; forever.</p>
+  <div class="free-features-grid">
+    <div class="free-feature">
+      <span class="free-feature-icon">🔍</span>
+      <div>
+        <strong>Discover page</strong>
+        <p>Browse trending podcasts and their aggregate bias scores from 1M+ shows</p>
+      </div>
+    </div>
+    <div class="free-feature">
+      <span class="free-feature-icon">🧬</span>
+      <div>
+        <strong>Personal bias fingerprint &amp; echo chamber score</strong>
+        <p>See your listening patterns and political lean based on what you actually listen to</p>
+      </div>
+    </div>
+    <div class="free-feature">
+      <span class="free-feature-icon">📊</span>
+      <div>
+        <strong>Show profiles</strong>
+        <p>View any show&rsquo;s aggregate bias, episode history and host scores</p>
+      </div>
+    </div>
+    <div class="free-feature">
+      <span class="free-feature-icon">🔔</span>
+      <div>
+        <strong>Follow + alerts</strong>
+        <p>Follow any show and get notified when new episodes are analyzed by anyone on the platform</p>
+      </div>
+    </div>
+    <div class="free-feature">
+      <span class="free-feature-icon">📬</span>
+      <div>
+        <strong>Weekly digest</strong>
+        <p>The most interesting bias findings from the week, delivered every Monday</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="compare">
+  <h2>Full feature comparison</h2>
+
+  <!-- Critical features — always visible -->
+  <table class="compare-table">
+    <thead>
+      <tr><th>Feature</th><th>Free</th><th>Starter Lens</th><th>Pro Lens</th><th>Operator Lens</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Monthly analyses</td><td>4</td><td>25</td><td>&infin;</td><td>&infin;</td></tr>
+      <tr><td>Full bias scores + all findings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Host trust score</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Source citations</td><td class="check-n">&mdash;</td><td>5/analysis</td><td>All</td><td>All</td></tr>
+      <tr><td>Audio briefings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Pre-episode audio brief</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+      <tr><td>Team seats</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>10</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Expandable full breakdown -->
+  <div style="text-align:center;margin-top:20px">
+    <button id="features-toggle" onclick="toggleAllFeatures()" style="background:none;border:1px solid var(--border2);border-radius:4px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff);transition:background .15s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
+      See all features &#8595;
+    </button>
+  </div>
+
+  <div id="features-full" style="display:none;margin-top:24px">
+    <table class="compare-table">
+      <thead>
+        <tr><th></th><th>Free</th><th>Starter Lens</th><th>Pro Lens</th><th>Operator Lens</th></tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Analysis</td></tr>
+        <tr><td>Monthly analyses</td><td>4</td><td>25</td><td>&infin;</td><td>&infin;</td></tr>
+        <tr><td>Bias bar + label</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>6-dimension bias scoring</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Transcript evidence quotes</td><td class="check-n">&mdash;</td><td>2/dimension</td><td>Unlimited</td><td>Unlimited</td></tr>
+        <tr><td>Full bias scores + all findings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Host trust score</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Source citations</td><td class="check-n">&mdash;</td><td>5/analysis</td><td>All</td><td>All</td></tr>
+        <tr><td>Bulk scanner (20 URLs)</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Audio</td></tr>
+        <tr><td>Audio briefings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Pre-episode audio brief</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Live subtitles</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Translation</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Voice assistant</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td><span style="font-size:10px;color:#aaa">Soon</span></td><td><span style="font-size:10px;color:#aaa">Soon</span></td></tr>
+        
+
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Platform &mdash; always free for everyone</td></tr>
+        <tr><td>Discover page</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Show profiles + aggregate bias</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Personal bias fingerprint</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Echo chamber score</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Follow shows + alerts</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Weekly digest</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Unheard stories</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>All 5/week</td><td>All 5/week</td></tr>
+
+        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Power features</td></tr>
+        <tr><td>Full transcript</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Pre-analysis tracking</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>5 shows</td><td>&infin;</td></tr>
+        <tr><td>Basic PDF export</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Full PDF export</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Brand monitoring</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>API access</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>CSV export</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+        <tr><td>Team seats</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>10</td></tr>
+        <tr><td>Usage dashboard</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
+      </tbody>
+    </table>
+    <div style="text-align:center;margin-top:16px">
+      <button onclick="toggleAllFeatures()" style="background:none;border:1px solid var(--border2);border-radius:4px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
+        Hide details &#8593;
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- FOOTER -->
+</div>
 
 <!-- SHOW VIEW -->
 <!-- LIBRARY VIEW (inline — same SPA as discover/analyze) -->
@@ -5762,6 +6315,8 @@ function showView(name) {
     discover: 'Discover — Podlens',
     analyze: 'Analyze — Podlens',
     library: 'Your Library — Podlens',
+    'how-it-works': 'How it works — Podlens',
+    pricing: 'Pricing — Podlens',
     show: 'Show profile — Podlens',
     admin: 'Admin — Podlens',
     account: 'Account — Podlens',
@@ -5769,6 +6324,7 @@ function showView(name) {
   };
   document.title = titles[name] || 'Podlens';
   if (name === 'library' && typeof initLibraryView === 'function') { initLibraryView(window._pendingLibTab); window._pendingLibTab = null; }
+  if (name === 'pricing' && typeof initPricingView === 'function') initPricingView();
   if (name === 'account' || name === 'settings') {
     if (typeof renderAccountView === 'function') setTimeout(renderAccountView, 50);
     if (typeof sidebarSetActive === 'function') sidebarSetActive(name);
@@ -5815,7 +6371,7 @@ function showView(name) {
   // Hide footer when in non-home views (except show)
   var footer = document.getElementById('site-footer');
   var _footerAuth = !!(plUser() && plUser().id);
-  var _showFooter = (name === 'home' || name === 'show') || (!_footerAuth && (name === 'discover' || name === 'analyze'));
+  var _showFooter = (name === 'home' || name === 'show' || name === 'how-it-works' || name === 'pricing') || (!_footerAuth && (name === 'discover' || name === 'analyze'));
   if (footer) footer.style.display = _showFooter ? '' : 'none';
   // Banner only shows on home when logged out
   var isHome = (name === 'home');
@@ -11648,6 +12204,109 @@ function renderProfileEmptyState(el) {
     + '</div>';
 }
 
+
+
+// ── PRICING VIEW ─────────────────────────────────────────────────────────────
+var _plBilling = 'monthly';
+var _plFoundingActive = true;
+var _plPriceIdsLoaded = false;
+var _plPricingInited = false;
+
+var PL_PRICES = {
+  monthly: {
+    creator:  { full: '$7',  founding: '$4.69',  period: '/mo', priceKey: 'creator_monthly' },
+    operator: { full: '$19', founding: '$12.73', period: '/mo', priceKey: 'operator_monthly' },
+    studio:   { full: '$49', founding: '$32.83', period: '/mo', priceKey: 'studio_monthly' },
+  },
+  annual: {
+    creator:  { full: '$56',  founding: '$37.52',  period: '/yr', priceKey: 'creator_annual' },
+    operator: { full: '$152', founding: '$101.84', period: '/yr', priceKey: 'operator_annual' },
+    studio:   { full: '$392', founding: '$262.64', period: '/yr', priceKey: 'studio_annual' },
+  },
+};
+
+var PL_PRICE_IDS = { creator_monthly:'', creator_annual:'', operator_monthly:'', operator_annual:'', studio_monthly:'', studio_annual:'' };
+
+function setBilling(billing) {
+  _plBilling = billing;
+  var mBtn = document.getElementById('bt-monthly');
+  var aBtn = document.getElementById('bt-annual');
+  var badge = document.getElementById('annual-save-badge');
+  if (mBtn) mBtn.classList.toggle('on', billing === 'monthly');
+  if (aBtn) aBtn.classList.toggle('on', billing === 'annual');
+  if (badge) badge.style.display = billing === 'annual' ? '' : 'none';
+  plRenderPrices();
+}
+
+function plRenderPrices() {
+  ['creator','operator','studio'].forEach(function(plan) {
+    var p = PL_PRICES[_plBilling][plan];
+    var priceEl = document.getElementById(plan + '-price');
+    var periodEl = document.getElementById(plan + '-period');
+    var origEl = document.getElementById(plan + '-original');
+    var noteEl = document.getElementById(plan + '-founding-note');
+    if (!priceEl) return;
+    if (_plFoundingActive) {
+      if (origEl) { origEl.textContent = p.full + p.period; origEl.style.display = 'block'; }
+      priceEl.textContent = p.founding;
+      if (noteEl) noteEl.style.display = 'block';
+    } else {
+      if (origEl) origEl.style.display = 'none';
+      priceEl.textContent = p.full;
+      if (noteEl) noteEl.style.display = 'none';
+    }
+    if (periodEl) periodEl.textContent = p.period;
+  });
+}
+
+function startCheckout(planName) {
+  var key = planName + '_' + (_plBilling === 'annual' ? 'annual' : 'monthly');
+  var priceId = PL_PRICE_IDS[key] || '';
+  var u = plUser();
+  if (!u || !u.id) { window.location.href = '/?upgrade=' + planName; return; }
+  if (!priceId) { window.location.href = 'mailto:hello@podlens.app?subject=' + encodeURIComponent('Upgrade to ' + planName); return; }
+  var coupon = '';
+  try { var ci = document.getElementById('pilot-code-input'); if (ci) coupon = ci.value.trim().toUpperCase(); } catch(e) {}
+  fetch('/api/create-checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName, couponCode: coupon || undefined }),
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })
+  .catch(function(){ alert('Could not start checkout. Please try again.'); });
+}
+
+function toggleAllFeatures() {
+  var el = document.getElementById('features-full');
+  var btn = document.getElementById('features-toggle');
+  if (!el || !btn) return;
+  var open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  btn.innerHTML = open ? 'See all features &#8595;' : 'Hide details &#8593;';
+}
+
+function initPricingView() {
+  plRenderPrices();
+  if (_plPricingInited) return;
+  _plPricingInited = true;
+  // Load price IDs
+  fetch('/api/public-config')
+    .then(function(r){ return r.json(); })
+    .then(function(cfg){ if (cfg && cfg.prices) Object.keys(cfg.prices).forEach(function(k){ if (cfg.prices[k]) PL_PRICE_IDS[k] = cfg.prices[k]; }); })
+    .catch(function(){});
+  // Load founding status
+  fetch('/api/get-plan?action=founding')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      _plFoundingActive = !!(d && d.foundingActive);
+      var dismissed = false;
+      try { dismissed = localStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
+      var banner = document.getElementById('pricing-founding-banner');
+      if (banner) banner.style.display = (_plFoundingActive && !dismissed) ? '' : 'none';
+      plRenderPrices();
+    }).catch(function(){ plRenderPrices(); });
+}
 
 // ── LIKES & PLAYLISTS ────────────────────────────────────────────────────────
 var PL_LIKED_KEY = 'pl_liked_episodes';

@@ -71,8 +71,8 @@
   function _buildLoggedOut(navLinks, path) {
     navLinks.innerHTML =
       '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '">Discover</a>'
-      + '<a href="/how-it-works.html" class="nav-link' + (_isActive('/how-it-works.html', path) ? ' active' : '') + '">How it works</a>'
-      + '<a href="/pricing.html" class="nav-link' + (_isActive('/pricing.html', path) ? ' active' : '') + '">Pricing</a>'
+      + '<a href=\"/how-it-works\" class=\"nav-link' + (_isActive('/how-it-works', path) ? ' active' : '') + '\" onclick=\"if(typeof showView===\'function\'){showView(\'how-it-works\');return false}\">How it works</a>'
+      + '<a href=\"/pricing\" class=\"nav-link' + (_isActive('/pricing', path) ? ' active' : '') + '\" onclick=\"if(typeof showView===\'function\'){showView(\'pricing\');return false}\">Pricing</a>'
       + '<button class="nav-theme-toggle mode-toggle" onclick="if(typeof toggleMode===\'function\')toggleMode()" aria-label="Toggle dark/light mode" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px">☀️</button>'
       + '<a href="/" class="nav-signin" onclick="if(typeof openModal===\'function\'){openModal(\'login\');return false}">Sign in / up</a>';
   }
@@ -92,7 +92,7 @@
           : '<div class="nav-avatar-ini" style="background:#6B7280;display:flex;align-items:center;justify-content:center;color:#fff">' + _personSvg + '</div>');
 
     var adminRow = isSuperAdmin
-      ? '<a href="javascript:void(0)" onclick="if(typeof showView==='function')showView('admin')" class="nav-dd-item" style="color:#dc2626;font-weight:600">🔴 Admin Panel</a><div class="nav-dd-div"></div>'
+      ? '<a href="javascript:void(0)" onclick="if(typeof showView===\'function\')showView(\'admin\')" class="nav-dd-item" style="color:#dc2626;font-weight:600">🔴 Admin Panel</a><div class="nav-dd-div"></div>'
       : '';
 
     var planBadge = u.plan
@@ -101,7 +101,7 @@
 
     // Admin indicator — only for super admin, completely hidden from normal users
     var adminLink = isSuperAdmin
-      ? '<a href="javascript:void(0)" onclick="if(typeof showView==='function')showView('admin')" class="nav-link" style="color:#dc2626;font-weight:600">🔴 Admin</a>'
+      ? '<a href="javascript:void(0)" onclick="if(typeof showView===\'function\')showView(\'admin\')" class="nav-link" style="color:#dc2626;font-weight:600">🔴 Admin</a>'
       : '';
 
     navLinks.innerHTML =
