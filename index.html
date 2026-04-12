@@ -4883,9 +4883,11 @@ function loadSqWidget() {
 // ── FOLLOW / UNFOLLOW SHOW ────────────────────────────────────────────────────
 function _isFollowingShow(name) {
   var u = plUser();
-  if (!u || !u.followedShows) return '+ Follow';
-  var following = u.followedShows.some(function(s){ return (s.name||s.showName||'').toLowerCase() === (name||'').toLowerCase(); });
-  return following ? '✓ Following' : '+ Follow';
+  if (!u || !u.followedShows) return false;
+  return u.followedShows.some(function(s){ return (s.name||s.showName||'').toLowerCase() === (name||'').toLowerCase(); });
+}
+function _followLabel(name) {
+  return _isFollowingShow(name) ? '✓ Following' : '+ Follow';
 }
 
 function toggleFollowShow(name, feedUrl, artwork, btn) {
@@ -8532,7 +8534,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     html+='<div class="sp-actions" style="margin-top:10px"><button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
     if (yt.channelId) html+='<a href="https://youtube.com/channel/'+yt.channelId+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:12px;font-weight:600;color:var(--text2);text-decoration:none">View channel ↗</a>';
     if (data.episodeCount>0) html+='<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share &#8599;</button>';
-    html+='<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+'\',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\',\''+(yt.thumbnailHigh||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_isFollowingShow(displayName)+'</button>';
+    html+='<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+'\',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\',\''+(yt.thumbnailHigh||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_followLabel(displayName)+'</button>';
     html+='</div></div></div>';
     // Channel description
     var ytDesc=yt.channelDescription||(rss&&rss.description)||null;
@@ -8593,7 +8595,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       + '</div>';
 
     // ── MAIN CONTENT ──────────────────────────────────────────────────────────
-    var followBtn = '<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+'\''+',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\''+',\''+(artwork||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_isFollowingShow(displayName)+'</button>';
+    var followBtn = '<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+'\''+',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\''+',\''+(artwork||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_followLabel(displayName)+'</button>';
 
     var mainHtml = '<div class="sp-3col-main">';
 
