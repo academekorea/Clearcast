@@ -57,14 +57,8 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 /* ── PAGE ── */
 .page{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px);align-items:start;max-width:100%;padding:0;margin:0}
 .page-inner{padding:32px 36px 80px;min-width:0}
-.lib-nav{background:#0a1a20;display:flex;flex-direction:column;min-height:calc(100vh - 60px);position:sticky;top:60px}
-.lib-nav *{color:#fff}
-.lib-nav-lbl{padding:16px 20px 8px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4}
-.lib-nav-btn{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:'Inter',-apple-system,sans-serif;text-decoration:none}
-.lib-nav-btn:hover{background:rgba(255,255,255,.07)}
-.lib-nav-btn.active{background:rgba(255,255,255,.13)}
-.lib-nav-div{height:0.5px;background:rgba(255,255,255,.1);margin:4px 20px}
-@media(max-width:768px){.page{grid-template-columns:1fr}.lib-nav{display:none}}
+/* lib-nav styles moved to /sidebar.js */
+@media(max-width:768px){.page{grid-template-columns:1fr}}
 .page-header{margin-bottom:28px}
 .page-title{font-family:var(--ffs);font-size:28px;font-weight:700;letter-spacing:-.01em}
 .page-sub{font-size:14px;color:var(--text2);margin-top:4px}
@@ -163,17 +157,7 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
 
 /* ── YOUR SHOWS (platform-connected) ── */
 
-/* ── SIDEBAR DROPDOWN ── */
-.lib-nav-sub{display:none;flex-direction:column}
-.lib-nav-sub.open{display:flex}
-.lib-nav-sub-btn{display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:'Inter',-apple-system,sans-serif;text-decoration:none;transition:background .12s,color .12s}
-.lib-nav-sub-btn:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.7)}
-.lib-nav-sub-btn.active{color:rgba(255,255,255,.9);background:rgba(255,255,255,.07)}
-.lib-nav-arrow{margin-left:auto;font-size:11px;color:rgba(255,255,255,.2);transition:transform .15s;line-height:1}
-.lib-nav-arrow.open{transform:rotate(90deg)}
-.lib-nav-count{margin-left:auto;font-size:10px;color:rgba(255,255,255,.22)}
-.lib-nav-badge{margin-left:auto;font-size:9px;background:rgba(55,138,221,.3);color:#378ADD;padding:1px 5px;border-radius:10px}
-.lib-nav-soon{margin-left:auto;font-size:9px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.3);padding:1px 5px;border-radius:10px}
+/* sidebar dropdown styles moved to /sidebar.js */
 
 
 /* ── ARCHIVE — FOLLOWING ── */
@@ -247,28 +231,8 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
 <script src="/nav.js" defer></script>
 
 <div class="page">
-  <!-- Left Nav — matches dashboard layout -->
-  <div class="lib-nav">
-    <div class="lib-nav-lbl">Menu</div>
-    <button class="lib-nav-btn" id="nav-home-toggle" onclick="libToggleDrop('home')"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home<span class="lib-nav-arrow open" id="lib-arr-home">›</span></button>
-    <div class="lib-nav-sub open" id="lib-drop-home">
-      <a href="/?section=intelligence" class="lib-nav-sub-btn"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</a>
-      <a href="/?section=queue" class="lib-nav-sub-btn"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue<span class="lib-nav-badge" id="lib-queue-count"></span></a>
-    </div>
-    <a href="/discover" class="lib-nav-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</a>
-    <a href="/" class="lib-nav-btn"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</a>
-    <div class="lib-nav-div"></div>
-    <button class="lib-nav-btn" id="nav-library-home" onclick="switchTab('library');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>My Library</button>
-    <button class="lib-nav-sub-btn active" id="nav-following" onclick="switchTab('following');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78z"/></svg>Following<span class="lib-nav-count" id="lib-count-following"></span></button>
-    <button class="lib-nav-sub-btn" id="nav-liked" onclick="switchTab('liked');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78z"/></svg>Liked episodes<span class="lib-nav-count" id="lib-count-liked"></span></button>
-    <button class="lib-nav-sub-btn" id="nav-playlists" onclick="libToggleDrop('playlists');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Playlists<span class="lib-nav-arrow" id="lib-arr-playlists">›</span></button>
-    <div class="lib-nav-sub" id="lib-drop-playlists">
-      <div class="lib-nav-sub-btn" id="lib-playlists-list" style="display:none"></div>
-      <button class="lib-nav-sub-btn" style="color:rgba(255,255,255,.3);font-style:italic" onclick="switchTab('playlists');setNavActive(document.getElementById('nav-playlists'))"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New playlist</button>
-    </div>
-    <button class="lib-nav-sub-btn" id="nav-analyzed" onclick="switchTab('analyzed');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed<span class="lib-nav-count" id="lib-count-analyzed"></span></button>
-    <button class="lib-nav-sub-btn" id="nav-downloads" onclick="switchTab('downloads');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Downloads<span class="lib-nav-soon">Soon</span></button>
-  </div>
+  <div id="app-sidebar"></div>
+  <script src="/sidebar.js" defer></script>
   <!-- Main content -->
   <div class="page-inner">
   <div id="error-banner" class="error-banner">Couldn't load your library. Try refreshing.</div>
@@ -393,13 +357,8 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     // Update tab counts
     document.getElementById('tc-following').textContent = follows.length;
     document.getElementById('tc-analyzed').textContent = analyses.length;
-    // Update sidebar nav counts
-    var cntF = document.getElementById('lib-count-following');
-    var cntA = document.getElementById('lib-count-analyzed');
-    var cntL = document.getElementById('lib-count-liked');
-    if (cntF) cntF.textContent = follows.length || '';
-    if (cntA) cntA.textContent = analyses.length || '';
-    if (cntL) cntL.textContent = saved.length || '';
+    // Update shared sidebar counts
+    if (window.sidebarUpdateCounts) window.sidebarUpdateCounts();
 
     renderAll();
     // Render echo chamber in library
@@ -875,19 +834,10 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
       + '<div style="font-size:11px;color:var(--text3);line-height:1.5">' + eco.description + '</div>';
   }
 
-  window.libToggleDrop = function(id) {
-    var el = document.getElementById('lib-drop-' + id);
-    var arr = document.getElementById('lib-arr-' + id);
-    if (!el) return;
-    var isOpen = el.classList.contains('open');
-    el.classList.toggle('open', !isOpen);
-    if (arr) arr.classList.toggle('open', !isOpen);
-  };
-
-  window.setNavActive = function(btn) {
-    document.querySelectorAll('.lib-nav-btn, .lib-nav-sub-btn').forEach(function(b){ b.classList.remove('active'); });
-    if (btn) btn.classList.add('active');
-  };
+  // libToggleDrop and setNavActive now handled by sidebar.js (_sbToggle / sidebarSetActive)
+  // Keep setNavActive as a shim for any remaining inline onclick references
+  window.setNavActive = function() {};
+  window.libToggleDrop = function(id) { if (window._sbToggle) window._sbToggle(id); };
 
   window.switchTab = function (tab) {
     if (tab === 'library') {
@@ -901,13 +851,9 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     document.querySelectorAll('.lib-panel').forEach(function (p) {
       p.classList.toggle('active', p.id === 'panel-' + tab);
     });
-    // Sync sidebar nav active state
-    document.querySelectorAll('.lib-nav-btn, .lib-nav-sub-btn').forEach(function(b) {
-      b.classList.toggle('active', b.id === 'nav-' + tab);
-    });
-    // Keep My Library button highlighted for all library sections
-    var libHome = document.getElementById('nav-library-home');
-    if (libHome) libHome.classList.add('active');
+    // Sync shared sidebar active state
+    if (window.sidebarSetActive) window.sidebarSetActive(tab);
+    if (tab === 'myshows') renderMyShows();
   };
 
   /* ── SEARCH ── */
@@ -964,6 +910,15 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
 
 
   loadData();
+
+  // Handle hash deep links from dashboard sidebar (e.g. /library#analyzed)
+  var hashTab = (window.location.hash || '').replace('#', '');
+  if (hashTab && document.getElementById('panel-' + hashTab)) {
+    switchTab(hashTab);
+  } else {
+    // Default active state
+    if (window.sidebarSetActive) window.sidebarSetActive('following');
+  }
 })();
 </script>
 </body>
