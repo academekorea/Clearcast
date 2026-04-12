@@ -91,8 +91,9 @@
     }
 
     function libLandingAttrs() {
+      // Library is now an inline view in index.html — always use showView/switchTab
       if (isDashboard) {
-        return 'href="/library" class="sb-btn" data-sb="library"';
+        return 'class="sb-btn" data-sb="library" onclick="showView(\'library\')"';
       } else {
         return 'class="sb-btn" data-sb="library" onclick="switchTab(\'following\');window.sidebarSetActive(\'following\')"';
       }
@@ -101,7 +102,7 @@
     function libSubItem(id, icon, label, suffix) {
       var suffixHtml = suffix || '';
       if (isDashboard) {
-        return '<a href="/library#' + id + '" class="sb-sub-btn" data-sb="' + id + '">' + icon + label + suffixHtml + '</a>';
+        return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="showView(\'library\');setTimeout(function(){if(typeof switchTab===\'function\')switchTab(\'' + id + '\')},0)">' + icon + label + suffixHtml + '</button>';
       } else {
         return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="switchTab(\'' + id + '\');window.sidebarSetActive(\'' + id + '\')">' + icon + label + suffixHtml + '</button>';
       }

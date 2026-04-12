@@ -108,7 +108,7 @@
       adminLink
       + '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'discover\');return false}">Discover</a>'
       + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'analyze\');return false}">Analyze</a>'
-      + '<a href="/library" class="nav-link' + (_isActive('/library', path) ? ' active' : '') + '">Library</a>'
+      + '<a href="/library" class="nav-link' + (_isActive('/library', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'library\');return false}">Library</a>'
       + '<button class="nav-theme" id="nav-theme-btn" aria-label="Toggle theme">' + (isDark ? '🌙' : '☀️') + '</button>'
       + '<div class="nav-dd-wrap">'
       + '<button class="nav-avatar-btn" id="nav-avatar-btn" aria-label="Profile menu">' + avatarInner + '</button>'
