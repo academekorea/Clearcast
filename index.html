@@ -2773,11 +2773,13 @@ body.light-mode,[data-theme="light"]{
           <button class="sia-tab" id="sia-tab-highlights" onclick="siaSwitchTab('highlights',this)">Transcript Highlights</button>
         </div>
 
-        <!-- Analysis panel -->
+        <!-- Analysis panel — matches actual v7-render.js layout exactly -->
         <div id="sia-panel-analysis" class="sia-panel on" style="padding:18px">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
 
-            <!-- Left: YouTube embed -->
+          <!-- .trow — left col 260px (video+bias) / right col (guest+brief) -->
+          <div class="trow" style="margin-bottom:18px">
+
+            <!-- Left column: video → controls → progress → bias bar -->
             <div>
               <div style="background:#1a3050;border-radius:7px;aspect-ratio:16/9;position:relative;overflow:hidden">
                 <iframe src="https://www.youtube-nocookie.com/embed/vif8NQcjVf0?rel=0&modestbranding=1"
@@ -2785,22 +2787,38 @@ body.light-mode,[data-theme="light"]{
                   allowfullscreen
                   style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:7px"></iframe>
               </div>
-              <div style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:12px">
-                <button class="pl-cb" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:5px 7px;font-family:inherit">&#8634; 30s</button>
-                <div style="width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;border:none;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer">&#9654;</div>
-                <button class="pl-cb" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:5px 7px;font-family:inherit">30s &#8635;</button>
+              <div class="pl-ctls">
+                <button class="pl-cb">&#8634; 30s</button>
+                <button class="pl-pc">&#9654;</button>
+                <button class="pl-cb">30s &#8635;</button>
+                <button class="pl-spd">1&times;</button>
               </div>
-              <div style="margin-top:10px">
-                <div style="font-size:10px;color:var(--text3);display:flex;justify-content:space-between;margin-bottom:5px"><span>34:12</span><span>2:18:44</span></div>
-                <div style="height:3px;background:var(--border2);border-radius:2px;position:relative">
-                  <div style="height:100%;background:var(--navy);border-radius:2px;width:34%"></div>
-                  <div style="width:9px;height:9px;border-radius:50%;background:var(--navy);position:absolute;top:-3px;left:34%;transform:translateX(-50%)"></div>
+              <div class="pl-abar">
+                <div class="pl-abarlbl"><span>34:12</span><span>2:18:44</span></div>
+                <div class="pl-atrack"><div class="pl-afill" style="width:34%"></div><div class="pl-athumb" style="left:34%"></div></div>
+              </div>
+              <!-- Bias bar in left column — matches actual UI -->
+              <div class="pl-card" style="margin-top:10px">
+                <div class="biasrow">
+                  <div class="lbl" style="margin-bottom:0">Political lean &mdash; how this episode frames issues</div>
+                  <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#d97706"><div class="pdot"></div>Final</div>
+                </div>
+                <div class="bverdict">Slight left lean</div>
+                <div style="position:relative"><div class="bias-bar-wrap">
+                  <div class="bias-seg-left" style="width:38%"></div>
+                  <div class="bias-seg-center" style="width:41%"></div>
+                  <div class="bias-seg-right" style="width:21%"></div>
+                </div></div>
+                <div class="bpcts">
+                  <span style="color:#e0352b">&#9679; 38% left</span>
+                  <span style="color:#999">&#9642; 41% center</span>
+                  <span style="color:#3a7fd4">&#9679; 21% right</span>
                 </div>
               </div>
             </div>
 
-            <!-- Right: guest + briefing + bias -->
-            <div style="display:flex;flex-direction:column;gap:10px">
+            <!-- Right column (.rc): guest card → audio briefing -->
+            <div class="rc">
               <div class="pl-card">
                 <div class="gtop"><div class="gav">JH</div><div><div class="gname">Jensen Huang</div><div class="grole">CEO, NVIDIA &middot; Tech executive</div></div></div>
                 <div class="chips"><div class="lchip">Tech-optimist lean</div><div class="chip">15 prior episodes</div><div class="chip">High credibility</div></div>
@@ -2815,27 +2833,9 @@ body.light-mode,[data-theme="light"]{
                 <div class="lbl">Audio briefing &middot; Before you listen</div>
                 <div class="bdesc">2-min overview of AI infrastructure framing, CUDA origins, and bias patterns detected in this episode.</div>
                 <div style="display:flex;align-items:center;gap:8px">
-                  <button class="bbtn" onclick="toggleAudioSummary('demo', &quot;Before you listen — here's what you should know about this episode. Jensen Huang, CEO of NVIDIA, joins Lex Fridman for a two-hour conversation on AI infrastructure, CUDA, and the future of computing. The episode leans slightly left — about 38% of the framing uses progressive regulatory language, while 21% pushes back with free-market arguments. Four moments specifically push the bias left: Jensen frames government oversight as necessary for AI safety, emphasizes the environmental cost of model training, and argues that big tech cannot self-regulate. Two moments push right: he defends free-market innovation and argues that export controls on chips are counterproductive. Worth knowing before you listen — the host rarely challenged Jensen's self-reported market share figures, and there is no mention of NVIDIA's ongoing antitrust scrutiny in the EU and US. Three sponsor segments are editorially integrated rather than clearly separated from the conversation. On host trust, Jensen scores 7.2 out of 10 — high credibility, but the episode is one-sided in his favor. If you want balance, look for perspectives on AI regulation costs and NVIDIA's market dominance risks.&quot;)">&#9654; Play briefing</button>
+                  <button class="bbtn" onclick="toggleAudioSummary('demo', &quot;Before you press play — here is what Podlens found about this episode with Jensen Huang from Lex Fridman Podcast. The episode has a mild left lean. About 38 percent of the framing uses progressive regulatory language, while 21 percent pushes back with free-market arguments. Host credibility is strong overall, but Lex Fridman rarely challenged Jensen’s self-reported market share figures. Key stat: Jensen claimed over 80 percent of AI training compute — independent estimates put it at 65 to 70 percent. That was never questioned. Omission risk is high. NVIDIA’s active antitrust scrutiny in the EU and US is never mentioned. The 40 billion dollar ARM acquisition failure is also absent, despite a full discussion of NVIDIA’s strategic bets. Three sponsor segments are editorially integrated rather than clearly separated from content. Two things to watch for as you listen: First, when market share figures are cited, they are not sourced. Second, government regulation is framed as necessary without presenting the counterargument. Now you know what to listen for. Stay critical.&quot;)">&#9654; Play briefing</button>
                   <span class="bdur" id="sia-bdur">10 sec preview</span>
                 </div>
-              </div>
-              <div class="pl-card">
-                <div class="biasrow">
-                  <div class="lbl" style="margin-bottom:0">Political lean &mdash; how this episode frames issues</div>
-                  <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#d97706"><div class="pdot"></div>Final</div>
-                </div>
-                <div style="position:relative"><div class="bias-bar-wrap">
-                  <div class="bias-seg-left" style="width:38%"></div>
-                  <div class="bias-seg-center" style="width:41%"></div>
-                  <div class="bias-seg-right" style="width:21%"></div>
-                  <div class="bias-marker" style="left:34%"></div>
-                </div></div>
-                <div class="bpcts">
-                  <span style="color:#e0352b">&#9679; 38% left</span>
-                  <span style="color:#999">&#9642; 41% center</span>
-                  <span style="color:#3a7fd4">&#9679; 21% right</span>
-                </div>
-                <div class="bverdict">Slight left lean</div>
               </div>
             </div>
           </div>
@@ -2952,7 +2952,16 @@ body.light-mode,[data-theme="light"]{
             </div>
           </div>
 
-                    <!-- Findings -->
+                    <!-- Unheard section — matches actual UI -->
+          <div class="sec unheard-section" id="sia-unheard-section">
+            <div class="seclbl" style="display:flex;align-items:center;gap:8px">Unheard <span style="font-size:9px;font-weight:700;background:rgba(139,92,246,.1);color:#7c3aed;padding:2px 6px;border-radius:3px">Pro</span></div>
+            <div id="sia-hl-gate" class="th-gate"><span class="th-gate-txt" id="sia-hl-gate-txt">Unheard stories unlock with Pro Lens</span><button class="th-gate-btn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
+            <div id="sia-unheard-body" style="display:none">
+              <div style="font-size:13px;color:var(--text2);line-height:1.7;padding:10px 0">The perspectives, facts, and counterarguments that were absent from this episode — what you didn't hear.</div>
+            </div>
+          </div>
+
+          <!-- Findings -->
           <div class="sec">
             <div class="seclbl">Worth knowing before you listen <span id="sia-findings-hint" style="display:none;font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap any finding to expand</span></div>
             <div id="ar-echo-nudge" style="display:none;margin-bottom:12px;padding:9px 14px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--text2)"></div>
@@ -9554,6 +9563,14 @@ function siaDimCard(card) {
 }
 
 function siaSetTier(tier, btn) {
+  // Show/hide unheard section based on tier
+  var unheardGate = document.getElementById('sia-hl-gate');
+  var unheardBody = document.getElementById('sia-unheard-body');
+  if (unheardGate && unheardBody) {
+    var showUnheard = tier === 'operator';
+    unheardGate.style.display = showUnheard ? 'none' : '';
+    unheardBody.style.display = showUnheard ? '' : 'none';
+  }
   // Directly target each button by ID — bulletproof, no querySelector needed
   ['free','creator','operator'].forEach(function(t) {
     var b = document.getElementById('sia-btn-' + t);
