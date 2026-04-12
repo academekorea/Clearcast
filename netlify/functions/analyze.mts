@@ -610,9 +610,7 @@ export default async (req: Request, context: Context) => {
               headers: { "authorization": aaiKey, "content-type": "application/json" },
               body: JSON.stringify({
                 audio_url: upload_url,
-                speech_models: ["universal-2"],
-                // Store word-level timestamps for transcript seek (Priority 4)
-                // words_json: true is the default — explicitly request it
+                speech_model: "best",
               }),
             });
             const { id: transcriptId } = await transcriptRes.json() as any;
@@ -698,7 +696,7 @@ export default async (req: Request, context: Context) => {
                   const aaiResBg = await fetch("https://api.assemblyai.com/v2/transcript", {
                     method: "POST",
                     headers: { authorization: aaiKeyBg, "content-type": "application/json" },
-                    body: JSON.stringify({ audio_url: postRailwayAudioUrl, speech_models: ["universal-2"] }),
+                    body: JSON.stringify({ audio_url: postRailwayAudioUrl, speech_model: "best" }),
                     signal: AbortSignal.timeout(30000),
                   });
                   if (aaiResBg.ok) {
@@ -884,7 +882,7 @@ export default async (req: Request, context: Context) => {
     headers: { authorization: assemblyKey, "content-type": "application/json" },
     body: JSON.stringify({
       audio_url: resolvedAudioUrl,
-      speech_models: ["universal-2"],
+      speech_model: "best",
       // word_boost not needed — default word-level timestamps are always returned
     }),
     signal: AbortSignal.timeout(30000),
