@@ -196,6 +196,15 @@
     });
     html += '</div>';
     html += '<div id="lib-shows-grid">'+buildShowsGrid('all')+'</div>';
+
+    // See all followed shows row
+    if (follows.length) {
+      html += '<div onclick="switchTab(\'following\')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r,8px);cursor:pointer;margin-bottom:16px" onmouseover="this.style.borderColor=\'var(--border2)\'" onmouseout="this.style.borderColor=\'var(--border)\'">';
+      html += '<span style="font-size:12px;font-weight:500;color:var(--text)">See all '+follows.length+' followed shows</span>';
+      html += '<span style="font-size:11px;color:var(--text3)">Following \u2192</span>';
+      html += '</div>';
+    }
+
     if (analyses.length) {
       html += '<div style="display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px">';
       html += '<div style="font-size:14px;font-weight:600;color:var(--text)">Recently analyzed</div>';

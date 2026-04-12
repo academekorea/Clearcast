@@ -3316,7 +3316,7 @@ body.light-mode,[data-theme="light"]{
     <div class="dash-3col">
 
       <div id="app-sidebar"></div>
-      <script src="/sidebar.js"></script>
+      <!-- sidebar.js loaded before init at end of body -->
 
       <!-- MAIN CONTENT — sections switch via showDashSection() -->
       <div class="dash-main dash-main-content">
@@ -3766,7 +3766,7 @@ body.light-mode,[data-theme="light"]{
     </div>
   </div>
 </div>
-<script src="/library-view.js"></script>
+<!-- library-view.js loaded before init at end of body -->
 
 <!-- VIEW: Account (merged profile + billing + notifications + integrations) -->
 <div class="view" id="view-account" style="display:none">
@@ -11798,6 +11798,11 @@ function addToPlaylist(ep) {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
 
+// ── LOAD SPA VIEW SCRIPTS (must be before init so functions are defined) ──
+</script>
+<script src="/sidebar.js"></script>
+<script src="/library-view.js"></script>
+<script>
 // ── AUTO INIT ──
 // Set auth state synchronously before any render logic runs.
 // CSS keys off body.authenticated to hide/show marketing vs dashboard.
