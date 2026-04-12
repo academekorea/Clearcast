@@ -1635,9 +1635,9 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-tab.on{color:var(--text);border-bottom-color:var(--text);font-weight:500}
 .disc-tab-pro{font-size:9px;font-weight:700;background:var(--bg3);color:var(--text3);padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle}
 .metric-q-wrap{position:relative;display:inline-flex;align-items:center}
-.metric-q-wrap:hover .metric-q-tip{opacity:1;pointer-events:auto;transform:translateY(0)}
-.metric-q-tip{position:absolute;bottom:calc(100% + 6px);right:0;background:var(--navy);color:#fff;font-size:11px;padding:6px 10px;border-radius:6px;white-space:normal;width:220px;line-height:1.5;opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .15s,transform .15s;z-index:9999;font-family:var(--ff);font-weight:400;box-shadow:0 4px 12px rgba(0,0,0,.2)}
-.metric-q-tip::after{content:'';position:absolute;top:100%;right:8px;border:5px solid transparent;border-top-color:var(--navy)}
+.metric-q-wrap:hover .metric-q-tip{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.metric-q-tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);background:var(--navy);color:#fff;font-size:11px;padding:8px 11px;border-radius:6px;white-space:normal;width:240px;line-height:1.5;text-transform:none;letter-spacing:normal;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:9999;font-family:var(--ff);font-weight:400;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.metric-q-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--navy)}
 .disc-rc{background:var(--bg2);border-left:0.5px solid var(--border);padding:20px 16px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px)}
 .disc-rc-block{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:14px}
 .disc-rc-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
@@ -11698,7 +11698,7 @@ function _metricQ(key) {
   var m = METRIC_EXPLAINERS[key];
   if (!m) return '';
   var tip = m.title + ': ' + m.what;
-  return '<span class="metric-q-wrap" style="margin-left:6px;position:relative;display:inline-flex"><button style="width:16px;height:16px;border-radius:50%;border:1px solid var(--border2);background:none;cursor:default;font-size:10px;font-weight:700;color:var(--text3);font-family:var(--ff);display:inline-flex;align-items:center;justify-content:center;padding:0;line-height:1;flex-shrink:0" title="'+tip+'">?</button><span class="metric-q-tip">'+m.title+'<br><span style=\"font-weight:400;opacity:.8\">'+m.what+'</span></span></span>';
+  return '<span class="metric-q-wrap" style="margin-left:6px;position:relative;display:inline-flex"><button style="width:16px;height:16px;border-radius:50%;border:1px solid var(--border2);background:none;cursor:default;font-size:10px;font-weight:700;color:var(--text3);font-family:var(--ff);display:inline-flex;align-items:center;justify-content:center;padding:0;line-height:1;flex-shrink:0">?</button><span class="metric-q-tip"><strong style=\"display:block;margin-bottom:3px\">'+m.title+'</strong><span style=\"font-weight:400;opacity:.85\">'+m.what+'</span></span></span>';
 }
 
 function showBiasExplainer() {
