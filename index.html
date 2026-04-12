@@ -6170,7 +6170,12 @@ function discSearch(q, isLive) {
           var safeUrl = (s.feedUrl||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
           var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-show-art"></div>';
           var safeName2 = (s.name||'').replace(/"/g,'').replace(/'/g,'');
-          return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+_escHtml(s.name)+'</div><div class="disc-show-sub">'+_escHtml(s.artist||'')+'</div>'+_biasMini(s.bias||null)+'<button data-follow-name="'+safeName2+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName2+'\',\''+safeUrl+'\',\''+(s.artwork||'')+'\',this)" style="margin-top:8px;width:100%;padding:5px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button></div>';
+          var _likedHeart = isLiked({url:s.feedUrl}) ? '\u2665' : '\u2661';
+          var _likedColor = isLiked({url:s.feedUrl}) ? '#e24b4a' : 'rgba(0,0,0,.3)';
+          return '<div class="disc-show-card" style="position:relative" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
+            +'<button data-url="'+(s.feedUrl||'')+'" data-title="'+safeName2+'" data-artist="'+(s.artist||'')+'" data-art="'+(s.artwork||'')+'" onclick="event.stopPropagation();_likeFromBtn(this);this.textContent=this.textContent===\'\u2661\'?\'\u2665\':\'\u2661\';this.style.color=this.textContent===\'\u2665\'?\'#e24b4a\':\'rgba(0,0,0,.3)\'" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:28px;height:28px;font-size:16px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;color:'+_likedColor+'">'+_likedHeart+'</button>'
+            +art+'<div class="disc-show-name">'+_escHtml(s.name)+'</div><div class="disc-show-sub">'+_escHtml(s.artist||'')+'</div>'+_biasMini(s.bias||null)
+            +'<button data-follow-name="'+safeName2+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName2+'\',\''+safeUrl+'\',\''+(s.artwork||'')+'\',this)" style="margin-top:8px;width:100%;padding:5px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button></div>';
         }).join('');
       }
     }).catch(function(){}); // silently keep curated results on error
