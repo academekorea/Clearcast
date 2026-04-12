@@ -64,7 +64,14 @@
   /* ── LOAD DATA ── */
   function loadData() {
     refreshUser();
-    if (!u) return;
+    if (!u) {
+      console.warn('[library-view] No user found in pl-user');
+      // Still render empty states
+      follows = [];
+      analyses = [];
+      renderAll();
+      return;
+    }
     follows = [];
     analyses = [];
     activeTab = activeTab || 'library';
@@ -103,9 +110,15 @@
   /* Library overview */
   function renderLibraryOverview() {
     var el = document.getElementById('library-overview-content');
-    if (!el) return;
-    var fp = (typeof calcBiasFingerprint === 'function') ? calcBiasFingerprint(analyses) : null;
-    var eco = (typeof calcEchoChamber === 'function') ? calcEchoChamber(analyses) : null;
+    if (!el) { console.warn('[library-view] library-overview-content not found'); return; }
+    try { _renderLibraryOverviewInner(el); } catch(e) {
+      console.error('[library-view] renderLibraryOverview error:', e);
+      el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)"><div style="font-size:32px;margin-bottom:12px">📚</div><div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px">Your Library</div><div style="font-size:13px">Follow shows and analyze episodes to build your library.</div></div>';
+    }
+  }
+  function _renderLibraryOverviewInner(el) {
+    var fp = (typeof calcBiasFingerprint === 'function') ? calcBiasFingerprint(analyses || []) : null;
+    var eco = (typeof calcEchoChamber === 'function') ? calcEchoChamber(analyses || []) : null;
     var mostBiased = '', mostBiasedLean = '', mostBiasedCls = '';
     if (follows.length) {
       follows.forEach(function(s) {
@@ -510,6 +523,7 @@
 
   /* ── Public init — called by showView('library') ── */
   window.initLibraryView = function(tab) {
+    console.log('[library-view] initLibraryView called, tab:', tab, 'initialized:', _libInitialized);
     loadData();
     renderLibRightSidebar();
     if (tab && document.getElementById('panel-' + tab)) {
