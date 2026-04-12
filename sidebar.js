@@ -117,6 +117,9 @@
     // ── Assemble HTML ──
     var html = '';
 
+    // ── Top section (scrollable) ──
+    html += '<div class="sb-top">';
+
     // Menu section
     html += '<div class="sb-lbl">Menu</div>';
 
@@ -158,9 +161,10 @@
     html += libSubItem('analyzed', icons.analyzed, 'Analyzed', '<span class="sb-count">' + (c.analyzed || '') + '</span>');
     html += libSubItem('downloads', icons.downloads, 'Downloads', '<span class="sb-soon">Soon</span>');
 
-    // Bottom section: Account + Settings first, then Resources
-    html += '<div class="sb-spacer" style="flex:1"></div>';
-    html += '<div style="border-top:0.5px solid rgba(255,255,255,.08);padding-top:4px">';
+    html += '</div>'; // end .sb-top
+
+    // ── Bottom section (pinned) ──
+    html += '<div class="sb-bottom">';
 
     // Account
     if (isDashboard) {
@@ -194,7 +198,8 @@
     style.id = 'sb-styles';
     style.textContent = [
       '#app-sidebar,#app-sidebar-lib{background:#0a1a20;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);min-width:220px;overflow:hidden}',
-      '#app-sidebar > *:not(:last-child),#app-sidebar-lib > *:not(:last-child){overflow-y:auto}',
+      '.sb-top{flex:1;overflow-y:auto;padding:8px 0}',
+      '.sb-bottom{flex-shrink:0;padding:4px 0 8px;border-top:0.5px solid rgba(255,255,255,.08)}',
       '.sb-bot{font-size:11px!important;padding:6px 20px!important;color:rgba(255,255,255,.35)!important}',
       '.sb-bot:hover{color:rgba(255,255,255,.65)!important}',
       '.sb-bot.active{color:#fff!important;background:rgba(255,255,255,.08)!important}',

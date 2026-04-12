@@ -3723,16 +3723,16 @@ body.light-mode,[data-theme="light"]{
       <div class="lib-panel" id="panel-downloads"><div id="downloads-content"></div></div>
     </div>
     <!-- Right sidebar — library intelligence -->
-    <div class="dash-sidebar" id="lib-right-sidebar">
-      <div class="sidebar-card" id="lib-rs-bias">
-        <div class="sidebar-card-title">Analyzed bias this week</div>
-        <div id="lib-rs-bias-content">
-          <div style="height:6px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:5px">
+    <div class="dash-sidebar" id="lib-right-sidebar" style="display:flex;flex-direction:column;gap:11px">
+      <div id="lib-rs-bias">
+        <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:5px">Analyzed bias this week</div>
+        <div id="lib-rs-bias-content" style="background:var(--bg2);border-radius:var(--r,8px);padding:9px 10px">
+          <div style="height:6px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:5px">
             <div style="width:33%;background:#E24B4A"></div>
             <div style="width:34%;background:#D1CFC9"></div>
             <div style="width:33%;background:#378ADD"></div>
           </div>
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3)">
             <span style="color:#E24B4A">—</span>
             <span>— center</span>
             <span style="color:#378ADD">—</span>
@@ -3740,24 +3740,25 @@ body.light-mode,[data-theme="light"]{
           <div style="font-size:10px;color:var(--text3);margin-top:4px">Analyze episodes to see your weekly lean</div>
         </div>
       </div>
-      <div class="sidebar-card" id="lib-rs-echo">
-        <div class="sidebar-card-title">Echo chamber score</div>
-        <div id="lib-rs-echo-content">
+      <div style="height:0.5px;background:var(--border)"></div>
+      <div id="lib-rs-echo">
+        <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:5px">Echo chamber score</div>
+        <div id="lib-rs-echo-content" style="background:var(--bg2);border-radius:var(--r,8px);padding:9px 10px">
           <div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes across different shows to see your score.</div>
         </div>
       </div>
-      <div class="sidebar-card" id="lib-rs-unheard">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div class="sidebar-card-title" style="margin-bottom:0">Unheard alert</div>
-        </div>
+      <div style="height:0.5px;background:var(--border)"></div>
+      <div id="lib-rs-unheard">
+        <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:5px">Unheard alert</div>
         <div id="lib-rs-unheard-content">
-          <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--r,8px);padding:10px 12px">
+          <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--r,8px);padding:8px 10px">
             <div style="font-size:11px;color:var(--text3)">Follow and analyze shows to see what perspectives you might be missing.</div>
           </div>
         </div>
       </div>
-      <div class="sidebar-card" id="lib-rs-balance">
-        <div class="sidebar-card-title">Suggested to balance</div>
+      <div style="height:0.5px;background:var(--border)"></div>
+      <div id="lib-rs-balance">
+        <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:5px">Suggested to balance</div>
         <div id="lib-rs-balance-content">
           <div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes to get personalized balance suggestions.</div>
         </div>

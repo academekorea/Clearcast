@@ -124,35 +124,64 @@
     var ecoLabel = eco && eco.hasData ? eco.label : null;
     var ecoColor = eco && eco.hasData ? eco.color : 'var(--text3)';
     var html = '';
-    html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">';
-    html += '<div><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Library lean</div>';
-    if (fp && fp.hasData) {
-      html += '<div style="height:6px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:4px"><div style="width:'+fpL+'%;background:#E24B4A"></div><div style="width:'+fpC+'%;background:var(--border2)"></div><div style="width:'+fpR+'%;background:#378ADD"></div></div>';
-      html += '<div style="font-size:10px;color:var(--text3)">'+fpL+'% left \u00b7 '+fpC+'% center \u00b7 '+fpR+'% right</div>';
-    } else { html += '<div style="font-size:12px;color:var(--text3)">No data yet</div>'; }
+
+    // ── Recently liked shows (horizontal chips) ──
+    var liked = [];
+    try { liked = JSON.parse(localStorage.getItem('pl_liked_episodes') || '[]'); } catch(e) {}
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+    html += '<span style="font-size:13px;font-weight:500;color:var(--text)">Recently liked shows</span>';
+    html += '<button onclick="switchTab(\'liked\')" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:var(--ff)">See all \u2192</button>';
     html += '</div>';
-    html += '<div><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Echo chamber</div>';
-    if (ecoScore !== null) {
-      html += '<div style="font-size:18px;font-weight:700;color:'+ecoColor+'">'+ecoScore+'<span style="font-size:11px;font-weight:400;color:var(--text3)">/100</span></div>';
-      html += '<div style="font-size:11px;color:'+ecoColor+'">'+ecoLabel+'</div>';
-    } else { html += '<div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes to unlock</div>'; }
+    html += '<div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:3px;margin-bottom:12px;scrollbar-width:none">';
+    // Show chips from liked episodes (dedupe by show name)
+    var seenShows = {};
+    liked.forEach(function(ep) {
+      var sn = ep.showName || '';
+      if (!sn || seenShows[sn]) return;
+      seenShows[sn] = true;
+      var leanLabel = ep.biasLabel || biasFromEp(ep) || '';
+      var leanCls = biasCls(ep);
+      html += '<div style="display:flex;align-items:center;gap:6px;padding:5px 9px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r,8px);flex-shrink:0;cursor:pointer;min-width:120px">';
+      html += artHtml(ep.artwork, sn, 'saved-art');
+      html += '<div style="min-width:0"><div style="font-size:11px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(sn)+'</div>';
+      if (leanLabel) html += '<span class="bias-pill '+leanCls+'" style="font-size:8px;padding:1px 4px;margin-top:2px;display:inline-block">'+esc(leanLabel)+'</span>';
+      html += '</div></div>';
+    });
+    // Dashed placeholder
+    html += '<div style="display:flex;align-items:center;justify-content:center;padding:5px 9px;border:0.5px dashed var(--border2);border-radius:var(--r,8px);flex-shrink:0;min-width:64px;cursor:pointer">';
+    html += '<div style="font-size:10px;color:var(--text3);text-align:center;line-height:1.4">\u2665 like a<br>show</div></div>';
     html += '</div>';
-    html += '<div><div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Most biased source</div>';
-    if (mostBiased) {
-      html += '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">'+esc(mostBiased)+'</div>';
-      html += '<span class="'+mostBiasedCls+'">'+mostBiasedLean+'</span>';
-    } else { html += '<div style="font-size:12px;color:var(--text3)">Follow shows to see this</div>'; }
-    html += '</div></div>';
-    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
-    html += '<div style="font-size:14px;font-weight:600;color:var(--text)">Your followed shows</div>';
-    html += '<button onclick="switchTab(\'following\')" style="font-size:12px;color:var(--navy);background:none;border:none;cursor:pointer;font-family:var(--ff)">See all \u2192</button></div>';
-    var filters = [{id:'all',label:'All shows',dot:''},{id:'left',label:'Left leaning',dot:'#E24B4A'},{id:'center',label:'Center',dot:'#D1CFC9'},{id:'right',label:'Right leaning',dot:'#378ADD'}];
-    html += '<div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">';
-    filters.forEach(function(f,i) {
-      var isOn = i===0;
-      html += '<button onclick="libFilterShows(\''+f.id+'\',this)" style="padding:4px 12px;font-size:11px;font-weight:500;border:1px solid var(--border2);border-radius:999px;cursor:pointer;background:'+(isOn?'var(--navy)':'none')+';color:'+(isOn?'#fff':'var(--text2)')+';font-family:var(--ff);display:flex;align-items:center;gap:5px;transition:all .12s">';
-      if (f.dot) html += '<span style="width:7px;height:7px;border-radius:50%;background:'+f.dot+';display:inline-block"></span>';
-      html += f.label+'</button>';
+
+    // Divider
+    html += '<div style="height:0.5px;background:var(--border);margin-bottom:13px"></div>';
+
+    // ── Your followed shows ──
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+    html += '<span style="font-size:13px;font-weight:500;color:var(--text)">Your followed shows</span>';
+    html += '<button onclick="switchTab(\'following\')" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:var(--ff)">See all \u2192</button></div>';
+
+    // Filter tabs (underline style with colored dots)
+    var leftCount = 0, centerCount = 0, rightCount = 0;
+    follows.forEach(function(s) {
+      var b = s.bias || {}; var l = b.l||b.leftPct||0; var r = b.r||b.rightPct||0;
+      var diff = Math.abs(l - r);
+      if (diff < 20) centerCount++;
+      else if (l > r) leftCount++;
+      else rightCount++;
+    });
+    var filters = [
+      {id:'all', label:'All', count:follows.length, dot:''},
+      {id:'left', label:'Left', count:leftCount, dot:'#E24B4A'},
+      {id:'center', label:'Center', count:centerCount, dot:'#D1CFC9'},
+      {id:'right', label:'Right', count:rightCount, dot:'#378ADD'}
+    ];
+    html += '<div style="display:flex;gap:0;border-bottom:0.5px solid var(--border2);margin-bottom:12px">';
+    filters.forEach(function(f, i) {
+      var isOn = i === 0;
+      html += '<button onclick="libFilterShows(\''+f.id+'\',this)" style="padding:5px 11px;font-size:11px;font-weight:500;border:none;background:none;cursor:pointer;color:'+(isOn?'var(--text)':'var(--text3)')+';border-bottom:2px solid '+(isOn?'#0f2027':'transparent')+';font-family:var(--ff);margin-bottom:-0.5px;display:flex;align-items:center;gap:4px;transition:color .12s">';
+      if (f.dot) html += '<span style="width:6px;height:6px;border-radius:50%;background:'+f.dot+';flex-shrink:0"></span>';
+      html += f.label+' <span style="font-size:9px;color:var(--text3);margin-left:2px">'+f.count+'</span>';
+      html += '</button>';
     });
     html += '</div>';
     html += '<div id="lib-shows-grid">'+buildShowsGrid('all')+'</div>';
@@ -178,8 +207,12 @@
 
   window.libFilterShows = function(filter, btn) {
     if (btn && btn.parentElement) {
-      btn.parentElement.querySelectorAll('button').forEach(function(b) { b.style.background='none'; b.style.color='var(--text2)'; });
-      btn.style.background='var(--navy)'; btn.style.color='#fff';
+      btn.parentElement.querySelectorAll('button').forEach(function(b) {
+        b.style.color = 'var(--text3)';
+        b.style.borderBottomColor = 'transparent';
+      });
+      btn.style.color = 'var(--text)';
+      btn.style.borderBottomColor = '#0f2027';
     }
     var grid = document.getElementById('lib-shows-grid');
     if (grid) grid.innerHTML = buildShowsGrid(filter);
