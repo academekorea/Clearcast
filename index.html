@@ -4945,33 +4945,15 @@ function _maybeShowVerifyBanner() {
   }
 }
 
-// ── HOME VISIBILITY — single function, called everywhere ─────────────────────
-// This is the ONLY place that sets display on home-loggedout / home-loggedin.
-// Never set these inline anywhere else.
-function _syncHomeVisibility() {
-  var u = plUser();
-  var isAuth = !!(u && u.id);
-  document.body.classList.toggle('authenticated', isAuth);
-  var elOut = document.getElementById('home-loggedout');
-  var elIn  = document.getElementById('home-loggedin');
-  if (!elOut || !elIn) return;
-  elOut.style.cssText = isAuth ? 'display:none!important' : 'display:block';
-  elIn.style.cssText  = isAuth ? 'display:block'          : 'display:none!important';
-}
+// home-loggedin/home-loggedout visibility is managed by showView('home') only.
 
 function renderHomeState() {
   var u = plUser();
   if (u) u = enforcePlanRules() || u;
 
   var isAuth = !!(u && u.id);
-  // Sync class on BOTH html and body so CSS fires immediately
-  document.body.classList.toggle('authenticated', isAuth);
-  document.documentElement.classList.toggle('pl-signed-in', isAuth);
-  // Also set inline styles as belt-and-suspenders
-  var elOut = document.getElementById('home-loggedout');
-  var elIn  = document.getElementById('home-loggedin');
-  if (elOut) elOut.style.display = isAuth ? 'none' : 'block';
-  if (elIn)  elIn.style.display  = isAuth ? 'block' : 'none';
+  // home-loggedin/home-loggedout visibility is set by showView('home')
+  // This function only populates content.
 
   if (isAuth) {
     var _dashEl = document.getElementById('home-loggedin'); // already shown above
@@ -5049,11 +5031,7 @@ function renderHomeState() {
     return;
   }
 
-  // Logged-out: show marketing page
-  var _elOutGuest = document.getElementById('home-loggedout');
-  var _elInGuest  = document.getElementById('home-loggedin');
-  if (_elOutGuest) _elOutGuest.style.display = 'block';
-  if (_elInGuest)  _elInGuest.style.display  = 'none';
+  // Logged-out: populate marketing content (visibility set by showView)
   loadHeroStats();
   loadTrendingGrid('all');
   loadHomeTrending();
@@ -5716,38 +5694,50 @@ window.confirmDeleteAccount = function() {
 };
 
 function showView(name) {
-  // Home has special logic (loggedin/loggedout state) — always delegate
-  if (name === 'home') { if (typeof showHome === 'function') showHome(); return; }
-  // Sync auth class so home-loggedout CSS rule fires correctly
   var _u = plUser();
   document.body.classList.toggle('authenticated', !!(_u && _u.id));
-  // Library is auth-gated — guests redirect to Discover
-  if (name === 'library' && !plUser()) {
-    showToast('Sign in to access your Library', 3000);
-    name = 'discover';
-  }
+  document.documentElement.classList.toggle('pl-signed-in', !!(_u && _u.id));
+
+  // Auth gate
+  if (name === 'library' && !_u) { showToast('Sign in to access your Library', 3000); name = 'discover'; }
+
+  // ── Step 1: Hide ALL views and home sub-divs ──
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); v.style.display = 'none'; });
-  // Ensure home sub-views don't bleed through
   var _hli = document.getElementById('home-loggedin');
   var _hlo = document.getElementById('home-loggedout');
   if (_hli) _hli.style.display = 'none';
   if (_hlo) _hlo.style.display = 'none';
+
+  // ── Step 2: Show the target view ──
   var el = document.getElementById('view-' + name);
   if (el) { el.classList.add('on'); el.style.display = 'block'; }
-  document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
-  var nl = document.getElementById('nl-' + name);
-  if (nl) nl.classList.add('on');
-  // Also sync .active on nav-link buttons (logged-in nav uses .active not .on)
-  document.querySelectorAll('.nav-link').forEach(function(b){ b.classList.remove('active'); });
+
+  // ── Step 3: If home, show the correct sub-div ──
+  if (name === 'home') {
+    if (_u && _u.id) {
+      if (_hli) _hli.style.display = 'block';
+      var footer = document.getElementById('site-footer');
+      if (footer) footer.style.display = 'none';
+      renderHomeState();
+    } else {
+      if (_hlo) _hlo.style.display = 'block';
+      var footer2 = document.getElementById('site-footer');
+      if (footer2) footer2.style.display = '';
+      if (!_homeTrendingLoaded) loadHomeTrending();
+    }
+  }
+
+  // ── Step 4: Sync nav highlights ──
+  document.querySelectorAll('.nl, .nav-link').forEach(function(b){ b.classList.remove('on', 'active'); });
   var nlBtn = document.getElementById('nl-' + name);
-  if (nlBtn) nlBtn.classList.add('active');
+  if (nlBtn) { nlBtn.classList.add('on'); nlBtn.classList.add('active'); }
   document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
-  var mb = document.getElementById('mob-' + name);
+  var mb = document.getElementById('mob-' + (name === 'home' ? 'home' : name));
   if (mb) mb.classList.add('on');
 
-  // ── Update URL to reflect current view ──
+  // ── Step 5: Update URL ──
   var viewUrls = {
-    home: '/',
+    home: (_u && _u.id) ? '/dashboard' : '/',
     discover: '/discover',
     analyze: '/analyze',
     library: '/library',
@@ -5760,9 +5750,10 @@ function showView(name) {
   if (window.location.pathname !== newUrl) {
     history.pushState({ view: name }, '', newUrl);
   }
-  // Update document title
+
+  // ── Step 6: Update title ──
   var titles = {
-    home: 'Podlens — Know what you\'re actually listening to',
+    home: (_u && _u.id) ? 'Dashboard — Podlens' : 'Podlens — Know what you\'re actually listening to',
     discover: 'Discover — Podlens',
     analyze: 'Analyze — Podlens',
     library: 'Your Library — Podlens',
@@ -6066,48 +6057,7 @@ function navHome() {
   openModal('signup');
 }
 
-function showHome() {
-  var u = plUser();
-
-  // Hard-switch views with inline styles — not just class toggling.
-  // This overrides anything that may have set display:block on other views.
-  document.querySelectorAll('.view').forEach(function(v) {
-    v.classList.remove('on');
-    v.style.display = 'none';
-  });
-  var vh = document.getElementById('view-home');
-  if (vh) { vh.classList.add('on'); vh.style.display = 'block'; }
-
-  document.querySelectorAll('.nl, .nav-link').forEach(function(b){ b.classList.remove('on', 'active'); });
-  document.querySelectorAll('.mob-btn').forEach(function(b){ b.classList.remove('on'); });
-  var mb = document.getElementById('mob-home'); if (mb) mb.classList.add('on');
-
-  document.body.classList.toggle('authenticated', !!(u && u.id));
-  document.documentElement.classList.toggle('pl-signed-in', !!(u && u.id));
-
-  if (u && u.id) {
-    var footer = document.getElementById('site-footer');
-    if (footer) footer.style.display = 'none';
-    document.body.classList.remove('app-page');
-    var target = '/dashboard';
-    if (window.location.pathname !== target) history.pushState({ view: 'home' }, '', target);
-    document.title = 'Dashboard — Podlens';
-    renderHomeState();
-    return;
-  }
-
-  // Logged-out marketing page
-  var footer2 = document.getElementById('site-footer');
-  if (footer2) footer2.style.display = '';
-  // Show the marketing home — must call renderHomeState so home-loggedout becomes visible
-  var _elOut = document.getElementById('home-loggedout');
-  var _elIn  = document.getElementById('home-loggedin');
-  if (_elOut) _elOut.style.display = 'block';
-  if (_elIn)  _elIn.style.display  = 'none';
-  if (!_homeTrendingLoaded) { loadHomeTrending(); }
-  if (window.location.pathname !== '/') history.pushState({ view: 'home' }, '', '/');
-  document.title = 'Podlens — Know what you\'re actually listening to';
-}
+function showHome() { showView('home'); }
 
 var _homeTrendingLoaded = false;
 async function loadHomeTrending() {
