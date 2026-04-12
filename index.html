@@ -5458,7 +5458,8 @@ function discRenderRightCol(isLoggedIn, user) {
     if (midEl) {
       midEl.innerHTML = '<div class="disc-rc-title">Recently analyzed</div>'
         + (history.length ? history.slice(0,4).map(function(h){
-            return '<div class="disc-rc-row" style="cursor:pointer" onclick="showView(\'analyze\');if(h.jobId)viewAnalysis(h.jobId)">'
+            var safeJobId = (h.jobId||'').replace(/'/g,"\\'");
+            return '<div class="disc-rc-row" style="cursor:pointer" onclick="showView(\'analyze\');viewAnalysis(\''+safeJobId+'\')">'
               + '<div class="disc-rc-art"></div>'
               + '<div style="min-width:0"><div class="disc-rc-name">'+(h.title||h.episodeTitle||'Episode')+'</div>'
               + '<div class="disc-rc-sub">'+(h.showName||'')+'</div></div></div>';
@@ -5532,10 +5533,11 @@ function showDashSection(section) {
     renderDashFollowedShows(u);
     loadSqWidget();
   }
-  if (section === 'analyzed')    _renderDashAnalyzedSection();
-  if (section === 'following')   _renderDashFollowingSection(u);
-  if (section === 'fingerprint') _renderDashFingerprintSection();
-  if (section === 'queue')       _renderDashQueueSection(u);
+  if (section === 'analyzed')     _renderDashAnalyzedSection();
+  if (section === 'following')    _renderDashFollowingSection(u);
+  if (section === 'fingerprint')  _renderDashFingerprintSection();
+  if (section === 'queue')        _renderDashQueueSection(u);
+  if (section === 'intelligence') renderDashIntelligence(u);
 }
 
 function _renderDashAnalyzedSection() {
@@ -5559,7 +5561,10 @@ function _renderDashFollowingSection(u) {
   var el = document.getElementById('dash-following-list');
   if (!el) return;
   var followed = (u && u.followedShows) || [];
-  if (!followed.length) return; // Keep empty state HTML
+  if (!followed.length) {
+    el.innerHTML = '<div style="padding:40px 0;text-align:center;color:var(--text3)"><div style="font-size:32px;margin-bottom:12px">&#128266;</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">No shows followed yet</div><div style="font-size:13px;margin-bottom:20px">Follow shows to build your listening feed.</div><button onclick="showView(\'discover\')" style="padding:10px 24px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Discover shows &rarr;</button></div>';
+    return;
+  }
   el.innerHTML = '<div class="tg-grid">' + followed.slice(0, 12).map(function(s) {
     var name = s.name || s.showName || 'Show';
     var slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
@@ -7636,6 +7641,7 @@ var TIPS = {
 };
 function tipBtn(k) { return '<span class="tip-wrap"><button class="info-btn">?</button><div class="tip-box">'+TIPS[k]+'</div></span>'; }
 function bpClass(l) { return {['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[l]||'bp-center'; }
+function _biasCls(score) { return score < -20 ? 'bp-left' : score > 20 ? 'bp-right' : 'bp-center'; }
 function bfClass(l) { return {['Mostly factual']:'bp-factual',['Mixed factuality']:'bp-mixed',['Unreliable']:'bp-unreliable'}[l]||'bp-factual'; }
 function ftClass(t) { return {['fact-check']:'ft-fact',['framing']:'ft-framing',['omission']:'ft-omission',['sponsor-note']:'ft-sponsor',['context']:'ft-context'}[t]||'ft-context'; }
 function ftLabel(t) { return {['fact-check']:'Fact check',['framing']:'Framing',['omission']:'Omission',['sponsor-note']:'Sponsor',['context']:'Context'}[t]||t; }
@@ -9170,8 +9176,8 @@ function initFreeAccessPanel() {
 // selPlan removed — replaced by 4-tier pricing modal
 
 // ── KEYBOARD ──
-document.getElementById('url-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleAnalyze();});
-document.getElementById('hero-url-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleHeroAnalyze();});
+var _ui=document.getElementById('url-input'); if(_ui)_ui.addEventListener('keydown',function(e){if(e.key==='Enter')handleAnalyze();});
+var _hui=document.getElementById('hero-url-input'); if(_hui)_hui.addEventListener('keydown',function(e){if(e.key==='Enter')handleHeroAnalyze();});
 var _dui=document.getElementById('dash-url-input'); if(_dui)_dui.addEventListener('keydown',function(e){if(e.key==='Enter')handleDashAnalyze();});
 
 // ── POPSTATE ──
