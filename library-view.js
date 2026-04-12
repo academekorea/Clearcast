@@ -523,14 +523,8 @@
 
   /* ── Public init — called by showView('library') ── */
   window.initLibraryView = function(tab) {
-    console.log('[library-view] initLibraryView called, tab:', tab, 'initialized:', _libInitialized);
     loadData();
     renderLibRightSidebar();
-    if (tab && document.getElementById('panel-' + tab)) {
-      switchTab(tab);
-    } else if (!_libInitialized) {
-      switchTab('library');
-    }
-    _libInitialized = true;
+    switchTab(tab || activeTab || 'library');
   };
 })();

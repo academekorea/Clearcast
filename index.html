@@ -5770,7 +5770,7 @@ function showView(name) {
     settings: 'Settings — Podlens'
   };
   document.title = titles[name] || 'Podlens';
-  if (name === 'library' && typeof initLibraryView === 'function') { initLibraryView(); }
+  if (name === 'library' && typeof initLibraryView === 'function') { initLibraryView(window._pendingLibTab); window._pendingLibTab = null; }
   if (name === 'account' || name === 'settings') {
     if (typeof renderAccountView === 'function') setTimeout(renderAccountView, 50);
     if (typeof sidebarSetActive === 'function') sidebarSetActive(name);

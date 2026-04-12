@@ -67,7 +67,7 @@
 
     function homeSubItem(id, icon, label, badge) {
       var badgeHtml = badge ? '<span class="sb-badge">' + badge + '</span>' : '';
-      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="if(typeof showView===\'function\')showView(\'home\');setTimeout(function(){if(typeof showDashSection===\'function\')showDashSection(\'' + id + '\')},0)">' + icon + label + badgeHtml + '</button>';
+      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="if(typeof showDashSection===\'function\')showDashSection(\'' + id + '\')">' + icon + label + badgeHtml + '</button>';
     }
 
     function topNavItem(id, icon, label) {
@@ -76,7 +76,7 @@
 
     function libSubItem(id, icon, label, suffix) {
       var suffixHtml = suffix || '';
-      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="if(typeof showView===\'function\')showView(\'library\');setTimeout(function(){if(typeof switchTab===\'function\')switchTab(\'' + id + '\')},0)">' + icon + label + suffixHtml + '</button>';
+      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="window._pendingLibTab=\'' + id + '\';if(typeof showView===\'function\')showView(\'library\')">' + icon + label + suffixHtml + '</button>';
     }
 
     // ── Assemble HTML ──
@@ -113,10 +113,10 @@
     html += libSubItem('liked', icons.liked, 'Liked episodes', '<span class="sb-count">' + (c.liked || '') + '</span>');
 
     // Playlists (toggle dropdown)
-    html += '<button class="sb-sub-btn" data-sb="playlists" id="sb-playlists-toggle" onclick="window._sbToggle(\'playlists\');if(typeof showView===\'function\')showView(\'library\');setTimeout(function(){if(typeof switchTab===\'function\')switchTab(\'playlists\')},0)">' + icons.playlists + 'Playlists<span class="sb-arrow" id="sb-arr-playlists">\u203A</span></button>';
+    html += '<button class="sb-sub-btn" data-sb="playlists" id="sb-playlists-toggle" onclick="window._sbToggle(\'playlists\');window._pendingLibTab=\'playlists\';if(typeof showView===\'function\')showView(\'library\')">' + icons.playlists + 'Playlists<span class="sb-arrow" id="sb-arr-playlists">\u203A</span></button>';
     html += '<div class="sb-sub" id="sb-drop-playlists">';
     html += '<div id="sb-playlists-list" style="display:none"></div>';
-    html += '<button class="sb-sub-btn sb-muted" onclick="if(typeof showView===\'function\')showView(\'library\');setTimeout(function(){if(typeof switchTab===\'function\')switchTab(\'playlists\')},0)">' + icons.newPlaylist + 'New playlist</button>';
+    html += '<button class="sb-sub-btn sb-muted" onclick="window._pendingLibTab=\'playlists\';if(typeof showView===\'function\')showView(\'library\')">' + icons.newPlaylist + 'New playlist</button>';
     html += '</div>';
 
     html += libSubItem('analyzed', icons.analyzed, 'Analyzed', '<span class="sb-count">' + (c.analyzed || '') + '</span>');
