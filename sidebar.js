@@ -193,14 +193,14 @@
     var style = document.createElement('style');
     style.id = 'sb-styles';
     style.textContent = [
-      '#app-sidebar{background:#0a1a20;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);min-width:220px;overflow:hidden}',
-      '#app-sidebar > *:not(:last-child){overflow-y:auto}',
+      '#app-sidebar,#app-sidebar-lib{background:#0a1a20;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);min-width:220px;overflow:hidden}',
+      '#app-sidebar > *:not(:last-child),#app-sidebar-lib > *:not(:last-child){overflow-y:auto}',
       '.sb-bot{font-size:11px!important;padding:6px 20px!important;color:rgba(255,255,255,.35)!important}',
       '.sb-bot:hover{color:rgba(255,255,255,.65)!important}',
       '.sb-bot.active{color:#fff!important;background:rgba(255,255,255,.08)!important}',
       '.sb-bot svg{width:11px!important;height:11px!important}',
-      '#app-sidebar *{color:#fff}',
-      '#app-sidebar a{text-decoration:none}',
+      '#app-sidebar *,#app-sidebar-lib *{color:#fff}',
+      '#app-sidebar a,#app-sidebar-lib a{text-decoration:none}',
 
       '.sb-lbl{padding:16px 20px 8px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4}',
 

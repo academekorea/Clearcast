@@ -2611,7 +2611,7 @@ body.light-mode,[data-theme="light"]{
 [data-theme="dark"] .nav-bar{background:var(--bg);border-bottom-color:var(--border)}
 
 /* ── LIBRARY VIEW (embedded from library.html) ── */
-.lib-view-inner{padding:32px 36px 80px;min-width:0}
+.lib-view-inner{padding:28px 28px 80px;min-width:0}
 .lib-search{position:relative;margin-bottom:20px}
 .lib-search-input{width:100%;padding:10px 16px 10px 38px;border:1px solid var(--border2);border-radius:var(--r);font-size:14px;background:var(--bg2);color:var(--text);font-family:var(--ff);outline:none;transition:border-color .15s}
 .lib-search-input:focus{border-color:var(--navy)}
@@ -3712,7 +3712,7 @@ body.light-mode,[data-theme="light"]{
 <!-- SHOW VIEW -->
 <!-- LIBRARY VIEW (inline — same SPA as discover/analyze) -->
 <div class="view" id="view-library" style="display:none">
-  <div class="dash-3col" style="grid-template-columns:220px 1fr">
+  <div class="dash-3col">
     <div id="app-sidebar-lib"></div>
     <div class="lib-view-inner">
       <div class="lib-panel active" id="panel-library"><div id="library-overview-content"></div></div>
@@ -3721,6 +3721,47 @@ body.light-mode,[data-theme="light"]{
       <div class="lib-panel" id="panel-playlists"><div id="playlists-content"></div></div>
       <div class="lib-panel" id="panel-analyzed"><div id="usage-meter-wrap"></div><div id="analyzed-content"></div></div>
       <div class="lib-panel" id="panel-downloads"><div id="downloads-content"></div></div>
+    </div>
+    <!-- Right sidebar — library intelligence -->
+    <div class="dash-sidebar" id="lib-right-sidebar">
+      <div class="sidebar-card" id="lib-rs-bias">
+        <div class="sidebar-card-title">Analyzed bias this week</div>
+        <div id="lib-rs-bias-content">
+          <div style="height:6px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:5px">
+            <div style="width:33%;background:#E24B4A"></div>
+            <div style="width:34%;background:#D1CFC9"></div>
+            <div style="width:33%;background:#378ADD"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
+            <span style="color:#E24B4A">—</span>
+            <span>— center</span>
+            <span style="color:#378ADD">—</span>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px">Analyze episodes to see your weekly lean</div>
+        </div>
+      </div>
+      <div class="sidebar-card" id="lib-rs-echo">
+        <div class="sidebar-card-title">Echo chamber score</div>
+        <div id="lib-rs-echo-content">
+          <div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes across different shows to see your score.</div>
+        </div>
+      </div>
+      <div class="sidebar-card" id="lib-rs-unheard">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="sidebar-card-title" style="margin-bottom:0">Unheard alert</div>
+        </div>
+        <div id="lib-rs-unheard-content">
+          <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--r,8px);padding:10px 12px">
+            <div style="font-size:11px;color:var(--text3)">Follow and analyze shows to see what perspectives you might be missing.</div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-card" id="lib-rs-balance">
+        <div class="sidebar-card-title">Suggested to balance</div>
+        <div id="lib-rs-balance-content">
+          <div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes to get personalized balance suggestions.</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

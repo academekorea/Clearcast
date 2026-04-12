@@ -442,9 +442,43 @@
     window.location.href = '/?analyze=' + encodeURIComponent(url) + '&show=' + encodeURIComponent(showName || '');
   };
 
+  /* ── Right sidebar — populate with real data when available ── */
+  function renderLibRightSidebar() {
+    var fp = (typeof calcBiasFingerprint === 'function') ? calcBiasFingerprint(analyses) : null;
+    var eco = (typeof calcEchoChamber === 'function') ? calcEchoChamber(analyses) : null;
+
+    // Bias bar
+    var biasEl = document.getElementById('lib-rs-bias-content');
+    if (biasEl && fp && fp.hasData) {
+      biasEl.innerHTML = '<div style="height:6px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:5px">'
+        + '<div style="width:'+fp.leftPct+'%;background:#E24B4A"></div>'
+        + '<div style="width:'+fp.centerPct+'%;background:#D1CFC9"></div>'
+        + '<div style="width:'+fp.rightPct+'%;background:#378ADD"></div></div>'
+        + '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">'
+        + '<span style="color:#E24B4A">'+fp.leftPct+'%</span>'
+        + '<span>'+fp.centerPct+'% center</span>'
+        + '<span style="color:#378ADD">'+fp.rightPct+'%</span></div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:4px">'+analyses.length+' episode'+(analyses.length!==1?'s':'')+' analyzed</div>';
+    }
+
+    // Echo chamber
+    var echoEl = document.getElementById('lib-rs-echo-content');
+    if (echoEl && eco && eco.hasData) {
+      var barColor = eco.score <= 25 ? '#3B6D11' : eco.score <= 50 ? '#BA7517' : '#E24B4A';
+      echoEl.innerHTML = '<div style="display:flex;align-items:baseline;gap:5px;margin-bottom:4px">'
+        + '<span style="font-size:20px;font-weight:500;color:'+eco.color+'">'+eco.score+'</span>'
+        + '<span style="font-size:10px;color:var(--text3)">/100</span></div>'
+        + '<div style="height:6px;border-radius:3px;background:var(--bg3,#eee);overflow:hidden;margin-bottom:4px">'
+        + '<div style="height:100%;width:'+eco.score+'%;background:'+barColor+';border-radius:3px"></div></div>'
+        + '<div style="font-size:10px;font-weight:500;color:'+eco.color+'">'+eco.label+'</div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:2px">'+eco.description+'</div>';
+    }
+  }
+
   /* ── Public init — called by showView('library') ── */
   window.initLibraryView = function(tab) {
     loadData();
+    renderLibRightSidebar();
     if (tab && document.getElementById('panel-' + tab)) {
       switchTab(tab);
     } else if (!_libInitialized) {
