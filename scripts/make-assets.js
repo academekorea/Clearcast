@@ -232,7 +232,7 @@ function makeOgImage() {
 
 // ─── Generate files ────────────────────────────────────────────────────────────
 
-const outDir = '/Users/albertlee/Desktop/Clearcast';
+const outDir = '/Users/albertlee/Desktop/podlens';
 
 writeFileSync(`${outDir}/favicon-16.png`,  makePNG(16,  16,  makeFavicon(16)));
 writeFileSync(`${outDir}/favicon-32.png`,  makePNG(32,  32,  makeFavicon(32)));

@@ -8,8 +8,8 @@
 - **Netlify subdomain:** https://podlens.netlify.app
 - **Netlify project:** podlens
 - **Netlify site ID:** 336b4d9b-fcc0-4675-a7d8-f61022fc2cdc
-- **GitHub:** https://github.com/academekorea/Clearcast (private)
-- **Project folder:** ~/Desktop/clearcast/
+- **GitHub:** https://github.com/academekorea/podlens (private)
+- **Project folder:** ~/Desktop/podlens/
 - **Extension folder:** ~/Desktop/podlens-extension/ (separate repo)
 - **Contact:** hello@podlens.app
 
@@ -58,7 +58,7 @@ Apply this tone to: results, errors, upgrade prompts, empty states, onboarding, 
 | ANTHROPIC_API_KEY | ✅ Set | Claude AI analysis |
 | ASSEMBLYAI_API_KEY | ✅ Set | Audio transcription |
 | YOUTUBE_API_KEY | ✅ Set | YouTube metadata + captions |
-| AUDIO_SERVICE_URL | ✅ Set | https://clearcast-audio-service-production.up.railway.app |
+| AUDIO_SERVICE_URL | ✅ Set | https://podlens-audio-service-production.up.railway.app |
 | SPOTIFY_CLIENT_ID | ✅ Set | 1eb72bc291654bfba6cd9ce1679c5774 |
 | SPOTIFY_CLIENT_SECRET | ✅ Set | Spotify API auth |
 | STRIPE_PUBLISHABLE_KEY | ✅ Set (live) | pk_live_51TIboFR... |
@@ -449,7 +449,7 @@ if (url.includes('audioclip.naver.com/channels/'))
 ## Chrome Extension
 
 **Location:** ~/Desktop/podlens-extension/ — SEPARATE git repo
-**NOT inside ~/Desktop/clearcast/**
+**NOT inside ~/Desktop/podlens/**
 
 Supports: youtube.com/watch pages + open.spotify.com/episode pages
 Sidebar auto-injects with: bias bar, findings, "See full analysis →"
@@ -473,7 +473,7 @@ Also handles YouTube→RSS fallback: shows "Select episode on Podlens →"
 ## File Structure
 
 ```
-~/Desktop/clearcast/           ← Main project
+~/Desktop/podlens/           ← Main project
 ├── index.html                 ← Main app
 ├── about.html
 ├── pricing.html
@@ -516,7 +516,7 @@ Also handles YouTube→RSS fallback: shows "Select episode on Podlens →"
 
 ## WHAT NOT TO DO
 
-- ❌ Use "Clearcast" or "Audlens" — always PODLENS
+- ❌ Use "Clearcast" (old name) or "Audlens" — always PODLENS
 - ❌ Show -100/+100 numeric bias score
 - ❌ Use "Audio Lean" — always "Political Lean"
 - ❌ Fetch Unheard data for non-Operator users (server-side gate)

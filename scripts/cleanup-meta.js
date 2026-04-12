@@ -2,7 +2,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-const ROOT = '/Users/albertlee/Desktop/Clearcast';
+const ROOT = '/Users/albertlee/Desktop/podlens';
 const PAGES = ['about.html','account.html','bulk-scan.html','extension.html',
   'how-it-works.html','pricing.html','privacy.html','profile.html','settings.html','terms.html'];
 

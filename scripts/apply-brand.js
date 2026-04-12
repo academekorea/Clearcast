@@ -2,7 +2,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-const ROOT = '/Users/albertlee/Desktop/Clearcast';
+const ROOT = '/Users/albertlee/Desktop/podlens';
 
 // Shared CSS to inject after .podlens-wordmark rules
 const LOCKUP_CSS = `
