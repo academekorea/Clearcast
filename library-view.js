@@ -458,11 +458,18 @@
 
   /* Tab switching */
   window.switchTab = function(tab) {
-    if (tab === 'library') renderLibraryOverview();
     activeTab = tab;
+    // Show correct panel
     document.querySelectorAll('#view-library .lib-panel').forEach(function(p) {
       p.classList.toggle('active', p.id === 'panel-' + tab);
     });
+    // Re-render the active panel so content is always fresh
+    if (tab === 'library') renderLibraryOverview();
+    else if (tab === 'following') renderFollowing();
+    else if (tab === 'liked') renderLiked();
+    else if (tab === 'playlists') renderPlaylists();
+    else if (tab === 'analyzed') renderAnalyzed();
+    // Sync sidebar
     if (window.sidebarSetActive) window.sidebarSetActive(tab);
   };
 

@@ -106,7 +106,7 @@
     html += '<div class="sb-lbl">My Library</div>';
 
     // My Library (landing)
-    html += '<button class="sb-btn" data-sb="library" onclick="if(typeof showView===\'function\')showView(\'library\')">' + icons.library + 'My Library</button>';
+    html += '<button class="sb-btn" data-sb="library" onclick="window._pendingLibTab=\'library\';if(typeof showView===\'function\')showView(\'library\')">' + icons.library + 'My Library</button>';
 
     // Library sub-items
     html += libSubItem('following', icons.following, 'Following', '<span class="sb-count">' + (c.follows || '') + '</span>');
