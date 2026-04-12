@@ -5724,9 +5724,12 @@ function showView(name) {
     showToast('Sign in to access your Library', 3000);
     name = 'discover';
   }
-  // If navigating to home, delegate to showHome() which handles loggedin/loggedout state
-  if (name === 'home') { showHome(); return; }
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); v.style.display = 'none'; });
+  // Also hide home sub-divs so any async renderHomeState callbacks do not bleed through
+  var _hli = document.getElementById('home-loggedin');
+  var _hlo = document.getElementById('home-loggedout');
+  if (_hli) _hli.style.display = 'none';
+  if (_hlo) _hlo.style.display = 'none';
   var el = document.getElementById('view-' + name);
   if (el) { el.classList.add('on'); el.style.display = 'block'; }
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });

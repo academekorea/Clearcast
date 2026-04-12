@@ -124,7 +124,7 @@
     html += '<div class="sb-lbl">Menu</div>';
 
     // Home (toggle dropdown)
-    html += '<button class="sb-btn" ' + homeToggleAttrs() + ' onclick="if(typeof showHome===\'function\')showHome();window._sbToggle(\'home\')">' + icons.home + 'Home<span class="sb-arrow open" id="sb-arr-home">\u203A</span></button>';
+    html += '<button class="sb-btn" ' + homeToggleAttrs() + ' onclick="window._sbToggle(\'home\')">' + icons.home + 'Home<span class="sb-arrow open" id="sb-arr-home">\u203A</span></button>';
     html += '<div class="sb-sub open" id="sb-drop-home">';
     html += homeSubItem('intelligence', icons.intel, 'My intelligence', '');
     html += homeSubItem('queue', icons.queue, 'Smart queue', c.queued || '');
