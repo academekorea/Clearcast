@@ -3459,7 +3459,7 @@ body.light-mode,[data-theme="light"]{
         <div class="sq-widget" id="sq-widget" style="display:none">
           <div class="sq-widget-header">
             <span class="sq-widget-title">⚡ Smart Queue</span>
-            <a href="/settings.html#notifications" class="sq-widget-manage">Manage &rarr;</a>
+            <a href="javascript:void(0)" onclick="showView('settings')" class="sq-widget-manage">Manage &rarr;</a>
           </div>
           <div id="sq-widget-body"><div class="sq-empty">Loading&hellip;</div></div>
         </div>
@@ -4442,8 +4442,8 @@ function _renderNavAvatar(u) {
     + '<div class="dropdown-tier">' + tierLabel + ' plan</div></div></div>'
     + '<div class="dropdown-divider"></div>'
     + adminRows
-    + '<a href="/profile.html" class="dropdown-item">Profile settings</a>'
-    + '<a href="/account.html" class="dropdown-item">Account &amp; billing</a>'
+    + '<a href="javascript:void(0)" onclick="showView(\'account\')" class="dropdown-item">Profile settings</a>'
+    + '<a href="javascript:void(0)" onclick="showView(\'account\')" class="dropdown-item">Account &amp; billing</a>'
     + '<div class="dropdown-divider"></div>'
     + '<button class="danger" onclick="doLogout()">Sign out</button>'
     + '</div></div>';
@@ -5750,8 +5750,8 @@ function showView(name) {
     library: '/library',
     show: '/show',
     admin: '/admin',
-    account: '/?view=account',
-    settings: '/?view=settings'
+    account: '/account',
+    settings: '/settings'
   };
   var newUrl = viewUrls[name] || '/' + name;
   if (window.location.pathname !== newUrl) {
@@ -8772,6 +8772,16 @@ function handleUrlRouting() {
   if (path === '/library') {
     history.replaceState({ view: 'library' }, '', '/library');
     showView('library');
+    return true;
+  }
+  if (path === '/account' || path === '/profile') {
+    history.replaceState({ view: 'account' }, '', '/account');
+    showView('account');
+    return true;
+  }
+  if (path === '/settings') {
+    history.replaceState({ view: 'settings' }, '', '/settings');
+    showView('settings');
     return true;
   }
 
@@ -12731,7 +12741,7 @@ window.addEventListener('popstate', function(e) {
 
 function _viewFromPath(path) {
   if (!path || path === '/' || path.startsWith('/dashboard')) return 'home';
-  var map = { '/discover': 'discover', '/analyze': 'analyze', '/library': 'library', '/show': 'show', '/admin': 'admin' };
+  var map = { '/discover': 'discover', '/analyze': 'analyze', '/library': 'library', '/account': 'account', '/profile': 'account', '/settings': 'settings', '/show': 'show', '/admin': 'admin' };
   return map[path] || map[path.replace(/\/$/, '')] || 'home';
 }
 function heroConnectSpotify() {

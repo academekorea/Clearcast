@@ -92,7 +92,7 @@
           : '<div class="nav-avatar-ini" style="background:#6B7280;display:flex;align-items:center;justify-content:center;color:#fff">' + _personSvg + '</div>');
 
     var adminRow = isSuperAdmin
-      ? '<a href="/account?tab=admin" class="nav-dd-item" style="color:#dc2626;font-weight:600">🔴 Admin Panel</a><div class="nav-dd-div"></div>'
+      ? '<a href="javascript:void(0)" onclick="if(typeof showView==='function')showView('admin')" class="nav-dd-item" style="color:#dc2626;font-weight:600">🔴 Admin Panel</a><div class="nav-dd-div"></div>'
       : '';
 
     var planBadge = u.plan
@@ -101,13 +101,13 @@
 
     // Admin indicator — only for super admin, completely hidden from normal users
     var adminLink = isSuperAdmin
-      ? '<a href="/account?tab=admin" class="nav-link" style="color:#dc2626;font-weight:600">🔴 Admin</a>'
+      ? '<a href="javascript:void(0)" onclick="if(typeof showView==='function')showView('admin')" class="nav-link" style="color:#dc2626;font-weight:600">🔴 Admin</a>'
       : '';
 
     navLinks.innerHTML =
       adminLink
       + '<a href="/discover" class="nav-link' + (_isActive('/discover', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'discover\');return false}">Discover</a>'
-      + '<a href="/?view=analyze" class="nav-link' + (_isActive('/?view=analyze', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'analyze\');return false}">Analyze</a>'
+      + '<a href="/analyze" class="nav-link' + (_isActive('/analyze', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'analyze\');return false}">Analyze</a>'
       + '<a href="/library" class="nav-link' + (_isActive('/library', path) ? ' active' : '') + '" onclick="if(typeof showView===\'function\'){showView(\'library\');return false}">Library</a>'
       + '<button class="nav-theme" id="nav-theme-btn" aria-label="Toggle theme">' + (isDark ? '🌙' : '☀️') + '</button>'
       + '<div class="nav-dd-wrap">'
