@@ -5727,6 +5727,11 @@ function showView(name) {
     name = 'discover';
   }
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); v.style.display = 'none'; });
+  // Ensure home sub-views don't bleed through
+  var _hli = document.getElementById('home-loggedin');
+  var _hlo = document.getElementById('home-loggedout');
+  if (_hli) _hli.style.display = 'none';
+  if (_hlo) _hlo.style.display = 'none';
   var el = document.getElementById('view-' + name);
   if (el) { el.classList.add('on'); el.style.display = 'block'; }
   document.querySelectorAll('.nl').forEach(function(b){ b.classList.remove('on'); });
@@ -11852,11 +11857,8 @@ function addToPlaylist(ep) {
     var _isAuth = !!(_u && _u.id);
     document.body.classList.toggle('authenticated', _isAuth);
     document.documentElement.classList.toggle('pl-signed-in', _isAuth);
-    // Belt-and-suspenders: set inline styles immediately so there's zero flash
-    var _elOut = document.getElementById('home-loggedout');
-    var _elIn  = document.getElementById('home-loggedin');
-    if (_elOut) _elOut.style.display = _isAuth ? 'none'  : 'block';
-    if (_elIn)  _elIn.style.display  = _isAuth ? 'block' : 'none';
+    // Set auth classes only — don't show home-loggedin yet.
+    // renderHomeState() or showHome() will handle visibility after routing.
   } catch(e) {}
 })();
 enforcePlanRules();
