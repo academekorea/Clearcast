@@ -155,3 +155,73 @@ if (typeof window !== 'undefined') {
   window.safeFetch = safeFetch;
   window.friendlyError = friendlyError;
 }
+
+/* ── ECHO CHAMBER SCORE ──────────────────────────────────────────────────────
+ * Measures listening diversity across all analyzed episodes.
+ * Needs 3+ analyses to return a meaningful score.
+ * Returns: { score:0-100, label, description, hasData }
+ */
+function calcEchoChamber(analyses) {
+  if (!analyses || analyses.length < 3) {
+    return { score: null, label: null, description: 'Analyze 3+ episodes to see your echo chamber score.', hasData: false };
+  }
+  var left = 0, center = 0, right = 0;
+  var showSet = new Set();
+  analyses.forEach(function(ep) {
+    var l = ep.leftPct || 0;
+    var r = ep.rightPct || 0;
+    var diff = Math.abs(l - r);
+    if (diff < 20) center++;
+    else if (l > r) left++;
+    else right++;
+    if (ep.showName) showSet.add((ep.showName || '').toLowerCase());
+  });
+  var total = analyses.length;
+  var maxPct = Math.max(left / total, center / total, right / total);
+  // Dominance score: how lopsided is distribution (0-80)
+  var dominance = Math.round(Math.max(0, (maxPct - 0.34) / 0.66) * 80);
+  // Show diversity: fewer distinct shows = higher echo risk (0-20)
+  var diversityPenalty = Math.max(0, 20 - Math.min(showSet.size, 5) * 4);
+  var score = Math.min(100, Math.max(0, dominance + diversityPenalty));
+  var label, description, color;
+  if (score <= 25) {
+    label = 'Low risk'; color = '#3B6D11';
+    description = 'You\'re hearing diverse perspectives across your shows.';
+  } else if (score <= 50) {
+    label = 'Moderate'; color = '#854F0B';
+    description = 'Some lean in your listening. Consider balancing with opposing views.';
+  } else if (score <= 75) {
+    label = 'High risk'; color = '#A32D2D';
+    description = 'Your listening is significantly one-sided. Counterpoint shows recommended.';
+  } else {
+    label = 'Echo chamber'; color = '#791F1F';
+    description = 'Almost all your content shares the same perspective. You\'re in a bubble.';
+  }
+  var dominant = left > right && left > center ? 'left' : right > left && right > center ? 'right' : 'center';
+  return { score: score, label: label, description: description, color: color, dominant: dominant, showCount: showSet.size, totalAnalyses: total, hasData: true };
+}
+
+/* ── BIAS FINGERPRINT ────────────────────────────────────────────────────────
+ * Aggregates all analyzed episodes into a single lean summary.
+ */
+function calcBiasFingerprint(analyses) {
+  if (!analyses || !analyses.length) return { leftPct: 0, centerPct: 100, rightPct: 0, label: 'No data', hasData: false };
+  var leftSum = 0, centerSum = 0, rightSum = 0;
+  analyses.forEach(function(ep) {
+    leftSum   += (ep.leftPct   || 0);
+    centerSum += (ep.centerPct || 100 - (ep.leftPct||0) - (ep.rightPct||0));
+    rightSum  += (ep.rightPct  || 0);
+  });
+  var n = analyses.length;
+  var l = Math.round(leftSum / n);
+  var r = Math.round(rightSum / n);
+  var c = 100 - l - r;
+  var diff = Math.abs(l - r);
+  var label = diff < 20 ? 'Mostly balanced' : diff < 40 ? (l > r ? 'Lightly left' : 'Lightly right') : (l > r ? 'Leans left' : 'Leans right');
+  return { leftPct: l, centerPct: c, rightPct: r, label: label, hasData: true };
+}
+
+if (typeof window !== 'undefined') {
+  window.calcEchoChamber    = calcEchoChamber;
+  window.calcBiasFingerprint = calcBiasFingerprint;
+}

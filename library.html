@@ -246,6 +246,102 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
 .skel-line.w80{width:80%}
 .skel-line.w60{width:60%}
 .skel-line.w40{width:40%}
+
+/* ── ARCHIVE-STYLE FOLLOWING PANEL ── */
+.archive-search-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.archive-search{flex:1;padding:8px 14px 8px 36px;border:1px solid var(--border2);border-radius:var(--r);font-size:13px;background:var(--bg2);color:var(--text);font-family:var(--ff);outline:none;transition:border-color .15s}
+.archive-search:focus{border-color:var(--navy)}
+.archive-search-wrap{flex:1;position:relative}
+.archive-search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.archive-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.af-pill{padding:4px 12px;font-size:11px;font-weight:500;border:1px solid var(--border2);border-radius:999px;cursor:pointer;background:none;color:var(--text2);font-family:var(--ff);transition:all .12s;white-space:nowrap}
+.af-pill:hover{border-color:var(--navy);color:var(--navy)}
+.af-pill.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.show-archive-block{margin-bottom:28px}
+.show-archive-hd{display:flex;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);transition:border-color .12s}
+.show-archive-hd:hover{border-color:var(--border2)}
+.sah-art{width:48px;height:48px;border-radius:7px;flex-shrink:0;object-fit:cover;background:var(--bg3)}
+.sah-art-ph{width:48px;height:48px;border-radius:7px;flex-shrink:0;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:var(--ffs);font-size:16px;font-weight:700;color:#fff}
+.sah-info{flex:1;min-width:0}
+.sah-name{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sah-meta{font-size:11px;color:var(--text3)}
+.sah-trend{width:60px;display:flex;align-items:flex-end;gap:2px;height:20px;flex-shrink:0}
+.sah-trend-bar{flex:1;border-radius:2px 2px 0 0;min-height:4px;opacity:.7}
+.sah-lean{flex-shrink:0}
+.archive-ep-list{padding-left:0;margin-top:4px}
+.archive-ep{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--bg2);border:1px solid var(--border);border-top:none;font-size:12px;cursor:pointer;transition:background .1s}
+.archive-ep:first-child{border-top:1px solid var(--border)}
+.archive-ep:last-child{border-radius:0 0 var(--r) var(--r)}
+.archive-ep:hover{background:var(--bg3)}
+.aep-num{width:20px;text-align:right;color:var(--text3);font-size:11px;flex-shrink:0}
+.aep-title{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.aep-date{font-size:11px;color:var(--text3);flex-shrink:0;width:52px;text-align:right}
+.aep-score{font-size:11px;color:var(--text3);flex-shrink:0;width:28px;text-align:right}
+.show-more-btn{display:block;width:100%;padding:7px 14px;background:var(--bg);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);font-size:11px;color:var(--text3);cursor:pointer;font-family:var(--ff);text-align:left;transition:color .12s}
+.show-more-btn:hover{color:var(--navy)}
+
+/* ── ARCHIVE HISTORY (Analyzed panel) ── */
+.history-filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.history-col-hd{display:grid;grid-template-columns:1fr 60px 72px 32px;gap:8px;padding:6px 14px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);border-bottom:1px solid var(--border)}
+.history-row{display:grid;grid-template-columns:1fr 60px 72px 32px;gap:8px;align-items:center;padding:9px 14px;background:var(--bg2);border:1px solid var(--border);border-top:none;cursor:pointer;transition:background .1s;font-size:12px}
+.history-row:first-of-type{border-top:1px solid var(--border);border-radius:var(--r) var(--r) 0 0}
+.history-row:last-of-type{border-radius:0 0 var(--r) var(--r)}
+.history-row:hover{background:var(--bg3)}
+.hr-ep{min-width:0}
+.hr-title{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);margin-bottom:1px}
+.hr-show{font-size:10px;color:var(--text3)}
+.hr-date{font-size:11px;color:var(--text3);text-align:right}
+.hr-score{font-size:11px;color:var(--text3);text-align:right;font-weight:500}
+
+/* ── SIDEBAR DROPDOWN ── */
+.lib-nav-sub{display:none;flex-direction:column}
+.lib-nav-sub.open{display:flex}
+.lib-nav-sub-btn{display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:'Inter',-apple-system,sans-serif;text-decoration:none;transition:background .12s,color .12s}
+.lib-nav-sub-btn:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.7)}
+.lib-nav-sub-btn.active{color:rgba(255,255,255,.9);background:rgba(255,255,255,.07)}
+.lib-nav-arrow{margin-left:auto;font-size:11px;color:rgba(255,255,255,.2);transition:transform .15s;line-height:1}
+.lib-nav-arrow.open{transform:rotate(90deg)}
+.lib-nav-count{margin-left:auto;font-size:10px;color:rgba(255,255,255,.22)}
+.lib-nav-badge{margin-left:auto;font-size:9px;background:rgba(55,138,221,.3);color:#378ADD;padding:1px 5px;border-radius:10px}
+.lib-nav-soon{margin-left:auto;font-size:9px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.3);padding:1px 5px;border-radius:10px}
+
+/* ── ARCHIVE — FOLLOWING ── */
+.archive-search-wrap{position:relative;margin-bottom:12px}
+.archive-search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.archive-search{width:100%;padding:8px 14px 8px 36px;border:1px solid var(--border2);border-radius:var(--r);font-size:13px;background:var(--bg2);color:var(--text);font-family:var(--ff);outline:none;transition:border-color .15s}
+.archive-search:focus{border-color:var(--navy)}
+.show-archive-block{margin-bottom:14px}
+.show-archive-hd{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);transition:border-color .12s}
+.show-archive-hd.has-eps{border-radius:var(--r) var(--r) 0 0}
+.sah-art{width:48px;height:48px;border-radius:7px;flex-shrink:0;object-fit:cover;background:var(--bg3)}
+.sah-art-ph{width:48px;height:48px;border-radius:7px;flex-shrink:0;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:var(--ffs);font-size:16px;font-weight:700;color:#fff}
+.sah-info{flex:1;min-width:0}
+.sah-name{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sah-meta{font-size:11px;color:var(--text3)}
+.sah-trend{width:56px;display:flex;align-items:flex-end;gap:2px;height:22px;flex-shrink:0}
+.sah-trend-bar{flex:1;border-radius:2px 2px 0 0;min-height:3px}
+.sah-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.archive-ep-list{border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);overflow:hidden}
+.archive-ep{display:flex;align-items:center;gap:10px;padding:9px 16px;background:var(--bg2);border-top:1px solid var(--border);font-size:12px;cursor:pointer;transition:background .1s}
+.archive-ep:hover{background:var(--bg3)}
+.aep-num{width:18px;text-align:right;color:var(--text3);font-size:11px;flex-shrink:0}
+.aep-title{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.aep-date{font-size:11px;color:var(--text3);flex-shrink:0;width:52px;text-align:right}
+.archive-show-more{display:block;width:100%;padding:7px 16px;background:var(--bg);border:none;border-top:1px solid var(--border);font-size:11px;color:var(--text3);cursor:pointer;font-family:var(--ff);text-align:left;transition:color .12s}
+.archive-show-more:hover{color:var(--navy)}
+.archive-no-eps{font-size:12px;color:var(--text3);padding:8px 16px;background:var(--bg);border-top:1px solid var(--border)}
+
+/* ── ARCHIVE — ANALYZED ── */
+.history-col-hd{display:grid;grid-template-columns:1fr 56px 80px 36px;gap:8px;padding:7px 16px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;background:var(--bg3)}
+.history-row{display:grid;grid-template-columns:1fr 56px 80px 36px;gap:8px;align-items:center;padding:9px 16px;background:var(--bg2);border:1px solid var(--border);border-top:none;cursor:pointer;transition:background .1s}
+.history-row:last-of-type{border-radius:0 0 var(--r) var(--r)}
+.history-row:hover{background:var(--bg3)}
+.hr-ep{min-width:0}
+.hr-title{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);margin-bottom:1px}
+.hr-show{font-size:10px;color:var(--text3)}
+.hr-date{font-size:11px;color:var(--text3);text-align:right}
+.hr-lean{text-align:right}
+.hr-score{font-size:11px;color:var(--text3);text-align:right;font-weight:500}
 </style>
 </head>
 <body>
@@ -267,24 +363,31 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   <!-- Left Nav — matches dashboard layout -->
   <div class="lib-nav">
     <div class="lib-nav-lbl">Menu</div>
-    <a href="/dashboard" class="lib-nav-btn"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</a>
+    <button class="lib-nav-btn" id="nav-home-toggle" onclick="libToggleDrop('home')"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home<span class="lib-nav-arrow open" id="lib-arr-home">›</span></button>
+    <div class="lib-nav-sub open" id="lib-drop-home">
+      <a href="/?section=intelligence" class="lib-nav-sub-btn"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</a>
+      <a href="/?section=queue" class="lib-nav-sub-btn"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue<span class="lib-nav-badge" id="lib-queue-count"></span></a>
+    </div>
     <a href="/discover" class="lib-nav-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</a>
-    <a href="/analyze" class="lib-nav-btn"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</a>
+    <a href="/" class="lib-nav-btn"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</a>
     <div class="lib-nav-div"></div>
-    <div class="lib-nav-lbl">My Library</div>
-    <button class="lib-nav-btn active" id="nav-following" onclick="switchTab('following');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78z"/></svg>Following</button>
-    <button class="lib-nav-btn" id="nav-liked" onclick="switchTab('liked');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78z"/></svg>Liked episodes</button>
-    <button class="lib-nav-btn" id="nav-playlists" onclick="switchTab('playlists');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Playlists</button>
-    <button class="lib-nav-btn" id="nav-analyzed" onclick="switchTab('analyzed');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
-    <button class="lib-nav-btn" id="nav-myshows" onclick="switchTab('myshows');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Your shows</button>
-    <button class="lib-nav-btn" id="nav-downloads" onclick="switchTab('downloads');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Downloads</button>
+    <button class="lib-nav-btn" id="nav-library-home" onclick="switchTab('following');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>My Library</button>
+    <button class="lib-nav-sub-btn active" id="nav-following" onclick="switchTab('following');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78z"/></svg>Following<span class="lib-nav-count" id="lib-count-following"></span></button>
+    <button class="lib-nav-sub-btn" id="nav-liked" onclick="switchTab('liked');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78z"/></svg>Liked episodes<span class="lib-nav-count" id="lib-count-liked"></span></button>
+    <button class="lib-nav-sub-btn" id="nav-playlists" onclick="libToggleDrop('playlists');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Playlists<span class="lib-nav-arrow" id="lib-arr-playlists">›</span></button>
+    <div class="lib-nav-sub" id="lib-drop-playlists">
+      <div class="lib-nav-sub-btn" id="lib-playlists-list" style="display:none"></div>
+      <button class="lib-nav-sub-btn" style="color:rgba(255,255,255,.3);font-style:italic" onclick="switchTab('playlists');setNavActive(document.getElementById('nav-playlists'))"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New playlist</button>
+    </div>
+    <button class="lib-nav-sub-btn" id="nav-analyzed" onclick="switchTab('analyzed');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed<span class="lib-nav-count" id="lib-count-analyzed"></span></button>
+    <button class="lib-nav-sub-btn" id="nav-downloads" onclick="switchTab('downloads');setNavActive(this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Downloads<span class="lib-nav-soon">Soon</span></button>
   </div>
   <!-- Main content -->
   <div class="page-inner">
   <div id="error-banner" class="error-banner">Couldn't load your library. Try refreshing.</div>
   <div class="page-header">
     <div class="page-title">Your Library</div>
-    <div class="page-sub">Shows you follow and episodes you've analyzed</div>
+    <div class="page-sub">Your personal analysis archive</div>
   </div>
 
   <!-- Search -->
@@ -323,11 +426,6 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   <div class="lib-panel" id="panel-analyzed">
     <div id="usage-meter-wrap"></div>
     <div id="analyzed-content"></div>
-  </div>
-
-  <!-- Your Shows Panel -->
-  <div class="lib-panel" id="panel-myshows">
-    <div id="myshows-content"></div>
   </div>
 
   <!-- Saved Panel -->
@@ -434,8 +532,17 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     document.getElementById('tc-analyzed').textContent = analyses.length;
     document.getElementById('tc-saved').textContent = saved.length;
     document.getElementById('tc-downloads').textContent = downloads.length;
+    // Update sidebar nav counts
+    var cntF = document.getElementById('lib-count-following');
+    var cntA = document.getElementById('lib-count-analyzed');
+    var cntL = document.getElementById('lib-count-liked');
+    if (cntF) cntF.textContent = follows.length || '';
+    if (cntA) cntA.textContent = analyses.length || '';
+    if (cntL) cntL.textContent = saved.length || '';
 
     renderAll();
+    // Render echo chamber in library
+    renderLibEchoChamber(analyses);
   }
 
   /* ── RENDER ── */
@@ -456,103 +563,110 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     });
   }
 
-  /* Following */
+  /* Following — archive style */
   function renderFollowing() {
     var el = document.getElementById('following-content');
     var items = applySearch(follows, ['name', 'host', 'latestEp']);
     if (!items.length) {
-      el.innerHTML = '<div class="empty-state">'
-        + '<div class="empty-icon">🎧</div>'
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎧</div>'
         + '<div class="empty-title">' + (follows.length ? 'No matching shows' : "You haven't followed any shows yet") + '</div>'
-        + '<div class="empty-sub">' + (follows.length ? 'Try a different search term.' : 'Head to Discover to find podcasts to follow.') + '</div>'
+        + '<div class="empty-sub">' + (follows.length ? 'Try a different search.' : 'Head to Discover to find podcasts to follow.') + '</div>'
         + (!follows.length ? '<a href="/" class="btn-cta">Go to Discover →</a>' : '')
         + '</div>';
       return;
     }
-    var plan = u.plan || 'free';
-    var showSQ = ['creator', 'operator', 'studio', 'trial'].includes(plan);
-    el.innerHTML = '<div class="following-grid">' + items.map(function (s, i) {
-      var sqId = 'sq-' + i;
-      var sqChecked = s.smartQueue ? 'checked' : '';
-      var sqHtml = showSQ
-        ? '<div class="sq-toggle-wrap" title="Smart Queue — auto-analyze new episodes"><span class="sq-label">SQ</span><label class="sq-toggle"><input type="checkbox" ' + sqChecked + ' onchange="toggleSmartQueue(' + i + ',this.checked)"><span class="sq-slider"></span></label></div>'
-        : '';
+    var plan = u ? (u.plan || 'free') : 'free';
+    var showSQ = ['creator','operator','studio','trial'].includes(plan);
+    var html = '';
+    html += '<div class="archive-search-wrap"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" class="archive-search" placeholder="Search your followed shows…" oninput="filterLib(this.value)"></div>';
+    items.forEach(function(s, i) {
+      var showName = s.name || s.showName || '';
+      var showEps = analyses.filter(function(ep) {
+        return (ep.showName || ep.show || '').toLowerCase() === showName.toLowerCase();
+      }).sort(function(a,b){ return new Date(b.analyzedAt||0) - new Date(a.analyzedAt||0); });
+      var artEl = s.artwork
+        ? '<img class="sah-art" src="' + esc(s.artwork) + '" alt="" loading="lazy" onerror="this.outerHTML='<div class=\"sah-art-ph\">' + esc((showName||'P').charAt(0).toUpperCase()) + '</div>'">'
+        : '<div class="sah-art-ph">' + esc((showName||'P').charAt(0).toUpperCase()) + '</div>';
       var bias = s.bias || {};
-      var pillCls = biasPillClass(bias.l, bias.r);
-      var pillLabel = biasPillLabel(bias.l, bias.r);
+      var bLabel = biasPillLabel(bias.l || bias.leftPct, bias.r || bias.rightPct);
+      var bCls   = biasPillClass(bias.l || bias.leftPct, bias.r || bias.rightPct);
+      var trendBars = showEps.slice(0,6).reverse().map(function(ep) {
+        var h = Math.max(20, Math.min(100, ep.credibilityScore || ep.hostTrustScore || 55));
+        var col = (ep.leftPct||0) > (ep.rightPct||0) ? 'var(--left)' : (ep.rightPct||0) > (ep.leftPct||0) ? 'var(--right)' : 'var(--center)';
+        return '<div class="sah-trend-bar" style="height:' + h + '%;background:' + col + ';opacity:.7"></div>';
+      }).join('');
+      var sqHtml = showSQ ? '<label class="sq-toggle" title="Smart Queue"><input type="checkbox" ' + (s.smartQueue ? 'checked' : '') + ' onchange="toggleSmartQueue(' + i + ',this.checked)"><span class="sq-slider"></span></label>' : '';
       var analyzeUrl = s.feedUrl || s.youtubeUrl || '';
-      return '<div class="show-card">'
-        + '<div class="show-card-top">'
-        + artHtml(s.artwork, s.name, 'show-art-lg')
-        + '<div class="show-info">'
-        + '<div class="show-name">' + esc(s.name || '') + '</div>'
-        + '<div class="show-host">' + esc(s.host || '') + '</div>'
-        + (s.latestEp ? '<div class="show-latest-ep">' + esc(s.latestEp) + '</div>' : '')
-        + '</div>'
-        + '</div>'
-        + '<div class="show-card-footer">'
-        + '<span class="bias-pill ' + pillCls + '">' + pillLabel + '</span>'
-        + sqHtml
-        + '</div>'
-        + '<div class="show-actions">'
-        + (analyzeUrl ? '<button class="btn-analyze" onclick="analyzeLatest(\'' + esc(analyzeUrl) + '\',\'' + esc(s.name || '') + '\')">Analyze latest →</button>' : '')
-        + '<button class="btn-unfollow" onclick="unfollowShow(' + i + ')">Unfollow</button>'
-        + '</div>'
-        + '</div>';
-    }).join('') + '</div>';
+      var hasEps = showEps.length > 0;
+      html += '<div class="show-archive-block">';
+      html += '<div class="show-archive-hd' + (hasEps ? ' has-eps' : '') + '">';
+      html += artEl;
+      html += '<div class="sah-info"><div class="sah-name">' + esc(showName) + '</div>';
+      html += '<div class="sah-meta">' + (s.host ? esc(s.host) + ' · ' : '') + (hasEps ? showEps.length + ' analyzed' : 'No analyses yet') + '</div></div>';
+      if (trendBars) html += '<div class="sah-trend">' + trendBars + '</div>';
+      if (bLabel && (bias.l !== undefined || bias.leftPct !== undefined)) html += '<span class="bias-pill ' + bCls + '">' + esc(bLabel) + '</span>';
+      html += '<div class="sah-actions">' + sqHtml;
+      if (analyzeUrl) html += '<button class="btn-analyze" onclick="analyzeLatest('' + esc(analyzeUrl) + '','' + esc(showName) + '')">Analyze →</button>';
+      html += '<button class="btn-unfollow" onclick="unfollowShow(' + i + ')">Unfollow</button>';
+      html += '</div></div>';
+      if (hasEps) {
+        html += '<div class="archive-ep-list">';
+        showEps.slice(0,3).forEach(function(ep, n) {
+          var epCls = biasCls(ep); var epLbl = ep.biasLabel || biasFromEp(ep);
+          var viewUrl = ep.jobId ? '/?jobId=' + ep.jobId : '#';
+          html += '<div class="archive-ep" onclick="window.location='' + esc(viewUrl) + ''">';
+          html += '<span class="aep-num">' + (n+1) + '</span>';
+          html += '<span class="aep-title">' + esc(ep.episodeTitle || ep.title || 'Episode') + '</span>';
+          html += '<span class="bias-pill ' + epCls + '" style="font-size:9px;padding:2px 6px;flex-shrink:0">' + esc(epLbl) + '</span>';
+          html += '<span class="aep-date">' + esc(timeAgo(ep.analyzedAt)) + '</span></div>';
+        });
+        if (showEps.length > 3) html += '<button class="archive-show-more" onclick="switchTab('analyzed')">+ ' + (showEps.length-3) + ' more analyzed episodes — see in Analyzed →</button>';
+        html += '</div>';
+      } else {
+        html += '<div class="archive-ep-list"><div class="archive-no-eps">No analyses yet — <button onclick="analyzeLatest('' + esc(analyzeUrl) + '','' + esc(showName) + '')" style="background:none;border:none;color:var(--navy);font-size:12px;cursor:pointer;font-family:var(--ff);padding:0;font-weight:500">analyze latest →</button></div></div>';
+      }
+      html += '</div>';
+    });
+    el.innerHTML = html;
   }
 
-  /* Analyzed */
+  /* Analyzed — flat archive list */
   function renderAnalyzed() {
     var el = document.getElementById('analyzed-content');
     var items = applySearch(analyses, ['episodeTitle', 'showName']);
-    // Usage meter
     var lim = getPlanLimits();
     var used = u.analysesThisWeek || 0;
     var umHtml = '';
     if (!lim.unlimited) {
       var pct = Math.min(100, Math.round(used / lim.max * 100));
       var fillCls = pct >= 100 ? 'red' : pct >= 80 ? 'amber' : '';
-      umHtml = '<div class="usage-meter">'
-        + '<span class="usage-label">' + used + ' of ' + lim.max + ' analyses used this ' + lim.label + '</span>'
-        + '<div class="usage-track"><div class="usage-fill ' + fillCls + '" style="width:' + pct + '%"></div></div>'
-        + '<span class="usage-pct">' + pct + '%</span>'
-        + (pct >= 80 ? '<a href="/pricing.html" class="usage-upgrade">Upgrade for more →</a>' : '')
-        + '</div>';
+      umHtml = '<div class="usage-meter"><span class="usage-label">' + used + ' of ' + lim.max + ' analyses this ' + lim.label + '</span><div class="usage-track"><div class="usage-fill ' + fillCls + '" style="width:' + pct + '%"></div></div><span class="usage-pct">' + pct + '%</span>' + (pct >= 80 ? '<a href="/pricing.html" class="usage-upgrade">Upgrade →</a>' : '') + '</div>';
     } else {
       umHtml = '<div class="usage-meter"><span class="usage-label" style="color:var(--text3)">Unlimited analyses</span></div>';
     }
     document.getElementById('usage-meter-wrap').innerHTML = umHtml;
-
     if (!items.length) {
-      el.innerHTML = '<div class="empty-state">'
-        + '<div class="empty-icon">📊</div>'
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div>'
         + '<div class="empty-title">' + (analyses.length ? 'No matching analyses' : 'No analyses yet') + '</div>'
         + '<div class="empty-sub">' + (analyses.length ? 'Try a different search.' : 'Analyze any podcast episode to see it here.') + '</div>'
         + (!analyses.length ? '<a href="/" class="btn-cta">Analyze an episode →</a>' : '')
         + '</div>';
       return;
     }
-    el.innerHTML = '<div class="ep-list">' + items.map(function (ep) {
+    var html = '<div class="history-col-hd"><span>Episode</span><span style="text-align:right">Date</span><span style="text-align:right">Lean</span><span style="text-align:right">Score</span></div>';
+    html += items.map(function(ep) {
       var pillCls = biasCls(ep);
       var pillLabel = ep.biasLabel || biasFromEp(ep);
       var viewUrl = ep.jobId ? '/?jobId=' + ep.jobId : '#';
-      return '<div class="ep-row">'
-        + artHtml(ep.artwork, ep.showName, 'ep-art-sm')
-        + '<div class="ep-body">'
-        + '<div class="ep-show-name">' + esc(ep.showName || '') + '</div>'
-        + '<div class="ep-title">' + esc(ep.episodeTitle || 'Episode') + '</div>'
-        + '<div class="ep-meta">'
-        + (pillLabel ? '<span class="bias-pill ' + pillCls + '">' + pillLabel + '</span>' : '')
-        + '<span>' + timeAgo(ep.analyzedAt) + '</span>'
-        + '</div>'
-        + '</div>'
-        + '<div class="ep-actions">'
-        + (ep.jobId ? '<a href="' + esc(viewUrl) + '" class="btn-view">View →</a>' : '')
-        + (ep.url ? '<button class="btn-reanalyze" onclick="reAnalyze(\'' + esc(ep.url) + '\',\'' + esc(ep.episodeTitle || '') + '\',\'' + esc(ep.showName || '') + '\')">Re-analyze</button>' : '')
-        + '</div>'
+      var score = ep.credibilityScore || ep.hostTrustScore || '';
+      return '<div class="history-row" onclick="window.location='' + esc(viewUrl) + ''">'
+        + '<div class="hr-ep"><div class="hr-title">' + esc(ep.episodeTitle || 'Episode') + '</div><div class="hr-show">' + esc(ep.showName || '') + '</div></div>'
+        + '<div class="hr-date">' + esc(timeAgo(ep.analyzedAt)) + '</div>'
+        + '<div class="hr-lean">' + (pillLabel ? '<span class="bias-pill ' + pillCls + '" style="font-size:9px;padding:2px 6px">' + esc(pillLabel) + '</span>' : '') + '</div>'
+        + '<div class="hr-score">' + (score ? esc(String(score)) : '—') + '</div>'
         + '</div>';
-    }).join('') + '</div>';
+    }).join('');
+    el.innerHTML = html;
   }
 
   /* Saved */
@@ -721,8 +835,36 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
     renderPlaylists();
   };
 
+  function renderLibEchoChamber(analyses) {
+    var el = document.getElementById('lib-echo-content');
+    if (!el) return;
+    var eco = (typeof calcEchoChamber === 'function') ? calcEchoChamber(analyses || []) : { hasData: false };
+    if (!eco || !eco.hasData) {
+      el.innerHTML = '<div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes across different shows to see your echo chamber score.</div>';
+      return;
+    }
+    var barColor = eco.score <= 25 ? '#639922' : eco.score <= 50 ? '#BA7517' : '#E24B4A';
+    el.innerHTML = '<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px">'
+      + '<span style="font-size:22px;font-weight:600;color:' + eco.color + '">' + eco.score + '</span>'
+      + '<span style="font-size:11px;color:var(--text3)">/100</span>'
+      + '<span style="font-size:11px;font-weight:600;color:' + eco.color + '">' + eco.label + '</span>'
+      + '</div>'
+      + '<div style="height:5px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-bottom:6px">'
+      + '<div style="height:100%;width:' + eco.score + '%;background:' + barColor + ';border-radius:3px"></div></div>'
+      + '<div style="font-size:11px;color:var(--text3);line-height:1.5">' + eco.description + '</div>';
+  }
+
+  window.libToggleDrop = function(id) {
+    var el = document.getElementById('lib-drop-' + id);
+    var arr = document.getElementById('lib-arr-' + id);
+    if (!el) return;
+    var isOpen = el.classList.contains('open');
+    el.classList.toggle('open', !isOpen);
+    if (arr) arr.classList.toggle('open', !isOpen);
+  };
+
   window.setNavActive = function(btn) {
-    document.querySelectorAll('.lib-nav-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.lib-nav-btn, .lib-nav-sub-btn').forEach(function(b){ b.classList.remove('active'); });
     if (btn) btn.classList.add('active');
   };
 
@@ -736,9 +878,12 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
       p.classList.toggle('active', p.id === 'panel-' + tab);
     });
     // Sync sidebar nav active state
-    document.querySelectorAll('.lib-nav-btn').forEach(function(b) {
+    document.querySelectorAll('.lib-nav-btn, .lib-nav-sub-btn').forEach(function(b) {
       b.classList.toggle('active', b.id === 'nav-' + tab);
     });
+    // Keep My Library button highlighted when any sub-item is active
+    var libHome = document.getElementById('nav-library-home');
+    if (libHome) libHome.classList.add('active');
     if (tab === 'myshows') renderMyShows();
   };
 
@@ -968,13 +1113,11 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
       .then(function (data) {
         myShowsData = data;
         myShowsLoaded = true;
-        renderMyShows();
-      })
+          })
       .catch(function () {
         myShowsLoaded = true;
         myShowsData = null;
-        renderMyShows();
-      });
+          });
   }
 
   window.toggleMyShowSQ = function (showId, val) {

@@ -2529,6 +2529,10 @@ body.light-mode,[data-theme="light"]{
 [data-theme="dark"] .blur-r{background:var(--bg3)}
 [data-theme="dark"] .sec{border-color:var(--border)}
 
+
+/* ── ECHO CHAMBER ── */
+.echo-meter{height:6px;border-radius:3px;background:var(--bg3);overflow:hidden;margin:6px 0}
+.echo-fill-low{background:#639922}.echo-fill-mod{background:#BA7517}.echo-fill-high{background:#E24B4A}
 /* ── DARK MODE — DASHBOARD ── */
 [data-theme="dark"] .dashboard-sidebar{border-color:var(--border)}
 [data-theme="dark"] .fingerprint-container{background:var(--bg3);border-color:var(--border)}
@@ -2951,6 +2955,7 @@ body.light-mode,[data-theme="light"]{
                     <!-- Findings -->
           <div class="sec">
             <div class="seclbl">Worth knowing before you listen <span id="sia-findings-hint" style="display:none;font-size:10px;color:#ccc;text-transform:none;letter-spacing:0;margin-left:4px">&middot; tap any finding to expand</span></div>
+            <div id="ar-echo-nudge" style="display:none;margin-bottom:12px;padding:9px 14px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--text2)"></div>
             <div class="findings-wrap">
               <div class="fi" onclick="siaToggle(this)"><div class="ftag fs">SPONSOR</div><div><div class="ftitle">Multiple sponsor integrations throughout</div><div class="fbody">Extended segments for Shopify, Element, and Fin at 12m, 58m, and 1h32m.</div></div><div class="farrow">&#8250;</div></div>
               <div class="expand"><div class="exp-summary">Three sponsor segments appear editorially integrated rather than clearly separated from content. Each read follows a topically related segment, suggesting possible influence on adjacent framing.</div><div class="exp-lbl">Why it matters</div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Sponsor placement immediately after related content blurs editorial and commercial intent.</div></div><div class="exp-impact"><div class="exp-dot"></div><div class="exp-impact-text">Host&rsquo;s tone continues unbroken into sponsor reads &mdash; no clear separation.</div></div><div class="exp-lbl" style="margin-top:10px">What balanced would look like</div><div class="exp-balanced"><div class="exp-bal-lbl">A more balanced approach</div><div class="exp-bal-text">Sponsor segments should be clearly marked and placed at natural content breaks, not immediately after topically related content.</div></div></div>
@@ -3149,11 +3154,10 @@ body.light-mode,[data-theme="light"]{
           <button class="dash-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
           <div class="dash-nav-div"></div>
           <div class="dash-nav-lbl">My library</div>
+          <button class="dash-nav-btn" data-section="intelligence" onclick="showDashSection('intelligence')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</button>
           <button class="dash-nav-btn" data-section="queue" onclick="showDashSection('queue')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
           <button class="dash-nav-btn" data-section="following" onclick="showDashSection('following')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Following</button>
           <button class="dash-nav-btn" data-section="analyzed" onclick="showDashSection('analyzed')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Analyzed</button>
-          <button class="dash-nav-btn" data-section="intelligence" onclick="showDashSection('intelligence')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My Intelligence</button>
-          <button class="dash-nav-btn" data-section="fingerprint" onclick="showDashSection('fingerprint')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>My fingerprint</button>
           <div style="flex:1"></div>
           <div class="dash-nav-div"></div>
           <div class="dash-nav-lbl">Resources</div>
@@ -3298,6 +3302,13 @@ body.light-mode,[data-theme="light"]{
           <div class="fingerprint-bar-track" id="sb-fp-track"><div class="fingerprint-dot" id="sb-fp-dot" style="left:50%"></div></div>
           <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
           <div class="fingerprint-counts" id="sb-fp-counts"></div>
+        </div>
+        <div class="sidebar-card" id="sb-echo-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="sidebar-card-title" style="margin-bottom:0">Echo chamber score</div>
+            <button onclick="showDashSection('intelligence')" style="background:none;border:none;font-size:11px;font-weight:600;color:var(--navy);cursor:pointer;font-family:var(--ff);padding:0">Details &rarr;</button>
+          </div>
+          <div id="sb-echo-content"><div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes across different shows to see your echo chamber score.</div></div>
         </div>
         <div class="sq-widget" id="sq-widget" style="display:none">
           <div class="sq-widget-header">
@@ -4717,6 +4728,16 @@ function renderHomeState() {
     // Render all dashboard data
     renderDashRecent();
     renderBiasFingerprint();
+  // Update echo chamber nudge in analysis results
+  try {
+    var _recentForEcho = getRecent ? getRecent().filter(function(r){ return r.leftPct !== undefined; }) : [];
+    var _eco = (typeof calcEchoChamber === 'function') ? calcEchoChamber(_recentForEcho) : null;
+    var _nudgeEl = document.getElementById('ar-echo-nudge');
+    if (_nudgeEl && _eco && _eco.hasData) {
+      _nudgeEl.style.display = 'block';
+      _nudgeEl.innerHTML = '<span style="font-weight:600;color:' + _eco.color + '">' + _eco.label + ' (' + _eco.score + '/100)</span> &mdash; ' + _eco.description + ' <button onclick="showDashSection(\'intelligence\')" style="background:none;border:none;color:var(--navy);font-size:12px;cursor:pointer;font-family:var(--ff);padding:0;font-weight:600">View full score &rarr;</button>';
+    }
+  } catch(e) {}
     renderDashUnheardPreview(u);
     renderDashFollowedShows(u);
     renderDashFollowingSection(u);
@@ -4954,6 +4975,23 @@ function renderDashIntelligence(u) {
   recent.forEach(function(r){ var t = r.topic || r.category || 'General'; topTopics[t] = (topTopics[t]||0)+1; });
   var topicList = Object.keys(topTopics).sort(function(a,b){return topTopics[b]-topTopics[a];}).slice(0,6);
 
+  // Calculate echo chamber
+  var eco = (typeof calcEchoChamber === 'function') ? calcEchoChamber(recent) : { hasData: false };
+  var ecoBarColor = !eco.hasData ? 'var(--bg4)' : eco.score <= 25 ? '#639922' : eco.score <= 50 ? '#BA7517' : '#E24B4A';
+  var ecoHtml = eco.hasData
+    ? '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">'
+      + '<span style="font-size:32px;font-weight:700;font-family:var(--ffs);color:' + eco.color + '">' + eco.score + '</span>'
+      + '<span style="font-size:13px;color:var(--text3)">/100 &mdash; <strong style="color:' + eco.color + '">' + eco.label + '</strong></span>'
+      + '</div>'
+      + '<div style="height:8px;border-radius:4px;background:var(--bg3);overflow:hidden;margin-bottom:10px">'
+      + '<div style="height:100%;width:' + eco.score + '%;background:' + ecoBarColor + ';border-radius:4px;transition:width .4s ease"></div></div>'
+      + '<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px">' + eco.description + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px;color:var(--text3)">'
+      + '<span>' + eco.totalAnalyses + ' episodes analyzed</span>'
+      + '<span>' + eco.showCount + ' distinct show' + (eco.showCount !== 1 ? 's' : '') + '</span>'
+      + '</div>'
+    : '<div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes across different shows to see your echo chamber score.</div>';
+
   el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
     // Bias fingerprint card
     + '<div class="sidebar-card" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">'
@@ -4977,6 +5015,13 @@ function renderDashIntelligence(u) {
     + (topicList.length ? '<div style="display:flex;flex-wrap:wrap;gap:6px">'
         +topicList.map(function(t){return '<span style="padding:4px 10px;background:var(--bg3);border-radius:12px;font-size:11px;font-weight:500">'+t+' <span style="opacity:.5">'+topTopics[t]+'</span></span>';}).join('')
         +'</div>' : '<div style="font-size:12px;color:var(--text3)">Analyze episodes to see topic breakdown.</div>')
+    + '</div>'
+    // Echo chamber card
+    + '<div class="sidebar-card" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">'
+    + '<div><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Echo chamber score</div>'
+    + '<div style="font-size:11px;color:var(--text3)">How diverse is your listening?</div></div>'
+    + '</div>'
+    + ecoHtml
     + '</div>'
     // Recent analyses list
     + '<div class="sidebar-card" style="grid-column:1/-1"><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Recent analyses</div>'
@@ -5109,6 +5154,29 @@ function renderBiasFingerprint() {
   if (sbCounts) sbCounts.innerHTML='<span class="bias-count"><span class="bias-dot" style="background:var(--left-bar)"></span>'+l+'% left</span>'
     +'<span class="bias-count"><span class="bias-dot" style="background:var(--center-bar)"></span>'+c+'% center</span>'
     +'<span class="bias-count"><span class="bias-dot" style="background:var(--right-bar)"></span>'+r+'% right</span>';
+  // Render echo chamber score
+  renderEchoChamber(recent);
+}
+
+function renderEchoChamber(analyses) {
+  var el = document.getElementById('sb-echo-content');
+  if (!el) return;
+  var eco = (typeof calcEchoChamber === 'function') ? calcEchoChamber(analyses || []) : null;
+  if (!eco || !eco.hasData) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes across different shows to see your echo chamber score.</div>';
+    return;
+  }
+  var barColor = eco.score <= 25 ? '#639922' : eco.score <= 50 ? '#BA7517' : '#E24B4A';
+  el.innerHTML = '<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px">'
+    + '<span style="font-size:24px;font-weight:600;color:' + eco.color + '">' + eco.score + '</span>'
+    + '<span style="font-size:11px;color:var(--text3)">/100</span>'
+    + '<span style="font-size:11px;font-weight:600;color:' + eco.color + '">' + eco.label + '</span>'
+    + '</div>'
+    + '<div style="height:6px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-bottom:6px">'
+    + '<div style="height:100%;width:' + eco.score + '%;background:' + barColor + ';border-radius:3px;transition:width .4s ease"></div>'
+    + '</div>'
+    + '<div style="font-size:11px;color:var(--text3);line-height:1.5">' + eco.description + '</div>'
+    + '<div style="margin-top:6px;font-size:10px;color:var(--text3)">' + eco.totalAnalyses + ' episodes analyzed across ' + eco.showCount + ' show' + (eco.showCount !== 1 ? 's' : '') + '</div>';
 }
 
 // ── PENDING ANALYZE (saved when gate intercepts) ──
