@@ -4685,8 +4685,8 @@ function doSignup() {
 
 function doLogout() {
   setPlUser(null);
-  // Reload the page — home-loggedout was removed from DOM on login,
-  // a fresh load is the cleanest way to restore the marketing homepage
+  // Hide everything immediately to prevent flash during navigation
+  document.querySelectorAll('.view').forEach(function(v){ v.style.display = 'none'; });
   window.location.href = '/';
 }
 

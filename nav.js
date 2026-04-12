@@ -121,7 +121,7 @@
       + '<button onclick="if(typeof showView===\'function\')showView(\'account\')" class="nav-dd-item" style="width:100%;text-align:left">Profile settings</button>'
       + '<button onclick="if(typeof showView===\'function\')showView(\'account\')" class="nav-dd-item" style="width:100%;text-align:left">Account &amp; billing</button>'
       + '<div class="nav-dd-div"></div>'
-      + '<button onclick="localStorage.removeItem(\'pl-user\');window.location.href=\'/\'" class="nav-dd-item">Sign out</button>'
+      + '<button onclick="localStorage.removeItem(\'pl-user\');document.querySelectorAll(\'.view\').forEach(function(v){v.style.display=\'none\'});window.location.href=\'/\'" class="nav-dd-item">Sign out</button>'
       + '</div>'
       + '</div>';
 
