@@ -118,8 +118,8 @@
       + '<div class="nav-dd-email">' + _esc(u.email || '') + '</div>'
       + '</div>'
       + adminRow
-      + '<a href="/profile.html" class="nav-dd-item">Profile settings</a>'
-      + '<a href="/account.html" class="nav-dd-item">Account &amp; billing</a>'
+      + '<button onclick="if(typeof showView===\'function\')showView(\'account\')" class="nav-dd-item" style="width:100%;text-align:left">Profile settings</button>'
+      + '<button onclick="if(typeof showView===\'function\')showView(\'account\')" class="nav-dd-item" style="width:100%;text-align:left">Account &amp; billing</button>'
       + '<div class="nav-dd-div"></div>'
       + '<button onclick="localStorage.removeItem(\'pl-user\');window.location.href=\'/\'" class="nav-dd-item">Sign out</button>'
       + '</div>'

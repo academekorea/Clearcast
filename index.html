@@ -2522,6 +2522,61 @@ body.light-mode,[data-theme="light"]{
 [data-theme="dark"] .sec{border-color:var(--border)}
 
 
+
+/* ── ACCOUNT / SETTINGS VIEWS ── */
+.account-view-wrap{max-width:680px;margin:0 auto;padding:32px 24px 80px}
+.account-view-inner{}
+.account-header{margin-bottom:24px}
+.account-title{font-size:24px;font-weight:600;font-family:var(--ffs);letter-spacing:-.01em;margin-bottom:4px}
+.account-sub{font-size:14px;color:var(--text2)}
+.account-tabs{display:flex;border-bottom:1px solid var(--border2);margin-bottom:24px}
+.account-tab{padding:9px 18px;font-size:13px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;font-family:var(--ff);margin-bottom:-1px;transition:color .12s}
+.account-tab:hover{color:var(--text)}
+.account-tab.active{color:var(--navy);border-bottom-color:var(--navy);font-weight:600}
+[data-theme="dark"] .account-tab.active{color:var(--text);border-bottom-color:var(--text)}
+.account-panel{display:none}
+.account-panel.active{display:block}
+.acct-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
+[data-theme="dark"] .acct-card{background:var(--bg3)}
+.acct-card-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;padding-bottom:10px;border-bottom:0.5px solid var(--border)}
+.acct-avatar-row{display:flex;align-items:center;gap:14px;padding:6px 0 14px;border-bottom:0.5px solid var(--border);margin-bottom:4px}
+.acct-av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0;font-family:var(--ff)}
+.acct-name{font-size:15px;font-weight:600}
+.acct-email{font-size:12px;color:var(--text3);margin-top:2px}
+.acct-plan-badge{display:inline-flex;padding:3px 9px;background:rgba(55,138,221,.12);color:#185FA5;border-radius:999px;font-size:10px;font-weight:600;margin-top:5px;letter-spacing:.03em}
+[data-theme="dark"] .acct-plan-badge{background:rgba(55,138,221,.2);color:#378ADD}
+.acct-field{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:0.5px solid var(--border)}
+.acct-field:last-child{border-bottom:none}
+.acct-field-label{font-size:12px;color:var(--text2);width:110px;flex-shrink:0}
+.acct-field-val{font-size:13px;color:var(--text);flex:1}
+.acct-field-action{font-size:11px;font-weight:600;color:var(--navy);background:none;border:none;cursor:pointer;font-family:var(--ff);flex-shrink:0}
+[data-theme="dark"] .acct-field-action{color:var(--text2)}
+.acct-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.acct-toggle-row:last-child{border-bottom:none}
+.acct-toggle-info{flex:1;min-width:0;margin-right:12px}
+.acct-toggle-label{font-size:13px;font-weight:500;margin-bottom:2px}
+.acct-toggle-desc{font-size:11px;color:var(--text3)}
+.acct-toggle{position:relative;width:34px;height:19px;flex-shrink:0}
+.acct-toggle input{opacity:0;width:0;height:0;position:absolute}
+.acct-toggle-slider{position:absolute;inset:0;background:var(--bg4);border-radius:999px;transition:background .2s}
+.acct-toggle-slider:before{content:'';position:absolute;width:15px;height:15px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:transform .2s}
+.acct-toggle input:checked+.acct-toggle-slider{background:var(--navy)}
+.acct-toggle input:checked+.acct-toggle-slider:before{transform:translateX(15px)}
+.acct-btn-primary{padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:opacity .15s}
+.acct-btn-primary:hover{opacity:.85}
+.acct-btn-secondary{padding:8px 16px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--ff);text-decoration:none;display:inline-block}
+.acct-btn-secondary:hover{border-color:var(--navy);color:var(--navy)}
+.acct-btn-danger{padding:8px 16px;background:transparent;color:#dc2626;border:1px solid #fecaca;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--ff)}
+.acct-btn-danger:hover{background:#fef2f2;border-color:#dc2626}
+.acct-plan-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.acct-plan-card.active-plan{border-color:var(--navy)}
+.acct-plan-icon{width:34px;height:34px;border-radius:8px;background:rgba(55,138,221,.1);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.acct-plan-active-badge{font-size:10px;background:rgba(22,163,74,.1);color:#16a34a;padding:3px 9px;border-radius:999px;font-weight:600}
+.acct-inv-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:12px}
+.acct-inv-row:last-child{border-bottom:none}
+.acct-int-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+[data-theme="dark"] .acct-int-card{background:var(--bg3)}
+.acct-int-icon{width:34px;height:34px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px}
 /* ── ECHO CHAMBER ── */
 .echo-meter{height:6px;border-radius:3px;background:var(--bg3);overflow:hidden;margin:6px 0}
 .echo-fill-low{background:#639922}.echo-fill-mod{background:#BA7517}.echo-fill-high{background:#E24B4A}
@@ -3667,6 +3722,96 @@ body.light-mode,[data-theme="light"]{
   </div>
 </div>
 <script src="/library-view.js" defer></script>
+
+<!-- VIEW: Account (merged profile + billing + notifications + integrations) -->
+<div class="view" id="view-account" style="display:none">
+  <div class="account-view-wrap">
+    <div class="account-view-inner">
+      <div class="account-header">
+        <div class="account-title">Account</div>
+        <div class="account-sub">Manage your profile, billing, and preferences</div>
+      </div>
+      <div class="account-tabs" role="tablist">
+        <button class="account-tab active" data-tab="profile" onclick="switchAccountTab('profile',this)">Profile</button>
+        <button class="account-tab" data-tab="billing" onclick="switchAccountTab('billing',this)">Billing</button>
+        <button class="account-tab" data-tab="notifications" onclick="switchAccountTab('notifications',this)">Notifications</button>
+        <button class="account-tab" data-tab="integrations" onclick="switchAccountTab('integrations',this)">Integrations</button>
+      </div>
+      <!-- Profile -->
+      <div class="account-panel active" id="acct-panel-profile">
+        <div class="acct-card">
+          <div class="acct-card-title">Your profile</div>
+          <div class="acct-avatar-row" id="acct-avatar-row">
+            <div class="acct-av" id="acct-av-circle">?</div>
+            <div>
+              <div class="acct-name" id="acct-display-name">Loading…</div>
+              <div class="acct-email" id="acct-display-email"></div>
+              <span class="acct-plan-badge" id="acct-plan-badge"></span>
+            </div>
+          </div>
+          <div class="acct-field"><span class="acct-field-label">Full name</span><span class="acct-field-val" id="acct-field-name"></span><button class="acct-field-action" onclick="showDashSection('profile')">Edit</button></div>
+          <div class="acct-field"><span class="acct-field-label">Email</span><span class="acct-field-val" id="acct-field-email"></span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
+          <div class="acct-field"><span class="acct-field-label">Password</span><span class="acct-field-val" style="color:var(--text3)">••••••••••</span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
+        </div>
+        <div class="acct-card">
+          <div class="acct-card-title">Danger zone</div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:13px;font-weight:500">Delete account</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Permanently remove your account and all data</div></div>
+            <button class="acct-btn-danger" onclick="confirmDeleteAccount()">Delete account</button>
+          </div>
+        </div>
+      </div>
+      <!-- Billing -->
+      <div class="account-panel" id="acct-panel-billing">
+        <div class="acct-card" id="acct-billing-content">
+          <div class="acct-card-title">Current plan</div>
+          <div id="acct-plan-row"></div>
+        </div>
+        <div class="acct-card" id="acct-invoices-card">
+          <div class="acct-card-title">Invoice history</div>
+          <div id="acct-invoices"><div style="font-size:13px;color:var(--text3)">No invoices yet.</div></div>
+        </div>
+      </div>
+      <!-- Notifications -->
+      <div class="account-panel" id="acct-panel-notifications">
+        <div class="acct-card">
+          <div class="acct-card-title">Email notifications</div>
+          <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">Smart queue ready</div><div class="acct-toggle-desc">When new episodes from your followed shows are analyzed</div></div><label class="acct-toggle"><input type="checkbox" id="notif-queue" checked onchange="saveNotifPref('queue',this.checked)"><span class="acct-toggle-slider"></span></label></div>
+          <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">Weekly bias digest</div><div class="acct-toggle-desc">Your listening bias and echo chamber score each week</div></div><label class="acct-toggle"><input type="checkbox" id="notif-digest" checked onchange="saveNotifPref('digest',this.checked)"><span class="acct-toggle-slider"></span></label></div>
+          <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">New feature updates</div><div class="acct-toggle-desc">Product announcements and new analysis capabilities</div></div><label class="acct-toggle"><input type="checkbox" id="notif-updates" onchange="saveNotifPref('updates',this.checked)"><span class="acct-toggle-slider"></span></label></div>
+          <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">Billing receipts</div><div class="acct-toggle-desc">Invoices and payment confirmations</div></div><label class="acct-toggle"><input type="checkbox" id="notif-billing" checked onchange="saveNotifPref('billing',this.checked)"><span class="acct-toggle-slider"></span></label></div>
+        </div>
+      </div>
+      <!-- Integrations -->
+      <div class="account-panel" id="acct-panel-integrations">
+        <div class="acct-int-card"><div class="acct-int-icon" style="background:#E8F9EE">&#127925;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Import your podcast subscriptions and listening history</div></div><button class="acct-btn-primary" onclick="heroConnectSpotify()">Connect</button></div>
+        <div class="acct-int-card"><div class="acct-int-icon" style="background:#FEE2E2">&#9654;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">YouTube</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze video podcasts and YouTube channels</div></div><button class="acct-btn-primary" onclick="heroConnectYouTube()">Connect</button></div>
+        <div class="acct-int-card"><div class="acct-int-icon" style="background:var(--bg3)">&#128276;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Browser extension</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze any podcast directly from your browser</div></div><a class="acct-btn-secondary" href="/extension.html">Install</a></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /view-account -->
+
+<!-- VIEW: Settings -->
+<div class="view" id="view-settings" style="display:none">
+  <div class="account-view-wrap">
+    <div class="account-view-inner">
+      <div class="account-header">
+        <div class="account-title">Settings</div>
+        <div class="account-sub">App preferences, display, and advanced options</div>
+      </div>
+      <div class="acct-card">
+        <div class="acct-card-title">Appearance</div>
+        <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">Dark mode</div><div class="acct-toggle-desc">Switch between light and dark theme</div></div><label class="acct-toggle"><input type="checkbox" id="setting-dark" onchange="if(typeof toggleMode===\'function\')toggleMode()"><span class="acct-toggle-slider"></span></label></div>
+      </div>
+      <div class="acct-card">
+        <div class="acct-card-title">Analysis defaults</div>
+        <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">Auto-play audio briefing</div><div class="acct-toggle-desc">Play the Before you listen briefing automatically when an analysis loads</div></div><label class="acct-toggle"><input type="checkbox" id="setting-autoplay"><span class="acct-toggle-slider"></span></label></div>
+        <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">Show transcript by default</div><div class="acct-toggle-desc">Expand transcript highlights on every analysis result</div></div><label class="acct-toggle"><input type="checkbox" id="setting-transcript"><span class="acct-toggle-slider"></span></label></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /view-settings -->
 
 <div class="view" id="view-show">
   <div class="sp-content" id="sp-content"></div>
@@ -5458,6 +5603,73 @@ function _renderCategoryBiasContext(cat) {
 })();
 
 // ── VIEWS ──
+
+// Account view helpers
+window.switchAccountTab = function(tab, btn) {
+  document.querySelectorAll('.account-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.account-panel').forEach(function(p){ p.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  var panel = document.getElementById('acct-panel-' + tab);
+  if (panel) panel.classList.add('active');
+};
+
+window.saveNotifPref = function(key, val) {
+  try {
+    var prefs = JSON.parse(localStorage.getItem('pl-notif-prefs') || '{}');
+    prefs[key] = val;
+    localStorage.setItem('pl-notif-prefs', JSON.stringify(prefs));
+  } catch(e) {}
+};
+
+window.renderAccountView = function() {
+  var u; try { u = JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) { u = null; }
+  if (!u) return;
+  var name = u.name || u.email || '';
+  var email = u.email || '';
+  var plan = u.plan || 'free';
+  var ini = name ? name.trim().split(/\s+/).map(function(p){ return p[0]; }).slice(0,2).join('').toUpperCase() : '?';
+  var el;
+  el = document.getElementById('acct-av-circle'); if (el) el.textContent = ini;
+  el = document.getElementById('acct-display-name'); if (el) el.textContent = name || 'No name set';
+  el = document.getElementById('acct-display-email'); if (el) el.textContent = email;
+  el = document.getElementById('acct-field-name'); if (el) el.textContent = name || '—';
+  el = document.getElementById('acct-field-email'); if (el) el.textContent = email;
+  el = document.getElementById('acct-plan-badge');
+  if (el) { el.textContent = plan.charAt(0).toUpperCase() + plan.slice(1); }
+  var planNames = { free:'Free', starter:'Starter Lens', creator:'Starter Lens', operator:'Pro Lens', studio:'Operator Lens', trial:'Trial' };
+  var planPrices = { free:'Free forever', starter:'$4.69/month', creator:'$4.69/month', operator:'$12.73/month', studio:'$32.83/month', trial:'Trial period' };
+  var pr = document.getElementById('acct-plan-row');
+  if (pr) {
+    pr.innerHTML = '<div class="acct-plan-card active-plan">'
+      + '<div class="acct-plan-icon">&#11088;</div>'
+      + '<div style="flex:1"><div style="font-size:13px;font-weight:600">' + (planNames[plan]||plan) + '</div>'
+      + '<div style="font-size:12px;color:var(--text3);margin-top:2px">' + (planPrices[plan]||'') + '</div></div>'
+      + '<span class="acct-plan-active-badge">Active</span></div>'
+      + '<div style="display:flex;gap:8px;margin-top:12px">'
+      + '<a href="/pricing.html" class="acct-btn-primary">View all plans &rarr;</a>'
+      + '</div>';
+  }
+  // Load notif prefs
+  try {
+    var prefs = JSON.parse(localStorage.getItem('pl-notif-prefs') || '{}');
+    ['queue','digest','updates','billing'].forEach(function(k) {
+      var inp = document.getElementById('notif-' + k);
+      if (inp && prefs[k] !== undefined) inp.checked = prefs[k];
+    });
+  } catch(e) {}
+  // Dark mode setting toggle
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+    (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var dm = document.getElementById('setting-dark'); if (dm) dm.checked = dark;
+};
+
+window.confirmDeleteAccount = function() {
+  if (confirm('Are you sure? This will permanently delete your account and all data. This cannot be undone.')) {
+    localStorage.clear();
+    window.location.href = '/';
+  }
+};
+
 function showView(name) {
   // Sync auth class so home-loggedout CSS rule fires correctly
   var _u = plUser();
@@ -5493,7 +5705,9 @@ function showView(name) {
     analyze: '/analyze',
     library: '/library',
     show: '/show',
-    admin: '/admin'
+    admin: '/admin',
+    account: '/?view=account',
+    settings: '/?view=settings'
   };
   var newUrl = viewUrls[name] || '/' + name;
   if (window.location.pathname !== newUrl) {
@@ -5506,10 +5720,16 @@ function showView(name) {
     analyze: 'Analyze — Podlens',
     library: 'Your Library — Podlens',
     show: 'Show profile — Podlens',
-    admin: 'Admin — Podlens'
+    admin: 'Admin — Podlens',
+    account: 'Account — Podlens',
+    settings: 'Settings — Podlens'
   };
   document.title = titles[name] || 'Podlens';
   if (name === 'library' && typeof initLibraryView === 'function') { initLibraryView(); }
+  if (name === 'account' || name === 'settings') {
+    if (typeof renderAccountView === 'function') setTimeout(renderAccountView, 50);
+    if (typeof sidebarSetActive === 'function') sidebarSetActive(name);
+  }
   if (name === 'discover') { initDiscover(); }
   if (name === 'analyze') {
     // Populate recent analyses in left nav
