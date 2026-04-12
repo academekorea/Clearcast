@@ -226,44 +226,54 @@
       '.sb-soon{margin-left:auto;font-size:9px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.3);padding:1px 5px;border-radius:10px}',
       '.sb-muted{color:rgba(255,255,255,.3);font-style:italic}',
 
-      '@media(max-width:1100px){#app-sidebar{display:none}}',
+      '@media(max-width:1100px){#app-sidebar,#app-sidebar-lib{display:none}}',
     ].join('\n');
     document.head.appendChild(style);
   }
 
+  // ── Helper: get all sidebar containers ────────────────────────────────────────
+  function getAllSidebars() {
+    var result = [];
+    ['app-sidebar', 'app-sidebar-lib'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) result.push(el);
+    });
+    return result;
+  }
+
   // ── Toggle dropdown ──────────────────────────────────────────────────────────
   window._sbToggle = function (id) {
-    var el = document.getElementById('sb-drop-' + id);
-    var arr = document.getElementById('sb-arr-' + id);
-    if (!el) return;
-    var isOpen = el.classList.contains('open');
-    el.classList.toggle('open', !isOpen);
-    if (arr) arr.classList.toggle('open', !isOpen);
+    // Toggle in both primary (sb-) and secondary (sb2-) sidebars
+    ['sb-', 'sb2-'].forEach(function (prefix) {
+      var el = document.getElementById(prefix + 'drop-' + id);
+      var arr = document.getElementById(prefix + 'arr-' + id);
+      if (!el) return;
+      var isOpen = el.classList.contains('open');
+      el.classList.toggle('open', !isOpen);
+      if (arr) arr.classList.toggle('open', !isOpen);
+    });
   };
 
   // ── Set active item ──────────────────────────────────────────────────────────
   // Called by each page after render: window.sidebarSetActive('following')
   window.sidebarSetActive = function (id) {
-    var sidebar = document.getElementById('app-sidebar');
-    if (!sidebar) return;
-    sidebar.querySelectorAll('.sb-btn, .sb-sub-btn').forEach(function (b) {
-      b.classList.remove('active');
+    getAllSidebars().forEach(function (sidebar) {
+      sidebar.querySelectorAll('.sb-btn, .sb-sub-btn').forEach(function (b) {
+        b.classList.remove('active');
+      });
+      var target = sidebar.querySelector('[data-sb="' + id + '"]');
+      if (target) target.classList.add('active');
+      var libraryItems = ['following', 'liked', 'playlists', 'analyzed', 'downloads'];
+      if (libraryItems.indexOf(id) !== -1) {
+        var libBtn = sidebar.querySelector('[data-sb="library"]');
+        if (libBtn) libBtn.classList.add('active');
+      }
+      var homeItems = ['intelligence', 'queue'];
+      if (homeItems.indexOf(id) !== -1) {
+        var homeBtn = sidebar.querySelector('[data-sb="home-toggle"]');
+        if (homeBtn) homeBtn.classList.add('active');
+      }
     });
-    // Activate the matching item
-    var target = sidebar.querySelector('[data-sb="' + id + '"]');
-    if (target) target.classList.add('active');
-
-    // Keep parent button highlighted for sub-items
-    var libraryItems = ['following', 'liked', 'playlists', 'analyzed', 'downloads'];
-    if (libraryItems.indexOf(id) !== -1) {
-      var libBtn = sidebar.querySelector('[data-sb="library"]');
-      if (libBtn) libBtn.classList.add('active');
-    }
-    var homeItems = ['intelligence', 'queue'];
-    if (homeItems.indexOf(id) !== -1) {
-      var homeBtn = sidebar.querySelector('[data-sb="home-toggle"]');
-      if (homeBtn) homeBtn.classList.add('active');
-    }
   };
 
   // Called when navigating to account/settings view
@@ -274,30 +284,35 @@
   // ── Update counts (callable from outside) ────────────────────────────────────
   window.sidebarUpdateCounts = function () {
     var c = getCounts();
-    var sidebar = document.getElementById('app-sidebar');
-    if (!sidebar) return;
-    // Update count spans by finding the sb-count inside each sub-btn
     var map = { following: c.follows, analyzed: c.analyzed, liked: c.liked };
-    Object.keys(map).forEach(function (id) {
-      var btn = sidebar.querySelector('[data-sb="' + id + '"]');
-      if (!btn) return;
-      var span = btn.querySelector('.sb-count');
-      if (span) span.textContent = map[id] || '';
+    getAllSidebars().forEach(function (sidebar) {
+      Object.keys(map).forEach(function (id) {
+        var btn = sidebar.querySelector('[data-sb="' + id + '"]');
+        if (!btn) return;
+        var span = btn.querySelector('.sb-count');
+        if (span) span.textContent = map[id] || '';
+      });
+      var qBtn = sidebar.querySelector('[data-sb="queue"]');
+      if (qBtn) {
+        var badge = qBtn.querySelector('.sb-badge');
+        if (badge) badge.textContent = c.queued || '';
+      }
     });
-    // Queue badge
-    var qBtn = sidebar.querySelector('[data-sb="queue"]');
-    if (qBtn) {
-      var badge = qBtn.querySelector('.sb-badge');
-      if (badge) badge.textContent = c.queued || '';
-    }
   };
 
   // ── Render ───────────────────────────────────────────────────────────────────
   function render() {
-    var container = document.getElementById('app-sidebar');
-    if (!container) return;
     injectStyles();
-    container.innerHTML = buildSidebar();
+    var html = buildSidebar();
+    // Primary sidebar gets IDs as-is
+    var primary = document.getElementById('app-sidebar');
+    if (primary) primary.innerHTML = html;
+    // Secondary sidebars get IDs prefixed to avoid duplicates
+    ['app-sidebar-lib'].forEach(function (containerId) {
+      var el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = html.replace(/id="sb-/g, 'id="sb2-');
+    });
   }
 
   // Run on DOM ready

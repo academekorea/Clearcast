@@ -3712,13 +3712,16 @@ body.light-mode,[data-theme="light"]{
 <!-- SHOW VIEW -->
 <!-- LIBRARY VIEW (inline — same SPA as discover/analyze) -->
 <div class="view" id="view-library" style="display:none">
-  <div class="lib-view-inner">
-    <div class="lib-panel active" id="panel-library"><div id="library-overview-content"></div></div>
-    <div class="lib-panel" id="panel-following"><div id="following-content"></div></div>
-    <div class="lib-panel" id="panel-liked"><div id="liked-content"></div></div>
-    <div class="lib-panel" id="panel-playlists"><div id="playlists-content"></div></div>
-    <div class="lib-panel" id="panel-analyzed"><div id="usage-meter-wrap"></div><div id="analyzed-content"></div></div>
-    <div class="lib-panel" id="panel-downloads"><div id="downloads-content"></div></div>
+  <div class="dash-3col" style="grid-template-columns:220px 1fr">
+    <div id="app-sidebar-lib"></div>
+    <div class="lib-view-inner">
+      <div class="lib-panel active" id="panel-library"><div id="library-overview-content"></div></div>
+      <div class="lib-panel" id="panel-following"><div id="following-content"></div></div>
+      <div class="lib-panel" id="panel-liked"><div id="liked-content"></div></div>
+      <div class="lib-panel" id="panel-playlists"><div id="playlists-content"></div></div>
+      <div class="lib-panel" id="panel-analyzed"><div id="usage-meter-wrap"></div><div id="analyzed-content"></div></div>
+      <div class="lib-panel" id="panel-downloads"><div id="downloads-content"></div></div>
+    </div>
   </div>
 </div>
 <script src="/library-view.js" defer></script>
