@@ -1570,8 +1570,8 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .btn-kakao{background:#FEE500;color:#1a1a1a;border:none;border-radius:4px;padding:10px 20px;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer}
 
 /* ── DISCOVER PAGE — 3-COLUMN LAYOUT ── */
-#view-discover.on{display:block}.disc-wrap{display:grid;grid-template-columns:210px 1fr 240px;min-height:calc(100vh - 60px)}
-@media(max-width:1200px){.disc-wrap{grid-template-columns:210px 1fr}}
+#view-discover.on{display:block}.disc-wrap{display:grid;grid-template-columns:220px 1fr 240px;min-height:calc(100vh - 60px)}
+@media(max-width:1200px){.disc-wrap{grid-template-columns:220px 1fr}}
 @media(max-width:900px){.disc-wrap{grid-template-columns:1fr}}
 .disc-nav{background:#0a1a20;display:flex;flex-direction:column;overflow-y:auto;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);flex-shrink:0}
 .disc-nav *{color:#fff !important}
@@ -2803,6 +2803,16 @@ body.light-mode,[data-theme="light"]{
 </div>
 
 <!-- VIEWS -->
+
+<!--
+  VIEW SIDEBAR ARCHITECTURE (do not unify — intentional distinction):
+  - Home/Library: shared sidebar via sidebar.js (220px nav, consistent across both)
+  - Discover: own contextual sidebar (220px, category filters for show browsing)
+  - Analyze: own contextual sidebar (220px, recent analyses for quick re-access)
+  - Account/Settings: no sidebar (centered form layout, max-width 680px)
+  - Show/Admin: no sidebar (full-width content)
+  All left columns use 220px for visual consistency.
+-->
 
 <!-- HOME VIEW -->
 <div class="view" id="view-home" style="display:none">
