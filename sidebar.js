@@ -6,10 +6,7 @@
 (function () {
   'use strict';
 
-  // ── Detect page ──────────────────────────────────────────────────────────────
-  var path = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
-  var isLibrary = path === '/library';
-  var isDashboard = !isLibrary; // / or /dashboard or /dashboard/*
+  // ── All views are in one SPA (index.html) — no page detection needed ──
 
   // ── User data helpers ────────────────────────────────────────────────────────
   function getUser() {
@@ -66,52 +63,20 @@
     var plan = getUserPlan();
     var showBulk = plan === 'operator' || plan === 'studio';
 
-    // ── Routing helpers based on page ──
-    // Dashboard: Home sub-items call JS functions, library items link away
-    // Library: Home sub-items link to dashboard, library items call JS functions
-
-    function homeToggleAttrs() {
-      return 'id="sb-home-toggle" data-sb="home-toggle"';
-    }
+    // ── Routing — all views are in one SPA ──
 
     function homeSubItem(id, icon, label, badge) {
       var badgeHtml = badge ? '<span class="sb-badge">' + badge + '</span>' : '';
-      if (isDashboard) {
-        return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="showDashSection(\'' + id + '\')">' + icon + label + badgeHtml + '</button>';
-      } else {
-        return '<a href="/?section=' + id + '" class="sb-sub-btn" data-sb="' + id + '">' + icon + label + badgeHtml + '</a>';
-      }
+      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="if(typeof showView===\'function\')showView(\'home\');setTimeout(function(){if(typeof showDashSection===\'function\')showDashSection(\'' + id + '\')},0)">' + icon + label + badgeHtml + '</button>';
     }
 
     function topNavItem(id, icon, label) {
-      if (isDashboard) {
-        return '<button class="sb-btn" data-sb="' + id + '" onclick="showView(\'' + id + '\')">' + icon + label + '</button>';
-      } else {
-        var href = id === 'discover' ? '/discover' : '/';
-        return '<a href="' + href + '" class="sb-btn" data-sb="' + id + '">' + icon + label + '</a>';
-      }
-    }
-
-    function libLandingAttrs() {
-      // Library is now an inline view in index.html — always use showView/switchTab
-      if (isDashboard) {
-        return 'class="sb-btn" data-sb="library" onclick="showView(\'library\')"';
-      } else {
-        return 'class="sb-btn" data-sb="library" onclick="switchTab(\'following\');window.sidebarSetActive(\'following\')"';
-      }
+      return '<button class="sb-btn" data-sb="' + id + '" onclick="if(typeof showView===\'function\')showView(\'' + id + '\')">' + icon + label + '</button>';
     }
 
     function libSubItem(id, icon, label, suffix) {
       var suffixHtml = suffix || '';
-      if (isDashboard) {
-        return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="showView(\'library\');setTimeout(function(){if(typeof switchTab===\'function\')switchTab(\'' + id + '\')},0)">' + icon + label + suffixHtml + '</button>';
-      } else {
-        return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="switchTab(\'' + id + '\');window.sidebarSetActive(\'' + id + '\')">' + icon + label + suffixHtml + '</button>';
-      }
-    }
-
-    function playlistsToggleAttrs() {
-      return 'data-sb="playlists" id="sb-playlists-toggle"';
+      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="if(typeof showView===\'function\')showView(\'library\');setTimeout(function(){if(typeof switchTab===\'function\')switchTab(\'' + id + '\')},0)">' + icon + label + suffixHtml + '</button>';
     }
 
     // ── Assemble HTML ──
@@ -123,8 +88,8 @@
     // Menu section
     html += '<div class="sb-lbl">Menu</div>';
 
-    // Home (toggle dropdown)
-    html += '<button class="sb-btn" ' + homeToggleAttrs() + ' onclick="window._sbToggle(\'home\')">' + icons.home + 'Home<span class="sb-arrow open" id="sb-arr-home">\u203A</span></button>';
+    // Home (toggle dropdown + navigate to dashboard)
+    html += '<button class="sb-btn" id="sb-home-toggle" data-sb="home-toggle" onclick="if(typeof showView===\'function\')showView(\'home\');window._sbToggle(\'home\')">' + icons.home + 'Home<span class="sb-arrow open" id="sb-arr-home">\u203A</span></button>';
     html += '<div class="sb-sub open" id="sb-drop-home">';
     html += homeSubItem('intelligence', icons.intel, 'My intelligence', '');
     html += homeSubItem('queue', icons.queue, 'Smart queue', c.queued || '');
@@ -141,22 +106,18 @@
     html += '<div class="sb-lbl">My Library</div>';
 
     // My Library (landing)
-    html += '<a ' + libLandingAttrs() + '>' + icons.library + 'My Library</a>';
+    html += '<button class="sb-btn" data-sb="library" onclick="if(typeof showView===\'function\')showView(\'library\')">' + icons.library + 'My Library</button>';
 
     // Library sub-items
     html += libSubItem('following', icons.following, 'Following', '<span class="sb-count">' + (c.follows || '') + '</span>');
     html += libSubItem('liked', icons.liked, 'Liked episodes', '<span class="sb-count">' + (c.liked || '') + '</span>');
 
     // Playlists (toggle dropdown)
-    if (isLibrary) {
-      html += '<button class="sb-sub-btn" ' + playlistsToggleAttrs() + ' onclick="window._sbToggle(\'playlists\');switchTab(\'playlists\');window.sidebarSetActive(\'playlists\')">' + icons.playlists + 'Playlists<span class="sb-arrow" id="sb-arr-playlists">\u203A</span></button>';
-      html += '<div class="sb-sub" id="sb-drop-playlists">';
-      html += '<div id="sb-playlists-list" style="display:none"></div>';
-      html += '<button class="sb-sub-btn sb-muted" onclick="switchTab(\'playlists\');window.sidebarSetActive(\'playlists\')">' + icons.newPlaylist + 'New playlist</button>';
-      html += '</div>';
-    } else {
-      html += '<a href="/library#playlists" class="sb-sub-btn" data-sb="playlists">' + icons.playlists + 'Playlists</a>';
-    }
+    html += '<button class="sb-sub-btn" data-sb="playlists" id="sb-playlists-toggle" onclick="window._sbToggle(\'playlists\');if(typeof showView===\'function\')showView(\'library\');setTimeout(function(){if(typeof switchTab===\'function\')switchTab(\'playlists\')},0)">' + icons.playlists + 'Playlists<span class="sb-arrow" id="sb-arr-playlists">\u203A</span></button>';
+    html += '<div class="sb-sub" id="sb-drop-playlists">';
+    html += '<div id="sb-playlists-list" style="display:none"></div>';
+    html += '<button class="sb-sub-btn sb-muted" onclick="if(typeof showView===\'function\')showView(\'library\');setTimeout(function(){if(typeof switchTab===\'function\')switchTab(\'playlists\')},0)">' + icons.newPlaylist + 'New playlist</button>';
+    html += '</div>';
 
     html += libSubItem('analyzed', icons.analyzed, 'Analyzed', '<span class="sb-count">' + (c.analyzed || '') + '</span>');
     html += libSubItem('downloads', icons.downloads, 'Downloads', '<span class="sb-soon">Soon</span>');
@@ -166,14 +127,9 @@
     // ── Bottom section (pinned) ──
     html += '<div class="sb-bottom">';
 
-    // Account
-    if (isDashboard) {
-      html += '<button class="sb-btn sb-bot" data-sb="account" onclick="showView(\'account\')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account</button>';
-      html += '<button class="sb-btn sb-bot" data-sb="settings" onclick="showView(\'settings\')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</button>';
-    } else {
-      html += '<a class="sb-btn sb-bot" data-sb="account" href="/account"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account</a>';
-      html += '<a class="sb-btn sb-bot" data-sb="settings" href="/settings"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>';
-    }
+    // Account & Settings
+    html += '<button class="sb-btn sb-bot" data-sb="account" onclick="if(typeof showView===\'function\')showView(\'account\')">' + icons.account + 'Account</button>';
+    html += '<button class="sb-btn sb-bot" data-sb="settings" onclick="if(typeof showView===\'function\')showView(\'settings\')">' + icons.settings + 'Settings</button>';
 
     // Divider then Resources
     html += '<div class="sb-div"></div>';
@@ -181,7 +137,7 @@
     html += '<a class="sb-btn sb-bot" href="/faq.html"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>FAQ</a>';
     html += '<a class="sb-btn sb-bot" href="/contact.html"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Contact</a>';
 
-    if (showBulk && isDashboard) {
+    if (showBulk) {
       html += '<div class="sb-div"></div>';
       html += '<a class="sb-btn sb-bot" href="/bulk-scan.html"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Bulk Scanner</a>';
     }
