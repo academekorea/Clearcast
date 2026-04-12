@@ -76,7 +76,7 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .lib-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
 
 /* ── TABS ── */
-.lib-tabs{display:flex;gap:0;border-bottom:1px solid var(--border2);margin-bottom:24px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.lib-tabs{display:none}
 .lib-tabs::-webkit-scrollbar{display:none}
 .lib-tab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;font-family:var(--ff);border-bottom:2px solid transparent;white-space:nowrap;transition:color .12s,border-color .12s;margin-bottom:-1px;position:relative;top:1px}
 .lib-tab:hover{color:var(--text)}
@@ -385,27 +385,6 @@ footer a{color:var(--text3)}footer a:hover{color:var(--text)}
   <!-- Main content -->
   <div class="page-inner">
   <div id="error-banner" class="error-banner">Couldn't load your library. Try refreshing.</div>
-  <div class="page-header">
-    <div class="page-title">Your Library</div>
-    <div class="page-sub">Your personal analysis archive</div>
-  </div>
-
-  <!-- Search -->
-  <div class="lib-search">
-    <span class="lib-search-icon">🔍</span>
-    <input type="text" class="lib-search-input" id="lib-search" placeholder="Search your library…" oninput="filterLib(this.value)">
-  </div>
-
-  <!-- Tabs -->
-  <div class="lib-tabs" role="tablist">
-    <button class="lib-tab active" id="tab-following" role="tab" aria-selected="true" onclick="switchTab('following')">Following <span class="tab-count" id="tc-following">0</span></button>
-    <button class="lib-tab" id="tab-liked" role="tab" aria-selected="false" onclick="switchTab('liked')">Liked <span class="tab-count" id="tc-liked">0</span></button>
-    <button class="lib-tab" id="tab-playlists" role="tab" aria-selected="false" onclick="switchTab('playlists')">Playlists <span class="tab-count" id="tc-playlists">0</span></button>
-    <button class="lib-tab" id="tab-analyzed" role="tab" aria-selected="false" onclick="switchTab('analyzed')">Analyzed <span class="tab-count" id="tc-analyzed">0</span></button>
-    <button class="lib-tab" id="tab-myshows" role="tab" aria-selected="false" onclick="switchTab('myshows')">Your Shows <span class="tab-count" id="tc-myshows"></span></button>
-    <button class="lib-tab" id="tab-saved" role="tab" aria-selected="false" onclick="switchTab('saved')">Saved <span class="tab-count" id="tc-saved">0</span></button>
-    <button class="lib-tab" id="tab-downloads" role="tab" aria-selected="false" onclick="switchTab('downloads')">Downloads <span class="tab-count" id="tc-downloads">0</span></button>
-  </div>
 
   <!-- Following Panel -->
   <div class="lib-panel active" id="panel-following">
