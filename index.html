@@ -8704,11 +8704,11 @@ function handleUrlRouting() {
 
   // Handle pathname-based routing
   if (path === '/dashboard' || path === '/dashboard/') {
-    showHome(); return true;
+    showView('home'); return true;
   }
   if (path.startsWith('/dashboard/')) {
     var sec = path.replace('/dashboard/', '');
-    showHome();
+    showView('home');
     setTimeout(function(){ showDashSection(sec); }, 50);
     return true;
   }
@@ -8735,6 +8735,11 @@ function handleUrlRouting() {
   if (path === '/settings') {
     history.replaceState({ view: 'settings' }, '', '/settings');
     showView('settings');
+    return true;
+  }
+
+  if (path === '/admin') {
+    showView('admin');
     return true;
   }
 
@@ -9595,12 +9600,7 @@ var _ui=document.getElementById('url-input'); if(_ui)_ui.addEventListener('keydo
 var _hui=document.getElementById('hero-url-input'); if(_hui)_hui.addEventListener('keydown',function(e){if(e.key==='Enter')handleHeroAnalyze();});
 var _dui=document.getElementById('dash-url-input'); if(_dui)_dui.addEventListener('keydown',function(e){if(e.key==='Enter')handleDashAnalyze();});
 
-// ── POPSTATE ──
-window.addEventListener('popstate',function(e){
-  var path=window.location.pathname;
-  if(path.match(/^\/show\//))handleUrlRouting();
-  else showHome();
-});
+// popstate handler moved to single handler at bottom (URL ROUTING section)
 
 // ── STRIPE CHECKOUT ──
 // ⚠️  ACTION REQUIRED: Set STRIPE_STARTER_MONTHLY_ID etc. in Netlify env vars.
