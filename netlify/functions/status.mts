@@ -383,6 +383,8 @@ export default async (req: Request) => {
         dim_framing_patterns: dim.framingPatterns?.score ?? null,
         dim_host_credibility: dim.hostCredibility?.score ?? null,
         dim_omission_risk:    dim.omissionRisk?.score    ?? null,
+        host_trust_score:     dim.hostCredibility?.score ?? null,
+        duration_ms:          audioDuration ? Math.round(audioDuration * 1000) : null,
         analyzed_at:          new Date().toISOString(),
         user_id:              job.userId || null,
       }, { onConflict: "canonical_key" });
@@ -392,7 +394,7 @@ export default async (req: Request) => {
         await supabase.from("events").insert({
           user_id:    job.userId,
           event_type: "analysis_complete",
-          metadata: {
+          properties: {
             jobId,
             canonicalKey: job.canonicalKey,
             showName: result.showName,

@@ -12553,9 +12553,9 @@ function _renderAdminTab(tab, d) {
     html += '<table class="adm-table"><thead><tr><th>Type</th><th>User</th><th>Properties</th><th>When</th></tr></thead><tbody>';
     (d.events || []).forEach(function(e) {
       var props = '';
-      try { var p = JSON.parse(e.properties||'{}'); props = Object.entries(p).slice(0,3).map(function(kv){ return kv[0]+':'+kv[1]; }).join(', '); } catch {}
+      try { var p = typeof e.properties === 'string' ? JSON.parse(e.properties||'{}') : (e.properties||{}); props = Object.entries(p).slice(0,3).map(function(kv){ return kv[0]+':'+kv[1]; }).join(', '); } catch {}
       html += '<tr>'
-        + '<td><code style="font-size:11px">' + _esc(e.type||'') + '</code></td>'
+        + '<td><code style="font-size:11px">' + _esc(e.event_type||'') + '</code></td>'
         + '<td style="font-size:11px;color:var(--text3)">' + (e.user_id||'anon').slice(0,8) + '</td>'
         + '<td style="font-size:11px;color:var(--text3);max-width:200px;overflow:hidden;text-overflow:ellipsis">' + _esc(props) + '</td>'
         + '<td style="font-size:11px">' + (e.created_at||'').slice(0,16).replace('T',' ') + '</td>'

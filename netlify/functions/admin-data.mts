@@ -97,8 +97,8 @@ async function getOverview() {
   const [users, analyses, subs, events] = await Promise.all([
     sbGet("users?select=id,plan,created_at,last_seen_at&order=created_at.desc"),
     sbGet("analyses?select=id,created_at&order=created_at.desc&limit=1000"),
-    sbGet("subscriptions?select=id,status,plan,amount&eq.status=active"),
-    sbGet("events?select=created_at,type&order=created_at.desc&limit=500"),
+    sbGet("subscriptions?select=id,status,plan,amount&status=eq.active"),
+    sbGet("events?select=created_at,event_type&order=created_at.desc&limit=500"),
   ]);
 
   const now = Date.now();
@@ -146,10 +146,10 @@ async function getUsers(url: URL) {
 
   let qs = `users?select=id,email,name,plan,created_at,last_seen_at,is_super_admin,stripe_customer_id&order=created_at.desc&limit=50&offset=${(page-1)*50}`;
   if (search) qs += `&or=(email.ilike.*${search}*,name.ilike.*${search}*)`;
-  if (plan) qs += `&eq.plan=${plan}`;
+  if (plan) qs += `&plan=eq.${plan}`;
 
   const users = await sbGet(qs);
-  const countRows = await sbGet(`users?select=id${plan ? `&eq.plan=${plan}` : ""}${search ? `&or=(email.ilike.*${search}*,name.ilike.*${search}*)` : ""}`);
+  const countRows = await sbGet(`users?select=id${plan ? `&plan=eq.${plan}` : ""}${search ? `&or=(email.ilike.*${search}*,name.ilike.*${search}*)` : ""}`);
 
   return json({ users, total: countRows.length, page, perPage: 50 });
 }
@@ -230,10 +230,10 @@ async function getShows() {
 async function getEvents(url: URL) {
   const page = parseInt(url.searchParams.get("page") || "1");
   const type = url.searchParams.get("type") || "";
-  let qs = `events?select=id,type,user_id,properties,created_at&order=created_at.desc&limit=50&offset=${(page-1)*50}`;
-  if (type) qs += `&eq.type=${type}`;
+  let qs = `events?select=id,event_type,user_id,properties,created_at&order=created_at.desc&limit=50&offset=${(page-1)*50}`;
+  if (type) qs += `&event_type=eq.${type}`;
   const events = await sbGet(qs);
-  const total = await sbGet(`events?select=id${type ? `&eq.type=${type}` : ""}`);
+  const total = await sbGet(`events?select=id${type ? `&event_type=eq.${type}` : ""}`);
   return json({ events, total: total.length, page });
 }
 
