@@ -5716,6 +5716,8 @@ window.confirmDeleteAccount = function() {
 };
 
 function showView(name) {
+  // Home has special logic (loggedin/loggedout state) — always delegate
+  if (name === 'home') { if (typeof showHome === 'function') showHome(); return; }
   // Sync auth class so home-loggedout CSS rule fires correctly
   var _u = plUser();
   document.body.classList.toggle('authenticated', !!(_u && _u.id));
