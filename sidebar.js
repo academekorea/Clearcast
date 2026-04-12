@@ -154,7 +154,7 @@
     style.id = 'sb-styles';
     style.textContent = [
       '#app-sidebar,#app-sidebar-lib{background:#0a1a20;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);min-width:220px;overflow:hidden}',
-      '.sb-top{flex:1;overflow-y:auto;padding:8px 0}',
+      '.sb-top{flex:1;overflow-y:auto;padding:0}',
       '.sb-bottom{flex-shrink:0;padding:4px 0 8px;border-top:0.5px solid rgba(255,255,255,.08)}',
       '.sb-bot{font-size:11px!important;padding:6px 20px!important;color:rgba(255,255,255,.35)!important}',
       '.sb-bot:hover{color:rgba(255,255,255,.65)!important}',
