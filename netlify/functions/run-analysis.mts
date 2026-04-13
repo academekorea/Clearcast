@@ -195,9 +195,9 @@ export default async (req: Request) => {
     try {
       const { getSupabaseAdmin } = await import("./lib/supabase.js");
       const sb = getSupabaseAdmin();
-      if (sb && job.userId) {
-        await sb.from("analyses").insert({
-          user_id: job.userId,
+      if (sb) {
+        const analysisRow = {
+          user_id: job.userId || null,
           job_id: transcriptId,
           url: job.url,
           canonical_key: job.canonicalKey || null,
@@ -214,7 +214,17 @@ export default async (req: Request) => {
           dim_host_credibility: result.dimensions?.hostCredibility?.score ?? null,
           dim_omission_risk: result.dimensions?.omissionRisk?.score ?? null,
           created_at: new Date().toISOString(),
-        });
+        };
+        let { error: insertErr } = await sb.from("analyses").insert(analysisRow);
+        // FK violation (user_id not in users table) — retry without user_id
+        if (insertErr?.code === "23503") {
+          console.warn("[run-analysis] FK violation on user_id, retrying without user_id");
+          const { error: retryErr } = await sb.from("analyses").insert({ ...analysisRow, user_id: null });
+          insertErr = retryErr;
+        }
+        if (insertErr) {
+          console.error("[run-analysis] Supabase analyses insert error:", insertErr.message, insertErr.details, insertErr.code);
+        }
 
         // Also write to community cache (canon key) for instant future lookups
         if (job.canonicalKey) {

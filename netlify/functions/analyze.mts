@@ -385,10 +385,11 @@ export default async (req: Request, context: Context) => {
         if (sbUrl && sbKey) {
           const { createClient } = await import("@supabase/supabase-js");
           const sb = createClient(sbUrl, sbKey, { auth: { persistSession: false } });
-          await sb.from("analyses").update({
+          const { error } = await sb.from("analyses").update({
             analyze_count: newCount,
-            last_analyzed_at: new Date().toISOString(),
+            analyzed_at: new Date().toISOString(),
           }).eq("canonical_key", canonical);
+          if (error) console.error("[analyze] Supabase analyze_count update error:", error.message, error.code);
         }
       } catch {}
       return new Response(JSON.stringify({ jobId: cached.jobId, fromCache: true, communityCount: newCount }), {

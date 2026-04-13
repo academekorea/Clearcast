@@ -364,7 +364,7 @@ export default async (req: Request) => {
       const dim = result.dimensions || {};
 
       // Upsert by canonical key — community cache deduplicates repeated analyses
-      await supabase.from("analyses").upsert({
+      const analysisRow = {
         job_id:               jobId,
         canonical_key:        job.canonicalKey || jobId,
         url:                  job.url || "",
@@ -387,11 +387,25 @@ export default async (req: Request) => {
         duration_ms:          audioDuration ? Math.round(audioDuration * 1000) : null,
         analyzed_at:          new Date().toISOString(),
         user_id:              job.userId || null,
-      }, { onConflict: "canonical_key" });
+      };
+      let { error: upsertErr } = await supabase.from("analyses").upsert(analysisRow, { onConflict: "canonical_key" });
+
+      // FK violation (user_id not in users table) — retry without user_id
+      if (upsertErr?.code === "23503") {
+        console.warn("[status] FK violation on user_id, retrying without user_id");
+        const { error: retryErr } = await supabase.from("analyses").upsert(
+          { ...analysisRow, user_id: null },
+          { onConflict: "canonical_key" }
+        );
+        upsertErr = retryErr;
+      }
+      if (upsertErr) {
+        console.error("[status] Supabase analyses upsert error:", upsertErr.message, upsertErr.details, upsertErr.code);
+      }
 
       // Log the analysis event for per-user data flywheel
       if (job.userId) {
-        await supabase.from("events").insert({
+        const { error: eventErr } = await supabase.from("events").insert({
           user_id:    job.userId,
           event_type: "analysis_complete",
           properties: {
@@ -403,6 +417,7 @@ export default async (req: Request) => {
           },
           created_at: new Date().toISOString(),
         });
+        if (eventErr) console.error("[status] Supabase events insert error:", eventErr.message, eventErr.code);
       }
     } catch (sbErr) {
       // Supabase write failed — log but never break the response

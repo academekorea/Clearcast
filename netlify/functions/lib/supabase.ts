@@ -37,7 +37,11 @@ export async function sbInsert(table: string, data: Record<string, unknown>): Pr
   try {
     const sb = getSupabaseAdmin()
     if (!sb) { await queueWrite(table, data); return }
-    await sb.from(table).insert(data)
+    const { error } = await sb.from(table).insert(data)
+    if (error) {
+      console.error(`[supabase] insert ${table} error:`, error.message, error.code)
+      await queueWrite(table, data)
+    }
   } catch {
     await queueWrite(table, data)
   }
@@ -47,9 +51,11 @@ export async function sbUpsert(table: string, data: Record<string, unknown>, onC
   try {
     const sb = getSupabaseAdmin()
     if (!sb) { await queueWrite(table, data); return }
-    const q = sb.from(table).upsert(data)
-    if (onConflict) (q as any).onConflict(onConflict)
-    await q
+    const { error } = await sb.from(table).upsert(data, onConflict ? { onConflict } : undefined)
+    if (error) {
+      console.error(`[supabase] upsert ${table} error:`, error.message, error.code)
+      await queueWrite(table, data)
+    }
   } catch {
     await queueWrite(table, data)
   }
@@ -61,7 +67,8 @@ export async function sbUpdate(table: string, match: Record<string, unknown>, da
     if (!sb) return
     let q = sb.from(table).update(data)
     for (const [k, v] of Object.entries(match)) q = (q as any).eq(k, v)
-    await q
+    const { error } = await q
+    if (error) console.error(`[supabase] update ${table} error:`, error.message, error.code)
   } catch { /* non-critical */ }
 }
 
