@@ -153,6 +153,10 @@ async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Pr
       dim_host_credibility: dim.hostCredibility?.score ?? null,
       dim_omission_risk:    dim.omissionRisk?.score    ?? null,
       host_trust_score:     dim.hostCredibility?.score ?? null,
+      // Bias percentage breakdown (for share cards + CSV export)
+      bias_left_pct:        result.leftPct ?? (result.biasScore != null ? Math.round(Math.max(0, -(result.biasScore)) * 0.5 + 20) : null),
+      bias_center_pct:      result.centerPct ?? (result.biasScore != null ? Math.max(5, 100 - Math.round(Math.max(0, -(result.biasScore)) * 0.5 + 20) - Math.round(Math.max(0, result.biasScore) * 0.5 + 20)) : null),
+      bias_right_pct:       result.rightPct ?? (result.biasScore != null ? Math.round(Math.max(0, result.biasScore) * 0.5 + 20) : null),
       analyzed_at:          new Date().toISOString(),
       user_id:              job.userId || null,
     };

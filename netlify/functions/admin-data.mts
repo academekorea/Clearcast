@@ -157,7 +157,7 @@ async function getUsers(url: URL) {
 async function getAnalyses(url: URL) {
   const page = parseInt(url.searchParams.get("page") || "1");
   const rows = await sbGet(
-    `analyses?select=id,episode_url,show_name,episode_title,user_id,created_at,status,duration_ms&order=created_at.desc&limit=50&offset=${(page-1)*50}`
+    `analyses?select=id,url,show_name,episode_title,user_id,created_at,bias_label,bias_score&order=created_at.desc&limit=50&offset=${(page-1)*50}`
   );
   const total = await sbGet("analyses?select=id");
   return json({ analyses: rows, total: total.length, page, perPage: 50 });

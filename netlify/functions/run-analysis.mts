@@ -213,6 +213,9 @@ export default async (req: Request) => {
           dim_framing_patterns: result.dimensions?.framingPatterns?.score ?? null,
           dim_host_credibility: result.dimensions?.hostCredibility?.score ?? null,
           dim_omission_risk: result.dimensions?.omissionRisk?.score ?? null,
+          bias_left_pct: result.biasScore != null ? Math.round(Math.max(0, -(result.biasScore)) * 0.5 + 20) : null,
+          bias_center_pct: result.biasScore != null ? Math.max(5, 100 - Math.round(Math.max(0, -(result.biasScore)) * 0.5 + 20) - Math.round(Math.max(0, result.biasScore) * 0.5 + 20)) : null,
+          bias_right_pct: result.biasScore != null ? Math.round(Math.max(0, result.biasScore) * 0.5 + 20) : null,
           created_at: new Date().toISOString(),
         };
         let { error: insertErr } = await sb.from("analyses").insert(analysisRow);

@@ -28,7 +28,7 @@ export default async (req: Request) => {
 
       if (data) {
         // Increment share_count
-        sb.from('analyses').update({ share_count: (data.share_count || 0) + 1 }).eq('share_id', shareId).then(() => {});
+        sb.from('analyses').update({ share_count: (data.share_count || 0) + 1 }).eq('share_id', shareId).then(({ error }) => { if (error) console.error('[share] update error:', error.message); });
         trackEvent(null, 'share_viewed', { share_id: shareId, show_name: data.show_name });
 
         return new Response(JSON.stringify({
