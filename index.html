@@ -4032,19 +4032,13 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 </div>
 
 <div class="view" id="view-pricing" style="display:none">
-<!-- Founding banner (shown dynamically) -->
-<div class="founding-banner" id="pricing-founding-banner" style="display:none;position:relative">
-  <strong>🎉 Founding Member Pricing</strong> — Lock in 33% off forever.
-  <button onclick="document.getElementById('pricing-founding-banner').style.display='none';try{localStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:inherit;opacity:.6;padding:4px 6px" aria-label="Dismiss">&times;</button>
-</div>
-
 <div class="hero">
   <h1>Simple, transparent pricing</h1>
   <p>Start free. Each tier unlocks a new level of understanding.</p>
   <div class="billing-toggle">
-    <span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span>
-    <span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span>
-    <span class="bt-save" id="annual-save-badge" style="display:none">Save 33%</span>
+    <span class="bt-opt on" id="pg-bt-monthly" onclick="setBilling('monthly')">Monthly</span>
+    <span class="bt-opt" id="pg-bt-annual" onclick="setBilling('annual')">Annual</span>
+    <span class="bt-save" id="pg-annual-save-badge" style="display:none">Save 33%</span>
   </div>
 </div>
 
@@ -8982,24 +8976,7 @@ var _prices={
   operator: {monthly:'$12.73',annual:'$101.84', normalMonthly:'$19', normalAnnual:'$152'},
   studio:   {monthly:'$32.83',annual:'$262.64', normalMonthly:'$49', normalAnnual:'$392'},
 };
-function setBilling(mode) {
-  _billing=mode;
-  var isAnn=mode==='annual';
-  document.getElementById('billing-annual-toggle').checked=isAnn;
-  document.getElementById('bt-monthly').classList.toggle('on',!isAnn);
-  document.getElementById('bt-annual').classList.toggle('on',isAnn);
-  ['creator','operator','studio'].forEach(function(t){
-    var pe=document.getElementById('tp-'+t);
-    var pp=document.getElementById('tpp-'+t);
-    var p=_prices[t];
-    if (pe) {
-      var price=isAnn?p.annual:p.monthly;
-      var normal=isAnn?p.normalAnnual:p.normalMonthly;
-      pe.innerHTML='<span style="font-size:11px;font-weight:400;text-decoration:line-through;color:var(--text3)">'+normal+'</span> '+price;
-    }
-    if (pp) pp.textContent=(isAnn?'per year':'per month')+' \u00b7 founding price';
-  });
-}
+// setBilling is defined once near plRenderPrices — handles both pricing page + modal
 
 // ── RENDER TRANSCRIPT HIGHLIGHTS ──
 function renderTranscriptHighlights(data) {
@@ -12541,13 +12518,35 @@ var PL_PRICE_IDS = { creator_monthly:'', creator_annual:'', operator_monthly:'',
 
 function setBilling(billing) {
   _plBilling = billing;
+  // Modal toggle
   var mBtn = document.getElementById('bt-monthly');
   var aBtn = document.getElementById('bt-annual');
-  var badge = document.getElementById('annual-save-badge');
   if (mBtn) mBtn.classList.toggle('on', billing === 'monthly');
   if (aBtn) aBtn.classList.toggle('on', billing === 'annual');
-  if (badge) badge.style.display = billing === 'annual' ? '' : 'none';
+  // Pricing page toggle
+  var pgM = document.getElementById('pg-bt-monthly');
+  var pgA = document.getElementById('pg-bt-annual');
+  var pgBadge = document.getElementById('pg-annual-save-badge');
+  if (pgM) pgM.classList.toggle('on', billing === 'monthly');
+  if (pgA) pgA.classList.toggle('on', billing === 'annual');
+  if (pgBadge) pgBadge.style.display = billing === 'annual' ? '' : 'none';
+  // Hidden checkbox (modal)
+  var chk = document.getElementById('billing-annual-toggle');
+  if (chk) chk.checked = billing === 'annual';
   plRenderPrices();
+  // Also update modal tier cards
+  var isAnn = billing === 'annual';
+  ['creator','operator','studio'].forEach(function(t){
+    var pe = document.getElementById('tp-'+t);
+    var pp = document.getElementById('tpp-'+t);
+    var p = _prices && _prices[t];
+    if (pe && p) {
+      var price = isAnn ? p.annual : p.monthly;
+      var normal = isAnn ? p.normalAnnual : p.normalMonthly;
+      pe.innerHTML = '<span style="font-size:11px;font-weight:400;text-decoration:line-through;color:var(--text3)">' + normal + '</span> ' + price;
+    }
+    if (pp) pp.textContent = (isAnn ? 'per year' : 'per month') + ' \u00b7 founding price';
+  });
 }
 
 function plRenderPrices() {
