@@ -65,12 +65,12 @@
 
 [[redirects]]
   from = "/pricing"
-  to = "/pricing.html"
+  to = "/index.html"
   status = 200
 
 [[redirects]]
   from = "/how-it-works"
-  to = "/how-it-works.html"
+  to = "/index.html"
   status = 200
 
 [[redirects]]
