@@ -156,32 +156,243 @@ if (typeof window !== 'undefined') {
   window.friendlyError = friendlyError;
 }
 
-/* ── ECHO CHAMBER SCORE ──────────────────────────────────────────────────────
- * Measures listening diversity across all analyzed episodes.
- * Needs 3+ analyses to return a meaningful score.
- * Returns: { score:0-100, label, description, hasData }
+/* ── INTELLIGENCE SYSTEM ─────────────────────────────────────────────────────
+ *
+ * Two-tier signal model:
+ *
+ * Tier 1 — LISTENING (broad signal, weight 0.3)
+ *   Recorded whenever a user plays an episode that has platform bias data.
+ *   Stored in localStorage as 'pl-listen-history'.
+ *   Powers: fingerprint, echo chamber, weekly bias, recommendations.
+ *
+ * Tier 2 — ANALYSIS (deep signal, weight 1.0)
+ *   Recorded when a user explicitly analyzes an episode.
+ *   Stored in localStorage as 'pl-recent' and u.analyzedEpisodes.
+ *   Powers: all of Tier 1 plus show-specific host trust, framing, evidence.
+ *
+ * BIAS FINGERPRINT uses a weekly-normalized exponential decay:
+ *   - Episodes are grouped by ISO week so one high-volume week
+ *     doesn't outweigh many normal weeks (GPA rule: one bad week
+ *     doesn't tank your grade).
+ *   - Each week's contribution decays by DECAY_FACTOR per week of age.
+ *   - A single outlier week moves the fingerprint by at most ~15%.
+ *
+ * WEEKLY BIAS is the exact snapshot of the current ISO week only —
+ *   volatile, reflects what you've consumed right now.
+ *
+ * RECOMMENDED LEAN is derived from weekly bias to surface shows that
+ *   would move the user toward center — anti-echo-chamber logic,
+ *   NOT engagement-maximizing.
  */
-function calcEchoChamber(analyses) {
-  if (!analyses || analyses.length < 3) {
-    return { score: null, label: null, description: 'Analyze 3+ episodes to see your echo chamber score.', hasData: false };
+
+var LISTEN_WEIGHT   = 0.3;  // non-analyzed play
+var ANALYSIS_WEIGHT = 1.0;  // explicit analysis
+var DECAY_FACTOR    = 0.85; // per-week decay for fingerprint
+
+/* ── ISO WEEK HELPERS ─────────────────────────────────────────────────────── */
+function _isoWeekKey(date) {
+  // Returns 'YYYY-WW' string for grouping
+  var d = new Date(date);
+  if (isNaN(d.getTime())) return '0000-00';
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  var yearStart = new Date(d.getFullYear(), 0, 1);
+  var week = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return d.getFullYear() + '-' + (week < 10 ? '0' + week : week);
+}
+
+function _weeksDiff(weekKeyA, weekKeyB) {
+  // Returns how many weeks B is before A (positive = older)
+  function toMs(wk) {
+    var parts = wk.split('-');
+    var year = parseInt(parts[0], 10);
+    var week = parseInt(parts[1], 10);
+    var jan4 = new Date(year, 0, 4);
+    var dayOfWeek = jan4.getDay() || 7;
+    var monday = new Date(jan4.getTime() - (dayOfWeek - 1) * 86400000 + (week - 1) * 7 * 86400000);
+    return monday.getTime();
+  }
+  return Math.round((toMs(weekKeyA) - toMs(weekKeyB)) / (7 * 86400000));
+}
+
+/* ── RECORD LISTEN EVENT ─────────────────────────────────────────────────────
+ * Call this when a user presses play on any episode that has bias data.
+ * Only episodes with known bias scores contribute to intelligence metrics.
+ *
+ * @param {object} ep — { showName, episodeTitle, url, leftPct, rightPct, biasLabel }
+ */
+function recordListenEvent(ep) {
+  if (!ep || (ep.leftPct === undefined && ep.rightPct === undefined)) return;
+  try {
+    var history = [];
+    try { history = JSON.parse(localStorage.getItem('pl-listen-history') || '[]'); } catch(e) {}
+    // Deduplicate: don't re-record same URL within 1 hour
+    var now = Date.now();
+    var dupe = history.some(function(h) {
+      return h.url === ep.url && (now - new Date(h.listenedAt).getTime()) < 3600000;
+    });
+    if (dupe) return;
+    history.unshift({
+      showName:     ep.showName     || '',
+      episodeTitle: ep.episodeTitle || '',
+      url:          ep.url          || '',
+      leftPct:      ep.leftPct      || 0,
+      centerPct:    ep.centerPct    || (100 - (ep.leftPct||0) - (ep.rightPct||0)),
+      rightPct:     ep.rightPct     || 0,
+      biasLabel:    ep.biasLabel    || '',
+      listenedAt:   new Date().toISOString(),
+      weight:       LISTEN_WEIGHT
+    });
+    if (history.length > 500) history = history.slice(0, 500);
+    localStorage.setItem('pl-listen-history', JSON.stringify(history));
+  } catch(e) {}
+}
+
+/* ── GET LISTEN HISTORY ───────────────────────────────────────────────────── */
+function getListenHistory() {
+  try { return JSON.parse(localStorage.getItem('pl-listen-history') || '[]'); } catch(e) { return []; }
+}
+
+/* ── MERGE SIGNALS ────────────────────────────────────────────────────────── */
+function _mergeSignals(analyses, listenEvents) {
+  var events = [];
+  (analyses || []).forEach(function(ep) {
+    if (ep.leftPct === undefined && ep.rightPct === undefined) return;
+    events.push({
+      leftPct:   ep.leftPct   || 0,
+      centerPct: ep.centerPct || (100 - (ep.leftPct||0) - (ep.rightPct||0)),
+      rightPct:  ep.rightPct  || 0,
+      showName:  ep.showName  || '',
+      date:      ep.analyzedAt || ep.date || new Date().toISOString(),
+      weight:    ANALYSIS_WEIGHT
+    });
+  });
+  (listenEvents || []).forEach(function(ev) {
+    if (ev.leftPct === undefined && ev.rightPct === undefined) return;
+    events.push({
+      leftPct:   ev.leftPct   || 0,
+      centerPct: ev.centerPct || (100 - (ev.leftPct||0) - (ev.rightPct||0)),
+      rightPct:  ev.rightPct  || 0,
+      showName:  ev.showName  || '',
+      date:      ev.listenedAt || ev.date || new Date().toISOString(),
+      weight:    ev.weight !== undefined ? ev.weight : LISTEN_WEIGHT
+    });
+  });
+  return events;
+}
+
+/* ── WEEKLY BIAS ─────────────────────────────────────────────────────────────
+ * Exact snapshot of the current ISO week — volatile, reflects right now.
+ * Returns { leftPct, centerPct, rightPct, episodeCount, listenCount } or null.
+ */
+function calcWeeklyBias(analyses, listenEvents) {
+  var nowWeek = _isoWeekKey(new Date());
+  var events = _mergeSignals(analyses, listenEvents || getListenHistory());
+  var thisWeek = events.filter(function(e) { return _isoWeekKey(e.date) === nowWeek; });
+  if (!thisWeek.length) return null;
+  var totalWeight = thisWeek.reduce(function(s, e) { return s + e.weight; }, 0);
+  var l = thisWeek.reduce(function(s, e) { return s + e.leftPct * e.weight; }, 0) / totalWeight;
+  var r = thisWeek.reduce(function(s, e) { return s + e.rightPct * e.weight; }, 0) / totalWeight;
+  var c = 100 - l - r;
+  var diff = Math.abs(l - r);
+  var label = diff < 20 ? 'Mostly balanced'
+    : diff < 40 ? (l > r ? 'Lightly left' : 'Lightly right')
+    : diff < 60 ? (l > r ? 'Leans left' : 'Leans right')
+    : (l > r ? 'Strongly left' : 'Strongly right');
+  return {
+    leftPct:      Math.round(l),
+    centerPct:    Math.round(Math.max(0, c)),
+    rightPct:     Math.round(r),
+    label:        label,
+    episodeCount: thisWeek.filter(function(e) { return e.weight === ANALYSIS_WEIGHT; }).length,
+    listenCount:  thisWeek.filter(function(e) { return e.weight < ANALYSIS_WEIGHT; }).length,
+    hasData:      true
+  };
+}
+
+/* ── BIAS FINGERPRINT ────────────────────────────────────────────────────────
+ * Long-term personal lean. Uses weekly-normalized exponential decay so:
+ *   - One outlier week barely moves the needle (GPA rule)
+ *   - Consistent multi-week patterns gradually shift it
+ *   - Analyzed episodes weighted 1.0, listened episodes weighted 0.3
+ *
+ * Returns { leftPct, centerPct, rightPct, label, weekCount, hasData }
+ */
+function calcBiasFingerprint(analyses, listenEvents) {
+  var events = _mergeSignals(analyses, listenEvents || getListenHistory());
+  if (!events.length) return { leftPct: 0, centerPct: 100, rightPct: 0, label: 'No data', weekCount: 0, hasData: false };
+
+  // Group by ISO week
+  var weekMap = {};
+  events.forEach(function(e) {
+    var wk = _isoWeekKey(e.date);
+    if (!weekMap[wk]) weekMap[wk] = [];
+    weekMap[wk].push(e);
+  });
+
+  var weeks = Object.keys(weekMap).sort();
+  var nowWeek = _isoWeekKey(new Date());
+
+  // Each week gets one "vote" — weighted average of that week's episodes
+  // This normalizes high-volume weeks (one bad week = one grade, not 20 grades)
+  var weeklyLeans = weeks.map(function(wk) {
+    var wkEvents = weekMap[wk];
+    var totalW = wkEvents.reduce(function(s, e) { return s + e.weight; }, 0);
+    var l = wkEvents.reduce(function(s, e) { return s + e.leftPct  * e.weight; }, 0) / totalW;
+    var r = wkEvents.reduce(function(s, e) { return s + e.rightPct * e.weight; }, 0) / totalW;
+    return { week: wk, left: l, right: r, center: 100 - l - r };
+  });
+
+  // Apply exponential decay across weeks
+  var wL = 0, wR = 0, totalDecayWeight = 0;
+  weeklyLeans.forEach(function(wl) {
+    var age = _weeksDiff(nowWeek, wl.week);
+    var decayW = Math.pow(DECAY_FACTOR, Math.max(0, age));
+    wL += wl.left   * decayW;
+    wR += wl.right  * decayW;
+    totalDecayWeight += decayW;
+  });
+
+  var l = Math.round(wL / totalDecayWeight);
+  var r = Math.round(wR / totalDecayWeight);
+  var c = Math.max(0, 100 - l - r);
+  var diff = Math.abs(l - r);
+  var label = diff < 20 ? 'Mostly balanced'
+    : diff < 40 ? (l > r ? 'Lightly left' : 'Lightly right')
+    : diff < 60 ? (l > r ? 'Leans left' : 'Leans right')
+    : (l > r ? 'Strongly left' : 'Strongly right');
+
+  return { leftPct: l, centerPct: c, rightPct: r, label: label, weekCount: weeks.length, hasData: true };
+}
+
+/* ── ECHO CHAMBER SCORE ──────────────────────────────────────────────────────
+ * Measures perspective diversity across analyzed + listened episodes.
+ * Needs 3+ combined signals to activate.
+ * Returns { score:0-100, label, description, color, dominant, hasData }
+ */
+function calcEchoChamber(analyses, listenEvents) {
+  var events = _mergeSignals(analyses, listenEvents || getListenHistory());
+  // Only count events with meaningful bias data
+  events = events.filter(function(e) { return e.leftPct || e.rightPct; });
+  if (events.length < 3) {
+    return { score: null, label: null, description: 'Listen to or analyze 3+ episodes to see your echo chamber score.', hasData: false };
   }
   var left = 0, center = 0, right = 0;
-  var showSet = new Set();
-  analyses.forEach(function(ep) {
-    var l = ep.leftPct || 0;
-    var r = ep.rightPct || 0;
-    var diff = Math.abs(l - r);
+  var showSet = {};
+  events.forEach(function(e) {
+    var diff = Math.abs(e.leftPct - e.rightPct);
     if (diff < 20) center++;
-    else if (l > r) left++;
+    else if (e.leftPct > e.rightPct) left++;
     else right++;
-    if (ep.showName) showSet.add((ep.showName || '').toLowerCase());
+    if (e.showName) showSet[e.showName.toLowerCase()] = 1;
   });
-  var total = analyses.length;
+  var total = events.length;
+  var showCount = Object.keys(showSet).length;
   var maxPct = Math.max(left / total, center / total, right / total);
-  // Dominance score: how lopsided is distribution (0-80)
+  // Dominance (0-80): how lopsided the lean distribution is
   var dominance = Math.round(Math.max(0, (maxPct - 0.34) / 0.66) * 80);
-  // Show diversity: fewer distinct shows = higher echo risk (0-20)
-  var diversityPenalty = Math.max(0, 20 - Math.min(showSet.size, 5) * 4);
+  // Diversity penalty (0-20): fewer distinct shows = higher echo risk
+  var diversityPenalty = Math.max(0, 20 - Math.min(showCount, 5) * 4);
   var score = Math.min(100, Math.max(0, dominance + diversityPenalty));
   var label, description, color;
   if (score <= 25) {
@@ -197,31 +408,66 @@ function calcEchoChamber(analyses) {
     label = 'Echo chamber'; color = '#791F1F';
     description = 'Almost all your content shares the same perspective. You\'re in a bubble.';
   }
-  var dominant = left > right && left > center ? 'left' : right > left && right > center ? 'right' : 'center';
-  return { score: score, label: label, description: description, color: color, dominant: dominant, showCount: showSet.size, totalAnalyses: total, hasData: true };
+  var dominant = left > right && left > center ? 'left'
+    : right > left && right > center ? 'right' : 'center';
+  return { score: score, label: label, description: description, color: color, dominant: dominant, showCount: showCount, totalSignals: total, hasData: true };
 }
 
-/* ── BIAS FINGERPRINT ────────────────────────────────────────────────────────
- * Aggregates all analyzed episodes into a single lean summary.
+/* ── RECOMMENDED LEAN ────────────────────────────────────────────────────────
+ * Anti-echo-chamber recommendation logic.
+ * Primary signal: weekly bias (what's imbalanced RIGHT NOW).
+ * Goal: surface shows that move the user toward center, not more of the same.
+ *
+ * Returns {
+ *   prioritize: ['center','right'] | ['center','left'] | ['all'],
+ *   avoid: 'left' | 'right' | null,
+ *   message: string,
+ *   balanced: boolean
+ * }
  */
-function calcBiasFingerprint(analyses) {
-  if (!analyses || !analyses.length) return { leftPct: 0, centerPct: 100, rightPct: 0, label: 'No data', hasData: false };
-  var leftSum = 0, centerSum = 0, rightSum = 0;
-  analyses.forEach(function(ep) {
-    leftSum   += (ep.leftPct   || 0);
-    centerSum += (ep.centerPct || 100 - (ep.leftPct||0) - (ep.rightPct||0));
-    rightSum  += (ep.rightPct  || 0);
-  });
-  var n = analyses.length;
-  var l = Math.round(leftSum / n);
-  var r = Math.round(rightSum / n);
-  var c = 100 - l - r;
-  var diff = Math.abs(l - r);
-  var label = diff < 20 ? 'Mostly balanced' : diff < 40 ? (l > r ? 'Lightly left' : 'Lightly right') : (l > r ? 'Leans left' : 'Leans right');
-  return { leftPct: l, centerPct: c, rightPct: r, label: label, hasData: true };
+function calcRecommendedLean(analyses, listenEvents) {
+  var listenEvs = listenEvents || getListenHistory();
+  var weekly  = calcWeeklyBias(analyses, listenEvs);
+  var fingerprint = calcBiasFingerprint(analyses, listenEvs);
+
+  // Use weekly bias as primary signal; fall back to fingerprint
+  var source = (weekly && weekly.hasData) ? weekly : (fingerprint && fingerprint.hasData ? fingerprint : null);
+  if (!source) return { prioritize: ['all'], avoid: null, message: 'Explore shows across all perspectives.', balanced: true };
+
+  var diff = source.leftPct - source.rightPct;
+  var THRESHOLD = 25; // must be >25 points off-center to trigger directional recommendation
+
+  if (diff > THRESHOLD) {
+    // Leaning left — recommend center and right
+    return {
+      prioritize: ['center', 'right'],
+      avoid: 'left',
+      message: 'Your ' + (weekly ? 'week' : 'listening history') + ' leans left. These shows will help balance your perspective.',
+      balanced: false
+    };
+  } else if (diff < -THRESHOLD) {
+    // Leaning right — recommend center and left
+    return {
+      prioritize: ['center', 'left'],
+      avoid: 'right',
+      message: 'Your ' + (weekly ? 'week' : 'listening history') + ' leans right. These shows will help balance your perspective.',
+      balanced: false
+    };
+  } else {
+    return {
+      prioritize: ['all'],
+      avoid: null,
+      message: 'Your listening is balanced. Keep exploring.',
+      balanced: true
+    };
+  }
 }
 
 if (typeof window !== 'undefined') {
-  window.calcEchoChamber    = calcEchoChamber;
-  window.calcBiasFingerprint = calcBiasFingerprint;
+  window.calcEchoChamber      = calcEchoChamber;
+  window.calcBiasFingerprint  = calcBiasFingerprint;
+  window.calcWeeklyBias       = calcWeeklyBias;
+  window.calcRecommendedLean  = calcRecommendedLean;
+  window.recordListenEvent    = recordListenEvent;
+  window.getListenHistory     = getListenHistory;
 }
