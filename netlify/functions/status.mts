@@ -327,9 +327,10 @@ export default async (req: Request) => {
 
   // ── Claude analysis with retry + exponential backoff ──────────────────────
   const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
-    let claudeRes: Response | null = null;
+  let claudeRes: Response | null = null;
   let claudeErr: any = null;
-  const delays = [0, 3000, 8000]; // 3 attempts: immediate, 3s, 8s
+  let wasRateLimited = false;
+  const delays = [0, 5000, 15000, 30000]; // 4 attempts: immediate, 5s, 15s, 30s
 
   for (let attempt = 0; attempt < delays.length; attempt++) {
     if (delays[attempt] > 0) await new Promise(r => setTimeout(r, delays[attempt]));
@@ -350,6 +351,17 @@ export default async (req: Request) => {
       });
       if (claudeRes.ok) break;
       const errBody = await claudeRes.text().catch(() => "");
+      if (claudeRes.status === 429) {
+        wasRateLimited = true;
+        // Parse retry-after header if available
+        const retryAfter = claudeRes.headers.get("retry-after");
+        const waitMs = retryAfter ? Math.min(parseInt(retryAfter, 10) * 1000, 60000) : delays[Math.min(attempt + 1, delays.length - 1)];
+        console.warn(`[status] Claude 429 rate limited, attempt ${attempt + 1}, waiting ${waitMs}ms`);
+        if (attempt < delays.length - 1) {
+          await new Promise(r => setTimeout(r, waitMs));
+          continue;
+        }
+      }
       console.error(`[status] Claude HTTP ${claudeRes.status}: ${errBody}`);
       throw new Error(`Claude HTTP ${claudeRes.status}: ${errBody}`);
     } catch (e) {
@@ -359,7 +371,16 @@ export default async (req: Request) => {
   }
 
   if (!claudeRes || !claudeRes.ok) {
-    const updated = { ...job, status: "error", error: `Analysis service unavailable: ${claudeErr?.message || "unknown"}` };
+    if (wasRateLimited) {
+      // Don't mark as permanent error — keep as "transcribed" so next poll retries
+      await store.setJSON(jobId, { ...job, status: "transcribed", transcript: transcriptText, words: transcriptWords });
+      return new Response(JSON.stringify({
+        status: "analyzing",
+        jobId,
+        step: "Waiting for analysis capacity — retrying automatically...",
+      }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    const updated = { ...job, status: "error", error: `Analysis service unavailable. Please try again in a moment.` };
     await store.setJSON(jobId, updated);
     return new Response(JSON.stringify(updated), { status: 200, headers: { "Content-Type": "application/json" } });
   }
