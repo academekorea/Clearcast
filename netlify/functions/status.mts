@@ -122,7 +122,7 @@ async function updateCatalog(store: any, entry: { jobId: string; showName: strin
 }
 
 // ── Supabase write helper — upserts analysis row, handles FK violations ───────
-async function writeAnalysisToSupabase(jobId: string, job: any, result: any, audioDuration?: number): Promise<void> {
+async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Promise<void> {
   const supabaseUrl = Netlify.env.get("SUPABASE_URL");
   const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
   if (!supabaseUrl || !supabaseKey) return;
@@ -152,7 +152,6 @@ async function writeAnalysisToSupabase(jobId: string, job: any, result: any, aud
       dim_host_credibility: dim.hostCredibility?.score ?? null,
       dim_omission_risk:    dim.omissionRisk?.score    ?? null,
       host_trust_score:     dim.hostCredibility?.score ?? null,
-      duration_ms:          audioDuration ? Math.round(audioDuration * 1000) : null,
       analyzed_at:          new Date().toISOString(),
       user_id:              job.userId || null,
     };
@@ -217,10 +216,9 @@ export default async (req: Request) => {
   // Return immediately if already done — but backfill Supabase if missing
   if (job.status === "complete" || job.status === "error") {
     if (job.status === "complete" && job.biasScore !== undefined && !job._sbWritten) {
-      // Fire-and-forget Supabase backfill for analyses that completed before the fix
-      writeAnalysisToSupabase(jobId, job, job).then(() => {
-        store.setJSON(jobId, { ...job, _sbWritten: true }).catch(() => {});
-      }).catch(() => {});
+      // Backfill Supabase for analyses that completed before the fix
+      await writeAnalysisToSupabase(jobId, job, job);
+      try { await store.setJSON(jobId, { ...job, _sbWritten: true }); } catch {}
     }
     return new Response(JSON.stringify(job), { status: 200, headers: { "Content-Type": "application/json" } });
   }
@@ -433,7 +431,7 @@ export default async (req: Request) => {
   // ── Supabase dual-write (data flywheel) ───────────────────────────────────
   // Writes to analyses table for trend charts, echo chamber, fingerprints.
   // Non-blocking — never fails the response if Supabase is down.
-  await writeAnalysisToSupabase(jobId, job, result, audioDuration);
+  await writeAnalysisToSupabase(jobId, job, result);
   // Mark as written so backfill path doesn't re-run on subsequent polls
   result._sbWritten = true;
 
