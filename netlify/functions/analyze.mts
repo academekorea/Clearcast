@@ -146,7 +146,7 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
       const type = extractAttr(tag, "type");
       if (type && /audio/i.test(type)) {
         const href = extractAttr(tag, "href");
-        if (href) return { audioUrl: href, epTitle, epNumber };
+        if (href) return { audioUrl: href, epTitle };
       }
     }
     return { audioUrl: null, epTitle, epNumber };
@@ -157,7 +157,7 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
   const atomItems = xml.split(/<entry[\s>]/i);
   const segments = rssItems.length >= atomItems.length ? rssItems : atomItems;
   for (let i = 1; i < Math.min(segments.length, 8); i++) {
-    const { audioUrl, epTitle, epNumber } = extractAudioFromBlock(segments[i]);
+    const { audioUrl, epTitle } = extractAudioFromBlock(segments[i]);
     if (audioUrl) return { audioUrl, episodeTitle: epTitle, episodeNumber: epNumber || "", showName, hostNames: extractHostsFromFeedXml(xml) };
   }
 
