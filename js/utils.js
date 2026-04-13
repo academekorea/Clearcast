@@ -413,54 +413,263 @@ function calcEchoChamber(analyses, listenEvents) {
   return { score: score, label: label, description: description, color: color, dominant: dominant, showCount: showCount, totalSignals: total, hasData: true };
 }
 
-/* ── RECOMMENDED LEAN ────────────────────────────────────────────────────────
- * Anti-echo-chamber recommendation logic.
- * Primary signal: weekly bias (what's imbalanced RIGHT NOW).
- * Goal: surface shows that move the user toward center, not more of the same.
+/* ── TOPIC AFFINITY ──────────────────────────────────────────────────────────
+ * Tracks which categories/topics the user gravitates toward.
+ * Built from: onboarding interests + followed shows + liked episodes +
+ *             listen history + analyzed episodes.
+ *
+ * Each signal type carries a different weight:
+ *   Explicit follow/like  = 3.0  (user made a deliberate choice)
+ *   Analysis              = 2.0  (user invested time to analyze)
+ *   Listen event          = 1.0  (user played it)
+ *   Onboarding interest   = 1.5  (stated preference, may be stale)
+ *
+ * Returns { topTopics: ['tech','news',...], profile: { tech:0.6, news:0.3 } }
+ */
+
+var TOPIC_WEIGHTS = {
+  follow:   3.0,
+  like:     3.0,
+  analyze:  2.0,
+  listen:   1.0,
+  onboard:  1.5
+};
+
+// Canonical category list matching CURATED_SHOWS and Discover nav
+var KNOWN_CATS = ['news', 'tech', 'business', 'society', 'crime', 'science', 'health', 'sports', 'culture', 'education'];
+
+function _normalizeCat(raw) {
+  if (!raw) return null;
+  var s = String(raw).toLowerCase().trim();
+  // Map common aliases
+  var aliases = {
+    'politics': 'news', 'technology': 'tech', 'finance': 'business',
+    'economics': 'business', 'true crime': 'crime', 'comedy': 'culture',
+    'arts': 'culture', 'history': 'education', 'self-help': 'education',
+    'wellness': 'health', 'fitness': 'health'
+  };
+  return aliases[s] || (KNOWN_CATS.indexOf(s) !== -1 ? s : null);
+}
+
+/* recordListenEvent already exists — we extend it to also record category */
+function _catFromEpisode(ep) {
+  // Try explicit category field first, then infer from showName keywords
+  var cat = ep.category || ep.cat || ep.genre || '';
+  var norm = _normalizeCat(cat);
+  if (norm) return norm;
+  // Keyword inference from show name
+  var name = (ep.showName || '').toLowerCase();
+  if (/news|politi|daily|report|npr|bbc|cnn|fox/.test(name)) return 'news';
+  if (/tech|code|dev|software|ai|startup|product/.test(name)) return 'tech';
+  if (/business|invest|market|money|finance|econom/.test(name)) return 'business';
+  if (/crime|murder|mystery|detective|court/.test(name)) return 'crime';
+  if (/science|research|space|physics|biology/.test(name)) return 'science';
+  if (/health|medic|mental|wellnes|fitness/.test(name)) return 'health';
+  if (/sport|nba|nfl|soccer|football|baseball/.test(name)) return 'sports';
+  return null;
+}
+
+/* ── BUILD TOPIC AFFINITY PROFILE ────────────────────────────────────────────
+ * @param {object} opts
+ *   opts.analyses       — analyzed episodes (from u.analyzedEpisodes / pl-recent)
+ *   opts.listenEvents   — from getListenHistory()
+ *   opts.followedShows  — from u.followedShows
+ *   opts.likedEpisodes  — from localStorage pl_liked_episodes
+ *   opts.userInterests  — from u.categories / u.interests (onboarding)
  *
  * Returns {
- *   prioritize: ['center','right'] | ['center','left'] | ['all'],
- *   avoid: 'left' | 'right' | null,
- *   message: string,
- *   balanced: boolean
+ *   topTopics:  string[]  — ordered by affinity, max 5
+ *   profile:    object    — { tech: 0.6, news: 0.3, ... } (sums to 1.0)
+ *   hasData:    boolean
  * }
  */
-function calcRecommendedLean(analyses, listenEvents) {
-  var listenEvs = listenEvents || getListenHistory();
-  var weekly  = calcWeeklyBias(analyses, listenEvs);
-  var fingerprint = calcBiasFingerprint(analyses, listenEvs);
+function buildTopicProfile(opts) {
+  opts = opts || {};
+  var scores = {};
 
-  // Use weekly bias as primary signal; fall back to fingerprint
-  var source = (weekly && weekly.hasData) ? weekly : (fingerprint && fingerprint.hasData ? fingerprint : null);
-  if (!source) return { prioritize: ['all'], avoid: null, message: 'Explore shows across all perspectives.', balanced: true };
-
-  var diff = source.leftPct - source.rightPct;
-  var THRESHOLD = 25; // must be >25 points off-center to trigger directional recommendation
-
-  if (diff > THRESHOLD) {
-    // Leaning left — recommend center and right
-    return {
-      prioritize: ['center', 'right'],
-      avoid: 'left',
-      message: 'Your ' + (weekly ? 'week' : 'listening history') + ' leans left. These shows will help balance your perspective.',
-      balanced: false
-    };
-  } else if (diff < -THRESHOLD) {
-    // Leaning right — recommend center and left
-    return {
-      prioritize: ['center', 'left'],
-      avoid: 'right',
-      message: 'Your ' + (weekly ? 'week' : 'listening history') + ' leans right. These shows will help balance your perspective.',
-      balanced: false
-    };
-  } else {
-    return {
-      prioritize: ['all'],
-      avoid: null,
-      message: 'Your listening is balanced. Keep exploring.',
-      balanced: true
-    };
+  function add(cat, weight) {
+    var norm = _normalizeCat(cat);
+    if (!norm) return;
+    scores[norm] = (scores[norm] || 0) + weight;
   }
+
+  // Onboarding interests
+  (opts.userInterests || []).forEach(function(c) { add(c, TOPIC_WEIGHTS.onboard); });
+
+  // Followed shows
+  (opts.followedShows || []).forEach(function(s) {
+    add(s.category || s.cat || _catFromEpisode(s), TOPIC_WEIGHTS.follow);
+  });
+
+  // Liked episodes
+  (opts.likedEpisodes || []).forEach(function(ep) {
+    add(ep.category || ep.cat || _catFromEpisode(ep), TOPIC_WEIGHTS.like);
+  });
+
+  // Analyzed episodes
+  (opts.analyses || []).forEach(function(ep) {
+    add(ep.category || ep.cat || _catFromEpisode(ep), TOPIC_WEIGHTS.analyze);
+  });
+
+  // Listen events
+  (opts.listenEvents || getListenHistory()).forEach(function(ev) {
+    add(ev.category || ev.cat || _catFromEpisode(ev), TOPIC_WEIGHTS.listen);
+  });
+
+  var total = Object.keys(scores).reduce(function(s, k) { return s + scores[k]; }, 0);
+  if (!total) return { topTopics: [], profile: {}, hasData: false };
+
+  // Normalize to 0-1
+  var profile = {};
+  Object.keys(scores).forEach(function(k) { profile[k] = Math.round((scores[k] / total) * 100) / 100; });
+
+  // Sort by weight descending
+  var topTopics = Object.keys(profile).sort(function(a, b) { return profile[b] - profile[a]; }).slice(0, 5);
+
+  return { topTopics: topTopics, profile: profile, hasData: true };
+}
+
+/* ── RECOMMENDED LEAN ────────────────────────────────────────────────────────
+ * Two-pass anti-echo-chamber recommendation logic.
+ *
+ * Pass 1 — RELEVANCE: filter candidate shows to topics the user cares about.
+ * Pass 2 — BALANCE: within relevant shows, surface those that fill the
+ *           user's bias gap (move their week toward center).
+ *
+ * @param {object} opts
+ *   opts.analyses        — analyzed episodes
+ *   opts.listenEvents    — listen history
+ *   opts.followedShows   — user's followed shows
+ *   opts.likedEpisodes   — user's liked episodes
+ *   opts.userInterests   — onboarding categories
+ *   opts.candidateShows  — pool of shows to recommend from (e.g. CURATED_SHOWS)
+ *                          Each show needs: { name, cat, bias:{leftPct,rightPct} }
+ *
+ * Returns {
+ *   shows:        array of recommended show objects (max 6)
+ *   prioritize:   ['center','right'] | ['center','left'] | ['all']
+ *   avoid:        'left' | 'right' | null
+ *   message:      string
+ *   balanced:     boolean
+ *   topicProfile: { topTopics, profile }
+ * }
+ */
+function calcRecommendedLean(opts) {
+  // Support legacy signature: calcRecommendedLean(analyses, listenEvents)
+  if (Array.isArray(opts)) {
+    opts = { analyses: opts, listenEvents: arguments[1] };
+  }
+  opts = opts || {};
+
+  var analyses     = opts.analyses     || [];
+  var listenEvs    = opts.listenEvents || getListenHistory();
+  var candidates   = opts.candidateShows || [];
+  var followedShows = opts.followedShows || [];
+  var likedEpisodes = opts.likedEpisodes || [];
+  var userInterests = opts.userInterests || [];
+
+  // ── Pass 1: bias direction ──────────────────────────────────────────────
+  var weekly      = calcWeeklyBias(analyses, listenEvs);
+  var fingerprint = calcBiasFingerprint(analyses, listenEvs);
+  var source = (weekly && weekly.hasData) ? weekly : (fingerprint && fingerprint.hasData ? fingerprint : null);
+
+  var prioritize = ['all'], avoid = null, balanced = true, message = '';
+  var THRESHOLD = 25;
+
+  if (source) {
+    var diff = source.leftPct - source.rightPct;
+    if (diff > THRESHOLD) {
+      prioritize = ['center', 'right']; avoid = 'left'; balanced = false;
+      message = 'Your ' + (weekly && weekly.hasData ? 'week' : 'listening history') + ' leans left. These shows will help balance your perspective.';
+    } else if (diff < -THRESHOLD) {
+      prioritize = ['center', 'left']; avoid = 'right'; balanced = false;
+      message = 'Your ' + (weekly && weekly.hasData ? 'week' : 'listening history') + ' leans right. These shows will help balance your perspective.';
+    } else {
+      message = 'Your listening is balanced. Keep exploring.';
+    }
+  } else {
+    message = 'Explore shows across all perspectives.';
+  }
+
+  // ── Pass 2: topic relevance + show filtering ────────────────────────────
+  var topicProfile = buildTopicProfile({
+    analyses: analyses, listenEvents: listenEvs,
+    followedShows: followedShows, likedEpisodes: likedEpisodes,
+    userInterests: userInterests
+  });
+
+  // Get followed/liked show names so we don't re-recommend what they have
+  var alreadyHave = {};
+  followedShows.forEach(function(s) { alreadyHave[(s.name||'').toLowerCase()] = 1; });
+  likedEpisodes.forEach(function(e) { alreadyHave[(e.showName||'').toLowerCase()] = 1; });
+
+  var recommended = [];
+  if (candidates.length) {
+    // Filter + score each candidate
+    var scored = candidates
+      .filter(function(s) {
+        // Skip shows user already follows/likes
+        if (alreadyHave[(s.name||'').toLowerCase()]) return false;
+        // Skip shows in the avoided lean (if balanced=false)
+        if (avoid && s.bias) {
+          var l = s.bias.leftPct || 0, r = s.bias.rightPct || 0;
+          var d = l - r;
+          if (avoid === 'left'  && d >  25) return false;
+          if (avoid === 'right' && d < -25) return false;
+        }
+        return true;
+      })
+      .map(function(s) {
+        var topicScore = 0;
+        var showCat = _normalizeCat(s.cat || s.category || '');
+
+        // Topic affinity score — higher if it matches user's interests
+        if (showCat && topicProfile.profile[showCat]) {
+          topicScore = topicProfile.profile[showCat];
+        } else if (!topicProfile.hasData) {
+          // No profile yet — treat all topics equally
+          topicScore = 0.5;
+        }
+        // Don't recommend shows in topics the user has zero affinity for
+        // (unless they have no profile yet)
+        if (topicProfile.hasData && topicScore === 0) return null;
+
+        // Bias balance score — higher if it fills the user's gap
+        var biasScore = 0;
+        if (s.bias) {
+          var l = s.bias.leftPct || 0, r = s.bias.rightPct || 0;
+          var lean = l - r;
+          if (!balanced) {
+            // Reward shows in the prioritized lean
+            var isCtr = Math.abs(lean) < 20;
+            var isRight = lean < -20;
+            var isLeft  = lean > 20;
+            if (prioritize.indexOf('center') !== -1 && isCtr)  biasScore = 1.0;
+            if (prioritize.indexOf('right')  !== -1 && isRight) biasScore = 0.9;
+            if (prioritize.indexOf('left')   !== -1 && isLeft)  biasScore = 0.9;
+          } else {
+            biasScore = 0.5; // balanced: all shows score equally on bias
+          }
+        }
+
+        return { show: s, score: topicScore * 0.6 + biasScore * 0.4 };
+      })
+      .filter(Boolean)
+      .sort(function(a, b) { return b.score - a.score; })
+      .slice(0, 6)
+      .map(function(s) { return s.show; });
+
+    recommended = scored;
+  }
+
+  return {
+    shows:        recommended,
+    prioritize:   prioritize,
+    avoid:        avoid,
+    message:      message,
+    balanced:     balanced,
+    topicProfile: topicProfile
+  };
 }
 
 if (typeof window !== 'undefined') {
@@ -468,6 +677,7 @@ if (typeof window !== 'undefined') {
   window.calcBiasFingerprint  = calcBiasFingerprint;
   window.calcWeeklyBias       = calcWeeklyBias;
   window.calcRecommendedLean  = calcRecommendedLean;
+  window.buildTopicProfile    = buildTopicProfile;
   window.recordListenEvent    = recordListenEvent;
   window.getListenHistory     = getListenHistory;
 }
