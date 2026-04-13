@@ -181,6 +181,7 @@ export default async (req: Request) => {
       jobId: transcriptId,
       url: job.url,
       episodeTitle: job.episodeTitle || transcript.chapters?.[0]?.headline || "Podcast Episode",
+      episodeNumber: job.episodeNumber || "",
       showName: job.showName || "",
       duration: transcript.audio_duration
         ? `${Math.round(transcript.audio_duration / 60)} min`
