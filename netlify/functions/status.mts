@@ -122,10 +122,10 @@ async function updateCatalog(store: any, entry: { jobId: string; showName: strin
 }
 
 // ── Supabase write helper — upserts analysis row, handles FK violations ───────
-async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Promise<void> {
+async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Promise<boolean> {
   const supabaseUrl = Netlify.env.get("SUPABASE_URL");
   const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
-  if (!supabaseUrl || !supabaseKey) return;
+  if (!supabaseUrl || !supabaseKey) return false;
 
   try {
     const supabase = createClient(supabaseUrl, supabaseKey, {
@@ -133,9 +133,10 @@ async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Pr
     });
 
     const dim = result.dimensions || {};
+    const canonKey = job.canonicalKey || result.canonicalKey || jobId;
     const analysisRow = {
       job_id:               jobId,
-      canonical_key:        job.canonicalKey || result.canonicalKey || jobId,
+      canonical_key:        canonKey,
       url:                  job.url || result.url || "",
       episode_title:        result.episodeTitle,
       show_name:            result.showName,
@@ -156,22 +157,37 @@ async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Pr
       user_id:              job.userId || null,
     };
 
-    let { error: upsertErr } = await supabase.from("analyses").upsert(analysisRow, { onConflict: "canonical_key" });
+    // Check if row already exists (canonical_key unique index may be missing)
+    const { data: existing } = await supabase
+      .from("analyses")
+      .select("id")
+      .eq("canonical_key", canonKey)
+      .maybeSingle();
 
-    // FK violation (user_id not in users table) — retry without user_id
-    if (upsertErr?.code === "23503") {
-      console.warn("[status] FK violation on user_id, retrying without user_id");
-      const { error: retryErr } = await supabase.from("analyses").upsert(
-        { ...analysisRow, user_id: null },
-        { onConflict: "canonical_key" }
-      );
-      upsertErr = retryErr;
-    }
-    if (upsertErr) {
-      console.error("[status] Supabase analyses upsert error:", upsertErr.message, upsertErr.details, upsertErr.code);
+    let writeErr: any = null;
+    if (existing) {
+      // Update existing row
+      const { error } = await supabase
+        .from("analyses")
+        .update(analysisRow)
+        .eq("canonical_key", canonKey);
+      writeErr = error;
     } else {
-      console.log("[status] Supabase analyses upsert OK:", analysisRow.canonical_key);
+      // Insert new row
+      let { error } = await supabase.from("analyses").insert(analysisRow);
+      // FK violation (user_id not in users table) — retry without user_id
+      if (error?.code === "23503") {
+        console.warn("[status] FK violation on user_id, retrying without user_id");
+        const { error: retryErr } = await supabase.from("analyses").insert({ ...analysisRow, user_id: null });
+        error = retryErr;
+      }
+      writeErr = error;
     }
+    if (writeErr) {
+      console.error("[status] Supabase analyses write error:", writeErr.message, writeErr.details, writeErr.code);
+      return false;
+    }
+    console.log("[status] Supabase analyses write OK:", canonKey);
 
     // Log the analysis event for per-user data flywheel
     if (job.userId) {
@@ -189,8 +205,10 @@ async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Pr
       });
       if (eventErr) console.error("[status] Supabase events insert error:", eventErr.message, eventErr.code);
     }
+    return true;
   } catch (sbErr) {
     console.error("[status] Supabase dual-write failed:", sbErr);
+    return false;
   }
 }
 
@@ -217,8 +235,10 @@ export default async (req: Request) => {
   if (job.status === "complete" || job.status === "error") {
     if (job.status === "complete" && job.biasScore !== undefined && !job._sbWritten) {
       // Backfill Supabase for analyses that completed before the fix
-      await writeAnalysisToSupabase(jobId, job, job);
-      try { await store.setJSON(jobId, { ...job, _sbWritten: true }); } catch {}
+      const ok = await writeAnalysisToSupabase(jobId, job, job);
+      if (ok) {
+        try { await store.setJSON(jobId, { ...job, _sbWritten: true }); } catch {}
+      }
     }
     return new Response(JSON.stringify(job), { status: 200, headers: { "Content-Type": "application/json" } });
   }
