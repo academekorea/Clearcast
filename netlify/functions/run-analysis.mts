@@ -64,7 +64,11 @@ Analyze the transcript and return a JSON object with this EXACT structure — no
     "website": <string — personal or company website URL if known, null if unknown>,
     "lean": <string — e.g. "Tech-optimist lean", "Conservative-leaning" — based on public statements, null if unclear>
   },
-  "hostTrustScore": <0 to 100 — overall host credibility score>,
+  "hosts": [{ "name": <string - detected host full name>, "role": <"host"|"co-host"> }],
+  "hasGuest": <boolean - true if a distinct guest or interviewee appears>,
+  "hostCount": <integer - number of distinct hosts detected>,
+  "guestScore": <0-100 - how rigorously hosts challenged guest claims; null if hasGuest false>,
+  "hostTrustScore": <0 to 100 - scores HOST(S) only: rigor in challenging claims, citing sources, avoiding parasocial manipulation. Does not score the guest.>,
   "keyFindings": [
     {
       "title": <finding title under 10 words>,
@@ -79,6 +83,7 @@ Rules:
 - Be specific — cite actual words from the transcript where possible
 - Maximum 6 flags, maximum 3 keyFindings
 - All scores are integers
+- If hasGuest is true, populate guestScore. If hasGuest is false, guestScore must be null.
 - Return ONLY the JSON object, no markdown, no preamble`;
 
 export default async (req: Request) => {
@@ -135,6 +140,11 @@ export default async (req: Request) => {
   const words = (transcript.text || "").split(" ");
   const truncated = words.slice(0, 6000).join(" ");
 
+  // Prepend known host names from RSS feed metadata if available
+  const hostPrefix = job.hostNames?.length > 0
+    ? `Known hosts from feed metadata: ${job.hostNames.join(", ")}\n\n`
+    : "";
+
   try {
     const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -149,7 +159,7 @@ export default async (req: Request) => {
         messages: [
           {
             role: "user",
-            content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${truncated}`,
+            content: `${ANALYSIS_PROMPT}\n\n${hostPrefix}Transcript:\n${truncated}`,
           },
         ],
       }),
@@ -207,6 +217,9 @@ export default async (req: Request) => {
           bias_label: result.biasLabel || null,
           factuality_label: result.factualityLabel || null,
           host_trust_score: result.hostTrustScore ?? null,
+          host_count: result.hostCount ?? null,
+          has_guest: result.hasGuest ?? null,
+          guest_score: result.guestScore ?? null,
           dim_perspective_balance: result.dimensions?.perspectiveBalance?.score ?? null,
           dim_factual_density: result.dimensions?.factualDensity?.score ?? null,
           dim_source_diversity: result.dimensions?.sourceDiversity?.score ?? null,

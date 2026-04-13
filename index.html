@@ -3533,11 +3533,24 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
             </div>
             <div id="dash-recent-list"></div>
           </div>
-          <div class="section-header" style="margin-top:20px">
-            <span class="section-title">Trending now</span>
-            <a href="javascript:void(0)" class="section-link" onclick="showView('discover');return false">Browse all &rarr;</a>
+          <!-- New from your shows -->
+          <div class="dash-section" id="dash-new-episodes" style="margin-top:20px;margin-bottom:24px">
+            <div class="section-header"><span class="section-title">New from your shows</span><a href="javascript:void(0)" class="section-link" onclick="showView('discover');return false">Discover more &rarr;</a></div>
+            <div id="dash-new-grid" class="tg-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
           </div>
-          <div id="dash-trending-grid" class="tg-grid" style="margin-top:0"></div>
+          <!-- Recommended -->
+          <div class="dash-section" id="dash-recommended" style="margin-bottom:24px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <div class="section-title" style="margin-bottom:0">Recommended</div>
+              <div id="dash-rec-tabs" style="display:flex;gap:4px">
+                <button class="cat-pill-btn on" onclick="filterDashRec('all',this)">All</button>
+                <button class="cat-pill-btn" onclick="filterDashRec('left',this)"><span style="color:var(--color-left)">&#9679;</span> Left</button>
+                <button class="cat-pill-btn" onclick="filterDashRec('center',this)"><span style="color:var(--color-center)">&#9679;</span> Center</button>
+                <button class="cat-pill-btn" onclick="filterDashRec('right',this)"><span style="color:var(--color-right)">&#9679;</span> Right</button>
+              </div>
+            </div>
+            <div id="dash-rec-grid" class="tg-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+          </div>
           <div class="section-header" style="margin-top:24px"><span class="section-title">Your stats</span></div>
           <div class="stats-grid">
             <div class="stat-card"><div class="stat-number" id="stat-analyses">0</div><div class="stat-label">Analyzed</div></div>
@@ -3604,11 +3617,11 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
           </div>
           <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:24px;margin-bottom:16px">
             <div class="fingerprint-title" style="margin-bottom:16px">Your listening bias distribution</div>
-            <div class="fingerprint-bar-track" id="dash-fp-track" style="height:16px;border-radius:8px;margin-bottom:12px">
+            <div class="fingerprint-bar-track" id="dash-fp-track" onclick="showFingerprintModal()" style="height:16px;border-radius:8px;margin-bottom:12px;cursor:pointer" title="Click for breakdown">
               <div class="fingerprint-dot" id="dash-fp-dot" style="left:50%"></div>
             </div>
             <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
-            <div class="fingerprint-counts" id="dash-fp-counts" style="margin-top:12px"></div>
+            <div class="fingerprint-counts" id="dash-fp-counts" onclick="showFingerprintModal()" style="margin-top:12px;cursor:pointer"></div>
           </div>
           <div class="section-header"><span class="section-title">Recent analyses</span></div>
           <div id="dash-fp-recent"></div>
@@ -3626,16 +3639,16 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
               <button onclick="showDashSection('fingerprint')" style="background:none;border:none;font-size:11px;font-weight:600;color:var(--navy);cursor:pointer;font-family:var(--ff);padding:0">My profile &rarr;</button>
             </div>
           </div>
-          <div class="fingerprint-bar-track" id="sb-fp-track"><div class="fingerprint-dot" id="sb-fp-dot" style="left:50%"></div></div>
+          <div class="fingerprint-bar-track" id="sb-fp-track" onclick="showFingerprintModal()" style="cursor:pointer" title="Click for breakdown"><div class="fingerprint-dot" id="sb-fp-dot" style="left:50%"></div></div>
           <div class="fingerprint-labels"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
-          <div class="fingerprint-counts" id="sb-fp-counts"></div>
+          <div class="fingerprint-counts" id="sb-fp-counts" onclick="showFingerprintModal()" style="cursor:pointer"></div>
         </div>
-        <div class="sidebar-card" id="sb-echo-card">
+        <div class="sidebar-card" id="sb-echo-card" onclick="showEchoChamberModal()" style="cursor:pointer">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
             <div class="sidebar-card-title" style="margin-bottom:0">Echo chamber score</div>
             <button onclick="showDashSection('intelligence')" style="background:none;border:none;font-size:11px;font-weight:600;color:var(--navy);cursor:pointer;font-family:var(--ff);padding:0">Details &rarr;</button>
           </div>
-          <div id="sb-echo-content"><div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes across different shows to see your echo chamber score.</div></div>
+          <div id="sb-echo-content"><div style="font-size:12px;color:var(--text3)">Keep listening — your score unlocks after 1 week or 10 episodes.</div></div>
         </div>
         <div class="sq-widget" id="sq-widget" style="display:none">
           <div class="sq-widget-header">
@@ -4234,7 +4247,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 
         <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Power features</td></tr>
         <tr><td>Full transcript</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Pre-analysis tracking</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>5 shows</td><td>&infin;</td></tr>
+        <tr><td>Pre-analysis tracking</td><td class="check-n">&mdash;</td><td>3 shows</td><td>5 shows</td><td>&infin;</td></tr>
         <tr><td>Basic PDF export</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
         <tr><td>Full PDF export</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
         <tr><td>Brand monitoring</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
@@ -4594,6 +4607,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
           <div class="tf"><span class="tf-y">✓</span>Audio briefing player (90-sec context)</div>
           <div class="tf"><span class="tf-y">✓</span>Shareable bias cards</div>
           <div class="tf"><span class="tf-y">✓</span>Full analysis history</div>
+          <div class="tf"><span class="tf-y">✓</span>Pre-analysis tracking (3 shows)</div>
         </div>
         <button class="tcard-cta" onclick="startCheckout('creator','monthly')">Start Starter Lens &rarr;</button>
       </div>
@@ -4933,7 +4947,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (spBtn) spBtn.classList.add('connected');
     if (spLabel) spLabel.textContent = '✓ Spotify connected';
     setTimeout(function() {
-      if (typeof openSpotifyConnectedOverlay === 'function') openSpotifyConnectedOverlay();
+      if (typeof startSpotifyImport === 'function') startSpotifyImport();
     }, 800);
   }
 
@@ -5597,7 +5611,8 @@ function renderHomeState() {
     renderDashUnheardPreview(u);
     renderDashFollowedShows(u);
     renderDashFollowingSection(u);
-    loadDashTrending();
+    renderNewFromShows();
+    renderDashRecommended();
     renderDashStats(u, recent);
     loadSqWidget();
     // Check for ?section= param (e.g. from /library sidebar links)
@@ -5664,6 +5679,79 @@ async function loadDashTrending() {
       });
     });
   });
+}
+
+
+// ── NEW FROM YOUR SHOWS ──
+function renderNewFromShows() {
+  var u = plUser();
+  var grid = document.getElementById('dash-new-grid');
+  if (!grid) return;
+  if (!u || !(u.followedShows || []).length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Follow shows on Discover to see new episodes here <a href="javascript:void(0)" onclick="showView(\'discover\');return false" style="color:var(--navy)">\u2192</a></div>';
+    return;
+  }
+  var shows = (u.followedShows || []).slice(0, 4);
+  grid.innerHTML = shows.map(function(s) {
+    var name = s.showName || s.name || '';
+    var art = s.artwork ? '<img src="' + s.artwork + '" alt="" style="width:48px;height:48px;border-radius:6px;object-fit:cover;display:block" onerror="this.style.display=\'none\'">' : '';
+    return '<div class="tg-card" style="padding:12px;border:1px solid var(--border);border-radius:8px">'
+      + (art ? '<div style="margin-bottom:8px">' + art + '</div>' : '')
+      + '<div style="font-weight:600;font-size:13px;margin-bottom:4px">' + name + '</div>'
+      + '<div style="font-size:11px;color:var(--text3);margin-bottom:8px">Followed</div>'
+      + '<button class="btn-primary" style="font-size:11px;padding:6px 12px" onclick="showView(\'analyze\')">Analyze \u2192</button>'
+      + '</div>';
+  }).join('');
+}
+
+// ── RECOMMENDED SECTION ──
+function renderDashRecommended() {
+  var grid = document.getElementById('dash-rec-grid');
+  if (!grid) return;
+  var u = plUser();
+  var analyses = u ? (u.analyzedEpisodes || []) : [];
+  var follows = u ? (u.followedShows || []) : [];
+  if (analyses.length < 3 && follows.length < 5) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Analyze a few episodes to unlock personalized recommendations.</div>';
+    return;
+  }
+  if (typeof calcRecommendedLean === 'function') {
+    var rec = calcRecommendedLean(analyses);
+    if (rec && rec.message) {
+      grid.innerHTML = '<div style="grid-column:1/-1;padding:16px;background:var(--bg2);border-radius:8px;font-size:13px">' + rec.message + '</div>';
+      return;
+    }
+  }
+  var fp = u.biasFingerprint || {};
+  var leanDir = (fp.leftPct || 0) > (fp.rightPct || 0) ? 'right' : 'left';
+  var recs = (typeof CURATED_SHOWS !== 'undefined' ? CURATED_SHOWS : []).filter(function(s) {
+    if (!s.bias) return false;
+    if (leanDir === 'right') return s.bias === 'right' || s.bias === 'center-right';
+    return s.bias === 'left' || s.bias === 'center-left';
+  }).slice(0, 4);
+  if (!recs.length) {
+    recs = (typeof CURATED_SHOWS !== 'undefined' ? CURATED_SHOWS : []).filter(function(s) { return s.bias === 'center'; }).slice(0, 4);
+  }
+  if (!recs.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Keep analyzing to refine recommendations.</div>';
+    return;
+  }
+  grid.innerHTML = recs.map(function(s) {
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    var safeUrl = s.feedUrl ? s.feedUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+    var art = s.artwork ? '<img src="' + s.artwork + '" alt="" style="width:48px;height:48px;border-radius:6px;object-fit:cover;display:block" onerror="this.style.display=\'none\'">' : '';
+    return '<div class="tg-card" style="padding:12px;border:1px solid var(--border);border-radius:8px;cursor:pointer" onclick="showView(\'show\');loadShowProfile(\'' + slug + '\',\'' + safeUrl + '\')">'
+      + (art ? '<div style="margin-bottom:8px">' + art + '</div>' : '')
+      + '<div style="font-weight:600;font-size:13px;margin-bottom:4px">' + s.name + '</div>'
+      + '<div style="font-size:11px;color:var(--text3);margin-bottom:4px">' + (s.artist || '') + '</div>'
+      + (typeof _biasMini === 'function' ? _biasMini(s.bias) : '')
+      + '</div>';
+  }).join('');
+}
+function filterDashRec(lean, btn) {
+  document.querySelectorAll('#dash-rec-tabs .cat-pill-btn').forEach(function(b){ b.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  renderDashRecommended();
 }
 
 function renderDashStats(u, recent) {
@@ -5844,11 +5932,18 @@ function renderDashIntelligence(u) {
       + '<span>' + eco.totalAnalyses + ' episodes analyzed</span>'
       + '<span>' + eco.showCount + ' distinct show' + (eco.showCount !== 1 ? 's' : '') + '</span>'
       + '</div>'
-    : '<div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes across different shows to see your echo chamber score.</div>';
+    : (function(){ var prog = (eco && eco.progress) ? eco.progress : { current: 0, needed: 10, daysRecorded: 0, daysNeeded: 7 };
+        return '<div style="font-size:12px;color:var(--text3);margin-bottom:8px">' + (eco && eco.description ? eco.description : 'Keep listening — your score unlocks after 1 week or 10 episodes.') + '</div>'
+          + '<div style="display:flex;gap:12px;font-size:11px;color:var(--text3)">'
+          + '<span>' + prog.current + ' of ' + prog.needed + ' episodes</span>'
+          + '<span>' + prog.daysRecorded + ' of ' + prog.daysNeeded + ' days</span>'
+          + '</div>'
+          + '<div style="height:4px;border-radius:2px;background:var(--bg3);overflow:hidden;margin-top:6px"><div style="height:100%;width:' + Math.min(100, Math.round(Math.max(prog.current / prog.needed, prog.daysRecorded / prog.daysNeeded) * 100)) + '%;background:var(--navy);border-radius:2px"></div></div>';
+      })();
 
   el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
     // Bias fingerprint card
-    + '<div class="sidebar-card" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">'
+    + '<div class="sidebar-card" style="grid-column:1/-1;cursor:pointer" onclick="showFingerprintModal()"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">'
     + '<div><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Bias fingerprint</div>'
     + '<div style="font-size:28px;font-weight:700;font-family:var(--ffs)">'+label+'</div></div>'
     + '<div style="font-size:13px;color:var(--text3)">Based on '+recent.length+' episode'+(recent.length===1?'':'s')+'</div></div>'
@@ -5871,7 +5966,7 @@ function renderDashIntelligence(u) {
         +'</div>' : '<div style="font-size:12px;color:var(--text3)">Analyze episodes to see topic breakdown.</div>')
     + '</div>'
     // Echo chamber card
-    + '<div class="sidebar-card" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">'
+    + '<div class="sidebar-card" style="grid-column:1/-1;cursor:pointer" onclick="showEchoChamberModal()"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">'
     + '<div><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Echo chamber score</div>'
     + '<div style="font-size:11px;color:var(--text3)">How diverse is your listening?</div></div>'
     + '</div>'
@@ -5986,7 +6081,21 @@ function renderBiasFingerprint() {
   var dotEl = document.getElementById('sb-fp-dot') || document.getElementById('dash-fp-dot');
   if (!recent.length) {
     if (dotEl) dotEl.style.left = '50%';
-    if (countsEl) countsEl.innerHTML = '<span style="color:var(--text3);font-size:11px">Analyze episodes to build your fingerprint</span>';
+    if (countsEl) countsEl.innerHTML = '<span style="color:var(--text3);font-size:11px">Keep listening — your fingerprint unlocks after 1 week or 10 episodes.</span>';
+    return;
+  }
+  // Check threshold via calcBiasFingerprint
+  var fpCheck = (typeof calcBiasFingerprint === 'function') ? calcBiasFingerprint(recent) : null;
+  if (fpCheck && !fpCheck.hasData) {
+    if (dotEl) dotEl.style.left = '50%';
+    var prog = fpCheck.progress || { current: 0, needed: 10, daysRecorded: 0, daysNeeded: 7 };
+    if (countsEl) countsEl.innerHTML = '<div style="color:var(--text3);font-size:11px;margin-bottom:6px">' + (fpCheck.description || 'Keep listening — your fingerprint unlocks after 1 week or 10 episodes.') + '</div>'
+      + '<div style="display:flex;gap:10px;font-size:10px;color:var(--text3)">'
+      + '<span>' + prog.current + ' of ' + prog.needed + ' episodes</span>'
+      + '<span>' + prog.daysRecorded + ' of ' + prog.daysNeeded + ' days</span>'
+      + '</div>'
+      + '<div style="height:4px;border-radius:2px;background:var(--bg3);overflow:hidden;margin-top:4px"><div style="height:100%;width:' + Math.min(100, Math.round(Math.max(prog.current / prog.needed, prog.daysRecorded / prog.daysNeeded) * 100)) + '%;background:var(--navy);border-radius:2px"></div></div>';
+    renderEchoChamber(recent);
     return;
   }
   var avg = recent.reduce(function(acc,r){ return {l:acc.l+r.leftPct,c:acc.c+r.centerPct,r:acc.r+r.rightPct}; },{l:0,c:0,r:0});
@@ -6017,7 +6126,13 @@ function renderEchoChamber(analyses) {
   if (!el) return;
   var eco = (typeof calcEchoChamber === 'function') ? calcEchoChamber(analyses || []) : null;
   if (!eco || !eco.hasData) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--text3)">Analyze 3+ episodes across different shows to see your echo chamber score.</div>';
+    var prog = (eco && eco.progress) ? eco.progress : { current: 0, needed: 10, daysRecorded: 0, daysNeeded: 7 };
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3);margin-bottom:8px">' + (eco && eco.description ? eco.description : 'Keep listening — your score unlocks after 1 week or 10 episodes.') + '</div>'
+      + '<div style="display:flex;gap:12px;font-size:11px;color:var(--text3)">'
+      + '<span>' + prog.current + ' of ' + prog.needed + ' episodes</span>'
+      + '<span>' + prog.daysRecorded + ' of ' + prog.daysNeeded + ' days</span>'
+      + '</div>'
+      + '<div style="height:4px;border-radius:2px;background:var(--bg3);overflow:hidden;margin-top:6px"><div style="height:100%;width:' + Math.min(100, Math.round(Math.max(prog.current / prog.needed, prog.daysRecorded / prog.daysNeeded) * 100)) + '%;background:var(--navy);border-radius:2px;transition:width .3s ease"></div></div>';
     return;
   }
   var barColor = eco.score <= 25 ? '#639922' : eco.score <= 50 ? '#BA7517' : '#E24B4A';
@@ -6553,7 +6668,8 @@ function showDashSection(section) {
   if (section === 'home') {
     // Re-render home content so clicking Home always shows fresh data
     renderDashRecent();
-    loadDashTrending();
+    renderNewFromShows();
+    renderDashRecommended();
     renderDashStats(u, getRecent());
     renderBiasFingerprint();
     renderDashFollowedShows(u);
@@ -7019,6 +7135,19 @@ var _discDefaultHero = {
   url:'https://www.youtube.com/watch?v=vif8NQcjVf0', ytId:'vif8NQcjVf0'
 };
 var _discCurrentHeroUrl = _discDefaultHero.url;
+var _discCurrentHeroShow = _discDefaultHero.show;
+var _discCurrentHeroTitle = _discDefaultHero.title;
+
+function _discMakeShowClickable(hostEl, showName, feedUrl) {
+  if (!hostEl || !showName) return;
+  hostEl.style.cursor = 'pointer';
+  hostEl.title = 'View show profile';
+  hostEl.onclick = function() {
+    var slug = (showName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    showView('show');
+    if (typeof loadShowProfile === 'function') loadShowProfile(slug, feedUrl || null);
+  };
+}
 
 function discTopicHero(topic) {
   var hero = TOPIC_HEROES[topic];
@@ -7063,10 +7192,13 @@ function discTopicHero(topic) {
     }
   }
 
-  // Track current hero URL so discHeroPlay() always uses the right one
+  // Track current hero URL/show/title so discHeroPlay() always uses the right one
   _discCurrentHeroUrl = hero.url;
+  _discCurrentHeroShow = hero.show;
+  _discCurrentHeroTitle = hero.title;
   if (playBtn) { playBtn.onclick = discHeroPlay; }
   if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,hero.url,hero.title,hero.show); }; }
+  _discMakeShowClickable(hostEl, hero.show, hero.url);
 
   // Show related episodes shelf
   if (relatedShelf) relatedShelf.style.display = '';
@@ -7110,8 +7242,11 @@ function discResetHero() {
   if (hostEl) hostEl.textContent = d.host;
   if (videoEl) videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+d.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
   _discCurrentHeroUrl = _discDefaultHero.url;
+  _discCurrentHeroShow = _discDefaultHero.show;
+  _discCurrentHeroTitle = _discDefaultHero.title;
   if (playBtn) playBtn.onclick = discHeroPlay;
   if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,_discDefaultHero.url,_discDefaultHero.title,_discDefaultHero.show); }; }
+  _discMakeShowClickable(hostEl, _discDefaultHero.show, _discDefaultHero.url);
   if (relatedShelf) relatedShelf.style.display = 'none';
   // Reset shows/episodes
   discRenderShows();
@@ -7120,10 +7255,40 @@ function discResetHero() {
 
 function discHeroPlay() {
   var url = _discCurrentHeroUrl || _discDefaultHero.url;
-  var inp = document.getElementById('url-input');
-  if (inp) inp.value = url;
-  showView('analyze');
-  setTimeout(function() { startAnalysis(url); }, 300);
+  if (!url) return;
+  // Play audio in ar-dock player instead of navigating to analyze
+  var dock = document.getElementById('ar-dock');
+  var dockTitle = document.getElementById('ar-dock-title');
+  var dockShow = document.getElementById('ar-dock-show');
+  var dockArt = document.getElementById('ar-dock-art');
+  var dockPlay = document.getElementById('ar-dock-play');
+  var dockStatus = document.getElementById('ar-dock-status');
+  // For YouTube URLs, fall back to analyze (can't direct-play YT audio)
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    var inp = document.getElementById('url-input');
+    if (inp) inp.value = url;
+    showView('analyze');
+    setTimeout(function() { startAnalysis(url); }, 300);
+    return;
+  }
+  // For RSS/audio URLs, play in dock
+  if (_arMedia.audio) { _arMedia.audio.pause(); _arMedia.audio = null; }
+  var showName = _discCurrentHeroShow || _discDefaultHero.show || '';
+  var epTitle = _discCurrentHeroTitle || _discDefaultHero.title || '';
+  // Find artwork from CURATED_SHOWS
+  var curShow = (typeof CURATED_SHOWS !== 'undefined') && CURATED_SHOWS.find(function(s){ return s.name === showName || s.feedUrl === url; });
+  var artUrl = (curShow && curShow.artwork) || '';
+  if (dock) dock.classList.remove('hidden');
+  if (dockTitle) dockTitle.textContent = epTitle.replace(/&mdash;/g,'\u2014').replace(/&amp;/g,'&');
+  if (dockShow) dockShow.textContent = showName;
+  if (dockArt && artUrl) dockArt.src = artUrl;
+  if (dockStatus) { dockStatus.className = 'ar-dock-status'; dockStatus.textContent = ''; }
+  // Initialize native audio player
+  _arInitNativeAudio(url, { audioLean: {} });
+  if (_arMedia.audio) {
+    _arMedia.audio.play().catch(function(){});
+    _arSetPlayIcon(true, document.getElementById('ar-play-btn'), dockPlay);
+  }
 }
 
 
@@ -8167,6 +8332,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
               _enrichWithAudioLean(cached);
               renderResults(cached);
               renderTranscriptHighlights(cached);
+              if (cached.words) initTranscriptSync(cached.words);
               _arUpdateProgress(100);
               plToast('\u26A1 From Podlens database \u2014 instant result');
               var resultsEl = document.getElementById('results');
@@ -8253,6 +8419,7 @@ function pollStatus(jobId, audioUrl) {
         if (!shownPartial) trackAnalysis(d);
         renderResults(d);
         renderTranscriptHighlights(d);
+        if (d.words) initTranscriptSync(d.words);
         _arUpdateProgress(100);
         plToast('\u2705 Analysis complete');
         return;
@@ -8886,6 +9053,83 @@ function thFilter(btn, dir) {
   });
 }
 
+// ── LIVE TRANSCRIPT SYNC (Spotify lyrics pattern) ──
+function initTranscriptSync(words) {
+  if (!words || !words.length) return;
+  var container = document.getElementById('transcript-content');
+  if (!container) return;
+
+  // Build lines of ~8 words each
+  var lines = [];
+  for (var i = 0; i < words.length; i += 8) {
+    var lineWords = words.slice(i, i + 8);
+    var text = lineWords.map(function(w){ return w.t; }).join(' ');
+    var startSec = lineWords[0].s;
+    var endSec = lineWords[lineWords.length - 1].e;
+    lines.push({ text: text, start: startSec, end: endSec });
+  }
+
+  // Create sync container
+  var syncDiv = document.createElement('div');
+  syncDiv.id = 'transcript-sync';
+  syncDiv.style.cssText = 'max-height:300px;overflow-y:auto;scroll-behavior:smooth;margin-bottom:16px;padding:12px;background:var(--bg2,#f7f6f3);border-radius:8px';
+  lines.forEach(function(line, idx) {
+    var el = document.createElement('div');
+    el.className = 'ts-line';
+    el.dataset.idx = idx;
+    el.dataset.start = line.start;
+    el.dataset.end = line.end;
+    el.textContent = line.text;
+    el.style.cssText = 'padding:4px 8px;font-size:13px;line-height:1.5;opacity:0.45;transition:opacity 0.2s;cursor:pointer;border-radius:4px';
+    el.onclick = function() {
+      // Seek unified media controller
+      if (_arMedia.type === 'yt') {
+        var p = _arMedia.ytVid && _ytPlayers[_arMedia.ytVid];
+        if (p) try { p.seekTo(line.start, true); } catch(e) {}
+      } else if (_arMedia.type === 'audio' && _arMedia.audio) {
+        _arMedia.audio.currentTime = line.start;
+        _arMedia.audio.play().catch(function(){});
+      }
+    };
+    syncDiv.appendChild(el);
+  });
+
+  // Add to transcript panel (prepend before highlights)
+  var existing = container.querySelector('#transcript-sync');
+  if (existing) existing.remove();
+  container.insertBefore(syncDiv, container.firstChild);
+
+  // Timeupdate listener — works for both audio and YouTube
+  var lastActive = -1;
+  function onTimeUpdate() {
+    var ct = 0;
+    if (_arMedia.type === 'yt') {
+      var p = _arMedia.ytVid && _ytPlayers[_arMedia.ytVid];
+      if (p && p.getCurrentTime) ct = p.getCurrentTime();
+    } else if (_arMedia.type === 'audio' && _arMedia.audio) {
+      ct = _arMedia.audio.currentTime;
+    }
+    var activeIdx = -1;
+    for (var j = 0; j < lines.length; j++) {
+      if (ct >= lines[j].start && ct <= lines[j].end + 1) { activeIdx = j; break; }
+    }
+    if (activeIdx === lastActive) return;
+    lastActive = activeIdx;
+    var allLines = syncDiv.querySelectorAll('.ts-line');
+    allLines.forEach(function(el, i) {
+      el.style.opacity = (i === activeIdx) ? '1' : '0.45';
+      el.style.fontWeight = (i === activeIdx) ? '600' : '400';
+    });
+    if (activeIdx >= 0 && allLines[activeIdx]) {
+      allLines[activeIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  // Poll-based sync (works for both audio element and YouTube player)
+  if (window._transcriptSyncInterval) clearInterval(window._transcriptSyncInterval);
+  window._transcriptSyncInterval = setInterval(onTimeUpdate, 250);
+}
+
 // ── RENDER RESULTS (2-col dashboard) ──
 // ── AR: unified media controller state ──
 var _arMedia = { type: null, ytVid: null, audio: null };
@@ -8899,11 +9143,27 @@ function arPlayPause() {
     if (!p) return;
     try {
       if (p.getPlayerState && p.getPlayerState() === 1) { p.pauseVideo(); _arSetPlayIcon(false, btn, dockBtn); }
-      else { p.playVideo(); _arSetPlayIcon(true, btn, dockBtn); }
+      else {
+        p.playVideo(); _arSetPlayIcon(true, btn, dockBtn);
+        if (typeof recordListenEvent === 'function') {
+          var _ard = window._lastAnalysisResult;
+          if (_ard && _ard.leftPct != null) {
+            recordListenEvent({ showName: _ard.showName || '', episodeTitle: _ard.episodeTitle || '', url: _ard.url || '', leftPct: _ard.leftPct, rightPct: _ard.rightPct, biasLabel: _ard.biasLabel || '' });
+          }
+        }
+      }
     } catch(e) {}
   } else if (_arMedia.type === 'audio' && _arMedia.audio) {
     var a = _arMedia.audio;
-    if (a.paused) { a.play(); _arSetPlayIcon(true, btn, dockBtn); }
+    if (a.paused) {
+      a.play(); _arSetPlayIcon(true, btn, dockBtn);
+      if (typeof recordListenEvent === 'function') {
+        var _ard = window._lastAnalysisResult;
+        if (_ard && _ard.leftPct != null) {
+          recordListenEvent({ showName: _ard.showName || '', episodeTitle: _ard.episodeTitle || '', url: _ard.url || '', leftPct: _ard.leftPct, rightPct: _ard.rightPct, biasLabel: _ard.biasLabel || '' });
+        }
+      }
+    }
     else { a.pause(); _arSetPlayIcon(false, btn, dockBtn); }
   }
 }
@@ -9907,6 +10167,7 @@ function viewAnalysis(jobId) {
         _enrichWithAudioLean(d);
         renderResults(d);
         renderTranscriptHighlights(d);
+        if (d.words) initTranscriptSync(d.words);
       } else {
         document.getElementById('results').innerHTML='<div style="padding:48px;text-align:center;color:var(--text3);font-size:13px">Analysis not yet complete. <a href="javascript:void(0)" onclick="pollStatus(\''+jobId+'\',\'\');return false" style="color:var(--navy)">Check again →</a></div>';
       }
@@ -10056,8 +10317,11 @@ function trackAnalysis(data) {
   try {
     // Increment monthly count for free users
     var cu = plUser();
-    if (cu && cu.plan === 'free') {
-      cu.analysesThisMonth = (cu.analysesThisMonth || 0) + 1;
+    if (cu) {
+      if (cu.plan === 'free') {
+        cu.analysesThisMonth = (cu.analysesThisMonth || 0) + 1;
+      }
+      cu.analysesThisWeek = (cu.analysesThisWeek || 0) + 1;
       setPlUser(cu);
     }
     var recent=getRecent();
@@ -10086,11 +10350,17 @@ function trackAnalysis(data) {
         centerPct: (data.audioLean && data.audioLean.centerPct) || 0,
         rightPct: (data.audioLean && data.audioLean.rightPct) || 0,
         duration: data.duration || '',
+        duration_minutes: (function(d) { if (!d) return null; var m = d.match(/(\d+)/); return m ? parseInt(m[1], 10) : null; })(data.duration),
         url: data.url || '',
         analyzedAt: new Date().toISOString()
       });
       cu2.analyzedEpisodes = analyzed.slice(0, 50);
       setPlUser(cu2);
+    }
+    // If Library view is visible, re-render it to show the new analysis
+    var libView = document.getElementById('view-library');
+    if (libView && libView.style.display !== 'none' && typeof initLibraryView === 'function') {
+      initLibraryView();
     }
   } catch(e){}
 }
@@ -10612,6 +10882,7 @@ function setPreviewTier(tier) {
   } else if (window._lastAnalysisResult) {
     renderResults(window._lastAnalysisResult);
     renderTranscriptHighlights(window._lastAnalysisResult);
+    if (window._lastAnalysisResult.words) initTranscriptSync(window._lastAnalysisResult.words);
   }
 }
 
@@ -12359,6 +12630,7 @@ var METRIC_EXPLAINERS = {
   'factual':    { title:'Factual rate', what:'The percentage of episodes rated "Mostly factual" — meaning claims are grounded in verifiable evidence without significant distortion.', how:'Each episodes factual score is determined by checking key claims against known facts, looking for logical fallacies, and evaluating source quality.' },
   'sponsor':    { title:'Sponsor influence rate', what:'The percentage of episodes where sponsor messaging appears to influence editorial content — not just ad reads, but actual topic avoidance or favorable framing.', how:'Detected by cross-referencing sponsor categories with episode topics, and flagging when sponsored industries receive unusually positive framing.' },
   'fingerprint':{ title:'Bias fingerprint', what:'Your personal media diet score. It reflects the aggregate political lean of every podcast episode you have analyzed on Podlens.', how:'Each episode you analyze adds its bias score (weighted by episode length) to your fingerprint. The bar shows the combined left/center/right distribution across all your analyses.' },
+  'guest':      { title:'Guest score', what:'How rigorously the host(s) challenged the guest\'s claims, pushed back on unsourced assertions, and avoided letting the guest go unchallenged.', how:'Scored 0-100. 100 = host challenged every major claim with evidence. 0 = guest was never questioned.' },
 };
 
 function showMetricExplainer(metricKey) {
@@ -12419,6 +12691,78 @@ function _biasExplainerRow(icon, label, desc) {
     + '<div style="font-size:18px;flex-shrink:0;margin-top:1px">'+icon+'</div>'
     + '<div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">'+label+'</div>'
     + '<div style="font-size:12px;color:var(--text2);line-height:1.5">'+desc+'</div></div></div>';
+}
+
+function showFingerprintModal() {
+  var u = plUser(); if (!u) return;
+  var fp = calcBiasFingerprint(u.analyzedEpisodes || []);
+  if (!fp.hasData) return;
+  var b = fp.basis || {};
+  var episodes = (u.analyzedEpisodes || []).slice(-5).reverse();
+  var listens = (getListenHistory() || []).slice(-5).reverse();
+  var html = '<div style="text-align:center;margin-bottom:16px">';
+  html += '<div style="font-size:18px;font-weight:700;margin-bottom:4px;font-family:var(--ffs)">Your bias fingerprint</div>';
+  html += '<div style="font-size:12px;color:var(--text3)">Based on ' + (b.episodeCount||0) + ' analyzed + ' + (b.listenCount||0) + ' listened across ' + (b.weekCount||0) + ' weeks</div>';
+  html += '</div>';
+  html += '<div style="display:flex;height:12px;border-radius:6px;overflow:hidden;margin:16px 0">';
+  html += '<div style="width:' + fp.leftPct + '%;background:var(--color-left,#E24B4A)"></div>';
+  html += '<div style="width:' + fp.centerPct + '%;background:var(--color-center,#D1CFC9)"></div>';
+  html += '<div style="width:' + fp.rightPct + '%;background:var(--color-right,#378ADD)"></div>';
+  html += '</div>';
+  html += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:16px">';
+  html += '<span>' + fp.leftPct + '% left</span><span>' + fp.centerPct + '% center</span><span>' + fp.rightPct + '% right</span>';
+  html += '</div>';
+  html += '<div style="font-size:12px;font-weight:600;margin-bottom:8px">Recent contributing episodes</div>';
+  var allItems = episodes.map(function(e){ return {name:e.showName||'',title:e.episodeTitle||'',label:e.biasLabel||'',type:'Analyzed',date:e.analyzedAt||e.date||''}; });
+  listens.forEach(function(l){ allItems.push({name:l.showName||'',title:l.episodeTitle||'',label:l.biasLabel||'',type:'Listened',date:l.listenedAt||''}); });
+  allItems.slice(0,5).forEach(function(item){
+    html += '<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:11px">';
+    html += '<div style="font-weight:600">' + item.name + '</div>';
+    html += '<div style="color:var(--text3)">' + item.title + ' \u00b7 ' + item.label + ' \u00b7 <span style="opacity:0.6">' + item.type + '</span></div>';
+    html += '</div>';
+  });
+  html += '<div style="font-size:10px;color:var(--text3);margin-top:12px;font-style:italic">Analyzed episodes carry full weight. Listened episodes carry lighter weight. One heavy week doesn\'t change your fingerprint overnight — it builds over time.</div>';
+  html += '<button onclick="this.closest(\'.modal-overlay\').remove()" style="width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);margin-top:16px">Got it</button>';
+  var existing = document.getElementById('modal-fingerprint-detail');
+  if (existing) existing.remove();
+  document.body.insertAdjacentHTML('beforeend', '<div id="modal-fingerprint-detail" class="modal-overlay" onclick="if(event.target===this)this.remove()" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:center;justify-content:center;padding:24px"><div class="modal-box" style="max-width:440px;background:var(--bg);border-radius:12px;padding:24px;position:relative;max-height:90vh;overflow-y:auto">' + html + '</div></div>');
+}
+
+function showEchoChamberModal() {
+  var u = plUser(); if (!u) return;
+  var eco = calcEchoChamber(u.analyzedEpisodes || []);
+  if (!eco.hasData) return;
+  var b = eco.basis || {};
+  var rec = (typeof calcRecommendedLean === 'function') ? calcRecommendedLean(u.analyzedEpisodes || []) : null;
+  var html = '<div style="text-align:center;margin-bottom:16px">';
+  html += '<div style="font-size:18px;font-weight:700;margin-bottom:4px;font-family:var(--ffs)">Your echo chamber score</div>';
+  var scoreColor = eco.score < 30 ? '#3B6D11' : eco.score < 60 ? '#854F0B' : '#A32D2D';
+  html += '<div style="font-size:48px;font-weight:800;color:' + scoreColor + '">' + eco.score + '</div>';
+  html += '<div style="font-size:14px;font-weight:600;color:' + eco.color + '">' + eco.label + '</div>';
+  html += '<div style="font-size:12px;color:var(--text3)">Based on ' + ((b.episodeCount||0) + (b.listenCount||0)) + ' episodes across ' + (b.showCount||0) + ' shows</div>';
+  html += '</div>';
+  html += '<div style="display:flex;height:12px;border-radius:6px;overflow:hidden;margin:12px 0">';
+  if (eco.leftPct) html += '<div style="width:' + eco.leftPct + '%;background:var(--color-left,#E24B4A)"></div>';
+  if (eco.centerPct) html += '<div style="width:' + eco.centerPct + '%;background:var(--color-center,#D1CFC9)"></div>';
+  if (eco.rightPct) html += '<div style="width:' + eco.rightPct + '%;background:var(--color-right,#378ADD)"></div>';
+  html += '</div>';
+  html += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:12px">';
+  if (eco.leftPct) html += '<span>' + eco.leftPct + '% left</span>';
+  if (eco.centerPct) html += '<span>' + eco.centerPct + '% center</span>';
+  if (eco.rightPct) html += '<span>' + eco.rightPct + '% right</span>';
+  html += '</div>';
+  html += '<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px">' + eco.description + '</div>';
+  if (eco.score > 50 && rec && rec.message) {
+    html += '<div style="margin-top:12px;padding:10px;background:var(--bg2);border-radius:8px;font-size:12px">';
+    html += '<div style="font-weight:600;margin-bottom:4px">Recommended to balance</div>';
+    html += '<div>' + rec.message + '</div>';
+    html += '</div>';
+  }
+  html += '<div style="font-size:10px;color:var(--text3);margin-top:12px;font-style:italic">Lower is better. A score under 30 means you\'re hearing diverse perspectives. Above 60 suggests most of your listening leans one direction.</div>';
+  html += '<button onclick="this.closest(\'.modal-overlay\').remove()" style="width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);margin-top:16px">Got it</button>';
+  var existing = document.getElementById('modal-echo-detail');
+  if (existing) existing.remove();
+  document.body.insertAdjacentHTML('beforeend', '<div id="modal-echo-detail" class="modal-overlay" onclick="if(event.target===this)this.remove()" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:center;justify-content:center;padding:24px"><div class="modal-box" style="max-width:440px;background:var(--bg);border-radius:12px;padding:24px;position:relative;max-height:90vh;overflow-y:auto">' + html + '</div></div>');
 }
 
 function _likeFromBtn(btn) {
@@ -13206,8 +13550,16 @@ function rotateSpotlight() {
         }
       }
       if (data.hostTrustScore != null && plan !== 'free') {
-        html += '<div class="lap-section-hd">Host Trust</div>';
+        html += '<div class="lap-section-hd">Host Trust' + (data.hostCount > 1 ? ' (' + data.hostCount + ' hosts)' : '') + '</div>';
         html += '<div class="lap-trust-row"><span>' + Math.round(data.hostTrustScore) + '/100</span><div class="lap-trust-bar"><div class="lap-trust-fill" style="width:' + data.hostTrustScore + '%"></div></div></div>';
+        if (data.hosts && data.hosts.length) {
+          html += '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + data.hosts.map(function(h){ return h.name; }).join(', ') + '</div>';
+        }
+      }
+      if (data.hasGuest === true && data.guestScore != null && plan !== 'free') {
+        html += '<div class="lap-section-hd">Guest Score ' + _metricQ('guest') + '</div>';
+        html += '<div class="lap-trust-row"><span>' + Math.round(data.guestScore) + '/100</span><div class="lap-trust-bar"><div class="lap-trust-fill" style="width:' + data.guestScore + '%"></div></div></div>';
+        html += '<div style="font-size:10px;color:var(--text3);margin-top:2px">Host challenge score</div>';
       }
     }
 
@@ -13405,6 +13757,21 @@ function _viewFromPath(path) {
   var map = { '/discover': 'discover', '/analyze': 'analyze', '/library': 'library', '/account': 'account', '/profile': 'account', '/settings': 'settings', '/show': 'show', '/admin': 'admin', '/how-it-works': 'how-it-works', '/pricing': 'pricing' };
   return map[path] || map[path.replace(/\/$/, '')] || 'home';
 }
+function startSpotifyImport() {
+  var u = plUser();
+  if (!u || !u.id) return;
+  fetch('/api/get-spotify-token?userId=' + encodeURIComponent(u.id))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d && d.accessToken) {
+        sessionStorage.setItem('pl-spotify-token-' + u.id, JSON.stringify({ accessToken: d.accessToken }));
+        if (typeof openSpotifyConnectedOverlay === 'function') {
+          openSpotifyConnectedOverlay();
+        }
+      }
+    }).catch(function(e) { console.warn('Spotify import failed:', e); });
+}
+
 function heroConnectSpotify() {
   var u = plUser();
   if (!u) { openModal('signup'); return; }

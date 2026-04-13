@@ -240,6 +240,7 @@ function recordListenEvent(ep) {
       centerPct:    ep.centerPct    || (100 - (ep.leftPct||0) - (ep.rightPct||0)),
       rightPct:     ep.rightPct     || 0,
       biasLabel:    ep.biasLabel    || '',
+      durationMinutes: ep.durationMinutes || null,
       listenedAt:   new Date().toISOString(),
       weight:       LISTEN_WEIGHT
     });
@@ -258,24 +259,31 @@ function _mergeSignals(analyses, listenEvents) {
   var events = [];
   (analyses || []).forEach(function(ep) {
     if (ep.leftPct === undefined && ep.rightPct === undefined) return;
+    var durationMinutes = ep.durationMinutes || ep.duration_minutes || null;
+    var durationFactor = durationMinutes ? Math.min(1.0, Math.max(0.1, durationMinutes / 60)) : 0.5;
+    var finalWeight = ANALYSIS_WEIGHT * durationFactor;
     events.push({
       leftPct:   ep.leftPct   || 0,
       centerPct: ep.centerPct || (100 - (ep.leftPct||0) - (ep.rightPct||0)),
       rightPct:  ep.rightPct  || 0,
       showName:  ep.showName  || '',
       date:      ep.analyzedAt || ep.date || new Date().toISOString(),
-      weight:    ANALYSIS_WEIGHT
+      weight:    finalWeight
     });
   });
   (listenEvents || []).forEach(function(ev) {
     if (ev.leftPct === undefined && ev.rightPct === undefined) return;
+    var durationMinutes = ev.durationMinutes || ev.duration_minutes || null;
+    var durationFactor = durationMinutes ? Math.min(1.0, Math.max(0.1, durationMinutes / 60)) : 0.5;
+    var baseWeight = ev.weight !== undefined ? ev.weight : LISTEN_WEIGHT;
+    var finalWeight = baseWeight * durationFactor;
     events.push({
       leftPct:   ev.leftPct   || 0,
       centerPct: ev.centerPct || (100 - (ev.leftPct||0) - (ev.rightPct||0)),
       rightPct:  ev.rightPct  || 0,
       showName:  ev.showName  || '',
       date:      ev.listenedAt || ev.date || new Date().toISOString(),
-      weight:    ev.weight !== undefined ? ev.weight : LISTEN_WEIGHT
+      weight:    finalWeight
     });
   });
   return events;
@@ -320,7 +328,31 @@ function calcWeeklyBias(analyses, listenEvents) {
  */
 function calcBiasFingerprint(analyses, listenEvents) {
   var events = _mergeSignals(analyses, listenEvents || getListenHistory());
-  if (!events.length) return { leftPct: 0, centerPct: 100, rightPct: 0, label: 'No data', weekCount: 0, hasData: false };
+
+  // Activation threshold: 10+ signals OR 7+ days of data
+  var totalSignals = events.length;
+  var oldestDate = events.length ? events[events.length - 1].date : null;
+  var newestDate = events.length ? events[0].date : null;
+  var daysSinceFirst = oldestDate ? Math.floor((Date.now() - new Date(oldestDate).getTime()) / 86400000) : 0;
+  var thresholdMet = totalSignals >= 10 || daysSinceFirst >= 7;
+
+  // Count analysis vs listen for basis
+  var analysisCount = 0, listenCount = 0;
+  var showSetAll = {};
+  events.forEach(function(e) {
+    if (e.weight >= ANALYSIS_WEIGHT * 0.5) analysisCount++; else listenCount++;
+    if (e.showName) showSetAll[e.showName.toLowerCase()] = 1;
+  });
+  var distinctShows = Object.keys(showSetAll).length;
+
+  if (!thresholdMet) {
+    return {
+      leftPct: 0, centerPct: 100, rightPct: 0, label: 'No data', weekCount: 0, hasData: false,
+      description: 'Keep listening — your fingerprint unlocks after 1 week or 10 episodes.',
+      progress: { current: totalSignals, needed: 10, daysRecorded: daysSinceFirst, daysNeeded: 7 },
+      basis: { episodeCount: analysisCount, listenCount: listenCount, weekCount: 0, oldestDate: oldestDate, newestDate: newestDate, showCount: distinctShows }
+    };
+  }
 
   // Group by ISO week
   var weekMap = {};
@@ -362,7 +394,10 @@ function calcBiasFingerprint(analyses, listenEvents) {
     : diff < 60 ? (l > r ? 'Leans left' : 'Leans right')
     : (l > r ? 'Strongly left' : 'Strongly right');
 
-  return { leftPct: l, centerPct: c, rightPct: r, label: label, weekCount: weeks.length, hasData: true };
+  return {
+    leftPct: l, centerPct: c, rightPct: r, label: label, weekCount: weeks.length, hasData: true,
+    basis: { episodeCount: analysisCount, listenCount: listenCount, weekCount: weeks.length, oldestDate: oldestDate, newestDate: newestDate, showCount: distinctShows }
+  };
 }
 
 /* ── ECHO CHAMBER SCORE ──────────────────────────────────────────────────────
@@ -374,9 +409,32 @@ function calcEchoChamber(analyses, listenEvents) {
   var events = _mergeSignals(analyses, listenEvents || getListenHistory());
   // Only count events with meaningful bias data
   events = events.filter(function(e) { return e.leftPct || e.rightPct; });
-  if (events.length < 3) {
-    return { score: null, label: null, description: 'Listen to or analyze 3+ episodes to see your echo chamber score.', hasData: false };
+
+  // Activation threshold: 10+ signals OR 7+ days of data
+  var totalSignals = events.length;
+  var oldestDate = events.length ? events[events.length - 1].date : null;
+  var newestDate = events.length ? events[0].date : null;
+  var daysSinceFirst = oldestDate ? Math.floor((Date.now() - new Date(oldestDate).getTime()) / 86400000) : 0;
+  var thresholdMet = totalSignals >= 10 || daysSinceFirst >= 7;
+
+  // Count distinct shows and analysis/listen counts for basis
+  var showSetAll = {};
+  var analysisCount = 0, listenCount = 0;
+  events.forEach(function(e) {
+    if (e.showName) showSetAll[e.showName.toLowerCase()] = 1;
+    if (e.weight >= ANALYSIS_WEIGHT * 0.5) analysisCount++; else listenCount++;
+  });
+  var distinctShows = Object.keys(showSetAll).length;
+
+  if (!thresholdMet) {
+    return {
+      score: 0, label: '', description: 'Keep listening — your score unlocks after 1 week or 10 episodes.',
+      hasData: false,
+      progress: { current: totalSignals, needed: 10, daysRecorded: daysSinceFirst, daysNeeded: 7 },
+      basis: { episodeCount: analysisCount, listenCount: listenCount, weekCount: 0, oldestDate: oldestDate, newestDate: newestDate, showCount: distinctShows }
+    };
   }
+
   var left = 0, center = 0, right = 0;
   var showSet = {};
   events.forEach(function(e) {
@@ -410,7 +468,18 @@ function calcEchoChamber(analyses, listenEvents) {
   }
   var dominant = left > right && left > center ? 'left'
     : right > left && right > center ? 'right' : 'center';
-  return { score: score, label: label, description: description, color: color, dominant: dominant, showCount: showCount, totalSignals: total, hasData: true };
+
+  // Group by week for weekCount
+  var weekSet = {};
+  events.forEach(function(e) { weekSet[_isoWeekKey(e.date)] = 1; });
+  var weekCount = Object.keys(weekSet).length;
+
+  return {
+    score: score, label: label, description: description, color: color, dominant: dominant,
+    showCount: showCount, totalSignals: total, hasData: true,
+    leftPct: Math.round(left / total * 100), centerPct: Math.round(center / total * 100), rightPct: Math.round(right / total * 100),
+    basis: { episodeCount: analysisCount, listenCount: listenCount, weekCount: weekCount, oldestDate: oldestDate, newestDate: newestDate, showCount: showCount }
+  };
 }
 
 /* ── TOPIC AFFINITY ──────────────────────────────────────────────────────────

@@ -480,6 +480,23 @@ export default async (req: Request) => {
   // Mark as written so backfill path doesn't re-run on subsequent polls
   result._sbWritten = true;
 
+  // ── Create lightweight show profile for YouTube-only channels ─────────────
+  if (result.showName && job.url && /youtube\.com|youtu\.be/i.test(job.url)) {
+    try {
+      const channelSlug = result.showName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const showMetaKey = `show-meta-youtube-${channelSlug}`;
+      const existing = await store.get(showMetaKey, { type: "json" }).catch(() => null) as any;
+      await store.setJSON(showMetaKey, {
+        channelTitle: result.showName,
+        lastVideoTitle: result.episodeTitle,
+        youtubeChannelUrl: job.url,
+        artworkUrl: result.showArtwork || existing?.artworkUrl || null,
+        firstAnalyzedAt: existing?.firstAnalyzedAt || new Date().toISOString(),
+        analysisCount: (existing?.analysisCount || 0) + 1,
+      });
+    } catch {}
+  }
+
   return new Response(JSON.stringify(result), { status: 200, headers: { "Content-Type": "application/json" } });
 };
 

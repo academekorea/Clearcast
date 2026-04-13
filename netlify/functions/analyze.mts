@@ -90,8 +90,8 @@ function extractText(block: string, tag: string): string {
   return m?.[1]?.trim() || "";
 }
 
-async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: string | null; episodeTitle: string; showName: string }> {
-  const empty = { audioUrl: null, episodeTitle: "", showName: "" };
+async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: string | null; episodeTitle: string; showName: string; hostNames: string[] }> {
+  const empty = { audioUrl: null, episodeTitle: "", showName: "", hostNames: [] as string[] };
   const userAgents = [
     "Mozilla/5.0 (compatible; Podlens/1.0; +https://podlens.app)",
     "Podlens/1.0 (podcast analysis bot)",
@@ -111,6 +111,9 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
     } catch { continue; }
   }
   if (!xml) return empty;
+
+  // Extract host names from feed metadata
+  const hostNames = extractHostsFromFeedXml(xml);
 
   // Show name
   const channelMatch = xml.match(/<channel[^>]*>([\s\S]*?)<\/channel>/i);
@@ -156,12 +159,12 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
   const segments = rssItems.length >= atomItems.length ? rssItems : atomItems;
   for (let i = 1; i < Math.min(segments.length, 8); i++) {
     const { audioUrl, epTitle } = extractAudioFromBlock(segments[i]);
-    if (audioUrl) return { audioUrl, episodeTitle: epTitle, showName };
+    if (audioUrl) return { audioUrl, episodeTitle: epTitle, showName, hostNames };
   }
 
   // Last resort: any audio URL in the whole feed
   const fallback = xml.match(/https?:\/\/[^\s"'<>]+\.(?:mp3|m4a|ogg|wav|aac|opus)(?:\?[^\s"'<>]*)?/i);
-  if (fallback) return { audioUrl: fallback[0], episodeTitle: "", showName };
+  if (fallback) return { audioUrl: fallback[0], episodeTitle: "", showName, hostNames };
 
   return empty;
 }
@@ -304,6 +307,36 @@ async function refreshGoogleToken(refreshToken: string): Promise<string | null> 
   } catch { return null; }
 }
 
+// ── RSS HOST EXTRACTION ──────────────────────────────────────────────────────
+function extractHostsFromFeedXml(xml: string): string[] {
+  const hosts: string[] = [];
+  // 1. podcast:person role="host"
+  const personRe = /<podcast:person[^>]*role=["']host["'][^>]*>([^<]+)<\/podcast:person>/gi;
+  let m;
+  while ((m = personRe.exec(xml)) !== null) hosts.push(m[1].trim());
+  if (hosts.length) return [...new Set(hosts)].slice(0, 4);
+
+  // 2. itunes:author (channel level — before first <item>)
+  const channelBlock = xml.split(/<item[\s>]/i)[0] || xml;
+  const itunesAuthor = channelBlock.match(/<itunes:author>([^<]+)<\/itunes:author>/i);
+  if (itunesAuthor) hosts.push(itunesAuthor[1].trim());
+  if (hosts.length) return [...new Set(hosts)].slice(0, 4);
+
+  // 3. managingEditor (strip email)
+  const editor = channelBlock.match(/<managingEditor>([^<]+)<\/managingEditor>/i);
+  if (editor) {
+    const cleaned = editor[1].replace(/\([^)]*\)/g, '').replace(/\S+@\S+/g, '').trim();
+    if (cleaned) hosts.push(cleaned);
+  }
+  if (hosts.length) return [...new Set(hosts)].slice(0, 4);
+
+  // 4. author in channel block
+  const author = channelBlock.match(/<author>([^<]+)<\/author>/i);
+  if (author) hosts.push(author[1].trim());
+
+  return [...new Set(hosts)].slice(0, 4);
+}
+
 // ── MAIN HANDLER ──────────────────────────────────────────────────────────────
 export default async (req: Request, context: Context) => {
   if (req.method !== "POST") {
@@ -404,6 +437,7 @@ export default async (req: Request, context: Context) => {
   let resolvedEpisodeTitle = epTitleRaw || "";
   let resolvedShowName = showNameRaw || "";
   let resolvedTranscript: string | null = null;
+  let resolvedHostNames: string[] = [];
 
   const jobId = `${urlType}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
@@ -602,6 +636,7 @@ export default async (req: Request, context: Context) => {
               status: "transcribing", jobId, url, canonicalKey: canonical,
               episodeTitle: resolvedEpisodeTitle || extracted.metadata?.title || "",
               showName: resolvedShowName || "",
+              hostNames: resolvedHostNames,
               transcriptId,
               createdAt: Date.now(),
               pendingTimeoutAt: Date.now() + TIMEOUT_MS,
@@ -683,6 +718,7 @@ export default async (req: Request, context: Context) => {
                       status: "transcribing", jobId, url, canonicalKey: canonical,
                       episodeTitle: resolvedEpisodeTitle,
                       showName: resolvedShowName || best.collectionName || channelName,
+                      hostNames: resolvedHostNames,
                       transcriptId: bgTranscriptId,
                       createdAt: Date.now(),
                       pendingTimeoutAt: Date.now() + TIMEOUT_MS,
@@ -735,7 +771,7 @@ export default async (req: Request, context: Context) => {
   // Try: Spotify API (if user connected) → RSS via Podchaser/iTunes → direct
   if (urlType === "spotify") {
     const spEpId = url.match(/spotify\.com\/episode\/([a-zA-Z0-9]+)/)?.[1];
-    let resolved = { audioUrl: null as string | null, episodeTitle: "", showName: "" };
+    let resolved = { audioUrl: null as string | null, episodeTitle: "", showName: "", hostNames: [] as string[] };
 
     // L1: If user has Spotify connected, use the Web API
     if (userId) {
@@ -761,7 +797,7 @@ export default async (req: Request, context: Context) => {
             if (ep.show?.name) {
               const rssResolved = await resolveRssFeedToAudio(
                 `https://itunes.apple.com/search?term=${encodeURIComponent(ep.show.name)}&media=podcast&limit=1`
-              ).catch(() => ({ audioUrl: null, episodeTitle: "", showName: "" }));
+              ).catch(() => ({ audioUrl: null, episodeTitle: "", showName: "", hostNames: [] as string[] }));
               if (rssResolved.audioUrl) resolved = rssResolved;
             }
           }
@@ -792,6 +828,7 @@ export default async (req: Request, context: Context) => {
       resolvedAudioUrl = resolved.audioUrl;
       if (!resolvedEpisodeTitle) resolvedEpisodeTitle = resolved.episodeTitle;
       if (!resolvedShowName) resolvedShowName = resolved.showName;
+      resolvedHostNames = resolved.hostNames || [];
     } else {
       // Can't resolve — tell user to paste the RSS or audio URL directly
       await store.setJSON(jobId, {
@@ -823,6 +860,7 @@ export default async (req: Request, context: Context) => {
       resolvedAudioUrl = resolved.audioUrl;
       if (!resolvedEpisodeTitle) resolvedEpisodeTitle = resolved.episodeTitle;
       if (!resolvedShowName) resolvedShowName = resolved.showName;
+      resolvedHostNames = resolved.hostNames || [];
     } else {
       await store.setJSON(jobId, { status: "error", jobId, error: "Could not find audio in the RSS feed. Make sure the feed contains episode audio files." });
       return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
@@ -841,6 +879,7 @@ export default async (req: Request, context: Context) => {
       resolvedAudioUrl = resolved.audioUrl;
       if (!resolvedEpisodeTitle) resolvedEpisodeTitle = resolved.episodeTitle;
       if (!resolvedShowName) resolvedShowName = resolved.showName;
+      resolvedHostNames = resolved.hostNames || [];
     } else {
       resolvedAudioUrl = url; // pass through and let AssemblyAI try
     }
@@ -864,6 +903,7 @@ export default async (req: Request, context: Context) => {
   await store.setJSON(jobId, {
     status: "transcribing", jobId, url, canonicalKey: canonical,
     episodeTitle: resolvedEpisodeTitle, showName: resolvedShowName,
+    hostNames: resolvedHostNames,
     transcriptId: aaiData.id,
     createdAt: Date.now(),
     // pendingTimeoutAt: used by status.mts to detect stuck jobs

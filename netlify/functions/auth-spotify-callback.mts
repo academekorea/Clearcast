@@ -12,7 +12,7 @@ export default async (req: Request) => {
   const error = url.searchParams.get('error');
 
   if (error || !code) {
-    return Response.redirect(`https://podlens.app/settings.html?spotify=error&msg=${encodeURIComponent(error || 'cancelled')}`, 302);
+    return Response.redirect(`https://podlens.app/?spotify=error&msg=${encodeURIComponent(error || 'cancelled')}`, 302);
   }
 
   const clientId = Netlify.env.get('SPOTIFY_CLIENT_ID');
@@ -20,7 +20,7 @@ export default async (req: Request) => {
   const redirectUri = 'https://podlens.app/auth/spotify/callback';
 
   if (!clientId || !clientSecret) {
-    return Response.redirect('https://podlens.app/settings.html?spotify=error&msg=config', 302);
+    return Response.redirect('https://podlens.app/?spotify=error&msg=config', 302);
   }
 
   try {
@@ -39,7 +39,7 @@ export default async (req: Request) => {
     });
 
     if (!tokenRes.ok) {
-      return Response.redirect('https://podlens.app/settings.html?spotify=error&msg=token_exchange', 302);
+      return Response.redirect('https://podlens.app/?spotify=error&msg=token_exchange', 302);
     }
 
     const tokens = await tokenRes.json();
@@ -99,11 +99,11 @@ export default async (req: Request) => {
       display_name: spotifyDisplayName,
       is_premium: String(isPremium),
     });
-    return Response.redirect(`https://podlens.app/settings.html?${params}`, 302);
+    return Response.redirect(`https://podlens.app/?${params}`, 302);
 
   } catch (e: any) {
     console.error('Spotify callback error:', e);
-    return Response.redirect('https://podlens.app/settings.html?spotify=error&msg=server', 302);
+    return Response.redirect('https://podlens.app/?spotify=error&msg=server', 302);
   }
 };
 
