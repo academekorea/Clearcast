@@ -19,10 +19,11 @@ export default async (req: Request) => {
     .select("id, canonical_key, show_name, bias_score")
     .limit(5);
 
-  // Test 2: Try a minimal upsert
+  // Test 2: Try a plain INSERT (no upsert/conflict)
+  const ts = Date.now();
   const testRow = {
-    job_id: "test-diag-" + Date.now(),
-    canonical_key: "test:diag-" + Date.now(),
+    job_id: "test-diag-" + ts,
+    canonical_key: "test:diag-" + ts,
     url: "https://example.com/test",
     episode_title: "Diagnostic Test",
     show_name: "Test Show",
@@ -32,25 +33,31 @@ export default async (req: Request) => {
     user_id: null,
   };
 
-  const { data: upsertData, error: upsertErr } = await sb
+  const { data: insertData, error: insertErr } = await sb
     .from("analyses")
-    .upsert(testRow, { onConflict: "canonical_key" })
+    .insert(testRow)
     .select();
 
-  // Test 3: Read it back
+  // Test 3: Check unique constraints
+  const { data: constraintData } = await sb.rpc("get_table_constraints", { table_name_param: "analyses" }).select();
+
+  // Test 4: Read back
   const { data: readBack, error: readErr } = await sb
     .from("analyses")
-    .select("*")
+    .select("id, canonical_key, show_name, bias_score")
     .eq("canonical_key", testRow.canonical_key)
-    .single();
+    .maybeSingle();
 
   // Cleanup
-  await sb.from("analyses").delete().eq("canonical_key", testRow.canonical_key);
+  if (readBack) {
+    await sb.from("analyses").delete().eq("canonical_key", testRow.canonical_key);
+  }
 
   return new Response(JSON.stringify({
     connection: { ok: !selectErr, existing_rows: selectData?.length ?? 0, error: selectErr?.message },
-    upsert: { ok: !upsertErr, data: upsertData, error: upsertErr?.message, code: upsertErr?.code, details: upsertErr?.details },
-    readBack: { ok: !readErr, found: !!readBack, error: readErr?.message },
+    insert: { ok: !insertErr, data: insertData, error: insertErr?.message, code: insertErr?.code, details: insertErr?.details },
+    readBack: { ok: !readErr, found: !!readBack, data: readBack, error: readErr?.message },
+    constraints: constraintData,
   }, null, 2), {
     status: 200, headers: { "Content-Type": "application/json" },
   });
