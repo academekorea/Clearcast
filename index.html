@@ -13347,6 +13347,12 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('pl-theme', 'light');
   }
 
+  // Initial pathname routing — load correct SPA view on first load
+  (function() {
+    var _initView = _viewFromPath(window.location.pathname);
+    if (_initView && _initView !== 'home') { showView(_initView); } else { showHome(); }
+  })();
+
   // Render tg-grid from CURATED_SHOWS and load artwork via iTunes
   filterTrendingGrid('all', document.querySelector('.cat-pill-btn.on'));
 });
@@ -13366,7 +13372,7 @@ window.addEventListener('popstate', function(e) {
 
 function _viewFromPath(path) {
   if (!path || path === '/' || path.startsWith('/dashboard')) return 'home';
-  var map = { '/discover': 'discover', '/analyze': 'analyze', '/library': 'library', '/account': 'account', '/profile': 'account', '/settings': 'settings', '/show': 'show', '/admin': 'admin' };
+  var map = { '/discover': 'discover', '/analyze': 'analyze', '/library': 'library', '/account': 'account', '/profile': 'account', '/settings': 'settings', '/show': 'show', '/admin': 'admin', '/how-it-works': 'how-it-works', '/pricing': 'pricing' };
   return map[path] || map[path.replace(/\/$/, '')] || 'home';
 }
 function heroConnectSpotify() {
