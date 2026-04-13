@@ -5,6 +5,7 @@ const GENRE_MAP: Record<string, string> = {
   technology: "1318",
   tech: "1318",
   news: "1489",
+  politics: "1489",
   business: "1321",
   comedy: "1303",
   society: "1324",
@@ -121,7 +122,7 @@ export default async (req: Request) => {
   // Build fetch requests
   const requests: [string, Promise<ShowItem[]>][] = [["trending", fetchTop(country)]];
 
-  for (const cat of activeInterests.slice(0, 2)) {
+  for (const cat of activeInterests.slice(0, 3)) {
     const genreId = GENRE_MAP[cat];
     if (genreId) {
       requests.push([cat, fetchByGenre(country, genreId)]);

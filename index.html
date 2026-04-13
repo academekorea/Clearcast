@@ -4748,21 +4748,26 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
         <div class="onb-dot on"></div><div class="onb-dot"></div><div class="onb-dot"></div>
       </div>
 
-      <!-- Step 1: categories -->
+      <!-- Step 1: topics (max 3) -->
       <div class="onb-step on" id="onb-step-1">
-        <div class="auth-logo" style="text-align:left;margin-bottom:4px">What do you mainly listen to?</div>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:0">Select all that apply.</p>
+        <div class="auth-logo" style="text-align:left;margin-bottom:4px">What do you listen to?</div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:4px">Pick up to 3 topics to personalize your feed.</p>
+        <div id="onb-counter" style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:12px">0 of 3 selected</div>
         <div class="onb-cats" id="onb-cats">
-          <button class="onb-cat" data-cat="News" onclick="toggleOnbCat(this)">News</button>
-          <button class="onb-cat" data-cat="Tech" onclick="toggleOnbCat(this)">Tech</button>
-          <button class="onb-cat" data-cat="Business" onclick="toggleOnbCat(this)">Business</button>
-          <button class="onb-cat" data-cat="Society" onclick="toggleOnbCat(this)">Society</button>
-          <button class="onb-cat" data-cat="Comedy" onclick="toggleOnbCat(this)">Comedy</button>
-          <button class="onb-cat" data-cat="Sports" onclick="toggleOnbCat(this)">Sports</button>
-          <button class="onb-cat" data-cat="Health" onclick="toggleOnbCat(this)">Health</button>
-          <button class="onb-cat" data-cat="True Crime" onclick="toggleOnbCat(this)">True Crime</button>
+          <button class="onb-cat" data-cat="news" onclick="toggleOnbCat(this)">News</button>
+          <button class="onb-cat" data-cat="technology" onclick="toggleOnbCat(this)">Technology</button>
+          <button class="onb-cat" data-cat="business" onclick="toggleOnbCat(this)">Business</button>
+          <button class="onb-cat" data-cat="society" onclick="toggleOnbCat(this)">Society</button>
+          <button class="onb-cat" data-cat="comedy" onclick="toggleOnbCat(this)">Comedy</button>
+          <button class="onb-cat" data-cat="sports" onclick="toggleOnbCat(this)">Sports</button>
+          <button class="onb-cat" data-cat="health" onclick="toggleOnbCat(this)">Health</button>
+          <button class="onb-cat" data-cat="true-crime" onclick="toggleOnbCat(this)">True Crime</button>
+          <button class="onb-cat" data-cat="science" onclick="toggleOnbCat(this)">Science</button>
+          <button class="onb-cat" data-cat="history" onclick="toggleOnbCat(this)">History</button>
+          <button class="onb-cat" data-cat="education" onclick="toggleOnbCat(this)">Education</button>
+          <button class="onb-cat" data-cat="politics" onclick="toggleOnbCat(this)">Politics</button>
         </div>
-        <button class="auth-btn" onclick="onbNext(1)">Continue &rarr;</button>
+        <button class="auth-btn" id="onb-continue-1" onclick="onbNext(1)">Continue &rarr;</button>
         <div style="text-align:center"><button class="onb-skip" onclick="onbNext(1)">Skip</button></div>
       </div>
 
@@ -5241,18 +5246,22 @@ function doLogout() {
 }
 
 function finishOnboarding() {
-  // Save interests to Supabase so they persist across devices
   var u = plUser();
-  if (u && u.id && (_onbCats.length || u.podcastUrl)) {
-    safeFetch('/api/update-settings', {
+  if (u && u.id && _onbCats.length) {
+    // Save interests to Supabase users table so for-you feed is personalized
+    safeFetch('/api/save-interests', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        userId: u.id,
-        interests: _onbCats.length ? _onbCats : (u.categories || []),
-        podcastUrl: u.podcastUrl || ''
-      })
+      body: JSON.stringify({ userId: u.id, interests: _onbCats })
     }).catch(function(){});
+    // Also persist podcast URL if set
+    if (u.podcastUrl) {
+      safeFetch('/api/update-settings', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ userId: u.id, podcastUrl: u.podcastUrl })
+      }).catch(function(){});
+    }
   }
   closeModal('onboarding');
   showHome();
@@ -5260,11 +5269,27 @@ function finishOnboarding() {
 
 // ── ONBOARDING HELPERS ──
 var _onbCats = [];
+var ONB_MAX = 3;
 function toggleOnbCat(el) {
   var cat = el.dataset.cat;
   var idx = _onbCats.indexOf(cat);
-  if (idx !== -1) { _onbCats.splice(idx, 1); el.classList.remove('on'); }
-  else { _onbCats.push(cat); el.classList.add('on'); }
+  if (idx !== -1) {
+    _onbCats.splice(idx, 1);
+    el.classList.remove('on');
+  } else {
+    if (_onbCats.length >= ONB_MAX) return; // 3-topic limit
+    _onbCats.push(cat);
+    el.classList.add('on');
+  }
+  // Update counter
+  var counter = document.getElementById('onb-counter');
+  if (counter) counter.textContent = _onbCats.length + ' of ' + ONB_MAX + ' selected';
+  // Disable unchosen buttons at limit
+  var atLimit = _onbCats.length >= ONB_MAX;
+  document.querySelectorAll('.onb-cat').forEach(function(btn) {
+    btn.style.opacity = (atLimit && !btn.classList.contains('on')) ? '0.4' : '';
+    btn.style.pointerEvents = (atLimit && !btn.classList.contains('on')) ? 'none' : '';
+  });
 }
 function showOnbStep(n) {
   document.querySelectorAll('.onb-step').forEach(function(s, i) { s.classList.toggle('on', i + 1 === n); });
@@ -5272,7 +5297,12 @@ function showOnbStep(n) {
 }
 function onbNext(step) {
   if (step === 1) {
-    var u = plUser(); if (u) { u.categories = _onbCats; u.interests = _onbCats; setPlUser(u); }
+    var u = plUser();
+    if (u) {
+      u.categories = _onbCats.slice();
+      u.interests  = _onbCats.slice();
+      setPlUser(u);
+    }
     showOnbStep(2);
   } else if (step === 2) {
     var podUrl = (document.getElementById('onb-podcast-url').value || '').trim();
