@@ -2953,6 +2953,16 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
   </div>
   <div class="pl-loader-bar"></div>
 </div>
+<script>
+// Failsafe: dismiss splash even if later JS errors block the main script
+(function(){
+  var _splashTimeout = setTimeout(function(){
+    var s = document.getElementById('pl-splash');
+    if(s){s.style.opacity='0';setTimeout(function(){s.style.display='none';},400);}
+  }, 3000);
+  window._splashTimeout = _splashTimeout;
+})();
+</script>
 
 <!-- NAV -->
 <nav class="nav-bar" id="main-nav">
@@ -12118,7 +12128,7 @@ function renderSpotifyConnected(data, u) {
       + '<div style="font-size:12px;color:var(--text3)">40% left &nbsp; 20% center &nbsp; 40% right</div>'
       + '</div>';
     html += '<div class="sp-fp-gate"><p>Fingerprint analysis is a Starter Lens+ feature</p>'
-      + '<button onclick="if(typeof showView=='function'){showView('pricing')}else{window.location='/pricing'}">Upgrade to Starter Lens &rarr;</button></div>';
+      + '<button onclick="showView(&quot;pricing&quot;)">Upgrade to Starter Lens &rarr;</button></div>';
   } else if (fp) {
     var leftW = fp.leftPct, centW = fp.centerPct, rightW = fp.rightPct;
     html += '<div style="height:10px;background:var(--bg4);border-radius:5px;overflow:hidden;display:flex;margin-bottom:8px">'
@@ -12680,7 +12690,7 @@ function showBiasExplainer() {
     + '</div>'
     + '<div style="display:flex;gap:10px">'
     + '<button onclick="document.getElementById(\'modal-bias-explainer\').style.display=\'none\'" style="flex:1;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Got it</button>'
-    + '<a href="/how-it-works" onclick="showView('how-it-works');return false" style="flex:1;padding:10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;color:var(--text2);text-align:center;text-decoration:none;font-family:var(--ff)">Full explanation &#8599;</a>'
+    + '<a href="/how-it-works" onclick="showView(&quot;how-it-works&quot;);return false" style="flex:1;padding:10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;color:var(--text2);text-align:center;text-decoration:none;font-family:var(--ff)">Full explanation &#8599;</a>'
     + '</div>'
     + '</div></div>';
   document.body.insertAdjacentHTML('beforeend', html);
