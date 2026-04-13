@@ -47,7 +47,7 @@ function detectUrlType(url: string): "youtube" | "spotify" | "apple" | "rss" | "
 
 // ── APPLE PODCASTS → RSS RESOLVER ────────────────────────────────────────────
 async function resolveApplePodcastsUrl(url: string): Promise<{ audioUrl: string | null; episodeTitle: string; showName: string }> {
-  const empty = { audioUrl: null, episodeTitle: "", episodeNumber: "", showName: "", hostNames: [] as string[] };
+  const empty = { audioUrl: null, episodeTitle: "", showName: "" };
   try {
     // Extract show ID and episode ID from Apple URL
     const showIdMatch = url.match(/\/id(\d+)/);
@@ -90,8 +90,8 @@ function extractText(block: string, tag: string): string {
   return m?.[1]?.trim() || "";
 }
 
-async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: string | null; episodeTitle: string; episodeNumber: string; showName: string; hostNames: string[] }> {
-  const empty = { audioUrl: null, episodeTitle: "", episodeNumber: "", showName: "", hostNames: [] as string[] };
+async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: string | null; episodeTitle: string; showName: string }> {
+  const empty = { audioUrl: null, episodeTitle: "", showName: "" };
   const userAgents = [
     "Mozilla/5.0 (compatible; Podlens/1.0; +https://podlens.app)",
     "Podlens/1.0 (podcast analysis bot)",
@@ -117,15 +117,13 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
   const channelXml = channelMatch?.[1] || xml;
   const showName = extractText(channelXml.slice(0, 2000), "title") || extractText(xml.slice(0, 500), "title") || "";
 
-  function extractAudioFromBlock(block: string): { audioUrl: string | null; epTitle: string; epNumber: string } {
+  function extractAudioFromBlock(block: string): { audioUrl: string | null; epTitle: string } {
     const epTitle = extractText(block, "title");
-    const epNumMatch = block.match(/<itunes:episode[^>]*>(\d+)<\/itunes:episode>/i);
-    const epNumber = epNumMatch ? epNumMatch[1] : "";
     // 1. <enclosure>
     const encTags = block.match(/<enclosure[^>]+>/gi) || [];
     for (const tag of encTags) {
       const url = extractAttr(tag, "url");
-      if (url) return { audioUrl: url, epTitle, epNumber };
+      if (url) return { audioUrl: url, epTitle };
     }
     // 2. <media:content>
     const mediaTags = block.match(/<media:content[^>]+>/gi) || [];
@@ -134,12 +132,12 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
       const medium = extractAttr(tag, "medium");
       const type = extractAttr(tag, "type");
       if (url && (medium === "audio" || (type && /audio/i.test(type)) || /\.(mp3|m4a|ogg|wav|aac|opus)(\?|$)/i.test(url))) {
-        return { audioUrl: url, epTitle, epNumber };
+        return { audioUrl: url, epTitle };
       }
     }
     // 3. Any bare audio URL in the block
     const anyAudio = block.match(/https?:\/\/[^\s"'<>]+\.(?:mp3|m4a|ogg|wav|aac|opus)(?:\?[^\s"'<>]*)?/i);
-    if (anyAudio) return { audioUrl: anyAudio[0], epTitle, epNumber };
+    if (anyAudio) return { audioUrl: anyAudio[0], epTitle };
     // 4. Atom <link type="audio/...">
     const linkTags = block.match(/<link[^>]+>/gi) || [];
     for (const tag of linkTags) {
@@ -149,7 +147,7 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
         if (href) return { audioUrl: href, epTitle };
       }
     }
-    return { audioUrl: null, epTitle, epNumber };
+    return { audioUrl: null, epTitle };
   }
 
   // Split on RSS <item> or Atom <entry>
@@ -158,42 +156,14 @@ async function resolveRssFeedToAudio(feedUrl: string): Promise<{ audioUrl: strin
   const segments = rssItems.length >= atomItems.length ? rssItems : atomItems;
   for (let i = 1; i < Math.min(segments.length, 8); i++) {
     const { audioUrl, epTitle } = extractAudioFromBlock(segments[i]);
-    if (audioUrl) return { audioUrl, episodeTitle: epTitle, episodeNumber: epNumber || "", showName, hostNames: extractHostsFromFeedXml(xml) };
+    if (audioUrl) return { audioUrl, episodeTitle: epTitle, showName };
   }
 
   // Last resort: any audio URL in the whole feed
   const fallback = xml.match(/https?:\/\/[^\s"'<>]+\.(?:mp3|m4a|ogg|wav|aac|opus)(?:\?[^\s"'<>]*)?/i);
-  if (fallback) return { audioUrl: fallback[0], episodeTitle: "", showName, hostNames: extractHostsFromFeedXml(xml) };
+  if (fallback) return { audioUrl: fallback[0], episodeTitle: "", showName };
 
   return empty;
-}
-
-// ── Extract host names from RSS feed XML ──────────────────────────────────────
-function extractHostsFromFeedXml(xml: string): string[] {
-  const hosts: string[] = [];
-  const seen = new Set<string>();
-  const add = (name: string) => {
-    const clean = name.trim().replace(/\s+/g, ' ');
-    if (clean && clean.length > 1 && !seen.has(clean.toLowerCase())) {
-      seen.add(clean.toLowerCase());
-      hosts.push(clean);
-    }
-  };
-  // 1. <podcast:person role="host"> — Podcast Index namespace (most reliable)
-  const personRegex = /<podcast:person[^>]*role=["']host["'][^>]*>([^<]+)<\/podcast:person>/gi;
-  let pm: RegExpExecArray | null;
-  while ((pm = personRegex.exec(xml)) !== null) add(pm[1]);
-  // 2. <itunes:author> — channel level
-  const itunesAuthor = xml.match(/<itunes:author[^>]*>([^<]+)<\/itunes:author>/i);
-  if (itunesAuthor) add(itunesAuthor[1]);
-  // 3. <managingEditor>
-  const editor = xml.match(/<managingEditor[^>]*>([^<(]+)/i);
-  if (editor) add(editor[1].replace(/\(.*?\)/g, '').trim());
-  // 4. <author> inside channel block only
-  const channelBlock = xml.match(/<channel[^>]*>([\s\S]*?)<item[\s>]/i)?.[1] || '';
-  const author = channelBlock.match(/<author[^>]*>([^<]+)<\/author>/i);
-  if (author) add(author[1]);
-  return hosts.slice(0, 4);
 }
 
 // ── YOUTUBE CAPTIONS — TIMEDTEXT (no auth) ───────────────────────────────────
@@ -433,8 +403,6 @@ export default async (req: Request, context: Context) => {
   let resolvedAudioUrl: string | null = null;
   let resolvedEpisodeTitle = epTitleRaw || "";
   let resolvedShowName = showNameRaw || "";
-  let resolvedHostNames: string[] = [];
-  let resolvedEpisodeNumber = "";
   let resolvedTranscript: string | null = null;
 
   const jobId = `${urlType}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -824,8 +792,6 @@ export default async (req: Request, context: Context) => {
       resolvedAudioUrl = resolved.audioUrl;
       if (!resolvedEpisodeTitle) resolvedEpisodeTitle = resolved.episodeTitle;
       if (!resolvedShowName) resolvedShowName = resolved.showName;
-      if (resolved.hostNames?.length) resolvedHostNames = resolved.hostNames;
-      if (resolved.episodeNumber) resolvedEpisodeNumber = resolved.episodeNumber;
     } else {
       // Can't resolve — tell user to paste the RSS or audio URL directly
       await store.setJSON(jobId, {
@@ -844,8 +810,6 @@ export default async (req: Request, context: Context) => {
       resolvedAudioUrl = resolved.audioUrl;
       if (!resolvedEpisodeTitle) resolvedEpisodeTitle = resolved.episodeTitle;
       if (!resolvedShowName) resolvedShowName = resolved.showName;
-      if (resolved.hostNames?.length) resolvedHostNames = resolved.hostNames;
-      if (resolved.episodeNumber) resolvedEpisodeNumber = resolved.episodeNumber;
     } else {
       await store.setJSON(jobId, { status: "error", jobId, error: "Could not resolve Apple Podcasts URL to an audio file. Try pasting the direct episode URL." });
       return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
@@ -859,8 +823,6 @@ export default async (req: Request, context: Context) => {
       resolvedAudioUrl = resolved.audioUrl;
       if (!resolvedEpisodeTitle) resolvedEpisodeTitle = resolved.episodeTitle;
       if (!resolvedShowName) resolvedShowName = resolved.showName;
-      if (resolved.hostNames?.length) resolvedHostNames = resolved.hostNames;
-      if (resolved.episodeNumber) resolvedEpisodeNumber = resolved.episodeNumber;
     } else {
       await store.setJSON(jobId, { status: "error", jobId, error: "Could not find audio in the RSS feed. Make sure the feed contains episode audio files." });
       return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
@@ -879,8 +841,6 @@ export default async (req: Request, context: Context) => {
       resolvedAudioUrl = resolved.audioUrl;
       if (!resolvedEpisodeTitle) resolvedEpisodeTitle = resolved.episodeTitle;
       if (!resolvedShowName) resolvedShowName = resolved.showName;
-      if (resolved.hostNames?.length) resolvedHostNames = resolved.hostNames;
-      if (resolved.episodeNumber) resolvedEpisodeNumber = resolved.episodeNumber;
     } else {
       resolvedAudioUrl = url; // pass through and let AssemblyAI try
     }
@@ -905,8 +865,6 @@ export default async (req: Request, context: Context) => {
     status: "transcribing", jobId, url, canonicalKey: canonical,
     episodeTitle: resolvedEpisodeTitle, showName: resolvedShowName,
     transcriptId: aaiData.id,
-    episodeNumber: resolvedEpisodeNumber,
-    hostNames: resolvedHostNames,
     createdAt: Date.now(),
     // pendingTimeoutAt: used by status.mts to detect stuck jobs
     pendingTimeoutAt: Date.now() + TIMEOUT_MS,
