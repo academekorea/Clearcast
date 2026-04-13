@@ -121,6 +121,80 @@ async function updateCatalog(store: any, entry: { jobId: string; showName: strin
   } catch { /* non-critical */ }
 }
 
+// ── Supabase write helper — upserts analysis row, handles FK violations ───────
+async function writeAnalysisToSupabase(jobId: string, job: any, result: any, audioDuration?: number): Promise<void> {
+  const supabaseUrl = Netlify.env.get("SUPABASE_URL");
+  const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+  if (!supabaseUrl || !supabaseKey) return;
+
+  try {
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false },
+    });
+
+    const dim = result.dimensions || {};
+    const analysisRow = {
+      job_id:               jobId,
+      canonical_key:        job.canonicalKey || result.canonicalKey || jobId,
+      url:                  job.url || result.url || "",
+      episode_title:        result.episodeTitle,
+      show_name:            result.showName,
+      bias_score:           result.biasScore,
+      bias_label:           result.biasLabel,
+      factuality_label:     result.factualityLabel || null,
+      omission_risk:        result.omissionRisk || null,
+      summary:              result.summary || null,
+      bias_reason:          result.biasReason || null,
+      dim_perspective_balance: dim.perspectiveBalance?.score ?? null,
+      dim_factual_density:  dim.factualDensity?.score  ?? null,
+      dim_source_diversity: dim.sourceDiversity?.score ?? null,
+      dim_framing_patterns: dim.framingPatterns?.score ?? null,
+      dim_host_credibility: dim.hostCredibility?.score ?? null,
+      dim_omission_risk:    dim.omissionRisk?.score    ?? null,
+      host_trust_score:     dim.hostCredibility?.score ?? null,
+      duration_ms:          audioDuration ? Math.round(audioDuration * 1000) : null,
+      analyzed_at:          new Date().toISOString(),
+      user_id:              job.userId || null,
+    };
+
+    let { error: upsertErr } = await supabase.from("analyses").upsert(analysisRow, { onConflict: "canonical_key" });
+
+    // FK violation (user_id not in users table) — retry without user_id
+    if (upsertErr?.code === "23503") {
+      console.warn("[status] FK violation on user_id, retrying without user_id");
+      const { error: retryErr } = await supabase.from("analyses").upsert(
+        { ...analysisRow, user_id: null },
+        { onConflict: "canonical_key" }
+      );
+      upsertErr = retryErr;
+    }
+    if (upsertErr) {
+      console.error("[status] Supabase analyses upsert error:", upsertErr.message, upsertErr.details, upsertErr.code);
+    } else {
+      console.log("[status] Supabase analyses upsert OK:", analysisRow.canonical_key);
+    }
+
+    // Log the analysis event for per-user data flywheel
+    if (job.userId) {
+      const { error: eventErr } = await supabase.from("events").insert({
+        user_id:    job.userId,
+        event_type: "analysis_complete",
+        properties: {
+          jobId,
+          canonicalKey: job.canonicalKey || result.canonicalKey,
+          showName: result.showName,
+          biasScore: result.biasScore,
+          biasLabel: result.biasLabel,
+        },
+        created_at: new Date().toISOString(),
+      });
+      if (eventErr) console.error("[status] Supabase events insert error:", eventErr.message, eventErr.code);
+    }
+  } catch (sbErr) {
+    console.error("[status] Supabase dual-write failed:", sbErr);
+  }
+}
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const jobId = url.pathname.split("/").pop();
@@ -140,8 +214,14 @@ export default async (req: Request) => {
     });
   }
 
-  // Return immediately if already done
+  // Return immediately if already done — but backfill Supabase if missing
   if (job.status === "complete" || job.status === "error") {
+    if (job.status === "complete" && job.biasScore !== undefined && !job._sbWritten) {
+      // Fire-and-forget Supabase backfill for analyses that completed before the fix
+      writeAnalysisToSupabase(jobId, job, job).then(() => {
+        store.setJSON(jobId, { ...job, _sbWritten: true }).catch(() => {});
+      }).catch(() => {});
+    }
     return new Response(JSON.stringify(job), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
@@ -353,77 +433,9 @@ export default async (req: Request) => {
   // ── Supabase dual-write (data flywheel) ───────────────────────────────────
   // Writes to analyses table for trend charts, echo chamber, fingerprints.
   // Non-blocking — never fails the response if Supabase is down.
-  const supabaseUrl = Netlify.env.get("SUPABASE_URL");
-  const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
-  if (supabaseUrl && supabaseKey) {
-    try {
-      const supabase = createClient(supabaseUrl, supabaseKey, {
-        auth: { persistSession: false },
-      });
-
-      const dim = result.dimensions || {};
-
-      // Upsert by canonical key — community cache deduplicates repeated analyses
-      const analysisRow = {
-        job_id:               jobId,
-        canonical_key:        job.canonicalKey || jobId,
-        url:                  job.url || "",
-        episode_title:        result.episodeTitle,
-        show_name:            result.showName,
-        bias_score:           result.biasScore,
-        bias_label:           result.biasLabel,
-        factuality_label:     result.factualityLabel || null,
-        omission_risk:        result.omissionRisk || null,
-        summary:              result.summary || null,
-        bias_reason:          result.biasReason || null,
-        // 6 dimensions
-        dim_perspective_balance: dim.perspectiveBalance?.score ?? null,
-        dim_factual_density:  dim.factualDensity?.score  ?? null,
-        dim_source_diversity: dim.sourceDiversity?.score ?? null,
-        dim_framing_patterns: dim.framingPatterns?.score ?? null,
-        dim_host_credibility: dim.hostCredibility?.score ?? null,
-        dim_omission_risk:    dim.omissionRisk?.score    ?? null,
-        host_trust_score:     dim.hostCredibility?.score ?? null,
-        duration_ms:          audioDuration ? Math.round(audioDuration * 1000) : null,
-        analyzed_at:          new Date().toISOString(),
-        user_id:              job.userId || null,
-      };
-      let { error: upsertErr } = await supabase.from("analyses").upsert(analysisRow, { onConflict: "canonical_key" });
-
-      // FK violation (user_id not in users table) — retry without user_id
-      if (upsertErr?.code === "23503") {
-        console.warn("[status] FK violation on user_id, retrying without user_id");
-        const { error: retryErr } = await supabase.from("analyses").upsert(
-          { ...analysisRow, user_id: null },
-          { onConflict: "canonical_key" }
-        );
-        upsertErr = retryErr;
-      }
-      if (upsertErr) {
-        console.error("[status] Supabase analyses upsert error:", upsertErr.message, upsertErr.details, upsertErr.code);
-      }
-
-      // Log the analysis event for per-user data flywheel
-      if (job.userId) {
-        const { error: eventErr } = await supabase.from("events").insert({
-          user_id:    job.userId,
-          event_type: "analysis_complete",
-          properties: {
-            jobId,
-            canonicalKey: job.canonicalKey,
-            showName: result.showName,
-            biasScore: result.biasScore,
-            biasLabel: result.biasLabel,
-          },
-          created_at: new Date().toISOString(),
-        });
-        if (eventErr) console.error("[status] Supabase events insert error:", eventErr.message, eventErr.code);
-      }
-    } catch (sbErr) {
-      // Supabase write failed — log but never break the response
-      console.error("[status] Supabase dual-write failed:", sbErr);
-    }
-  }
+  await writeAnalysisToSupabase(jobId, job, result, audioDuration);
+  // Mark as written so backfill path doesn't re-run on subsequent polls
+  result._sbWritten = true;
 
   return new Response(JSON.stringify(result), { status: 200, headers: { "Content-Type": "application/json" } });
 };
