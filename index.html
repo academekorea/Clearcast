@@ -1085,7 +1085,7 @@ body.player-on .lap{bottom:72px}
 .sp-3col-hdr{display:flex;gap:20px;align-items:flex-start;margin-bottom:20px}
 .sp-3col-ep-row{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border)}
 .sp-3col-ep-row:last-child{border-bottom:none;padding-bottom:0}
-.sp-3col-ep-art{width:36px;height:36px;border-radius:6px;flex-shrink:0;background:var(--bg3)}
+.sp-3col-ep-art{width:36px;height:36px;border-radius:6px;flex-shrink:0;background:var(--bg3);object-fit:cover}
 .sp-3col-nav-art{width:36px;height:36px;border-radius:6px;flex-shrink:0;object-fit:cover}
 .sp-3col-analyze-btn{padding:4px 9px;font-size:11px;font-weight:600;background:var(--navy);color:#fff;border:none;border-radius:5px;cursor:pointer;flex-shrink:0;white-space:nowrap;font-family:var(--ff)}
 .sp-3col-view-btn{padding:4px 9px;font-size:11px;background:none;border:0.5px solid var(--border2);border-radius:5px;cursor:pointer;color:var(--text2);flex-shrink:0;white-space:nowrap;font-family:var(--ff)}
@@ -10274,8 +10274,25 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     mainHtml += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
     mainHtml += '<button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
     mainHtml += followBtn;
-    if (data.episodeCount>0) mainHtml += '<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Share &#8599;</button>';
-    mainHtml += '</div></div></div>';
+    if (data.episodeCount>0) mainHtml += '<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Download card &#8599;</button>';
+    mainHtml += '</div>';
+    // Share bar with social icons
+    if (data.episodeCount>0) {
+      var spUrl = window.location.origin + '/show/' + slug;
+      var spMetrics = data.metrics || {};
+      var spBias = spMetrics.biasLabel || 'Unrated';
+      var spTrust = spMetrics.avgTrustScore;
+      var spTweetText = encodeURIComponent(displayName + ' — Bias: ' + spBias + (spTrust ? ' · Host trust: ' + spTrust + '/100' : '') + ' · ' + data.episodeCount + ' episodes analyzed\n\n' + spUrl + '\n\n#PodcastBias via @podlensapp');
+      mainHtml += '<div style="display:flex;gap:6px;align-items:center;margin-top:10px">';
+      mainHtml += '<span style="font-size:11px;color:var(--text3);margin-right:4px">Share:</span>';
+      mainHtml += '<button onclick="window.open(\'https://x.com/intent/tweet?text='+spTweetText+'\',\'_blank\')" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2)" title="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>';
+      mainHtml += '<button onclick="window.open(\'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(spUrl)+'\',\'_blank\')" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center" title="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></button>';
+      mainHtml += '<button onclick="window.open(\'https://wa.me/?text='+encodeURIComponent(displayName+' bias profile on Podlens '+spUrl)+'\',\'_blank\')" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center" title="WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button>';
+      mainHtml += '<button onclick="window.open(\'https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(spUrl)+'\',\'_blank\')" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center" title="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></button>';
+      mainHtml += '<button onclick="navigator.clipboard.writeText(\''+spUrl+'\').then(function(){var b=event.target.closest(\'button\');b.title=\'Copied!\';setTimeout(function(){b.title=\'Copy link\'},2000)})" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2)" title="Copy link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>';
+      mainHtml += '</div>';
+    }
+    mainHtml += '</div></div>';
 
     // About card
     if (description) {
@@ -10334,7 +10351,8 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       episodes.slice(0,5).forEach(function(ep){
         var bpCls = {['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[ep.biasLabel]||'bp-center';
         var dateStr = ep.createdAt ? new Date(ep.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
-        mainHtml += '<div class="sp-3col-ep-row" style="cursor:pointer" onclick="viewAnalysis(\''+ep.jobId+'\')"><div class="sp-3col-ep-art"></div>';
+        var epArt2 = ep.artwork || artwork || '';
+        mainHtml += '<div class="sp-3col-ep-row" style="cursor:pointer" onclick="viewAnalysis(\''+ep.jobId+'\')">'+(epArt2?'<img class="sp-3col-ep-art" src="'+_escHtml(epArt2)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="sp-3col-ep-art"></div>');
         mainHtml += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px">'+(ep.episodeTitle||'Untitled')+'</div>';
         mainHtml += '<div style="font-size:11px;color:var(--text3)">'+dateStr+'</div></div>';
         if (ep.biasLabel) mainHtml += '<span class="bpill '+bpCls+'" style="font-size:10px;padding:2px 7px;flex-shrink:0">'+ep.biasLabel+'</span>';
@@ -10372,7 +10390,8 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
         var dur = ep.duration ? formatDuration(ep.duration) : '';
         var meta = [dateStr,dur].filter(Boolean).join(' · ');
         sideHtml += '<div class="sp-3col-ep-row">';
-        sideHtml += '<div class="sp-3col-ep-art"></div>';
+        var epArt = ep.artwork || artwork || '';
+        sideHtml += epArt ? '<img class="sp-3col-ep-art" src="'+_escHtml(epArt)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="sp-3col-ep-art"></div>';
         sideHtml += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+ep.title+'</div>';
         sideHtml += '<div style="font-size:11px;color:var(--text3)">'+meta+'</div></div>';
         if (safeUrl) sideHtml += '<button class="sp-3col-analyze-btn" onclick="goAnalyze(&quot;'+safeUrl+'&quot;)">Analyze</button>';
@@ -10390,7 +10409,8 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     if (localAnalyses.length) {
       localAnalyses.slice(0,4).forEach(function(r){
         var bpCls = {['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[r.biasLabel]||'bp-center';
-        sideHtml += '<div class="sp-3col-ep-row" style="cursor:pointer" onclick="viewAnalysis(\''+r.jobId+'\')"><div class="sp-3col-ep-art"></div>';
+        var rArt = r.artwork || artwork || '';
+        sideHtml += '<div class="sp-3col-ep-row" style="cursor:pointer" onclick="viewAnalysis(\''+r.jobId+'\')">'+(rArt?'<img class="sp-3col-ep-art" src="'+_escHtml(rArt)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="sp-3col-ep-art"></div>');
         sideHtml += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+(r.episodeTitle||r.title||'Episode')+'</div>';
         if (r.biasLabel) sideHtml += '<span class="bpill '+bpCls+'" style="font-size:10px;padding:1px 6px">'+r.biasLabel+'</span>';
         sideHtml += '</div><button class="sp-3col-view-btn" onclick="event.stopPropagation();viewAnalysis(\''+r.jobId+'\')">View</button></div>';
