@@ -235,7 +235,7 @@ export default async (req: Request) => {
   canvas.drawText(wmText, (W - wmW) / 2, 80, 0xFF, 0xFF, 0xFF, wmScale);
 
   // Tagline
-  const tagText = 'Know what you\'re actually listening to';
+  const tagText = 'A force of clarity in the age of noise';
   const tagScale = 2;
   const tagW = canvas.textWidth(tagText, tagScale);
   canvas.drawText(tagText, (W - tagW) / 2, 200, 0xFF, 0xFF, 0xFF, tagScale);
