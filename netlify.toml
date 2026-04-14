@@ -10,8 +10,6 @@
     timeout = 60
   [functions.status]
     timeout = 300
-  [functions.run-analysis]
-    timeout = 300
 
 
 [[headers]]
