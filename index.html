@@ -4539,9 +4539,9 @@ iew" id="view-library" style="display:none">
         🎉 Founding Member Pricing — 33% off forever. Only available during our launch period.
       </div>
       <div class="billing-toggle">
-        <span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span>
+        <span class="bt-opt on" id="mod-bt-monthly" onclick="setBilling('monthly')">Monthly</span>
         <label class="bt-switch"><input type="checkbox" id="billing-annual-toggle" onchange="setBilling(this.checked?'annual':'monthly')"><div class="bt-track"></div></label>
-        <span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span>
+        <span class="bt-opt" id="mod-bt-annual" onclick="setBilling('annual')">Annual</span>
         <span class="bt-save">Save 33%</span>
       </div>
     </div>
@@ -12538,18 +12538,18 @@ var PL_PRICE_IDS = { creator_monthly:'', creator_annual:'', operator_monthly:'',
 
 function setBilling(billing) {
   _plBilling = billing;
-  // Modal toggle
+  // Pricing page toggle (bt-monthly/bt-annual)
   var mBtn = document.getElementById('bt-monthly');
   var aBtn = document.getElementById('bt-annual');
+  var saveBadge = document.getElementById('annual-save-badge');
   if (mBtn) mBtn.classList.toggle('on', billing === 'monthly');
   if (aBtn) aBtn.classList.toggle('on', billing === 'annual');
-  // Pricing page toggle
-  var pgM = document.getElementById('pg-bt-monthly');
-  var pgA = document.getElementById('pg-bt-annual');
-  var pgBadge = document.getElementById('pg-annual-save-badge');
-  if (pgM) pgM.classList.toggle('on', billing === 'monthly');
-  if (pgA) pgA.classList.toggle('on', billing === 'annual');
-  if (pgBadge) pgBadge.style.display = billing === 'annual' ? '' : 'none';
+  if (saveBadge) saveBadge.style.display = billing === 'annual' ? '' : 'none';
+  // Modal toggle (mod-bt-monthly/mod-bt-annual)
+  var modM = document.getElementById('mod-bt-monthly');
+  var modA = document.getElementById('mod-bt-annual');
+  if (modM) modM.classList.toggle('on', billing === 'monthly');
+  if (modA) modA.classList.toggle('on', billing === 'annual');
   // Hidden checkbox (modal)
   var chk = document.getElementById('billing-annual-toggle');
   if (chk) chk.checked = billing === 'annual';

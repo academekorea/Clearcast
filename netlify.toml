@@ -34,7 +34,7 @@
 
 [[redirects]]
   from = "/auth/spotify/callback"
-  to = "/.netlify/functions/spotify-callback"
+  to = "/.netlify/functions/auth-spotify-callback"
   status = 200
 
 [[redirects]]

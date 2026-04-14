@@ -274,14 +274,19 @@ export default async (req: Request) => {
 
         // Clear in Supabase
         if (sb) {
-          await sb.from('users')
-            .update({ payment_grace_until: null })
-            .eq('stripe_customer_id', customerId)
-            .catch(() => {});
+          try {
+            await sb.from('users')
+              .update({ payment_grace_until: null })
+              .eq('stripe_customer_id', customerId);
+          } catch(e) { console.warn('[stripe-webhook] clear grace failed:', e); }
 
           // Find userId to clear Blobs too
-          const { data: userData } = await sb.from('users')
-            .select('id').eq('stripe_customer_id', customerId).single().catch(() => ({ data: null }));
+          let userData: any = null;
+          try {
+            const res = await sb.from('users')
+              .select('id').eq('stripe_customer_id', customerId).single();
+            userData = res.data;
+          } catch(e) { /* user not found */ }
           if (userData?.id) {
             const existing = await store.get(`user-plan-${userData.id}`, { type: "json" }).catch(() => null) as any;
             if (existing) {

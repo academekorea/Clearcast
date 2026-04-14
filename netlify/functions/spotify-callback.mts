@@ -146,4 +146,5 @@ export default async (req: Request) => {
   return Response.redirect(`${BASE_URL}/?spotify_login=${loginPayload}`, 302);
 };
 
-export const config: Config = { path: "/auth/spotify/callback" };
+// Path removed — auth-spotify-callback.mts now handles /auth/spotify/callback
+export const config: Config = {};
