@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support — Podlens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="description" content="Podlens support — FAQ, contact, methodology, and legal information.">
+<meta property="og:title" content="Support — Podlens">
+<meta property="og:description" content="Get help with Podlens podcast bias intelligence.">
+<meta property="og:image" content="https://podlens.app/og-image.png">
+<meta property="og:url" content="https://podlens.app/support">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0f2027">
+<link rel="canonical" href="https://podlens.app/support">
+<style>
+.pl-lockup{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.pl-lockup-icon{width:28px;height:28px;flex-shrink:0;border-radius:6px;display:block}
+.pl-lockup-divider{width:1px;height:30px;background:rgba(255,255,255,.2);flex-shrink:0}
+.pl-lockup-text{display:flex;flex-direction:column;gap:3px;line-height:1}
+.pl-lockup-wm{font-family:'Playfair Display',Georgia,serif;font-size:16px;line-height:1;color:#fff;letter-spacing:0;display:block}
+.pl-wm-pod{font-weight:400}
+.pl-wm-lens{font-weight:700}
+.pl-lockup-tagline{display:block;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;font-size:9.5px;color:rgba(255,255,255,.45);letter-spacing:.02em;line-height:1.3;white-space:nowrap}
+@media(max-width:480px){.pl-lockup-divider,.pl-lockup-text{display:none}.pl-lockup-icon{width:30px;height:30px}}
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0a1a20;--teal:#0d7377;--bg:#f7f6f2;--bg2:#fff;--text:#111827;--text2:#374151;--text3:#6b7280;--border:#e5e7eb;--r:8px;--ff:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;--ffs:'Georgia',serif}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh}
+.nav{background:var(--navy);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.nav-back{color:rgba(255,255,255,.6);font-size:13px;text-decoration:none;transition:color .15s}
+.nav-back:hover{color:#fff}
+.page{max-width:720px;margin:0 auto;padding:56px 24px 80px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+h1{font-family:var(--ffs);font-size:clamp(1.7rem,4vw,2.4rem);font-weight:800;line-height:1.15;margin-bottom:10px;color:var(--navy)}
+.sub{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:40px}
+
+.support-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:48px}
+@media(max-width:560px){.support-grid{grid-template-columns:1fr}}
+.support-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;text-decoration:none;color:var(--text);transition:border-color .15s,box-shadow .15s}
+.support-card:hover{border-color:var(--teal);box-shadow:0 2px 12px rgba(13,115,119,.1)}
+.support-card-icon{width:36px;height:36px;border-radius:8px;background:rgba(13,115,119,.08);display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--teal)}
+.support-card h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.support-card p{font-size:13px;color:var(--text3);line-height:1.5}
+
+.section-title{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+
+.faq-list{margin-bottom:48px}
+.faq-item{border-bottom:1px solid var(--border);padding:16px 0}
+.faq-q{font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.faq-q::after{content:'+';font-size:18px;color:var(--text3);transition:transform .2s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{font-size:13px;color:var(--text2);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .25s ease,padding .25s ease;padding-top:0}
+.faq-item.open .faq-a{max-height:300px;padding-top:10px}
+
+.contact-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:28px;margin-bottom:48px}
+.contact-section h3{font-size:15px;font-weight:600;margin-bottom:12px}
+.contact-row{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);margin-bottom:8px}
+.contact-row svg{flex-shrink:0;color:var(--teal)}
+.contact-row a{color:var(--teal);text-decoration:none}
+.contact-row a:hover{text-decoration:underline}
+
+.legal-links{display:flex;gap:20px;flex-wrap:wrap}
+.legal-links a{font-size:13px;color:var(--text2);text-decoration:none;transition:color .15s}
+.legal-links a:hover{color:var(--teal)}
+
+.footer-mini{text-align:center;padding:32px 24px;font-size:12px;color:var(--text3);border-top:1px solid var(--border);margin-top:48px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="pl-lockup">
+    <img src="/favicon-32x32.png" alt="Podlens" width="28" height="28" class="pl-lockup-icon">
+    <div class="pl-lockup-divider"></div>
+    <div class="pl-lockup-text">
+      <span class="pl-lockup-wm"><span class="pl-wm-pod">Pod</span><span class="pl-wm-lens">lens</span></span>
+      <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
+    </div>
+  </a>
+  <a href="/" class="nav-back">&larr; Back to Podlens</a>
+</nav>
+
+<div class="page">
+  <div class="eyebrow">Support</div>
+  <h1>How can we help?</h1>
+  <p class="sub">Everything you need to know about Podlens — from getting started to understanding our methodology.</p>
+
+  <div class="support-grid">
+    <a href="/faq.html" class="support-card">
+      <div class="support-card-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <h3>FAQ</h3>
+      <p>Answers to common questions about using Podlens, plans, and features.</p>
+    </a>
+    <a href="/contact.html" class="support-card">
+      <div class="support-card-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3>Contact us</h3>
+      <p>Get in touch with the Podlens team for questions, feedback, or partnerships.</p>
+    </a>
+    <a href="/methodology.html" class="support-card">
+      <div class="support-card-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <h3>Methodology</h3>
+      <p>Learn how our AI analyzes bias, credibility, and narrative framing in podcasts.</p>
+    </a>
+    <a href="/how-it-works" class="support-card">
+      <div class="support-card-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3>How it works</h3>
+      <p>Step-by-step breakdown of the Podlens analysis pipeline.</p>
+    </a>
+  </div>
+
+  <div class="section-title">Frequently asked questions</div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What is Podlens?</div>
+      <div class="faq-a">Podlens is the world's first podcast bias intelligence platform. We use AI to analyze podcasts for political lean, credibility, narrative framing, and rhetorical techniques — so you can understand how to trust content, not just consume it.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How does the bias analysis work?</div>
+      <div class="faq-a">We transcribe podcast episodes using AssemblyAI, then run the transcript through Claude AI to evaluate political lean, factual claims, rhetorical techniques, source quality, and narrative framing. Each episode gets a detailed bias report with scores and evidence.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is Podlens free to use?</div>
+      <div class="faq-a">Yes! The free plan includes 4 analyses per month. For more analyses and advanced features like pre-analysis tracking and smart queue, check out our Starter Lens ($7/mo), Pro Lens ($19/mo), and Operator Lens ($49/mo) plans.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What podcasts can I analyze?</div>
+      <div class="faq-a">You can analyze any podcast episode that has a public RSS feed or is available on YouTube. Just paste the episode URL or search by show name in the Analyze view.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How long does an analysis take?</div>
+      <div class="faq-a">Most analyses complete within 3-5 minutes depending on episode length. You'll get a notification when your analysis is ready.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What is the Intelligence system?</div>
+      <div class="faq-a">Your Intelligence dashboard tracks your listening patterns and analyzed content to build a personal bias fingerprint, echo chamber score, and recommended lean — helping you understand and diversify your media diet over time.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Get in touch</div>
+  <div class="contact-section">
+    <h3>Contact the Podlens team</h3>
+    <div class="contact-row">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span>Email: <a href="mailto:support@podlens.app">support@podlens.app</a></span>
+    </div>
+    <div class="contact-row">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Or visit our <a href="/contact.html">contact page</a> for more options.</span>
+    </div>
+  </div>
+
+  <div class="section-title">Legal</div>
+  <div class="legal-links">
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms of Service</a>
+  </div>
+
+  <div class="footer-mini">&copy; 2026 Podlens. All rights reserved. A force of clarity in the age of noise.</div>
+</div>
+
+</body>
+</html>

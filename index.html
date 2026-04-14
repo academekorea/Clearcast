@@ -205,6 +205,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 /* Utility classes */
 body.authenticated .show-logged-out { display: none !important; }
 body:not(.authenticated) .show-logged-in { display: none !important; }
+body.authenticated .site-footer { display: none !important; }
 
 /* ── HOME HERO — 60/40 GRID ── */
 .home-hero{padding:0;margin:0;border-bottom:1px solid var(--border)}
@@ -2545,7 +2546,13 @@ body.light-mode,[data-theme="light"]{
 [data-theme="dark"] .acct-card{background:var(--bg3)}
 .acct-card-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;padding-bottom:10px;border-bottom:0.5px solid var(--border)}
 .acct-avatar-row{display:flex;align-items:center;gap:14px;padding:6px 0 14px;border-bottom:0.5px solid var(--border);margin-bottom:4px}
-.acct-av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0;font-family:var(--ff)}
+.acct-av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0;font-family:var(--ff);overflow:hidden;object-fit:cover}
+.acct-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.acct-av-wrap{position:relative;cursor:pointer;flex-shrink:0}
+.acct-av-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
+.acct-av-wrap:hover .acct-av-overlay{opacity:1}
+.acct-av-change-btn{display:inline-block;margin-top:5px;padding:0;border:none;background:none;font-size:11px;color:var(--teal,#0d7377);cursor:pointer;font-family:var(--ff)}
+.acct-av-change-btn:hover{text-decoration:underline}
 .acct-name{font-size:15px;font-weight:600}
 .acct-email{font-size:12px;color:var(--text3);margin-top:2px}
 .acct-plan-badge{display:inline-flex;padding:3px 9px;background:rgba(55,138,221,.12);color:#185FA5;border-radius:999px;font-size:10px;font-weight:600;margin-top:5px;letter-spacing:.03em}
@@ -4324,11 +4331,16 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
         <div class="acct-card">
           <div class="acct-card-title">Your profile</div>
           <div class="acct-avatar-row" id="acct-avatar-row">
-            <div class="acct-av" id="acct-av-circle">?</div>
+            <div class="acct-av-wrap" onclick="document.getElementById('acct-av-input').click()">
+              <div class="acct-av" id="acct-av-circle">?</div>
+              <div class="acct-av-overlay"><svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+              <input type="file" id="acct-av-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+            </div>
             <div>
               <div class="acct-name" id="acct-display-name">Loading…</div>
               <div class="acct-email" id="acct-display-email"></div>
               <span class="acct-plan-badge" id="acct-plan-badge"></span>
+              <button class="acct-av-change-btn" onclick="document.getElementById('acct-av-input').click()">Change photo</button>
             </div>
           </div>
           <div class="acct-field"><span class="acct-field-label">Full name</span><span class="acct-field-val" id="acct-field-name"></span><button class="acct-field-action" onclick="showDashSection('profile')">Edit</button></div>
@@ -4988,8 +5000,11 @@ function _renderNavAvatar(u) {
     + '<div class="dropdown-tier">' + tierLabel + ' plan</div></div></div>'
     + '<div class="dropdown-divider"></div>'
     + adminRows
-    + '<a href="javascript:void(0)" onclick="showView(\'account\')" class="dropdown-item">Profile settings</a>'
-    + '<a href="javascript:void(0)" onclick="showView(\'account\')" class="dropdown-item">Account &amp; billing</a>'
+    + '<a href="javascript:void(0)" onclick="closeUserMenu();showView(\'account\')" class="dropdown-item">Profile</a>'
+    + '<a href="javascript:void(0)" onclick="closeUserMenu();showView(\'account\');setTimeout(function(){switchAccountTab(\'billing\',document.querySelector(\'[data-tab=billing]\'))},100)" class="dropdown-item">Account &amp; billing</a>'
+    + '<a href="javascript:void(0)" onclick="closeUserMenu();showView(\'settings\')" class="dropdown-item">Settings</a>'
+    + '<div class="dropdown-divider"></div>'
+    + '<a href="/support.html" target="_blank" rel="noopener" class="dropdown-item">Support</a>'
     + '<div class="dropdown-divider"></div>'
     + '<button class="danger" onclick="doLogout()">Sign out</button>'
     + '</div></div>';
@@ -6383,8 +6398,16 @@ window.renderAccountView = function() {
   var email = u.email || '';
   var plan = u.plan || 'free';
   var ini = name ? name.trim().split(/\s+/).map(function(p){ return p[0]; }).slice(0,2).join('').toUpperCase() : '?';
+  var avatarUrl = u.avatar_custom_url || u.avatar_url || '';
   var el;
-  el = document.getElementById('acct-av-circle'); if (el) el.textContent = ini;
+  el = document.getElementById('acct-av-circle');
+  if (el) {
+    if (avatarUrl) {
+      el.innerHTML = '<img src="' + avatarUrl + '" alt="' + name + '" onerror="this.remove();this.parentElement.textContent=\'' + ini + '\'">';
+    } else {
+      el.textContent = ini;
+    }
+  }
   el = document.getElementById('acct-display-name'); if (el) el.textContent = name || 'No name set';
   el = document.getElementById('acct-display-email'); if (el) el.textContent = email;
   el = document.getElementById('acct-field-name'); if (el) el.textContent = name || '—';
@@ -6416,6 +6439,48 @@ window.renderAccountView = function() {
   var dark = document.documentElement.getAttribute('data-theme') === 'dark' ||
     (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
   var dm = document.getElementById('setting-dark'); if (dm) dm.checked = dark;
+};
+
+window.handleAvatarUpload = function(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showToast('Please select an image file', 3000); return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 3000); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var size = 256;
+      canvas.width = size;
+      canvas.height = size;
+      var ctx = canvas.getContext('2d');
+      var scale = Math.max(size / img.width, size / img.height);
+      var w = img.width * scale;
+      var h = img.height * scale;
+      ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      var u; try { u = JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(ex) { u = null; }
+      if (!u) return;
+      u.avatar_custom_url = dataUrl;
+      localStorage.setItem('pl-user', JSON.stringify(u));
+      if (typeof renderAccountView === 'function') renderAccountView();
+      if (typeof renderNavbar === 'function') renderNavbar();
+      fetch('/api/update-profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: u.id, avatar_custom_url: dataUrl })
+      }).then(function(res) {
+        if (res.ok) showToast('Profile photo updated', 2000);
+        else showToast('Photo saved locally — sync failed', 3000);
+      }).catch(function() {
+        showToast('Photo saved locally — sync failed', 3000);
+      });
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
 };
 
 window.confirmDeleteAccount = function() {

@@ -127,18 +127,7 @@
     // ── Bottom section (pinned) ──
     html += '<div class="sb-bottom">';
 
-    // Account & Settings
-    html += '<button class="sb-btn sb-bot" data-sb="account" onclick="if(typeof showView===\'function\')showView(\'account\')">' + icons.account + 'Account</button>';
-    html += '<button class="sb-btn sb-bot" data-sb="settings" onclick="if(typeof showView===\'function\')showView(\'settings\')">' + icons.settings + 'Settings</button>';
-
-    // Divider then Resources
-    html += '<div class="sb-div"></div>';
-    html += '<a class="sb-btn sb-bot" href="/methodology.html"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Methodology</a>';
-    html += '<a class="sb-btn sb-bot" href="/faq.html"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>FAQ</a>';
-    html += '<a class="sb-btn sb-bot" href="/contact.html"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Contact</a>';
-
     if (showBulk) {
-      html += '<div class="sb-div"></div>';
       html += '<a class="sb-btn sb-bot" href="/bulk-scan.html"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Bulk Scanner</a>';
     }
 

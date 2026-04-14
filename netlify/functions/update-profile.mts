@@ -7,7 +7,7 @@ export default async (req: Request) => {
   }
 
   try {
-    const { userId, name, bio } = await req.json();
+    const { userId, name, bio, avatar_custom_url } = await req.json();
     if (!userId) {
       return new Response(JSON.stringify({ error: "userId required" }), {
         status: 400, headers: { "Content-Type": "application/json" },
@@ -24,6 +24,16 @@ export default async (req: Request) => {
         status: 400, headers: { "Content-Type": "application/json" },
       });
     }
+    if (avatar_custom_url !== undefined && typeof avatar_custom_url !== "string") {
+      return new Response(JSON.stringify({ error: "avatar_custom_url must be a string" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
+    }
+    if (avatar_custom_url && avatar_custom_url.length > 500000) {
+      return new Response(JSON.stringify({ error: "Avatar image too large" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
+    }
 
     const store = getStore("podlens-users");
     const key = `user-profile-${userId}`;
@@ -34,6 +44,7 @@ export default async (req: Request) => {
       ...existing,
       ...(name !== undefined ? { name: name.trim() } : {}),
       ...(bio !== undefined ? { bio: bio.trim() } : {}),
+      ...(avatar_custom_url !== undefined ? { avatar_custom_url } : {}),
       updatedAt: new Date().toISOString(),
     };
 
