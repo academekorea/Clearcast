@@ -589,6 +589,16 @@ function renderResults(data) {
   html += '</div></div>'; // end pl-main + pl-results-wrap
 
   document.getElementById('results').innerHTML = html;
+
+  // Show share bar after results render
+  (function() {
+    var bar = document.getElementById('results-share-bar');
+    var lbl = document.getElementById('results-share-label');
+    if (bar) {
+      bar.style.display = 'flex';
+      if (lbl) lbl.textContent = (data.showName || '') + (data.episodeTitle ? ' — ' + (data.episodeTitle).substring(0, 60) : '');
+    }
+  })();
   var emptyState = document.getElementById('empty-state');
   if (emptyState) emptyState.style.display = 'none';
 
@@ -730,6 +740,16 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
 
   html += '</div></div>';
   document.getElementById('results').innerHTML = html;
+
+  // Show share bar after results render
+  (function() {
+    var bar = document.getElementById('results-share-bar');
+    var lbl = document.getElementById('results-share-label');
+    if (bar) {
+      bar.style.display = 'flex';
+      if (lbl) lbl.textContent = (data.showName || '') + (data.episodeTitle ? ' — ' + (data.episodeTitle).substring(0, 60) : '');
+    }
+  })();
 
   if (audioUrl && /\.(mp3|m4a|ogg|wav|aac)/i.test(audioUrl)) {
     setTimeout(function() { _arInitNativeAudio(audioUrl, {}); }, 100);
