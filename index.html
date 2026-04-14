@@ -1609,7 +1609,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-shows-row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:8px}
 .disc-shows-row::-webkit-scrollbar{display:none}
 .disc-shows-row .disc-show-card{flex-shrink:0;width:180px;scroll-snap-align:start}
-.disc-show-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s;position:relative;display:flex;flex-direction:column}
+.disc-show-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s;position:relative;display:flex;flex-direction:column;height:320px;overflow:hidden}
 .disc-show-card:hover{border-color:var(--navy)}
 [data-theme="dark"] .disc-show-card:hover{border-color:rgba(255,255,255,.35)}
 .disc-show-art{width:100%;aspect-ratio:1;border-radius:8px;margin-bottom:9px;display:flex;align-items:center;justify-content:center;font-family:var(--ffs);font-size:20px;font-weight:700;color:rgba(255,255,255,.5);overflow:hidden}
@@ -4258,8 +4258,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
 </div>
 </div>
 </div>
-<div class="v</div>
-iew" id="view-library" style="display:none">
+<div class="view" id="view-library" style="display:none">
   <div class="dash-3col">
     <div id="app-sidebar-lib"></div>
     <div class="lib-view-inner">
@@ -7406,8 +7405,8 @@ function discLoadLiveShows(cat) {
               + artHtml
               + '<div class="disc-show-name">' + safeName + '</div>'
               + '<div class="disc-show-sub">' + (s.artist || '') + '</div>'
-              + '<div style="font-size:10px;color:var(--text3);margin:4px 0 8px">Not yet analyzed</div>'
-              + '<button onclick="event.stopPropagation();analyzeEp(null,\'' + safeUrl + '\',\'\',\'' + safeName + '\')" style="width:100%;padding:7px 6px;background:var(--navy);color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff)">Analyze</button>'
+              + '<div style="font-size:10px;color:var(--text3);margin:4px 0 0">Not yet analyzed</div>'
+              + '<button onclick="event.stopPropagation();analyzeEp(null,\'' + safeUrl + '\',\'\',\'' + safeName + '\')" style="margin-top:auto;width:100%;padding:7px 6px;background:var(--navy);color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff)">Analyze</button>'
               + '</div>';
           }).join('')
         + '</div>';
