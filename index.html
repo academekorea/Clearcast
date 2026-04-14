@@ -10222,6 +10222,17 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
   var yt=data.youtubeChannel||null;
   var el=document.getElementById('sp-content');
 
+  // Fallback to CURATED_SHOWS bias data if no platform analyses exist
+  var displayName0=(itunes&&itunes.name)||show.name||slug;
+  if (!m.biasLabel && typeof CURATED_SHOWS !== 'undefined') {
+    var curMatch = CURATED_SHOWS.find(function(s){ return s.name.toLowerCase() === (displayName0||'').toLowerCase(); });
+    if (curMatch && curMatch.bias) {
+      m.biasLabel = m.biasLabel || curMatch.bias.label;
+      m.avgBiasScore = m.avgBiasScore || curMatch.bias.score;
+      if (!m.avgAudioLean) m.avgAudioLean = { leftPct: curMatch.bias.leftPct, centerPct: curMatch.bias.centerPct, rightPct: curMatch.bias.rightPct };
+    }
+  }
+
   var artwork=(itunes&&itunes.artwork)||show.artwork||(yt&&yt.thumbnailHigh)||null;
   var biasClass={['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[m.biasLabel]||'bp-center';
   var biasBadge=m.biasLabel?'<span class="bpill '+biasClass+'"><span class="dot"></span>'+m.biasLabel+'</span>':'';
@@ -10229,7 +10240,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
   var feedUrl=(itunes&&itunes.feedUrl)||show.feedUrl||null;
   var eName=encodeURIComponent(displayName);
   var hostName=(itunes&&itunes.artist)||(rss&&rss.host)||show.host||null;
-  var description=(itunes&&itunes.description)||(rss&&rss.description)||show.description||null;
+  var description=(rss&&rss.description)||(itunes&&itunes.description)||show.description||null;
   var totalEpisodes=(itunes&&itunes.trackCount)||null;
   var countryFlag={'US':'🇺🇸','GB':'🇬🇧','AU':'🇦🇺','CA':'🇨🇦','KR':'🇰🇷','IE':'🇮🇪','NZ':'🇳🇿','IN':'🇮🇳'}[(itunes&&itunes.country)||'']||'';
   var rssEpisodes=(rss&&rss.episodes)||[];
@@ -10350,7 +10361,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     if (data.episodeCount>0) mainHtml += '<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Download card &#8599;</button>';
     mainHtml += '</div>';
     // Share bar with social icons
-    if (data.episodeCount>0) {
+    {
       var spUrl = window.location.origin + '/show/' + slug;
       var spMetrics = data.metrics || {};
       var spBias = spMetrics.biasLabel || 'Unrated';
