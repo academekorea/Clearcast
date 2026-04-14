@@ -379,9 +379,10 @@ body.player-on .lap{bottom:72px}
 @media(max-width:1024px){.trending-grid-section{padding:40px 24px 60px}}
 .tg-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px}
 .tg-title{font-family:var(--ffs);font-size:28px;font-weight:600;margin-bottom:28px}
-.tg-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
-@media(max-width:1100px){.tg-grid{grid-template-columns:repeat(4,1fr)}}@media(max-width:700px){.tg-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:540px){.tg-grid{grid-template-columns:1fr}}
+.tg-grid{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:8px}
+.tg-grid::-webkit-scrollbar{display:none}
+.dragging{cursor:grabbing!important;user-select:none}
+.tg-grid .tg-card{flex-shrink:0;width:160px;scroll-snap-align:start}
 /* Trending card */
 .tg-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:border-color .1s;display:flex;flex-direction:column;gap:10px}
 .tg-card:hover{border-color:var(--navy)}
@@ -1605,8 +1606,9 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-shelf-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .disc-shelf-ttl{font-size:14px;font-weight:600;color:var(--text)}
 .disc-shelf-more{font-size:12px;color:var(--text3);cursor:pointer;background:none;border:none;font-family:var(--ff)}
-.disc-shows-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
-@media(max-width:1200px){.disc-shows-row{grid-template-columns:repeat(4,1fr)}}
+.disc-shows-row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:8px}
+.disc-shows-row::-webkit-scrollbar{display:none}
+.disc-shows-row .disc-show-card{flex-shrink:0;width:180px;scroll-snap-align:start}
 .disc-show-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s;position:relative;display:flex;flex-direction:column}
 .disc-show-card:hover{border-color:var(--navy)}
 [data-theme="dark"] .disc-show-card:hover{border-color:rgba(255,255,255,.35)}
@@ -1616,7 +1618,9 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-show-sub{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .disc-show-meta{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px}
 .disc-bdot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
-.disc-ep-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.disc-ep-row{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:8px}
+.disc-ep-row::-webkit-scrollbar{display:none}
+.disc-ep-row .disc-ep-card{flex-shrink:0;width:320px;scroll-snap-align:start}
 .disc-ep-card{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;transition:border-color .15s;min-height:90px}
 .disc-ep-card:hover{border-color:var(--navy)}
 .disc-ep-art{width:44px;height:44px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.5);overflow:hidden}
@@ -3547,7 +3551,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
           <!-- New from your shows -->
           <div class="dash-section" id="dash-new-episodes" style="margin-top:20px;margin-bottom:24px">
             <div class="section-header"><span class="section-title">New from your shows</span><a href="javascript:void(0)" class="section-link" onclick="showView('discover');return false">Discover more &rarr;</a></div>
-            <div id="dash-new-grid" class="tg-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+            <div id="dash-new-grid" class="tg-grid"></div>
           </div>
           <!-- Recommended -->
           <div class="dash-section" id="dash-recommended" style="margin-bottom:24px">
@@ -3560,7 +3564,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
                 <button class="cat-pill-btn" onclick="filterDashRec('right',this)"><span style="color:var(--color-right)">&#9679;</span> Right</button>
               </div>
             </div>
-            <div id="dash-rec-grid" class="tg-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+            <div id="dash-rec-grid" class="tg-grid"></div>
           </div>
           <div class="section-header" style="margin-top:24px"><span class="section-title">Your stats</span></div>
           <div class="stats-grid">
@@ -3768,6 +3772,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Trending shows</div><button class="disc-shelf-more">See all &rarr;</button></div>
         <div id="disc-cat-bias" style="margin-bottom:10px;padding:6px 0"></div>
         <div class="disc-shows-row" id="disc-shows-row"></div>
+        <div id="disc-live-shows" style="margin-top:16px"></div>
       </div>
       <div class="disc-shelf">
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Trending episodes this week</div><button class="disc-shelf-more">See all &rarr;</button></div>
@@ -5662,7 +5667,7 @@ function renderNewFromShows() {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Follow shows on Discover to see new episodes here <a href="javascript:void(0)" onclick="showView(\'discover\');return false" style="color:var(--navy)">\u2192</a></div>';
     return;
   }
-  var shows = (u.followedShows || []).slice(0, 4);
+  var shows = (u.followedShows || []).slice(0, 10);
   grid.innerHTML = shows.map(function(s) {
     var name = s.showName || s.name || '';
     var art = s.artwork ? '<img src="' + s.artwork + '" alt="" style="width:48px;height:48px;border-radius:6px;object-fit:cover;display:block" onerror="this.style.display=\'none\'">' : '';
@@ -6220,6 +6225,54 @@ var CURATED_SHOWS = [
   {name:'Maintenance Phase',artist:'Aubrey Gordon & Michael Hobbes',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/07/42/29/074229f2-2ef2-d62c-54e3-0c98b1c8e8d7/mza_16327541327882183316.jpg/600x600bb.jpg',feedUrl:'https://feeds.megaphone.fm/maintenancephase',cat:'health',bias:{score:-50,label:'Leans left',leftPct:65,centerPct:24,rightPct:11}},
   {name:'The Bill Simmons Podcast',artist:'The Ringer',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/8e/4e/60/8e4e6060-2b94-36d3-ce64-92e4f9da4b80/mza_11108810737003339695.jpg/600x600bb.jpg',feedUrl:'https://feeds.megaphone.fm/billsimmons',cat:'sports',bias:{score:-6,label:'Mostly balanced',leftPct:30,centerPct:52,rightPct:18}},
   {name:'Pardon My Take',artist:'Barstool Sports',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/2c/7e/ed/2c7eed5c-bf0f-f9ad-5b7b-3fb9b5eac9fc/mza_13536117426028413768.jpg/600x600bb.jpg',feedUrl:'https://feeds.megaphone.fm/pardonmytake',cat:'sports',bias:{score:6,label:'Mostly balanced',leftPct:24,centerPct:54,rightPct:22}},
+  // ── NEWS (4) ──
+  {name:'The Megyn Kelly Show',artist:'Megyn Kelly',artwork:'',feedUrl:'',cat:'news',bias:{score:62,label:'Heavily right',leftPct:8,centerPct:20,rightPct:72}},
+  {name:'Pod Save the World',artist:'Crooked Media',artwork:'',feedUrl:'',cat:'news',bias:{score:-60,label:'Leans left',leftPct:70,centerPct:20,rightPct:10}},
+  {name:'The Bulwark Podcast',artist:'The Bulwark',artwork:'',feedUrl:'',cat:'news',bias:{score:-20,label:'Lightly left',leftPct:42,centerPct:40,rightPct:18}},
+  {name:'America First with Sebastian Gorka',artist:'Salem Podcast Network',artwork:'',feedUrl:'',cat:'news',bias:{score:80,label:'Heavily right',leftPct:4,centerPct:16,rightPct:80}},
+  // ── TECH (4) ──
+  {name:'This Week in Tech',artist:'TWiT',artwork:'',feedUrl:'',cat:'tech',bias:{score:-15,label:'Mostly balanced',leftPct:36,centerPct:46,rightPct:18}},
+  {name:'The Tim Ferriss Show',artist:'Tim Ferriss',artwork:'',feedUrl:'',cat:'tech',bias:{score:5,label:'Mostly balanced',leftPct:22,centerPct:56,rightPct:22}},
+  {name:'Masters of Scale',artist:'Reid Hoffman',artwork:'',feedUrl:'',cat:'tech',bias:{score:-10,label:'Mostly balanced',leftPct:32,centerPct:52,rightPct:16}},
+  {name:'My First Million',artist:'Sam Parr & Shaan Puri',artwork:'',feedUrl:'',cat:'tech',bias:{score:8,label:'Mostly balanced',leftPct:22,centerPct:56,rightPct:22}},
+  // ── BUSINESS (5) ──
+  {name:'The Knowledge Project',artist:'Shane Parrish',artwork:'',feedUrl:'',cat:'business',bias:{score:5,label:'Mostly balanced',leftPct:22,centerPct:56,rightPct:22}},
+  {name:'We Study Billionaires',artist:'The Investor\'s Podcast Network',artwork:'',feedUrl:'',cat:'business',bias:{score:15,label:'Mostly balanced',leftPct:18,centerPct:56,rightPct:26}},
+  {name:'Founders',artist:'David Senra',artwork:'',feedUrl:'',cat:'business',bias:{score:5,label:'Mostly balanced',leftPct:22,centerPct:56,rightPct:22}},
+  {name:'Business Wars',artist:'Wondery',artwork:'',feedUrl:'',cat:'business',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
+  {name:'The Prof G Pod',artist:'Scott Galloway',artwork:'',feedUrl:'',cat:'business',bias:{score:-25,label:'Lightly left',leftPct:46,centerPct:36,rightPct:18}},
+  // ── SOCIETY (5) ──
+  {name:'SmartLess',artist:'Jason Bateman, Sean Hayes, Will Arnett',artwork:'',feedUrl:'',cat:'society',bias:{score:-20,label:'Lightly left',leftPct:42,centerPct:40,rightPct:18}},
+  {name:'Revisionist History',artist:'Malcolm Gladwell',artwork:'',feedUrl:'',cat:'society',bias:{score:-15,label:'Mostly balanced',leftPct:36,centerPct:46,rightPct:18}},
+  {name:'Hidden Brain',artist:'Shankar Vedantam',artwork:'',feedUrl:'',cat:'society',bias:{score:-30,label:'Lightly left',leftPct:48,centerPct:36,rightPct:16}},
+  {name:'On Being',artist:'Krista Tippett',artwork:'',feedUrl:'',cat:'society',bias:{score:-20,label:'Lightly left',leftPct:42,centerPct:40,rightPct:18}},
+  {name:'Armchair Expert',artist:'Dax Shepard',artwork:'',feedUrl:'',cat:'society',bias:{score:-15,label:'Mostly balanced',leftPct:36,centerPct:46,rightPct:18}},
+  // ── CRIME (4) ──
+  {name:'Casefile True Crime',artist:'Casefile Presents',artwork:'',feedUrl:'',cat:'crime',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
+  {name:'Generation Why',artist:'Wondery',artwork:'',feedUrl:'',cat:'crime',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
+  {name:'Your Own Backyard',artist:'Chris Lambert',artwork:'',feedUrl:'',cat:'crime',bias:{score:-8,label:'Mostly balanced',leftPct:30,centerPct:52,rightPct:18}},
+  {name:'Cold',artist:'KSL Podcasts',artwork:'',feedUrl:'',cat:'crime',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
+  // ── COMEDY (6) ──
+  {name:'This American Life',artist:'Ira Glass',artwork:'',feedUrl:'',cat:'comedy',bias:{score:-35,label:'Lightly left',leftPct:52,centerPct:32,rightPct:16}},
+  {name:'Wait Wait... Don\'t Tell Me!',artist:'NPR',artwork:'',feedUrl:'',cat:'comedy',bias:{score:-30,label:'Lightly left',leftPct:48,centerPct:36,rightPct:16}},
+  {name:'Call Her Daddy',artist:'Alex Cooper',artwork:'',feedUrl:'',cat:'comedy',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
+  {name:'The Joe Rogan Experience',artist:'Joe Rogan',artwork:'',feedUrl:'',cat:'comedy',bias:{score:20,label:'Lightly right',leftPct:16,centerPct:44,rightPct:40}},
+  {name:'Freakonomics Radio',artist:'Freakonomics Network',artwork:'',feedUrl:'',cat:'comedy',bias:{score:-10,label:'Mostly balanced',leftPct:32,centerPct:52,rightPct:16}},
+  {name:'Office Ladies',artist:'Jenna Fischer & Angela Kinsey',artwork:'',feedUrl:'',cat:'comedy',bias:{score:-10,label:'Mostly balanced',leftPct:32,centerPct:52,rightPct:16}},
+  // ── HEALTH (6) ──
+  {name:'On Purpose',artist:'Jay Shetty',artwork:'',feedUrl:'',cat:'health',bias:{score:-10,label:'Mostly balanced',leftPct:32,centerPct:52,rightPct:16}},
+  {name:'The Peter Attia Drive',artist:'Peter Attia',artwork:'',feedUrl:'',cat:'health',bias:{score:5,label:'Mostly balanced',leftPct:22,centerPct:56,rightPct:22}},
+  {name:'Unlocking Us',artist:'Bren\u00e9 Brown',artwork:'',feedUrl:'',cat:'health',bias:{score:-35,label:'Lightly left',leftPct:52,centerPct:32,rightPct:16}},
+  {name:'Feel Better, Live More',artist:'Dr. Rangan Chatterjee',artwork:'',feedUrl:'',cat:'health',bias:{score:-15,label:'Mostly balanced',leftPct:36,centerPct:46,rightPct:18}},
+  {name:'ZOE Science & Nutrition',artist:'ZOE',artwork:'',feedUrl:'',cat:'health',bias:{score:-10,label:'Mostly balanced',leftPct:32,centerPct:52,rightPct:16}},
+  {name:'The Doctor\'s Farmacy',artist:'Dr. Mark Hyman',artwork:'',feedUrl:'',cat:'health',bias:{score:5,label:'Mostly balanced',leftPct:22,centerPct:56,rightPct:22}},
+  // ── SPORTS (6) ──
+  {name:'First Take',artist:'ESPN',artwork:'',feedUrl:'',cat:'sports',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
+  {name:'The Ringer NFL Show',artist:'The Ringer',artwork:'',feedUrl:'',cat:'sports',bias:{score:-8,label:'Mostly balanced',leftPct:30,centerPct:52,rightPct:18}},
+  {name:'Pardon The Interruption',artist:'ESPN',artwork:'',feedUrl:'',cat:'sports',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
+  {name:'The Dan Patrick Show',artist:'Dan Patrick',artwork:'',feedUrl:'',cat:'sports',bias:{score:0,label:'Mostly balanced',leftPct:24,centerPct:52,rightPct:24}},
+  {name:'Fantasy Footballers',artist:'Fantasy Footballers',artwork:'',feedUrl:'',cat:'sports',bias:{score:0,label:'Mostly balanced',leftPct:24,centerPct:52,rightPct:24}},
+  {name:'New Heights',artist:'Jason & Travis Kelce',artwork:'',feedUrl:'',cat:'sports',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
 ];
 
 // ── BIAS HELPERS ─────────────────────────────────────────────────────────────
@@ -6590,8 +6643,8 @@ function discRenderRightCol(isLoggedIn, user) {
 function discRenderEpisodes() {
   var el = document.getElementById('disc-ep-row');
   if (!el) return;
-  var shows = _discCat === 'all' ? CURATED_SHOWS.slice(0,3) : CURATED_SHOWS.filter(function(s){ return s.cat===_discCat; }).slice(0,3);
-  if (!shows.length) shows = CURATED_SHOWS.slice(0,3);
+  var shows = _discCat === 'all' ? CURATED_SHOWS.slice(0,9) : CURATED_SHOWS.filter(function(s){ return s.cat===_discCat; }).slice(0,9);
+  if (!shows.length) shows = CURATED_SHOWS.slice(0,9);
   var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
   el.innerHTML = shows.map(function(s, i) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
@@ -6612,6 +6665,7 @@ function discRenderEpisodes() {
       +'<button class="ep-like-btn" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 10px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:'+(isLiked({url:s.feedUrl})?'#e24b4a':'var(--text3)')+'">'+(isLiked({url:s.feedUrl})?'♥':'♡')+'</button>'
       +'</div></div>';
   }).join('');
+  addScrollDrag(el);
 }
 
 // ── Dashboard section switching ──────────────────────────────────────────────
@@ -7291,6 +7345,62 @@ function _artError(img) {
 }
 
 
+// ── SCROLL DRAG — grab-and-slide for horizontal scroll containers ──
+function addScrollDrag(el) {
+  if (!el) return;
+  var isDown = false, startX, scrollLeft;
+  el.addEventListener('mousedown', function(e) {
+    isDown = true; el.classList.add('dragging');
+    startX = e.pageX - el.offsetLeft; scrollLeft = el.scrollLeft;
+  });
+  el.addEventListener('mouseleave', function() { isDown = false; el.classList.remove('dragging'); });
+  el.addEventListener('mouseup', function() { isDown = false; el.classList.remove('dragging'); });
+  el.addEventListener('mousemove', function(e) {
+    if (!isDown) return; e.preventDefault();
+    var x = e.pageX - el.offsetLeft;
+    el.scrollLeft = scrollLeft - (x - startX) * 1.5;
+  });
+}
+
+// ── LIVE PODCAST INDEX — secondary section below curated shows ──
+function discLoadLiveShows(cat) {
+  var container = document.getElementById('disc-live-shows');
+  if (!container) return;
+  if (cat === 'following') { container.innerHTML = ''; return; }
+  var query = cat === 'all' ? 'top podcasts' : cat;
+  container.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px 0">Loading more shows...</div>';
+  fetch('/api/podcast-search?q=' + encodeURIComponent(query))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var results = (data.results || []).filter(function(r) {
+        return !CURATED_SHOWS.some(function(c) {
+          return c.name.toLowerCase() === (r.name || '').toLowerCase();
+        });
+      });
+      if (!results.length) { container.innerHTML = ''; return; }
+      var catLabel = cat === 'all' ? '' : ' ' + cat;
+      container.innerHTML = '<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">More' + catLabel + ' shows</div>'
+        + '<div class="disc-shows-row" id="disc-live-row">'
+        + results.slice(0, 12).map(function(s) {
+            var safeName = (s.name || '').replace(/"/g, '').replace(/'/g, '');
+            var safeUrl = (s.feedUrl || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            var artHtml = s.artwork
+              ? '<img class="disc-show-art" src="' + s.artwork + '" alt="" onerror="this.parentElement.innerHTML=\'<div class=disc-show-art></div>\'">'
+              : '<div class="disc-show-art"></div>';
+            return '<div class="disc-show-card">'
+              + artHtml
+              + '<div class="disc-show-name">' + safeName + '</div>'
+              + '<div class="disc-show-sub">' + (s.artist || '') + '</div>'
+              + '<div style="font-size:10px;color:var(--text3);margin:4px 0 8px">Not yet analyzed</div>'
+              + '<button onclick="event.stopPropagation();analyzeEp(null,\'' + safeUrl + '\',\'\',\'' + safeName + '\')" style="width:100%;padding:7px 6px;background:var(--navy);color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff)">Analyze</button>'
+              + '</div>';
+          }).join('')
+        + '</div>';
+      addScrollDrag(document.getElementById('disc-live-row'));
+    })
+    .catch(function() { container.innerHTML = ''; });
+}
+
 function discRenderShows() {
   var el = document.getElementById('disc-shows-row');
   if (!el) return;
@@ -7303,7 +7413,7 @@ function discRenderShows() {
       el.innerHTML = '<div style="grid-column:1/-1;padding:32px;text-align:center;color:var(--text3);font-size:13px">No shows followed yet. Browse and follow shows to see them here.</div>';
       return;
     }
-    el.innerHTML = followed.slice(0,4).map(function(s) {
+    el.innerHTML = followed.map(function(s) {
       var name = s.name || s.showName || '';
       var slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
       var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="" onerror="this.parentElement.innerHTML=\'<div class=disc-show-art></div>\'">' : '<div class="disc-show-art"></div>';
@@ -7312,17 +7422,13 @@ function discRenderShows() {
         + art + '<div class="disc-show-name">'+name+'</div>'
         + '<div class="disc-show-sub">Following</div></div>';
     }).join('');
+    addScrollDrag(el);
     return;
   }
 
-  // For you / Trending — always exactly 4, pad with other categories if needed
+  // For you / Trending — show all shows for category (horizontal scroll)
   var filtered = _discCat === 'all' ? CURATED_SHOWS.slice() : CURATED_SHOWS.filter(function(s){return s.cat===_discCat;});
-  var shows = filtered.slice(0,4);
-  // Pad to 4 if category has fewer
-  if (shows.length < 4) {
-    var extra = CURATED_SHOWS.filter(function(s){return filtered.indexOf(s)===-1;});
-    shows = shows.concat(extra).slice(0,4);
-  }
+  var shows = filtered;
 
   el.innerHTML = shows.map(function(s) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
@@ -7338,6 +7444,9 @@ function discRenderShows() {
       + '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="margin-top:auto;padding-top:8px;width:100%;padding:8px 6px 6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
       + '</div>';
   }).join('');
+  addScrollDrag(el);
+  // Load live shows from Podcast Index
+  discLoadLiveShows(_discCat);
 }
 
 function discRenderRecent() {
@@ -12428,7 +12537,7 @@ function filterTrendingGrid(category, btn) {
   if (cached && cached.urls && (Date.now() - cached.ts) < 48*60*60*1000) {
     CURATED_SHOWS.forEach(function(s, i){ if (cached.urls[i]) artworkMap[s.name] = cached.urls[i]; });
   }
-  el.innerHTML = shows.slice(0, 6).map(function(s) {
+  el.innerHTML = shows.slice(0, 12).map(function(s) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
     var art = artworkMap[s.name];
@@ -12442,8 +12551,9 @@ function filterTrendingGrid(category, btn) {
       + _biasMini(s.bias)
       + '</div></div>';
   }).join('');
+  addScrollDrag(el);
   // Load missing artwork via iTunes and inject live
-  shows.slice(0, 6).forEach(function(s) {
+  shows.slice(0, 12).forEach(function(s) {
     if (artworkMap[s.name]) return;
     _itunesArtwork(s.name).then(function(url){
       if (!url) return;
