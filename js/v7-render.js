@@ -685,7 +685,7 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
 
   var html = '<div class="pl-results-wrap"><div class="pl-main">';
   html += '<div class="sec"><div style="background:var(--amber-bg);border:0.5px solid #fde68a;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
-    + '<div><div style="font-size:12px;color:#92580a">Analyzing \u2014 first findings appear in ~90 seconds</div>'
+    + '<div><div style="font-size:12px;color:#92580a">Analyzing \u2014 findings appear shortly</div>'
     + '<div style="font-size:10px;color:#b58a40;margin-top:2px">Play while you wait \u00b7 <strong style="color:#b45309">\u26A1 Analyzed once? Loads instantly next time</strong></div></div>'
     + '<div id="ar-eta-pct" style="font-size:10px;color:#b58a40">0% complete</div></div></div>';
 
@@ -719,7 +719,7 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
     + '<div class="lbl" style="margin-bottom:0">Political lean</div>'
     + '<div style="font-size:10px;color:#d97706">Calculating\u2026</div></div>'
     + '<div style="height:7px;background:#f0f0f0;border-radius:4px;margin:6px 0 4px;animation:shimmer 1.5s infinite"></div>'
-    + '<div style="font-size:10px;color:#bbb">Lean appears in ~90 seconds</div></div>';
+    + '<div style="font-size:10px;color:#bbb">Lean appears when analysis completes</div></div>';
   html += '</div>';
 
   html += '<div class="rc">'

@@ -3984,7 +3984,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
         <div style="font-size:13px;color:var(--text2);line-height:1.75">AssemblyAI transcribes with word-level timestamps. Claude then scores 6 bias dimensions, identifies host vs guest, detects framing patterns, and notes what&rsquo;s missing. Community cache means popular episodes are instant.</div>
         <div style="margin-top:16px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
           <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0"></div>
-          Early signal in ~30s &middot; Full results in ~90s
+          Play while you wait &middot; Full results appear shortly
         </div>
       </div>
       <div style="padding:40px 36px">
@@ -9269,7 +9269,7 @@ function toggleAudioSummary(jobId, script) {
   if (_audioEl && _audioJob!==jobId) {
     _audioEl.pause(); _audioEl.src='';
     _stopProgressTick(); _resetProgress(_audioJob);
-    _setAudioState(_audioJob,false,'Listen to briefing \u00b7 ~90 sec');
+    _setAudioState(_audioJob,false,'Listen to briefing');
     _audioEl=null;
   }
 

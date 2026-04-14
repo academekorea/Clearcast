@@ -68,11 +68,19 @@ Analyze the transcript and return a JSON object with this EXACT structure — no
       "title": <short description under 15 words>,
       "detail": <1-2 sentences grounded in verifiable fact>
     }
+  ],
+  "keyFindings": [
+    {
+      "text": <1 sentence key takeaway from the episode>,
+      "lean": <"left" | "right" | "neutral">,
+      "detail": <2-3 sentences expanding on why this matters>
+    }
   ]
 }
 
 Rules:
 - highlights: 8-12 quotes. Always include both left-leaning AND right-leaning quotes if they exist.
+- keyFindings: 3-5 findings. Focus on the most important political/media takeaways.
 - biasReason: plain English, no jargon
 - dimensions: score every dimension — never null
 - Only flag things you are highly confident about. Every fact-check must be verifiable.
