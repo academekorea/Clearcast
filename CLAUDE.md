@@ -3,7 +3,7 @@
 
 ## Project Identity
 - **Name:** Podlens
-- **Tagline:** "Know what you're actually listening to"
+- **Tagline:** "A force of clarity in the age of noise"
 - **Mission:** World's first podcast bias intelligence platform. AI that tells you how to trust content, not just summarize it.
 - **Live site:** https://podlens.app
 - **GitHub:** https://github.com/academekorea/Clearcast

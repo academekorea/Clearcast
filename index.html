@@ -3835,7 +3835,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
     <div class="analyze-wrap">
     <div id="analyze-hero" style="max-width:600px;margin:0 auto 32px;padding:56px 0 0;text-align:center">
       <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px">Podcast Intelligence</div>
-      <h1 style="font-family:var(--ffs);font-size:clamp(32px,4vw,48px);font-weight:700;line-height:1.1;color:var(--text);margin-bottom:12px;letter-spacing:-.02em">Know what you&rsquo;re<br><em style="font-style:italic;color:var(--navy)">actually listening to.</em></h1>
+      <h1 style="font-family:var(--ffs);font-size:clamp(32px,4vw,48px);font-weight:700;line-height:1.1;color:var(--text);margin-bottom:12px;letter-spacing:-.02em">A force of clarity<br><em style="font-style:italic;color:var(--navy)">in the age of noise.</em></h1>
       <p style="font-size:17px;color:var(--text2);margin-bottom:32px;line-height:1.6">Paste any YouTube, Spotify, Apple Podcasts, or RSS URL below.</p>
       <div style="display:flex;border:1.5px solid var(--border2);border-radius:12px;overflow:hidden;background:var(--bg2);margin-bottom:10px;transition:border-color .15s" onfocusin="this.style.borderColor='var(--navy)'" onfocusout="this.style.borderColor='var(--border2)'">
         <input type="text" id="url-input" class="url-input" placeholder="Paste a YouTube, Spotify, Apple Podcasts, RSS, or .mp3 URL" autocomplete="url" oninput="_urlInputHint(this.value)" style="flex:1;padding:16px 20px;font-size:15px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none"/>
@@ -6481,7 +6481,7 @@ function showView(name) {
 
   // ── Step 6: Update title ──
   var titles = {
-    home: (_u && _u.id) ? 'Dashboard — Podlens' : 'Podlens — Know what you\'re actually listening to',
+    home: (_u && _u.id) ? 'Dashboard — Podlens' : 'Podlens — A force of clarity in the age of noise',
     discover: 'Discover — Podlens',
     analyze: 'Analyze — Podlens',
     library: 'Your Library — Podlens',
@@ -9586,7 +9586,7 @@ async function generateShareCard1200(data) {
   ctx.font = '400 13px Inter, sans-serif';
   ctx.fillText('podlens.app', xContent, H - 18);
   ctx.textAlign = 'right';
-  ctx.fillText('Know what you\'re actually listening to', W - 40, H - 18);
+  ctx.fillText('A force of clarity in the age of noise', W - 40, H - 18);
   ctx.textAlign = 'left';
 
   return canvas.toDataURL('image/png');
@@ -11850,7 +11850,7 @@ var i18n = {
     navUnheard: "Unheard", navPricing: "Pricing",
     navSearch: "Search", navLibrary: "Library",
     navSettings: "Settings", tabAccount: "Account", tabBilling: "Billing", tabSecurity: "Security",
-    logoTagline: "Know what you\u2019re actually listening to",
+    logoTagline: "A force of clarity in the age of noise",
     trialBanner: "Your free plan renews every month",
     listenPlatform: "Listen on your preferred platform",
     analysisComplete: "Analysis complete", analyzingEpisode: "Analyzing this episode\u2026",

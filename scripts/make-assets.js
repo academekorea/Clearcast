@@ -215,7 +215,7 @@ function makeOgImage() {
 
   // Tagline below
   const tagScale = 2;
-  const tagline = 'KNOW WHAT YOU ARE ACTUALLY LISTENING TO';
+  const tagline = 'A FORCE OF CLARITY IN THE AGE OF NOISE';
   const tagW = textWidth(tagline, tagScale);
   const tagX = Math.round(W/2 - tagW/2);
   const tagY = wmY + 7*wmScale + 20;

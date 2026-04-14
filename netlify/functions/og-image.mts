@@ -85,7 +85,7 @@ function genericCard(): string {
     <tspan font-weight="400">POD</tspan><tspan font-weight="700">LENS</tspan>
   </text>
   <text x="600" y="320" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="20" fill="white" fill-opacity="0.5">
-    Know what you're actually listening to
+    A force of clarity in the age of noise
   </text>
   <text x="600" y="560" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="14" fill="white" fill-opacity="0.35">
     PODLENS.APP

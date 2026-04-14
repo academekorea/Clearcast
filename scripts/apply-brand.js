@@ -24,7 +24,7 @@ const NEW_NAV_LOGO = `<a class="pl-lockup" href="/" aria-label="Podlens home">
     <span class="pl-lockup-divider"></span>
     <span class="pl-lockup-text">
       <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
-      <span class="pl-lockup-tagline">Know what you&rsquo;re actually listening to</span>
+      <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
     </span>
   </a>`;
 
@@ -32,7 +32,7 @@ const NEW_NAV_LOGO = `<a class="pl-lockup" href="/" aria-label="Podlens home">
 function buildMetaTags(pageTitle, pageUrl) {
   return `
 <meta name="description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
-<meta property="og:title" content="Podlens — Know what you're actually listening to">
+<meta property="og:title" content="Podlens — A force of clarity in the age of noise">
 <meta property="og:description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
 <meta property="og:image" content="https://podlens.app/og-image.png">
 <meta property="og:url" content="${pageUrl}">
