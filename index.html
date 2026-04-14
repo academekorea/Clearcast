@@ -2961,7 +2961,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
 
 <div class="sticky-header">
 <div id="founding-banner" style="position:relative;background:#FFF8E7;border-bottom:1px solid #F0C040;width:100%;z-index:9999">
-  <a href="/pricing" style="display:flex;align-items:center;justify-content:center;width:100%;padding:10px 48px 10px 24px;gap:10px;text-decoration:none">
+  <a href="/pricing" onclick="showView('pricing');return false" style="display:flex;align-items:center;justify-content:center;width:100%;padding:10px 48px 10px 24px;gap:10px;text-decoration:none">
     <span style="font-size:16px">🎉</span>
     <span style="color:#92400E;font-size:13px;font-weight:600">Founding Member Pricing — 33% off forever</span>
     <span style="color:#92400E;font-size:12px;opacity:.8;margin-left:4px">Only available during our launch period →</span>
@@ -3919,7 +3919,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
   </div>
   <!-- Bottom dock — visible once analysis starts -->
   <div class="ar-dock hidden" id="ar-dock">
-    <img class="ar-dock-art" id="ar-dock-art" src="" alt="">
+    <img class="ar-dock-art" id="ar-dock-art" src="" alt="" onerror="this.style.display='none'">
     <div class="ar-dock-meta">
       <div class="ar-dock-title" id="ar-dock-title">Loading…</div>
       <div class="ar-dock-show" id="ar-dock-show"></div>
@@ -6437,7 +6437,7 @@ window.renderAccountView = function() {
       + '<div style="font-size:12px;color:var(--text3);margin-top:2px">' + (planPrices[plan]||'') + '</div></div>'
       + '<span class="acct-plan-active-badge">Active</span></div>'
       + '<div style="display:flex;gap:8px;margin-top:12px">'
-      + '<a href="/pricing" class="acct-btn-primary">View all plans &rarr;</a>'
+      + '<a href="/pricing" onclick="showView(\'pricing\');return false" class="acct-btn-primary">View all plans &rarr;</a>'
       + '</div>';
   }
   // Load notif prefs
@@ -6556,7 +6556,9 @@ function showView(name) {
     admin: '/admin',
     profile: '/profile',
     account: '/account',
-    settings: '/settings'
+    settings: '/settings',
+    'how-it-works': '/how-it-works',
+    pricing: '/pricing'
   };
   var newUrl = viewUrls[name] || '/' + name;
   if (window.location.pathname !== newUrl) {
@@ -6845,7 +6847,7 @@ function _renderDashQueueSection(u) {
   var plan = String(u.plan || 'free').toLowerCase();
   var isEligible = u.email === 'academekorea@gmail.com' || u.isSuperAdmin || ['creator','operator','studio','trial'].includes(plan);
   if (!isEligible) {
-    el.innerHTML = '<div style="padding:40px 0;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚡</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue is a Starter Lens+ feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Automatically queue new episodes from shows you follow.</div><a href="/pricing" style="display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">See plans &rarr;</a></div>';
+    el.innerHTML = '<div style="padding:40px 0;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚡</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue is a Starter Lens+ feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Automatically queue new episodes from shows you follow.</div><a href="/pricing" onclick="showView(\'pricing\');return false" style="display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">See plans &rarr;</a></div>';
   }
 }
 
@@ -6924,8 +6926,6 @@ function _renderHomeTrendingFallback(el) {
 
 
 // ── DISCOVER PAGE JS (see initDiscover above) ──────────────────────────────
-var _discCat = 'all';
-var _discTab = 'foryou';
 
 function discSetCat(cat, btn) {
   _discCat = cat;
@@ -7077,7 +7077,7 @@ function discRenderFeed() {
       el.innerHTML = '<div style="padding:32px 0;text-align:center">'
         + '<div style="font-size:14px;font-weight:500;margin-bottom:6px">Unheard is a Pro Lens feature</div>'
         + '<div style="font-size:13px;color:var(--text3);margin-bottom:16px">Stories one side covers that the other ignores — updated weekly.</div>'
-        + '<a href="/pricing" style="display:inline-block;padding:9px 20px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:500;text-decoration:none">Upgrade to Pro Lens &rarr;</a>'
+        + '<a href="/pricing" onclick="showView(\'pricing\');return false" style="display:inline-block;padding:9px 20px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:500;text-decoration:none">Upgrade to Pro Lens &rarr;</a>'
         + '</div>';
     } else {
       el.innerHTML = '<div style="padding:24px 0;color:var(--text3);font-size:13px">Loading Unheard stories&hellip;</div>';
@@ -7699,13 +7699,17 @@ function renderFallbackEpisodes(el) {
   html += '</div></div>';
   el.innerHTML = html;
   // Async: fetch real artwork for each fallback card via iTunes lookup
-  FALLBACK_EPISODES.forEach(function(ep) {
+  FALLBACK_EPISODES.forEach(function(ep, idx) {
     fetch('https://itunes.apple.com/lookup?id=' + ep.itunes_id)
       .then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.results && d.results[0] && d.results[0].artworkUrl100) {
-          var imgs = el.querySelectorAll('.foryou-art');
-          // update is best-effort; no hard dependency
+          var artSrc = d.results[0].artworkUrl100.replace('100x100', '300x300');
+          var cards = el.querySelectorAll('.foryou-card');
+          if (cards[idx]) {
+            var img = cards[idx].querySelector('img.foryou-art');
+            if (img) img.src = artSrc;
+          }
         }
       }).catch(function() {});
   });
@@ -9173,7 +9177,7 @@ function renderTranscriptHighlights(data) {
         + '<div class="th-quote-text">&ldquo;'+q.text.substring(0,80)+'&hellip;&rdquo;</div></div>';
     });
     blurHtml += '</div>';
-    blurHtml += '<div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Pro Lens</div><a class="ar-gate-btn" href="/pricing">Upgrade &rarr;</a></div>';
+    blurHtml += '<div class="ar-gate-overlay"><div class="ar-gate-msg">Unlocks with Pro Lens</div><a class="ar-gate-btn" href="/pricing" onclick="showView(\'pricing\');return false">Upgrade &rarr;</a></div>';
     blurHtml += '</div></div>';
     document.getElementById('transcript-content').innerHTML = blurHtml;
     return;
@@ -10671,7 +10675,7 @@ function showUpgradeModal(feature) {
     + '<h3>' + msg.title + '</h3>'
     + '<p>' + msg.desc + '</p>'
     + '<div class="upgrade-modal-plan-pill">' + msg.tier + ' plan &middot; ' + msg.price + ' founding</div>'
-    + '<a href="/pricing" class="upgrade-modal-cta">Upgrade to ' + msg.tier + ' &rarr;</a>'
+    + '<a href="/pricing" onclick="showView(\'pricing\');return false" class="upgrade-modal-cta">Upgrade to ' + msg.tier + ' &rarr;</a>'
     + '<button class="upgrade-modal-later" onclick="document.getElementById(\'upgrade-trigger-modal\').remove()">Maybe later</button>'
     + '</div>';
   el.addEventListener('click', function(e) { if (e.target === el) el.remove(); });
@@ -13423,7 +13427,7 @@ function rotateSpotlight() {
   <div class="gp-inner">
     <!-- Left: artwork + meta + bias pill -->
     <div class="gp-left">
-      <img class="gp-art" id="gp-art" src="" alt="">
+      <img class="gp-art" id="gp-art" src="" alt="" onerror="this.style.display='none'">
       <div class="gp-meta">
         <div class="gp-ep-title" id="gp-ep-title">Loading…</div>
         <div class="gp-show-name" id="gp-show-name"></div>
@@ -13812,9 +13816,9 @@ function rotateSpotlight() {
 
     // Gate message for free tier
     if (plan === 'free' && status !== 'complete') {
-      html += '<div class="lap-gate-msg">Live updates available on <a href="/pricing">Starter Lens</a>. Full results appear when analysis completes.</div>';
+      html += '<div class="lap-gate-msg">Live updates available on <a href="/pricing" onclick="showView(\'pricing\');return false">Starter Lens</a>. Full results appear when analysis completes.</div>';
     } else if (plan === 'creator' && status !== 'complete') {
-      html += '<div style="font-size:11px;color:var(--text3);margin-bottom:10px;text-align:center">Updates every 5 minutes — <a href="/pricing" style="color:var(--text2)">Pro Lens</a> for real-time</div>';
+      html += '<div style="font-size:11px;color:var(--text3);margin-bottom:10px;text-align:center">Updates every 5 minutes — <a href="/pricing" onclick="showView(\'pricing\');return false" style="color:var(--text2)">Pro Lens</a> for real-time</div>';
     }
 
     // Steps (only for Creator+)
@@ -13849,7 +13853,7 @@ function rotateSpotlight() {
           html += '<div class="lap-finding">' + _esc(f.headline || f.text || '') + '</div>';
         });
         if (plan === 'free' && data.findings.length > 1) {
-          html += '<div style="font-size:11px;color:var(--text3);text-align:center;margin:4px 0 8px"><a href="/pricing" style="color:var(--text2)">See all ' + data.findings.length + ' findings with Creator plan</a></div>';
+          html += '<div style="font-size:11px;color:var(--text3);text-align:center;margin:4px 0 8px"><a href="/pricing" onclick="showView(\'pricing\');return false" style="color:var(--text2)">See all ' + data.findings.length + ' findings with Creator plan</a></div>';
         }
       }
       if (data.hostTrustScore != null && plan !== 'free') {
