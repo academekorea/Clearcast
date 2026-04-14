@@ -246,6 +246,8 @@ function recordListenEvent(ep) {
     });
     if (history.length > 500) history = history.slice(0, 500);
     localStorage.setItem('pl-listen-history', JSON.stringify(history));
+    // Sync to server (fire-and-forget)
+    if (typeof window.syncToServer === 'function') window.syncToServer('listen_history', history);
   } catch(e) {}
 }
 

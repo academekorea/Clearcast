@@ -2853,8 +2853,9 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 #view-pricing .plan-name {font-family:var(--ffs);font-size:20px;font-weight:700;margin-bottom:8px}
 #view-pricing .plan-price-wrap {margin-bottom:4px}
 #view-pricing .plan-price-original {font-size:14px;color:var(--text3);text-decoration:line-through;display:none}
-#view-pricing .plan-price {font-size:34px;font-weight:700;letter-spacing:-.02em;font-family:var(--ffs)}
-#view-pricing .plan-price span {font-size:13px;font-weight:400;color:var(--text3)}
+#view-pricing .plan-price {font-size:34px;font-weight:700;letter-spacing:-.02em;font-family:var(--ffs);display:flex;align-items:baseline;gap:1px}
+#view-pricing .plan-price-num {font-size:inherit;font-weight:700}
+#view-pricing .plan-price-period {font-size:13px;font-weight:400;color:var(--text3)}
 #view-pricing .plan-founding-note {font-size:11px;font-weight:600;color:#1a7a2e;margin-top:2px;display:none}
 #view-pricing .plan-desc {font-size:13px;color:var(--text2);margin-top:8px;margin-bottom:20px;line-height:1.6;padding-bottom:20px;border-bottom:0.5px solid var(--border)}
 #view-pricing .plan-features {flex:1;margin-bottom:24px}
@@ -4102,10 +4103,6 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 </div>
 </div>
 <div class="view" id="view-pricing" style="display:none">
-<div class="founding-banner" id="pricing-founding-banner" style="display:none;position:relative">
-  <strong>&#11088; Founding Member Pricing</strong> &mdash; Lock in 33% off forever. 500 spots remaining.
-  <button onclick="document.getElementById('pricing-founding-banner').style.display='none';try{localStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:inherit;opacity:.5;padding:4px 6px" aria-label="Dismiss">&times;</button>
-</div>
 <div style="background:var(--bg)">
 <div style="max-width:1100px;margin:0 auto">
   <div style="padding:72px 40px 0;text-align:center">
@@ -4130,11 +4127,11 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
       <a class="plan-btn" href="/" onclick="if(typeof showView==='function'){showView('home');return false}">Get started free &rarr;</a>
     </div>
     <div class="plan featured">
-      <div class="plan-badge">Pro Lens</div>
+      <div class="plan-badge">Most Popular</div>
       <div class="plan-name">Starter Lens</div>
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="creator-original"></div>
-        <div class="plan-price">$<span id="creator-price">7</span><span id="creator-period">/mo</span></div>
+        <div class="plan-price">$<span id="creator-price" class="plan-price-num">7</span><span id="creator-period" class="plan-price-period">/mo</span></div>
         <div class="plan-founding-note" id="creator-founding-note" style="display:block">&#128274; $4.69/mo founding rate &mdash; locked forever</div>
       </div>
       <div class="plan-desc">For curious listeners who want the full picture on every episode.</div>
@@ -4154,7 +4151,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
       <div class="plan-name">Pro Lens</div>
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="operator-original"></div>
-        <div class="plan-price">$<span id="operator-price">19</span><span id="operator-period">/mo</span></div>
+        <div class="plan-price">$<span id="operator-price" class="plan-price-num">19</span><span id="operator-period" class="plan-price-period">/mo</span></div>
         <div class="plan-founding-note" id="operator-founding-note" style="display:block">&#128274; $12.73/mo founding rate &mdash; locked forever</div>
       </div>
       <div class="plan-desc">For serious listeners, researchers, and journalists who need full depth.</div>
@@ -4174,7 +4171,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
       <div class="plan-name">Operator Lens</div>
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="studio-original"></div>
-        <div class="plan-price">$<span id="studio-price">49</span><span id="studio-period">/mo</span></div>
+        <div class="plan-price">$<span id="studio-price" class="plan-price-num">49</span><span id="studio-period" class="plan-price-period">/mo</span></div>
         <div class="plan-founding-note" id="studio-founding-note" style="display:block">&#128274; $32.83/mo founding rate &mdash; locked forever</div>
       </div>
       <div class="plan-desc">For teams, brands, and researchers who need monitoring, delivery intelligence, and API access.</div>
@@ -4891,6 +4888,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Handle YouTube OAuth callback — sets connected flag in localStorage
   if (params.get('youtube') === 'connected') {
     localStorage.setItem('pl-youtube-connected', '1');
+    syncToServer('youtube_connected', true);
     var ytName = params.get('display_name') || 'YouTube';
     showToast('✓ ' + ytName + ' connected successfully', 3000);
     history.replaceState({}, '', window.location.pathname);
@@ -4909,6 +4907,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Handle Spotify OAuth callback — two possible param formats
   if (params.get('spotify') === 'connected' || params.get('connected') === 'spotify') {
     localStorage.setItem('pl-spotify-connected', '1');
+    syncToServer('spotify_connected', true);
     var spName = params.get('display_name') || 'Spotify';
     showToast('✓ ' + spName + ' connected successfully', 3000);
     history.replaceState({}, '', window.location.pathname);
@@ -5157,6 +5156,7 @@ function doLogin() {
     renderNavAuth();
     showHome();            // navigates to home view AND calls renderHomeState()
     syncPlanFromStripe(loginUser);
+    if (loginUser.id) restoreUserDataFromServer(loginUser.id);
   } catch(e) { errEl.textContent = 'Login failed. Try again.'; errEl.classList.add('on'); }
 }
 
@@ -10387,6 +10387,8 @@ function trackAnalysis(data) {
     if (libView && libView.style.display !== 'none' && typeof initLibraryView === 'function') {
       initLibraryView();
     }
+    // Sync to server
+    syncToServer('analyzed_episodes', cu2.analyzedEpisodes || cu.analyzedEpisodes);
   } catch(e){}
 }
 function renderRecentlyAnalyzed() {
@@ -10522,6 +10524,61 @@ var PODLENS_PRICES = {
 
 // startCheckout is defined once near PL_PRICE_IDS — uses _plBilling global
 
+
+// ── SERVER SYNC — persist user data to Supabase (fire-and-forget) ──────────
+function syncToServer(field, value) {
+  var u = plUser();
+  if (!u || !u.id) return;
+  try {
+    fetch('/api/sync-user-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: u.id, field: field, value: value })
+    }).catch(function() {});
+  } catch(e) {}
+}
+
+async function restoreUserDataFromServer(userId) {
+  try {
+    var r = await fetch('/api/get-user-profile?userId=' + encodeURIComponent(userId));
+    if (!r.ok) return;
+    var d = await r.json();
+    var u = plUser();
+    if (!u) return;
+    // Restore analyzed episodes
+    if (d.analyzed_episodes && d.analyzed_episodes.length > 0) {
+      u.analyzedEpisodes = d.analyzed_episodes;
+    }
+    // Restore listen history
+    if (d.listen_history && d.listen_history.length > 0) {
+      try { localStorage.setItem('pl-listen-history', JSON.stringify(d.listen_history)); } catch(e) {}
+    }
+    // Restore liked episodes
+    if (d.liked_episodes && d.liked_episodes.length > 0) {
+      try { localStorage.setItem('pl_liked_episodes', JSON.stringify(d.liked_episodes)); } catch(e) {}
+    }
+    // Restore playlists
+    if (d.playlists && d.playlists.length > 0) {
+      try { localStorage.setItem('pl_playlists', JSON.stringify(d.playlists)); } catch(e) {}
+    }
+    // Restore theme preference (only if not already set locally)
+    if (d.theme && !localStorage.getItem('pl-theme')) {
+      try { localStorage.setItem('pl-theme', d.theme); } catch(e) {}
+    }
+    // Restore region
+    if (d.region && !localStorage.getItem('pl_prefs_region')) {
+      try { localStorage.setItem('pl_prefs_region', d.region); } catch(e) {}
+    }
+    // Write back to localStorage
+    try { localStorage.setItem('pl-user', JSON.stringify(u)); } catch(e) {}
+    // Refresh UI
+    if (typeof renderBiasFingerprint === 'function') renderBiasFingerprint();
+    var libView = document.getElementById('view-library');
+    if (libView && libView.style.display !== 'none' && typeof initLibraryView === 'function') {
+      initLibraryView();
+    }
+  } catch(e) {}
+}
 
 function restoreConnections(u) {
   if (!u || !u.id) return;
@@ -12044,6 +12101,7 @@ function handleSocialLogin(userData) {
   // Always hide founding banner for logged-in users
   if (plUser()) { var _fb = document.getElementById('founding-banner'); if (_fb) _fb.style.display = 'none'; }
   syncPlanFromStripe(u);
+  if (u.id) restoreUserDataFromServer(u.id);
   if (userData.isNewUser) {
     if (u.foundingMember) {
       showToast('Welcome, Early User #' + (u.signupCount || '?') + ' — 33% off locked in forever');
@@ -12579,11 +12637,11 @@ function plRenderPrices() {
     if (!priceEl) return;
     if (_plFoundingActive) {
       if (origEl) { origEl.textContent = p.full + p.period; origEl.style.display = 'block'; }
-      priceEl.textContent = p.founding;
+      priceEl.textContent = p.founding.replace('$', '');
       if (noteEl) noteEl.style.display = 'block';
     } else {
       if (origEl) origEl.style.display = 'none';
-      priceEl.textContent = p.full;
+      priceEl.textContent = p.full.replace('$', '');
       if (noteEl) noteEl.style.display = 'none';
     }
     if (periodEl) periodEl.textContent = p.period;
@@ -12631,10 +12689,6 @@ function initPricingView() {
     .then(function(r){ return r.json(); })
     .then(function(d){
       _plFoundingActive = !!(d && d.foundingActive);
-      var dismissed = false;
-      try { dismissed = localStorage.getItem('pl-founding-dismissed') === '1'; } catch(e) {}
-      var banner = document.getElementById('pricing-founding-banner');
-      if (banner) banner.style.display = (_plFoundingActive && !dismissed) ? '' : 'none';
       plRenderPrices();
     }).catch(function(){ plRenderPrices(); });
 }
@@ -12644,9 +12698,9 @@ var PL_LIKED_KEY = 'pl_liked_episodes';
 var PL_PLAYLISTS_KEY = 'pl_playlists';
 
 function _getLiked() { try { return JSON.parse(localStorage.getItem(PL_LIKED_KEY)||'[]'); } catch(e){ return []; } }
-function _setLiked(arr) { localStorage.setItem(PL_LIKED_KEY, JSON.stringify(arr)); }
+function _setLiked(arr) { localStorage.setItem(PL_LIKED_KEY, JSON.stringify(arr)); syncToServer('liked_episodes', arr); }
 function _getPlaylists() { try { return JSON.parse(localStorage.getItem(PL_PLAYLISTS_KEY)||'[]'); } catch(e){ return []; } }
-function _setPlaylists(arr) { localStorage.setItem(PL_PLAYLISTS_KEY, JSON.stringify(arr)); }
+function _setPlaylists(arr) { localStorage.setItem(PL_PLAYLISTS_KEY, JSON.stringify(arr)); syncToServer('playlists', arr); }
 
 function _epId(ep) { return (ep.jobId||ep.url||ep.feedUrl||ep.title||'').replace(/[^a-z0-9]/gi,'').slice(0,40); }
 
@@ -13742,6 +13796,7 @@ function toggleMode() {
   });
   localStorage.setItem('podlens-mode', goLight ? 'light' : 'dark');
   localStorage.setItem('pl-theme', goLight ? 'light' : 'dark');
+  syncToServer('theme', goLight ? 'light' : 'dark');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -13766,6 +13821,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Render tg-grid from CURATED_SHOWS and load artwork via iTunes
   filterTrendingGrid('all', document.querySelector('.cat-pill-btn.on'));
+
+  // Restore user data from server if localStorage appears empty (cache cleared)
+  var _existingUser = plUser();
+  if (_existingUser && _existingUser.id &&
+      (!_existingUser.analyzedEpisodes || _existingUser.analyzedEpisodes.length === 0)) {
+    restoreUserDataFromServer(_existingUser.id);
+  }
 });
 
 // ── URL ROUTING — handle browser back/forward ─────────────────────────────────
