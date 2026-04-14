@@ -43,9 +43,9 @@ export default async (req: Request) => {
   return new Response(JSON.stringify({
     status: "triggered",
     message: "Pre-analysis seeding started. Check function logs for progress.",
-    shows: 16,
+    shows: 64,
     episodesPerShow: 2,
-    estimatedMinutes: 6
+    estimatedMinutes: 25
   }), {
     status: 202,
     headers: { "Content-Type": "application/json" }
