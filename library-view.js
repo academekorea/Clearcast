@@ -499,7 +499,13 @@
   };
 
   window.analyzeLatest = window.analyzeLatest || function(url, showName) {
-    window.location.href = '/?analyze=' + encodeURIComponent(url) + '&show=' + encodeURIComponent(showName || '');
+    if (typeof goAnalyze === 'function') {
+      goAnalyze(url);
+    } else {
+      showView('analyze');
+      var inp = document.getElementById('url-input');
+      if (inp) inp.value = url;
+    }
   };
 
   /* ── Right sidebar — populate with real data when available ── */
