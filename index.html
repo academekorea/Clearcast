@@ -3770,7 +3770,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="disc-hero" id="disc-hero-card">
         <div class="disc-hero-l">
           <div>
-            <div class="disc-hero-eye" id="disc-hero-eye">For you</div>
+            <div class="disc-hero-eye" id="disc-hero-eye">Featured episode</div>
             <div class="disc-hero-title" id="disc-hero-title">Jensen Huang &mdash; NVIDIA &amp; the AI Revolution</div>
             <div class="disc-hero-host" id="disc-hero-host">Lex Fridman Podcast &middot; 2h 18m</div>
           </div>
@@ -3793,6 +3793,13 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           <div id="disc-related-list" class="disc-ep-row"></div>
         </div>
       </div>
+      <div class="disc-shelf" id="disc-foryou-shelf" style="display:none">
+        <div class="disc-shelf-hd">
+          <div class="disc-shelf-ttl">For you</div>
+          <div style="font-size:11px;color:var(--text3)" id="disc-foryou-reason"></div>
+        </div>
+        <div id="foryou-trending"></div>
+      </div>
       <div class="disc-shelf">
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Trending shows</div><button class="disc-shelf-more">See all &rarr;</button></div>
         <div id="disc-cat-bias" style="margin-bottom:10px;padding:6px 0"></div>
@@ -3807,10 +3814,10 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="disc-shelf">
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Explore by bias profile</div></div>
         <div class="disc-mood-grid">
-          <div class="disc-mood" style="background:#1e3a5f"><h4>Deep dives</h4><p>2h+ &middot; worth the full listen</p></div>
-          <div class="disc-mood" style="background:#3d1a1a"><h4>Heavy bias</h4><p>Know before you listen</p></div>
-          <div class="disc-mood" style="background:#0f3d2e"><h4>Balanced picks</h4><p>Both sides, grounded</p></div>
-          <div class="disc-mood" style="background:#2d1a4a"><h4>Quick takes</h4><p>Under 30 min, high signal</p></div>
+          <div class="disc-mood" style="background:#1e3a5f" onclick="discFilterByMood('deepdive')"><h4>Deep dives</h4><p>2h+ &middot; worth the full listen</p></div>
+          <div class="disc-mood" style="background:#3d1a1a" onclick="discFilterByMood('heavy')"><h4>Heavy bias</h4><p>Know before you listen</p></div>
+          <div class="disc-mood" style="background:#0f3d2e" onclick="discFilterByMood('balanced')"><h4>Balanced picks</h4><p>Both sides, grounded</p></div>
+          <div class="disc-mood" style="background:#2d1a4a" onclick="discFilterByMood('quick')"><h4>Quick takes</h4><p>Under 30 min, high signal</p></div>
         </div>
       </div>
     </div>
@@ -6689,23 +6696,73 @@ function initDiscover() {
   var unheardTeaser = document.getElementById('disc-unheard-teaser');
   var navLibSection = document.getElementById('disc-nav-lib-section');
   var navCatSection = document.getElementById('disc-nav-cat-section');
+  var foryouShelf = document.getElementById('disc-foryou-shelf');
+  var heroCard = document.getElementById('disc-hero-card');
+  var foryouReason = document.getElementById('disc-foryou-reason');
 
   // Discover is always exploration — categories always show in sidebar
   if (navCatSection) navCatSection.style.display = '';
   if (navLibSection) navLibSection.style.display = 'none';
 
-  if (u) {
+  if (u && u.id) {
     if (greet) greet.textContent = 'Discover';
     if (sub) sub.textContent = 'Trending shows, new episodes, and what the podcasting world is talking about.';
     if (tabs) tabs.style.display = 'flex';
     if (unheardTeaser) unheardTeaser.style.display = '';
+    if (heroCard) heroCard.style.display = 'none';
     discRenderRightCol(true, u);
+
+    // Load For You shelf
+    var region = localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region') || 'us';
+    if (foryouShelf) foryouShelf.style.display = '';
+    loadForyouShows(region, u);
+
+    // After load, check personalization state and set reason text
+    fetch('/api/for-you?region=' + encodeURIComponent(region) + '&userId=' + encodeURIComponent(u.id), { signal: AbortSignal.timeout(6000) })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if (!data.personalized) {
+          // No interests and no history — show prompt card
+          var foryouDiv = document.getElementById('foryou-trending');
+          if (foryouDiv) {
+            foryouDiv.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px">'
+              + '<div><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">Personalise your Discover feed</div>'
+              + '<div style="font-size:13px;color:var(--text2)">Pick your interests and we\'ll surface shows tailored to you — takes 10 seconds.</div></div>'
+              + '<button onclick="openModal(\'onboarding\')" style="padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap;flex-shrink:0">Set interests \u2192</button>'
+              + '</div>';
+          }
+          if (foryouReason) foryouReason.textContent = '';
+        } else {
+          var interests = data.interests || [];
+          if (foryouReason) {
+            foryouReason.textContent = interests.length
+              ? 'Based on your interest in ' + interests.join(', ')
+              : 'Based on your listening history';
+          }
+        }
+      }).catch(function(){});
+
+    // Load trending topics from Supabase
+    fetch('/api/trending-topics')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var el = document.getElementById('disc-rc-mid');
+        if (!el || !d.topics || !d.topics.length) return;
+        el.innerHTML = '<div class="disc-rc-title">Most analyzed</div>'
+          + d.topics.slice(0,5).map(function(t){
+              return '<div class="disc-topic-row">'
+                +'<span class="disc-topic-name">'+t.name+'</span>'
+                +'<span class="disc-topic-count">'+t.count+' analyses</span>'
+                +'</div>';
+            }).join('');
+      }).catch(function(){});
   } else {
     if (greet) greet.textContent = 'Explore podcasts';
     if (sub) sub.textContent = 'Browse freely. Analyze any episode free.';
     if (tabs) tabs.style.display = 'none';
     if (unheardTeaser) unheardTeaser.style.display = 'none';
-    // Show categories sidebar, hide library
+    if (heroCard) heroCard.style.display = '';
+    if (foryouShelf) foryouShelf.style.display = 'none';
     if (navLibSection) navLibSection.style.display = 'none';
     if (navCatSection) navCatSection.style.display = '';
     discRenderRightCol(false, null);
@@ -6966,6 +7023,34 @@ function discSetCat(cat, btn) {
   _renderCategoryBiasContext(cat);
   discRenderShows();
   discRenderEpisodes();
+}
+
+function discFilterByMood(mood) {
+  var filtered;
+  if (mood === 'heavy')    filtered = CURATED_SHOWS.filter(function(s){ return Math.abs(s.bias&&s.bias.score||0) > 60; });
+  if (mood === 'balanced') filtered = CURATED_SHOWS.filter(function(s){ return Math.abs(s.bias&&s.bias.score||0) <= 20; });
+  if (mood === 'deepdive') filtered = CURATED_SHOWS.filter(function(s){ return s.cat==='society'||s.cat==='tech'||s.cat==='business'; });
+  if (mood === 'quick')    filtered = CURATED_SHOWS.filter(function(s){ return s.cat==='news'||s.cat==='comedy'; });
+  if (!filtered || !filtered.length) filtered = CURATED_SHOWS.slice(0, 10);
+  var el = document.getElementById('disc-shows-row');
+  if (!el) return;
+  el.innerHTML = filtered.map(function(s) {
+    var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
+    var art = _showArtImg(s.artwork, s.name, 'disc-show-art');
+    return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\')">'+
+      _heartBtn(s.feedUrl,s.name,s.artist,s.artwork)+art+
+      '<div class="disc-show-name">'+s.name+'</div>'+
+      '<div class="disc-show-sub">'+s.artist+'</div>'+
+      _biasMini(s.bias)+
+      '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="margin-top:auto;padding-top:8px;width:100%;padding:8px 6px 6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'+
+      '</div>';
+  }).join('');
+  addScrollDrag(el);
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.disc-mood').forEach(function(m){ m.style.outline='none'; });
+  if (event && event.currentTarget) event.currentTarget.style.outline='2px solid rgba(255,255,255,.5)';
 }
 
 function discSetTab(tab, btn) {
@@ -7274,7 +7359,7 @@ var TOPIC_HEROES = {
 };
 
 var _discDefaultHero = {
-  eye:'For you', title:'Jensen Huang &mdash; NVIDIA &amp; the AI Revolution',
+  eye:'Featured episode', title:'Jensen Huang &mdash; NVIDIA &amp; the AI Revolution',
   show:'Lex Fridman Podcast', host:'Lex Fridman Podcast &middot; 2h 18m',
   url:'https://www.youtube.com/watch?v=vif8NQcjVf0', ytId:'vif8NQcjVf0'
 };
@@ -7487,8 +7572,13 @@ function discLoadLiveShows(cat) {
   if (!container) return;
   if (cat === 'following') { container.innerHTML = ''; return; }
   var query = cat === 'all' ? 'top podcasts' : cat;
+  var genreMap = {
+    news:'1489', tech:'1318', business:'1321', society:'1324',
+    crime:'1488', comedy:'1303', health:'1307', sports:'1545'
+  };
+  var genreParam = genreMap[cat] ? '&genre=' + genreMap[cat] : '';
   container.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px 0">Loading more shows...</div>';
-  fetch('/api/podcast-search?q=' + encodeURIComponent(query))
+  fetch('/api/podcast-search?q=' + encodeURIComponent(query) + genreParam)
     .then(function(r) { return r.json(); })
     .then(function(data) {
       var results = (data.results || []).filter(function(r) {

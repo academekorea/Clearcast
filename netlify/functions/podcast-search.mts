@@ -75,9 +75,44 @@ async function searchPodcastIndex(q: string): Promise<any[]> {
   } catch { return []; }
 }
 
+function mapRssEntries(entries: any[]): any[] {
+  return (entries || [])
+    .map((item: any) => ({
+      name: item["im:name"]?.label || "",
+      artist: item["im:artist"]?.label || "",
+      artwork: item["im:image"]?.[2]?.label || item["im:image"]?.[1]?.label || item["im:image"]?.[0]?.label || "",
+      feedUrl: "",
+      itunesId: item.id?.attributes?.["im:id"] || "",
+      genre: item.category?.attributes?.label || "",
+      episodeCount: 0,
+      source: "itunes-rss",
+    }))
+    .filter((s) => s.name);
+}
+
+async function fetchGenreTop(genreId: string): Promise<any[]> {
+  try {
+    const res = await fetch(
+      `https://itunes.apple.com/us/rss/toppodcasts/limit=25/genre=${genreId}/json`,
+      { signal: AbortSignal.timeout(6000) }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return mapRssEntries(data.feed?.entry || []);
+  } catch { return []; }
+}
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const q = url.searchParams.get("q") || "";
+  const genre = url.searchParams.get("genre") || "";
+
+  // Genre-based lookup — use iTunes RSS top charts
+  if (genre) {
+    const results = await fetchGenreTop(genre);
+    return json({ results: results.slice(0, 12), query: q });
+  }
+
   if (!q.trim() || q.trim().length < 2) {
     return json({ results: [], query: q });
   }
