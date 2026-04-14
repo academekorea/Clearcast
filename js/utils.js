@@ -331,14 +331,7 @@ function calcWeeklyBias(analyses, listenEvents) {
 function calcBiasFingerprint(analyses, listenEvents) {
   var events = _mergeSignals(analyses, listenEvents || getListenHistory());
 
-  // Activation threshold: 10+ signals OR 7+ days of data
-  var totalSignals = events.length;
-  var oldestDate = events.length ? events[events.length - 1].date : null;
-  var newestDate = events.length ? events[0].date : null;
-  var daysSinceFirst = oldestDate ? Math.floor((Date.now() - new Date(oldestDate).getTime()) / 86400000) : 0;
-  var thresholdMet = totalSignals >= 10 || daysSinceFirst >= 7;
-
-  // Count analysis vs listen for basis
+  // Count analysis vs listen
   var analysisCount = 0, listenCount = 0;
   var showSetAll = {};
   events.forEach(function(e) {
@@ -347,11 +340,17 @@ function calcBiasFingerprint(analyses, listenEvents) {
   });
   var distinctShows = Object.keys(showSetAll).length;
 
+  // Activation threshold: 10+ analyzed episodes OR 7+ days of data
+  var oldestDate = events.length ? events[events.length - 1].date : null;
+  var newestDate = events.length ? events[0].date : null;
+  var daysSinceFirst = oldestDate ? Math.floor((Date.now() - new Date(oldestDate).getTime()) / 86400000) : 0;
+  var thresholdMet = analysisCount >= 10 || daysSinceFirst >= 7;
+
   if (!thresholdMet) {
     return {
       leftPct: 0, centerPct: 100, rightPct: 0, label: 'No data', weekCount: 0, hasData: false,
       description: 'Keep listening — your fingerprint unlocks after 1 week or 10 episodes.',
-      progress: { current: totalSignals, needed: 10, daysRecorded: daysSinceFirst, daysNeeded: 7 },
+      progress: { current: analysisCount, needed: 10, daysRecorded: daysSinceFirst, daysNeeded: 7 },
       basis: { episodeCount: analysisCount, listenCount: listenCount, weekCount: 0, oldestDate: oldestDate, newestDate: newestDate, showCount: distinctShows }
     };
   }
@@ -412,13 +411,6 @@ function calcEchoChamber(analyses, listenEvents) {
   // Only count events with meaningful bias data
   events = events.filter(function(e) { return e.leftPct || e.rightPct; });
 
-  // Activation threshold: 10+ signals OR 7+ days of data
-  var totalSignals = events.length;
-  var oldestDate = events.length ? events[events.length - 1].date : null;
-  var newestDate = events.length ? events[0].date : null;
-  var daysSinceFirst = oldestDate ? Math.floor((Date.now() - new Date(oldestDate).getTime()) / 86400000) : 0;
-  var thresholdMet = totalSignals >= 10 || daysSinceFirst >= 7;
-
   // Count distinct shows and analysis/listen counts for basis
   var showSetAll = {};
   var analysisCount = 0, listenCount = 0;
@@ -428,11 +420,17 @@ function calcEchoChamber(analyses, listenEvents) {
   });
   var distinctShows = Object.keys(showSetAll).length;
 
+  // Activation threshold: 10+ analyzed episodes OR 7+ days of data
+  var oldestDate = events.length ? events[events.length - 1].date : null;
+  var newestDate = events.length ? events[0].date : null;
+  var daysSinceFirst = oldestDate ? Math.floor((Date.now() - new Date(oldestDate).getTime()) / 86400000) : 0;
+  var thresholdMet = analysisCount >= 10 || daysSinceFirst >= 7;
+
   if (!thresholdMet) {
     return {
       score: 0, label: '', description: 'Keep listening — your score unlocks after 1 week or 10 episodes.',
       hasData: false,
-      progress: { current: totalSignals, needed: 10, daysRecorded: daysSinceFirst, daysNeeded: 7 },
+      progress: { current: analysisCount, needed: 10, daysRecorded: daysSinceFirst, daysNeeded: 7 },
       basis: { episodeCount: analysisCount, listenCount: listenCount, weekCount: 0, oldestDate: oldestDate, newestDate: newestDate, showCount: distinctShows }
     };
   }
