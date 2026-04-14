@@ -153,6 +153,12 @@ async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Pr
       dim_host_credibility: dim.hostCredibility?.score ?? null,
       dim_omission_risk:    dim.omissionRisk?.score    ?? null,
       host_trust_score:     dim.hostCredibility?.score ?? null,
+      host_count:           result.hostCount ?? null,
+      has_guest:            result.hasGuest ?? null,
+      guest_score:          result.guestScore ?? null,
+      duration_minutes:     job.durationMinutes || null,
+      episode_number:       job.episodeNumber || result.episodeNumber || null,
+      host_names:           job.hostNames || null,
       // Bias percentage breakdown (for share cards + CSV export)
       bias_left_pct:        result.leftPct ?? (result.biasScore != null ? Math.round(Math.max(0, -(result.biasScore)) * 0.5 + 20) : null),
       bias_center_pct:      result.centerPct ?? (result.biasScore != null ? Math.max(5, 100 - Math.round(Math.max(0, -(result.biasScore)) * 0.5 + 20) - Math.round(Math.max(0, result.biasScore) * 0.5 + 20)) : null),

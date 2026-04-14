@@ -72,7 +72,7 @@ export default async (req: Request) => {
         provider_email: spotifyEmail,
         metadata: JSON.stringify({ isPremium }),
         updated_at: new Date().toISOString(),
-      });
+      }, 'user_id,provider');
 
       trackEvent(userId, 'spotify_connected', { is_premium: isPremium });
     }

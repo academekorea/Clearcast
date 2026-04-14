@@ -66,7 +66,7 @@ export default async (req: Request) => {
         provider_user_id: googleId,
         provider_username: displayName,
         updated_at: new Date().toISOString(),
-      });
+      }, 'user_id,provider');
 
       trackEvent(userId, 'youtube_connected', { display_name: displayName });
 
@@ -127,15 +127,15 @@ async function importYouTubeSubscriptions(accessToken: string, userId: string) {
         if (!ch) continue;
 
         const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch}`;
-        await sbInsert('followed_shows', {
+        await sbUpsert('followed_shows', {
           user_id: userId,
           show_slug: ch,
           show_name: title,
-          show_artwork: art,
+          artwork_url: art,
           feed_url: feedUrl,
           platform: 'youtube',
           created_at: new Date().toISOString(),
-        });
+        }, 'user_id,feed_url');
         imported++;
       }
 

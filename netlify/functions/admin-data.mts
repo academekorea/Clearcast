@@ -95,7 +95,7 @@ export default async (req: Request) => {
 
 async function getOverview() {
   const [users, analyses, subs, events] = await Promise.all([
-    sbGet("users?select=id,plan,created_at,last_seen_at&order=created_at.desc"),
+    sbGet("users?select=id,tier,created_at,last_seen_at&order=created_at.desc"),
     sbGet("analyses?select=id,created_at&order=created_at.desc&limit=1000"),
     sbGet("subscriptions?select=id,status,plan,amount&status=eq.active"),
     sbGet("events?select=created_at,event_type&order=created_at.desc&limit=500"),
@@ -114,7 +114,7 @@ async function getOverview() {
   const wau          = users.filter(u => u.last_seen_at && new Date(u.last_seen_at).getTime() > day7).length;
 
   const planCounts: Record<string, number> = {};
-  for (const u of users) planCounts[u.plan || "free"] = (planCounts[u.plan || "free"] || 0) + 1;
+  for (const u of users) planCounts[u.tier || "free"] = (planCounts[u.tier || "free"] || 0) + 1;
 
   const totalAnalyses = analyses.length;
   const analyses24h   = analyses.filter(a => new Date(a.created_at).getTime() > day1).length;
@@ -144,12 +144,12 @@ async function getUsers(url: URL) {
   const search = url.searchParams.get("q") || "";
   const plan = url.searchParams.get("plan") || "";
 
-  let qs = `users?select=id,email,name,plan,created_at,last_seen_at,is_super_admin,stripe_customer_id&order=created_at.desc&limit=50&offset=${(page-1)*50}`;
+  let qs = `users?select=id,email,name,tier,created_at,last_seen_at,is_super_admin,stripe_customer_id&order=created_at.desc&limit=50&offset=${(page-1)*50}`;
   if (search) qs += `&or=(email.ilike.*${search}*,name.ilike.*${search}*)`;
-  if (plan) qs += `&plan=eq.${plan}`;
+  if (plan) qs += `&tier=eq.${plan}`;
 
   const users = await sbGet(qs);
-  const countRows = await sbGet(`users?select=id${plan ? `&plan=eq.${plan}` : ""}${search ? `&or=(email.ilike.*${search}*,name.ilike.*${search}*)` : ""}`);
+  const countRows = await sbGet(`users?select=id${plan ? `&tier=eq.${plan}` : ""}${search ? `&or=(email.ilike.*${search}*,name.ilike.*${search}*)` : ""}`);
 
   return json({ users, total: countRows.length, page, perPage: 50 });
 }
@@ -194,14 +194,14 @@ async function getRevenue() {
 
 async function getFunnel() {
   const [users, subs] = await Promise.all([
-    sbGet("users?select=id,plan,created_at"),
+    sbGet("users?select=id,tier,created_at"),
     sbGet("subscriptions?select=id,user_id,status,created_at")
   ]);
 
   const total = users.length;
-  const trial = users.filter((u: any) => u.plan === "trial").length;
-  const free = users.filter((u: any) => u.plan === "free").length;
-  const paid = users.filter((u: any) => ["creator", "operator", "studio"].includes(u.plan)).length;
+  const trial = users.filter((u: any) => u.tier === "trial").length;
+  const free = users.filter((u: any) => u.tier === "free").length;
+  const paid = users.filter((u: any) => ["creator", "operator", "studio"].includes(u.tier)).length;
   const activeSubIds = new Set(
     subs.filter((s: any) => s.status === "active").map((s: any) => s.user_id)
   );
@@ -268,7 +268,7 @@ async function handleControl(body: any, adminEmail: string) {
       const res = await fetch(`${SB_URL}/rest/v1/users?id=eq.${userId}`, {
         method: "PATCH",
         headers: sbHeaders(),
-        body: JSON.stringify({ plan: value, updated_at: new Date().toISOString() }),
+        body: JSON.stringify({ tier: value, updated_at: new Date().toISOString() }),
         signal: AbortSignal.timeout(8000)
       });
       if (!res.ok) return json({ error: "Supabase update failed" }, 500);

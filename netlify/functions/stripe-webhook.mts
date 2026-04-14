@@ -104,7 +104,7 @@ export default async (req: Request) => {
           current_period_end: periodEnd,
           founding_discount: foundingApplied,
           updated_at: new Date().toISOString(),
-        }).catch(() => {});
+        }, 'stripe_subscription_id').catch(() => {});
 
         // Supabase users table
         sbUpdate('users', { id: userId }, {
@@ -174,7 +174,7 @@ export default async (req: Request) => {
           amount: updAmount,
           current_period_end: periodEnd,
           updated_at: new Date().toISOString(),
-        }).catch(() => {});
+        }, 'stripe_subscription_id').catch(() => {});
 
         sbUpdate('users', { id: userId }, {
           tier: isActive ? planName : 'free',

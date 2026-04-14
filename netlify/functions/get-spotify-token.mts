@@ -21,7 +21,7 @@ export default async (req: Request) => {
 
   const { data, error } = await sb
     .from("connected_accounts")
-    .select("access_token, provider_username")
+    .select("access_token, refresh_token, expires_at, provider_username")
     .eq("user_id", userId)
     .eq("provider", "spotify")
     .maybeSingle();
@@ -33,9 +33,59 @@ export default async (req: Request) => {
     });
   }
 
+  let accessToken = data.access_token;
+  const expiresAt = data.expires_at ? Number(data.expires_at) : 0;
+  const BUFFER_MS = 5 * 60 * 1000; // 5 minute buffer
+
+  // Refresh token if expired or expiring within 5 minutes
+  if (data.refresh_token && expiresAt && Date.now() > expiresAt - BUFFER_MS) {
+    const clientId = Netlify.env.get("SPOTIFY_CLIENT_ID") || "";
+    const clientSecret = Netlify.env.get("SPOTIFY_CLIENT_SECRET") || "";
+
+    if (clientId && clientSecret) {
+      try {
+        const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: "Basic " + btoa(clientId + ":" + clientSecret),
+          },
+          body: new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token: data.refresh_token,
+          }),
+          signal: AbortSignal.timeout(10000),
+        });
+
+        if (tokenRes.ok) {
+          const tokenData = await tokenRes.json() as any;
+          accessToken = tokenData.access_token;
+          const newExpiresAt = Date.now() + (tokenData.expires_in || 3600) * 1000;
+
+          // Update stored token in Supabase
+          await sb
+            .from("connected_accounts")
+            .update({
+              access_token: accessToken,
+              expires_at: newExpiresAt,
+              // Spotify may return a new refresh_token
+              ...(tokenData.refresh_token ? { refresh_token: tokenData.refresh_token } : {}),
+              updated_at: new Date().toISOString(),
+            })
+            .eq("user_id", userId)
+            .eq("provider", "spotify");
+        } else {
+          console.warn("[get-spotify-token] Refresh failed:", tokenRes.status);
+        }
+      } catch (e: any) {
+        console.warn("[get-spotify-token] Refresh error:", e.message);
+      }
+    }
+  }
+
   return new Response(
     JSON.stringify({
-      accessToken: data.access_token,
+      accessToken,
       displayName: data.provider_username || "",
     }),
     {

@@ -146,14 +146,16 @@ export default async (req: Request) => {
         const sb = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
         // Upsert each followed show
         for (const show of showResults.slice(0, 20)) {
-          await sb.from("followed_shows").upsert({
-            user_id: userId,
-            show_name: show.name,
-            artwork: show.artwork || null,
-            spotify_id: show.spotifyId || null,
-            spotify_url: show.spotifyUrl || null,
-            followed_at: new Date().toISOString(),
-          }, { onConflict: "user_id,show_name" }).catch(() => {});
+          try {
+            await sb.from("followed_shows").upsert({
+              user_id: userId,
+              show_name: show.name,
+              artwork_url: show.artwork || null,
+              spotify_id: show.spotifyId || null,
+              spotify_url: show.spotifyUrl || null,
+              followed_at: new Date().toISOString(),
+            }, { onConflict: "user_id,show_name" });
+          } catch(e) { /* skip duplicates */ }
         }
       }
     } catch (sbErr) {
