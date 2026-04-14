@@ -6580,6 +6580,7 @@ function showView(name) {
     settings: 'Settings — Podlens'
   };
   document.title = titles[name] || 'Podlens';
+  if (typeof sidebarSetActive === 'function') sidebarSetActive(name);
   if (name === 'library' && typeof initLibraryView === 'function') { initLibraryView(window._pendingLibTab); window._pendingLibTab = null; }
   if (name === 'pricing' && typeof initPricingView === 'function') initPricingView();
   if (name === 'profile') {
