@@ -91,9 +91,9 @@ export default async (req: Request) => {
           sb.from("users").select("interests").eq("id", userId).single(),
           sb
             .from("analyses")
-            .select("show_name")
+            .select("show_category")
             .eq("user_id", userId)
-            .not("show_name", "is", null)
+            .not("show_category", "is", null)
             .order("created_at", { ascending: false })
             .limit(30),
         ]);
@@ -102,22 +102,12 @@ export default async (req: Request) => {
           interests = (userRes.value.data as any)?.interests || [];
         }
         if (histRes.status === "fulfilled") {
-          // Derive categories from show names using genre map
-          const showCatMap: Record<string, string> = {
-            "the daily": "news", "npr politics podcast": "news", "pod save america": "news",
-            "up first": "news", "the ben shapiro show": "news", "the megyn kelly show": "news",
-            "cnn 5 things": "news", "bbc global news podcast": "news",
-            "lex fridman podcast": "tech", "huberman lab": "science", "all-in podcast": "tech",
-            "acquired": "business", "the prof g pod": "business", "how i built this": "business",
-            "joe rogan experience": "comedy", "smartless": "comedy", "conan o'brien needs a friend": "comedy",
-            "serial": "crime", "crime junkie": "crime", "my favorite murder": "crime",
-            "the tim ferriss show": "health", "on purpose with jay shetty": "health",
-          };
           const catCounts: Record<string, number> = {};
           ((histRes.value.data as any[]) || []).forEach((a: any) => {
-            const name = (a.show_name || "").toLowerCase().trim();
-            const cat = showCatMap[name];
-            if (cat) catCounts[cat] = (catCounts[cat] || 0) + 1;
+            if (a.show_category) {
+              const cat = (a.show_category as string).toLowerCase();
+              catCounts[cat] = (catCounts[cat] || 0) + 1;
+            }
           });
           historyInterests = Object.entries(catCounts)
             .sort((a, b) => b[1] - a[1])

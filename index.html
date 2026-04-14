@@ -3777,7 +3777,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           </div>
           <div class="disc-hero-btns">
             <button class="disc-hero-play" id="disc-hero-play-btn" onclick="discHeroPlay()">&#9654; Play</button>
-            <button class="disc-hero-analyze" id="disc-hero-analyze-btn" onclick="analyzeEp(null,'https://www.youtube.com/watch?v=vif8NQcjVf0','Jensen Huang — NVIDIA & the AI Revolution','Lex Fridman Podcast')">Analyze &rarr;</button>
+            <button class="disc-hero-analyze" id="disc-hero-analyze-btn" onclick="analyzeEp(null,'https://www.youtube.com/watch?v=vif8NQcjVf0','Jensen Huang — NVIDIA & the AI Revolution','Lex Fridman Podcast',true)">Analyze &rarr;</button>
           </div>
         </div>
         <div class="disc-hero-r" id="disc-hero-video">
@@ -6865,7 +6865,7 @@ function discRenderEpisodes() {
       +'<div class="disc-ep-title">'+s.name+'</div>'
       +'<div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
       +'<div style="display:flex;gap:6px;align-items:center">'
-      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button>'
+      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\',true)">Analyze</button>'
       +'<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="padding:5px 10px;background:none;border:0.5px solid var(--border2);border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
       +'<button class="ep-like-btn" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 10px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:'+(isLiked({url:s.feedUrl})?'#e24b4a':'var(--text3)')+'">'+(isLiked({url:s.feedUrl})?'♥':'♡')+'</button>'
       +'</div></div>';
@@ -7173,7 +7173,7 @@ function discRenderHero() {
     + '<div class="disc-hero-title">Jensen Huang — NVIDIA &amp; the AI Revolution</div>'
     + '<div class="disc-hero-meta"><span class="disc-hero-dur">2h 18m &middot; Mar 24, 2026</span>'
     + '<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;background:rgba(224,53,43,.18);color:#ff8a80">Slight left lean</span>'
-    + '<button class="disc-hero-analyze" onclick="analyzeEp(null,\'https://www.youtube.com/watch?v=vif8NQcjVf0\',\'Jensen Huang — NVIDIA & the AI Revolution\',\'Lex Fridman Podcast\')">Analyze &rarr;</button>'
+    + '<button class="disc-hero-analyze" onclick="analyzeEp(null,\'https://www.youtube.com/watch?v=vif8NQcjVf0\',\'Jensen Huang — NVIDIA & the AI Revolution\',\'Lex Fridman Podcast\',true)">Analyze &rarr;</button>'
     + '</div></div>';
 }
 
@@ -7208,7 +7208,7 @@ function discRenderFeed() {
           + '<div class="disc-ep-body"><div class="disc-ep-show">Following</div>'
           + '<div class="disc-ep-title">'+name+'</div>'
           + '<div class="disc-ep-meta"><span class="disc-ep-dur">Tap to view episodes</span></div></div>'
-          + '<button class="disc-ep-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+name.replace(/'/g,"\\'").replace(/"/g,'')+'\')">Analyze &rarr;</button>'
+          + '<button class="disc-ep-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+name.replace(/'/g,"\\'").replace(/"/g,'')+'\',true)">Analyze &rarr;</button>'
           + '</div>';
       }).join('') + '</div>';
     }
@@ -7269,7 +7269,7 @@ function discRenderFeed() {
       + '<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div>'
       + '<div class="disc-ep-title">'+s.name+'</div>'
       + '<div class="disc-ep-meta"><span class="disc-ep-dur">Latest episode</span>'+biasPill+'</div></div>'
-      + '<button class="disc-ep-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze &rarr;</button>'
+      + '<button class="disc-ep-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\',true)">Analyze &rarr;</button>'
       + '</div>';
   }).join('') + '</div>';
 
@@ -7454,7 +7454,7 @@ function discTopicHero(topic) {
   _discCurrentHeroShow = hero.show;
   _discCurrentHeroTitle = hero.title;
   if (playBtn) { playBtn.onclick = discHeroPlay; }
-  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,hero.url,hero.title,hero.show); }; }
+  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,hero.url,hero.title,hero.show,true); }; }
   _discMakeShowClickable(hostEl, hero.show, hero.url);
 
   // Show related episodes shelf
@@ -7481,7 +7481,7 @@ function _buildRelatedEpisodes(el, topic, excludeUrl) {
     return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
       +'<div class="disc-ep-art" style="background:'+bgs[i%3]+'">'+artHtml+'</div>'
       +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div><div class="disc-ep-title">'+s.name+'</div><div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
-      +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\')">Analyze</button></div></div>';
+      +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\',true)">Analyze</button></div></div>';
   }).join('');
 }
 
@@ -7502,7 +7502,7 @@ function discResetHero() {
   _discCurrentHeroShow = _discDefaultHero.show;
   _discCurrentHeroTitle = _discDefaultHero.title;
   if (playBtn) playBtn.onclick = discHeroPlay;
-  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,_discDefaultHero.url,_discDefaultHero.title,_discDefaultHero.show); }; }
+  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,_discDefaultHero.url,_discDefaultHero.title,_discDefaultHero.show,true); }; }
   _discMakeShowClickable(hostEl, _discDefaultHero.show, _discDefaultHero.url);
   if (relatedShelf) relatedShelf.style.display = 'none';
   // Reset shows/episodes
@@ -7629,7 +7629,7 @@ function discLoadLiveShows(cat) {
               + '<div class="disc-show-name">' + safeName + '</div>'
               + '<div class="disc-show-sub">' + (s.artist || '') + '</div>'
               + '<div style="font-size:10px;color:var(--text3);margin:4px 0 0">Not yet analyzed</div>'
-              + '<button onclick="event.stopPropagation();analyzeEp(null,\'' + safeUrl + '\',\'\',\'' + safeName + '\')" style="margin-top:auto;width:100%;padding:7px 6px;background:var(--navy);color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff)">Analyze</button>'
+              + '<button onclick="event.stopPropagation();analyzeEp(null,\'' + safeUrl + '\',\'\',\'' + safeName + '\',true)" style="margin-top:auto;width:100%;padding:7px 6px;background:var(--navy);color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff)">Analyze</button>'
               + '</div>';
           }).join('')
         + '</div>';
@@ -7990,7 +7990,7 @@ function covBar(ep, dark) {
   var analyzeUrl = ep.youtubeUrl || ep.feedUrl || '';
   var safeAnalyze = analyzeUrl.replace(/"/g,'&quot;');
   return '<div style="font-size:10px;color:'+col+';margin-top:3px">Analyze to see bias'
-    + (analyzeUrl ? ' &rarr; <span style="text-decoration:underline;cursor:pointer" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeAnalyze+'&quot;,&quot;'+(ep.epTitle||'').replace(/"/g,'').replace(/'/g,'')+'&quot;,&quot;'+(ep.showName||'').replace(/"/g,'').replace(/'/g,'')+'&quot;)">Analyze &#8599;</span>' : '')
+    + (analyzeUrl ? ' &rarr; <span style="text-decoration:underline;cursor:pointer" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeAnalyze+'&quot;,&quot;'+(ep.epTitle||'').replace(/"/g,'').replace(/'/g,'')+'&quot;,&quot;'+(ep.showName||'').replace(/"/g,'').replace(/'/g,'')+'&quot;,true)">Analyze &#8599;</span>' : '')
     + '</div>';
 }
 
@@ -8159,7 +8159,7 @@ function renderHero(ep) {
   var safeHT=(ep.epTitle||'').replace(/"/g,'').replace(/'/g,'');
   var safeHS=(ep.showName||'').replace(/"/g,'').replace(/'/g,'');
   if (vid) {
-    hero.innerHTML='<div><div class="hero-yt-sizer">'+ytEmbed(vid)+'</div><div class="hero-below"><div class="hb-show">'+ep.showName+'</div><div class="hb-title">'+ep.epTitle+'</div>'+(metaLine?'<div class="hb-meta">'+metaLine+'</div>':'')+covBar(ep,false)+'<div class="hb-plts">'+(ep.youtubeUrl?'<a class="plt yt" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">YouTube</a>':'')+(ep.spotifyUrl?'<a class="plt sp" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>':'')+(ep.appleUrl?'<a class="plt ap" href="'+ep.appleUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>':'')+(heroAnalyzeUrl?'<button class="plt az" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeHA+'&quot;,&quot;'+safeHT+'&quot;,&quot;'+safeHS+'&quot;)">Analyze &#8599;</button>':'')+'</div></div></div>';
+    hero.innerHTML='<div><div class="hero-yt-sizer">'+ytEmbed(vid)+'</div><div class="hero-below"><div class="hb-show">'+ep.showName+'</div><div class="hb-title">'+ep.epTitle+'</div>'+(metaLine?'<div class="hb-meta">'+metaLine+'</div>':'')+covBar(ep,false)+'<div class="hb-plts">'+(ep.youtubeUrl?'<a class="plt yt" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">YouTube</a>':'')+(ep.spotifyUrl?'<a class="plt sp" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>':'')+(ep.appleUrl?'<a class="plt ap" href="'+ep.appleUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>':'')+(heroAnalyzeUrl?'<button class="plt az" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeHA+'&quot;,&quot;'+safeHT+'&quot;,&quot;'+safeHS+'&quot;,true)">Analyze &#8599;</button>':'')+'</div></div></div>';
   } else if (ep.artwork) {
     hero.innerHTML='<div class="hero" onclick="goAnalyze(&quot;'+safeUrl+'&quot;)"><div class="hero-img-wrap"><img class="hero-img" src="'+ep.artwork+'" alt="" onerror="this.style.display=\'none\'"></div><div class="hero-grad"></div><div class="hero-play-overlay">&#9654;</div><div class="hero-badge">Podlens</div><div class="hero-body"><div class="hero-show">'+ep.showName+'</div><div class="hero-title">'+ep.epTitle+'</div>'+(metaLine?'<div class="hero-host">'+metaLine+'</div>':'')+covBar(ep,true)+'<div class="hero-plts">'+plts+'</div></div></div>';
   } else {
@@ -8184,7 +8184,7 @@ function renderStoryRow(ep) {
     +(ep.youtubeUrl?'<a class="plt yt" href="'+ep.youtubeUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">YT</a>':'')
     +(ep.spotifyUrl?'<a class="plt sp" href="'+ep.spotifyUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Spotify</a>':'')
     +(ep.appleUrl?'<a class="plt ap" href="'+ep.appleUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Apple</a>':'')
-    +(analyzeTarget?'<button class="plt az" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeUrl+'&quot;,&quot;'+safeTitle+'&quot;,&quot;'+safeShow+'&quot;)">Analyze &#8599;</button>':'')
+    +(analyzeTarget?'<button class="plt az" onclick="event.stopPropagation();analyzeEp(event,&quot;'+safeUrl+'&quot;,&quot;'+safeTitle+'&quot;,&quot;'+safeShow+'&quot;,true)">Analyze &#8599;</button>':'')
     +'</div>';
   return '<div class="story-row">'
     +thumbHtml
@@ -8423,13 +8423,85 @@ async function loadEpisodes(feedUrl) {
   finally { btn.disabled=false; btn.textContent='Analyze'; }
 }
 
-function analyzeEp(e, url, epTitle, showName) {
+var _bgJobActive = false;
+function analyzeEp(e, url, epTitle, showName, background) {
   if (e) e.stopPropagation();
   if (!plUser()) {
     _showAnalysisAuthGate(url, epTitle, showName);
     return;
   }
   if (checkAnalysisLimit()) return;
+  if (background) {
+    if (_bgJobActive) {
+      showToast('Analysis already in progress — please wait');
+      return;
+    }
+    _bgJobActive = true;
+    var strip = document.getElementById('bg-analysis-strip');
+    var label = document.getElementById('bg-strip-label');
+    var prog = document.getElementById('bg-strip-progress');
+    if (strip) strip.style.display = 'flex';
+    if (label) label.textContent = 'Analyzing ' + (showName || 'episode') + '...';
+    if (prog) prog.textContent = '0%';
+    // Submit analysis in background
+    var bgUser = plUser();
+    fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: url, episodeTitle: epTitle || '', showName: showName || '',
+        userId: bgUser.id, userPlan: bgUser.plan || 'free', userEmail: bgUser.email || '' })
+    }).then(function(r) { return r.json(); }).then(function(d) {
+      if (d.error || !d.jobId) {
+        if (strip) strip.style.display = 'none';
+        _bgJobActive = false;
+        showToast(d.error || 'Analysis failed');
+        return;
+      }
+      // If cached result returned immediately
+      if (d.fromCache && d.status === 'complete') {
+        if (strip) strip.style.display = 'none';
+        _bgJobActive = false;
+        if (typeof trackAnalysis === 'function') trackAnalysis(d);
+        showToast('✅ Analysis ready — ' + (showName || 'episode'), 5000);
+        return;
+      }
+      var bgJobId = d.jobId;
+      var bgPollCount = 0;
+      var bgPoll = setInterval(function() {
+        bgPollCount++;
+        if (bgPollCount > 240) { // 12 min max
+          clearInterval(bgPoll);
+          if (strip) strip.style.display = 'none';
+          _bgJobActive = false;
+          showToast('Analysis timed out');
+          return;
+        }
+        fetch('/api/status/' + bgJobId).then(function(r) { return r.json(); }).then(function(s) {
+          var pctVal = Math.min(95, Math.round(bgPollCount / 240 * 100));
+          if (s.status === 'transcribing') pctVal = Math.min(50, pctVal);
+          else if (s.status === 'analyzing') pctVal = Math.max(55, Math.min(90, pctVal));
+          if (prog) prog.textContent = pctVal + '%';
+          if (s.status === 'complete' || s.biasScore !== undefined) {
+            clearInterval(bgPoll);
+            if (strip) strip.style.display = 'none';
+            _bgJobActive = false;
+            if (typeof trackAnalysis === 'function') trackAnalysis(s);
+            showToast('✅ Analysis ready — ' + (showName || 'episode'), 5000);
+          } else if (s.status === 'error') {
+            clearInterval(bgPoll);
+            if (strip) strip.style.display = 'none';
+            _bgJobActive = false;
+            showToast(s.error || 'Analysis failed');
+          }
+        }).catch(function() {});
+      }, 3000);
+    }).catch(function() {
+      if (strip) strip.style.display = 'none';
+      _bgJobActive = false;
+      showToast('Analysis request failed');
+    });
+    return;
+  }
   showView('analyze');
   document.getElementById('url-input').value=url;
   startAnalysis(url, epTitle||'', showName||'');
@@ -14979,5 +15051,13 @@ function addAppleShows() {
   }
 })();
 </script>
+<div id="bg-analysis-strip" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);color:#fff;padding:10px 20px;font-size:13px;z-index:9999;border-top:1px solid rgba(255,255,255,.15);align-items:center;justify-content:space-between">
+  <span id="bg-strip-label">Analyzing...</span>
+  <div style="display:flex;gap:12px;align-items:center">
+    <span id="bg-strip-progress" style="font-size:11px;color:rgba(255,255,255,.55)">0%</span>
+    <a onclick="showView('analyze')" style="font-size:12px;color:rgba(255,255,255,.7);cursor:pointer;text-decoration:none">View →</a>
+    <button onclick="document.getElementById('bg-analysis-strip').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:16px;padding:0 4px">×</button>
+  </div>
+</div>
 </body>
 </html>

@@ -134,6 +134,23 @@ async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Pr
 
     const dim = result.dimensions || {};
     const canonKey = job.canonicalKey || result.canonicalKey || jobId;
+
+    // Derive show_category from iTunes lookup or job data
+    let showCategory: string | null = job.showCategory || null;
+    if (!showCategory && result.showName) {
+      try {
+        const itunesRes = await fetch(
+          `https://itunes.apple.com/search?term=${encodeURIComponent(result.showName)}&media=podcast&entity=podcast&limit=1`,
+          { signal: AbortSignal.timeout(3000) }
+        );
+        const itunesData: any = await itunesRes.json();
+        const hit = itunesData.results?.[0];
+        if (hit?.primaryGenreName) {
+          showCategory = hit.primaryGenreName.toLowerCase().replace(/\s*&\s*/g, "-").replace(/\s+/g, "-");
+        }
+      } catch {}
+    }
+
     const analysisRow = {
       job_id:               jobId,
       canonical_key:        canonKey,
@@ -163,6 +180,7 @@ async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Pr
       bias_right_pct:       result.rightPct ?? (result.biasScore != null ? Math.round(Math.max(0, result.biasScore) * 0.5 + 20) : null),
       analyzed_at:          new Date().toISOString(),
       user_id:              job.userId || null,
+      show_category:        showCategory,
     };
 
     // Check if row already exists (canonical_key unique index may be missing)
