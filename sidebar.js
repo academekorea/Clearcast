@@ -124,14 +124,12 @@
 
     html += '</div>'; // end .sb-top
 
-    // ── Bottom section (pinned) ──
-    html += '<div class="sb-bottom">';
-
+    // ── Bottom section (pinned) — only rendered when there's content ──
     if (showBulk) {
+      html += '<div class="sb-bottom">';
       html += '<a class="sb-btn sb-bot" href="/bulk-scan.html"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Bulk Scanner</a>';
+      html += '</div>';
     }
-
-    html += '</div>';
 
     return html;
   }

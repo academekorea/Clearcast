@@ -6403,7 +6403,7 @@ window.renderAccountView = function() {
   el = document.getElementById('acct-av-circle');
   if (el) {
     if (avatarUrl) {
-      el.innerHTML = '<img src="' + avatarUrl + '" alt="' + name + '" onerror="this.remove();this.parentElement.textContent=\'' + ini + '\'">';
+      el.innerHTML = '<img src="' + _escHtml(avatarUrl) + '" alt="' + _escHtml(name) + '" onerror="this.remove();this.parentElement.textContent=\'' + _escJs(ini) + '\'">';
     } else {
       el.textContent = ini;
     }
@@ -6444,11 +6444,12 @@ window.renderAccountView = function() {
 window.handleAvatarUpload = function(input) {
   var file = input.files && input.files[0];
   if (!file) return;
-  if (!file.type.startsWith('image/')) { showToast('Please select an image file', 3000); return; }
-  if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 3000); return; }
+  if (!file.type.startsWith('image/')) { showToast('Please select an image file', 3000); input.value = ''; return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 3000); input.value = ''; return; }
   var reader = new FileReader();
   reader.onload = function(e) {
     var img = new Image();
+    img.onerror = function() { showToast('Could not read image', 3000); };
     img.onload = function() {
       var canvas = document.createElement('canvas');
       var size = 256;

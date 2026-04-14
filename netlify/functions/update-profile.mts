@@ -29,7 +29,12 @@ export default async (req: Request) => {
         status: 400, headers: { "Content-Type": "application/json" },
       });
     }
-    if (avatar_custom_url && avatar_custom_url.length > 500000) {
+    if (avatar_custom_url && !avatar_custom_url.startsWith("data:image/")) {
+      return new Response(JSON.stringify({ error: "avatar_custom_url must be a data:image/ URL" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
+    }
+    if (avatar_custom_url && Buffer.byteLength(avatar_custom_url, "utf8") > 500 * 1024) {
       return new Response(JSON.stringify({ error: "Avatar image too large" }), {
         status: 400, headers: { "Content-Type": "application/json" },
       });
