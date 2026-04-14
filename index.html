@@ -2546,7 +2546,7 @@ body.light-mode,[data-theme="light"]{
 [data-theme="dark"] .acct-card{background:var(--bg3)}
 .acct-card-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;padding-bottom:10px;border-bottom:0.5px solid var(--border)}
 .acct-avatar-row{display:flex;align-items:center;gap:14px;padding:6px 0 14px;border-bottom:0.5px solid var(--border);margin-bottom:4px}
-.acct-av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0;font-family:var(--ff);overflow:hidden;object-fit:cover}
+.acct-av{width:72px;height:72px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;flex-shrink:0;font-family:var(--ff);overflow:hidden;object-fit:cover}
 .acct-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .acct-av-wrap{position:relative;cursor:pointer;flex-shrink:0}
 .acct-av-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
@@ -4345,13 +4345,6 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
         <div class="acct-int-card"><div class="acct-int-icon" style="background:#FEE2E2">&#9654;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">YouTube</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze video podcasts and YouTube channels</div></div><button class="acct-btn-primary" onclick="heroConnectYouTube()">Connect</button></div>
         <div class="acct-int-card"><div class="acct-int-icon" style="background:var(--bg3)">&#128276;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Browser extension</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze any podcast directly from your browser</div></div><a class="acct-btn-secondary" href="/extension.html">Install</a></div>
       </div>
-      <div class="acct-card">
-        <div class="acct-card-title">Danger zone</div>
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <div><div style="font-size:13px;font-weight:500">Delete account</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Permanently remove your account and all data</div></div>
-          <button class="acct-btn-danger" onclick="confirmDeleteAccount()">Delete account</button>
-        </div>
-      </div>
     </div>
   </div>
 </div><!-- /view-profile -->
@@ -4387,6 +4380,13 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">Weekly bias digest</div><div class="acct-toggle-desc">Your listening bias and echo chamber score each week</div></div><label class="acct-toggle"><input type="checkbox" id="notif-digest" checked onchange="saveNotifPref('digest',this.checked)"><span class="acct-toggle-slider"></span></label></div>
           <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">New feature updates</div><div class="acct-toggle-desc">Product announcements and new analysis capabilities</div></div><label class="acct-toggle"><input type="checkbox" id="notif-updates" onchange="saveNotifPref('updates',this.checked)"><span class="acct-toggle-slider"></span></label></div>
           <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">Billing receipts</div><div class="acct-toggle-desc">Invoices and payment confirmations</div></div><label class="acct-toggle"><input type="checkbox" id="notif-billing" checked onchange="saveNotifPref('billing',this.checked)"><span class="acct-toggle-slider"></span></label></div>
+        </div>
+      </div>
+      <div class="acct-card" style="margin-top:24px">
+        <div class="acct-card-title">Danger zone</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-size:13px;font-weight:500">Delete account</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Permanently remove your account and all data</div></div>
+          <button class="acct-btn-danger" onclick="confirmDeleteAccount()">Delete account</button>
         </div>
       </div>
     </div>
@@ -9809,6 +9809,14 @@ function handleUrlRouting() {
 
   if (path === '/admin') {
     showView('admin');
+    return true;
+  }
+  if (path === '/how-it-works') {
+    showView('how-it-works');
+    return true;
+  }
+  if (path === '/pricing') {
+    showView('pricing');
     return true;
   }
 
