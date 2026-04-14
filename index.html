@@ -5149,6 +5149,7 @@ function doLogin() {
       analysesThisMonth: acc.analysesThisMonth || 0,
       weekResetDate: acc.weekResetDate,
       monthResetDate: acc.monthResetDate,
+      isSuperAdmin: acc.email === 'academekorea@gmail.com',
     };
     setPlUser(loginUser);  // sets body.authenticated synchronously
     closeModal('login');
@@ -13980,7 +13981,7 @@ var _ADMIN_TIMEOUT_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 function _fetchAdminData(tab, page) {
   var u = plUser();
-  if (!u || !u.isSuperAdmin) return;
+  if (!u || (!u.isSuperAdmin && u.email !== 'academekorea@gmail.com')) return;
   if (_adminLocked) return;
   var el = document.getElementById('adm-content');
   if (!el) return;
