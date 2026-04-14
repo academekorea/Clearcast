@@ -3923,361 +3923,324 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 
 
 <div class="view" id="view-how-it-works" style="display:none">
-  <div style="max-width:1000px;margin:0 auto;padding:0 24px 80px">
-<div class="hero">
-  <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">How it works</div>
-  <h1>From URL to full bias report<br>in under two minutes</h1>
-  <p>Here's exactly what happens when you submit a podcast or YouTube URL to Podlens &mdash; and why it works the way it does.</p>
-</div>
+<div style="background:var(--bg)">
 
-<div class="steps">
-  <div class="step">
-    <div class="step-num">01</div>
-    <div class="step-body">
-      <h3>Paste a URL</h3>
-      <p>Works with any YouTube video or direct podcast audio link. We extract the video ID and check whether the video is public and long enough to be meaningful (typically 5+ minutes).</p>
+  <div style="padding:80px 40px 64px;text-align:center;border-bottom:1px solid var(--border)">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">How it works</div>
+    <h1 style="font-family:var(--ffs);font-size:clamp(32px,4.5vw,50px);font-weight:700;line-height:1.1;letter-spacing:-.02em;color:var(--text);margin-bottom:16px">From URL to intelligence<br><em style="font-style:italic;font-weight:400">in 90 seconds</em></h1>
+    <p style="font-size:16px;color:var(--text2);max-width:500px;margin:0 auto 32px;line-height:1.75">Paste any podcast link. Podlens transcribes it, scores it across 6 bias dimensions, and surfaces what you need to know before &mdash; and while &mdash; you listen.</p>
+    <a onclick="if(typeof showView==='function'){showView('analyze');return false}" href="/" style="display:inline-block;padding:14px 32px;background:var(--navy);color:#fff;border-radius:8px;font-size:15px;font-weight:700;text-decoration:none;cursor:pointer">Analyze your first episode free &rarr;</a>
+    <div style="font-size:12px;color:var(--text3);margin-top:12px">4 free analyses &middot; No credit card &middot; No account required</div>
+  </div>
+
+  <div style="max-width:1100px;margin:0 auto">
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--border)">
+      <div style="padding:40px 36px;border-right:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--ff);flex-shrink:0">1</div>
+          <div style="height:1px;flex:1;background:var(--border)"></div>
+        </div>
+        <div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px">Paste any URL</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.75">YouTube, Spotify, Apple Podcasts, RSS feed, or direct .mp3. All formats handled automatically. YouTube captions tried first &mdash; fastest path. Falls back to full transcription if unavailable.</div>
+        <div style="margin-top:16px;display:flex;gap:6px;flex-wrap:wrap">
+          <span style="font-size:11px;padding:3px 9px;background:var(--bg3);border-radius:3px;color:var(--text3);border:1px solid var(--border)">YouTube</span>
+          <span style="font-size:11px;padding:3px 9px;background:var(--bg3);border-radius:3px;color:var(--text3);border:1px solid var(--border)">Spotify</span>
+          <span style="font-size:11px;padding:3px 9px;background:var(--bg3);border-radius:3px;color:var(--text3);border:1px solid var(--border)">Apple Podcasts</span>
+          <span style="font-size:11px;padding:3px 9px;background:var(--bg3);border-radius:3px;color:var(--text3);border:1px solid var(--border)">RSS</span>
+        </div>
+      </div>
+      <div style="padding:40px 36px;border-right:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--ff);flex-shrink:0">2</div>
+          <div style="height:1px;flex:1;background:var(--border)"></div>
+        </div>
+        <div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px">AI transcribes and scores</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.75">AssemblyAI transcribes with word-level timestamps. Claude then scores 6 bias dimensions, identifies host vs guest, detects framing patterns, and notes what&rsquo;s missing. Community cache means popular episodes are instant.</div>
+        <div style="margin-top:16px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+          <div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0"></div>
+          Early signal in ~30s &middot; Full results in ~90s
+        </div>
+      </div>
+      <div style="padding:40px 36px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--ff);flex-shrink:0">3</div>
+          <div style="height:1px;flex:1;background:var(--border)"></div>
+        </div>
+        <div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px">Listen with intelligence</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.75">Your AI-narrated briefing plays first &mdash; 2 minutes covering what to watch for. Then listen with the live transcript synced word-by-word to the audio and bias flags appearing in context.</div>
+        <div style="margin-top:16px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+          <div style="width:8px;height:8px;border-radius:50%;background:#1D9E75;flex-shrink:0"></div>
+          Like Spotify lyrics &mdash; but for what the host is claiming
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:60px 40px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">The intelligence layer</div>
+          <h2 style="font-family:var(--ffs);font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.01em;margin:0">6 dimensions on every episode</h2>
+        </div>
+        <div style="font-size:13px;color:var(--text3);max-width:300px;text-align:right;line-height:1.6">All 6 scores on every tier. Depth of transcript evidence varies &mdash; not access to the scores.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <div style="padding:24px;background:var(--bg2)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:4px;height:36px;background:#E24B4A;border-radius:2px;flex-shrink:0"></div>
+            <div><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:2px">01</div><div style="font-size:14px;font-weight:700;color:var(--text)">Political lean</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.65">Left / center / right framing, language patterns, source selection bias. Scored &minus;100 to +100 with transcript evidence.</div>
+        </div>
+        <div style="padding:24px;background:var(--bg2)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:4px;height:36px;background:#378ADD;border-radius:2px;flex-shrink:0"></div>
+            <div><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:2px">02</div><div style="font-size:14px;font-weight:700;color:var(--text)">Factual density</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.65">Sourced claims &divide; total claims. How often does the host cite evidence vs state opinion as fact?</div>
+        </div>
+        <div style="padding:24px;background:var(--bg2)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:4px;height:36px;background:#1D9E75;border-radius:2px;flex-shrink:0"></div>
+            <div><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:2px">03</div><div style="font-size:14px;font-weight:700;color:var(--text)">Source diversity</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.65">Distinct perspectives cited, expert balance. Are opposing views ever heard, or only one side of the story?</div>
+        </div>
+        <div style="padding:24px;background:var(--bg2)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:4px;height:36px;background:#B7770D;border-radius:2px;flex-shrink:0"></div>
+            <div><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:2px">04</div><div style="font-size:14px;font-weight:700;color:var(--text)">Framing patterns</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.65">Loaded language frequency, emotional vs neutral ratio, repetition of unqualified assertions.</div>
+        </div>
+        <div style="padding:24px;background:var(--bg2)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:4px;height:36px;background:#534AB7;border-radius:2px;flex-shrink:0"></div>
+            <div><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:2px">05</div><div style="font-size:14px;font-weight:700;color:var(--text)">Host credibility</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.65">How rigorously the host challenges claims. Separate guest score shows how hard the guest was pushed.</div>
+        </div>
+        <div style="padding:24px;background:var(--bg2)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:4px;height:36px;background:#D85A30;border-radius:2px;flex-shrink:0"></div>
+            <div><div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:2px">06</div><div style="font-size:14px;font-weight:700;color:var(--text)">Omission risk</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.65">What&rsquo;s absent vs comparable coverage? The story not told is often more important than the one that is.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)">
+      <div style="padding:52px 40px;border-right:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Your intelligence layer</div>
+        <h2 style="font-family:var(--ffs);font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:14px;line-height:1.25">The more you use it,<br>the smarter it gets</h2>
+        <p style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:24px">After 10 episodes or 1 week of listening, your personal intelligence layer activates. Bias fingerprint, echo chamber score, and recommendations calibrated to balance what you&rsquo;re actually consuming.</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--left);flex-shrink:0;margin-top:4px"></div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">Bias fingerprint</div><div style="font-size:12px;color:var(--text3)">Weighted rolling average with exponential decay. One bad week doesn&rsquo;t flip your score overnight.</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--right);flex-shrink:0;margin-top:4px"></div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">Echo chamber score 0&ndash;100</div><div style="font-size:12px;color:var(--text3)">Perspective diversity across all your shows. Click to see every contributing show and its lean.</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:8px;height:8px;border-radius:50%;background:#1D9E75;flex-shrink:0;margin-top:4px"></div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">Anti-echo recommendations</div><div style="font-size:12px;color:var(--text3)">When you&rsquo;re over-indexed on one lean, the recommended section surfaces the opposite.</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--navy);padding:40px;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:20px">Example &middot; Bias fingerprint &middot; 14 episodes</div>
+        <div style="height:9px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:6px">
+          <div style="background:#E24B4A;width:52%"></div><div style="background:rgba(255,255,255,.16);width:31%"></div><div style="background:#378ADD;width:17%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:24px">
+          <span style="color:#E24B4A">52% left</span><span style="color:rgba(255,255,255,.3)">31% center</span><span style="color:#378ADD">17% right</span>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:14px 16px;margin-bottom:8px;border:1px solid rgba(255,255,255,.08)">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:5px">Echo chamber score</div>
+          <div style="font-size:24px;font-weight:800;color:#f59e0b;font-family:var(--ff)">62 <span style="font-size:13px;font-weight:400;color:rgba(255,255,255,.4)">High risk</span></div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px">Based on 14 episodes across 6 shows</div>
+        </div>
+        <div style="background:rgba(55,138,221,.1);border-radius:8px;padding:14px 16px;border:1px solid rgba(55,138,221,.2)">
+          <div style="font-size:10px;color:#85B7EB;margin-bottom:4px;font-weight:600;letter-spacing:.04em">Recommended to balance</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6">You&rsquo;ve leaned left for 3 weeks. Try some center-right shows to diversify your perspective.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width:720px;margin:0 auto;padding:56px 40px">
+      <h2 style="font-family:var(--ffs);font-size:26px;font-weight:700;color:var(--text);margin-bottom:32px;letter-spacing:-.01em">Common questions</h2>
+      <div style="border-top:1px solid var(--border)">
+        <div style="border-bottom:1px solid var(--border);padding:22px 0">
+          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">Is my listening data private?</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.75">Transcripts are cached for 7 days so you don&rsquo;t re-transcribe the same episode. Your analysis history lives in your browser unless you&rsquo;re signed in. No advertising relationships. No data sales. Ever.</div>
+        </div>
+        <div style="border-bottom:1px solid var(--border);padding:22px 0">
+          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">How accurate is it?</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.75">Podlens is a starting point for critical listening &mdash; not a verdict. The AI can miss irony, satire, and specialized context. We benchmark against human-labeled episodes and publish our methodology openly.</div>
+        </div>
+        <div style="border-bottom:1px solid var(--border);padding:22px 0">
+          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">Does it work with YouTube videos that aren&rsquo;t podcasts?</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.75">Yes &mdash; any YouTube video, news segment, lecture, or interview is analyzed identically to a podcast. The channel name becomes the &ldquo;show&rdquo; and all 6 dimensions apply the same way.</div>
+        </div>
+        <div style="padding:22px 0">
+          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">Does Podlens use ads or sell data?</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.75">No. Funded entirely by subscriber revenue. No advertising relationships, no data sales, no conflicts of interest.</div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="step">
-    <div class="step-num">02</div>
-    <div class="step-body">
-      <h3>We transcribe the audio</h3>
-      <p>We attempt to use YouTube's built-in captions first (fastest path). If those aren't available, we fall back to Apple Podcasts and Podcast Index to find a clean audio file, then transcribe it using AI transcription. The full audio is never stored — only the transcript text.</p>
-    </div>
+
+  <div style="background:var(--navy);padding:80px 24px;text-align:center">
+    <h2 style="font-family:var(--ffs);font-size:32px;font-weight:700;color:#fff;margin-bottom:12px;letter-spacing:-.01em">Start with any episode &mdash; free</h2>
+    <p style="font-size:15px;color:rgba(255,255,255,.5);margin-bottom:28px;line-height:1.7">4 analyses free. No credit card. Connect Spotify or YouTube<br>to unlock your full intelligence layer.</p>
+    <a onclick="if(typeof showView==='function'){showView('analyze');return false}" href="/" style="display:inline-block;background:#fff;color:var(--navy);padding:15px 36px;border-radius:8px;font-size:15px;font-weight:800;text-decoration:none;cursor:pointer">Analyze my first episode &rarr;</a>
   </div>
-  <div class="step">
-    <div class="step-num">03</div>
-    <div class="step-body">
-      <h3>Our AI reads the transcript</h3>
-      <p>We send the transcript to our analysis engine with a detailed media literacy prompt. The model is instructed to identify loaded language, positional framing, unchallenged claims, and missing perspectives — and to ground every assessment in specific, quotable moments.</p>
-    </div>
-  </div>
-  <div class="step">
-    <div class="step-num">04</div>
-    <div class="step-body">
-      <h3>Results delivered in two phases</h3>
-      <p>Phase 1 (seconds): headline metrics appear immediately — the bias bar, factuality rating, omission risk, and host trust score. Phase 2 (15–30 seconds): deep analysis fills in — topic breakdown, key quotes, missing voices, sponsor conflicts, and flags with source citations.</p>
-    </div>
-  </div>
+
 </div>
-
-<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin:40px 0">
-  <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">What you get in every analysis</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">⚖️</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Political lean score</div><div style="font-size:12px;color:var(--text3)">−100 to +100, grounded in transcript framing signals</div></div></div>
-    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🔬</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Factual density</div><div style="font-size:12px;color:var(--text3)">Ratio of sourced claims to total claims made</div></div></div>
-    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🌐</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Source diversity</div><div style="font-size:12px;color:var(--text3)">How many distinct, independent perspectives appear</div></div></div>
-    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🗣️</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Loaded language</div><div style="font-size:12px;color:var(--text3)">Frequency of emotionally charged or advocacy framing</div></div></div>
-    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🎙️</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Host credibility</div><div style="font-size:12px;color:var(--text3)">How rigorously the host challenges claims</div></div></div>
-    <div style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:16px;flex-shrink:0">🕳️</span><div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Omission risk</div><div style="font-size:12px;color:var(--text3)">What important context was missing from the episode</div></div></div>
-  </div>
-  <p style="font-size:12px;color:var(--text3);margin-top:16px;margin-bottom:0">Want to understand exactly how each score is calculated? <a href="/methodology.html" style="color:var(--navy)">Read the open methodology →</a></p>
-</div>
-
-<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin:40px 0">
-  <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Your personal intelligence — builds over time</div>
-  <div style="font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.7">The more you analyze, the more PodLens tells you about <em>yourself</em> — not just the content. Two personal metrics build up across all your analyses:</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-    <div style="padding:16px;background:var(--bg3);border-radius:10px">
-      <div style="font-size:20px;margin-bottom:8px">🧬</div>
-      <div style="font-size:14px;font-weight:600;margin-bottom:6px">Bias fingerprint</div>
-      <div style="font-size:12px;color:var(--text2);line-height:1.6">Your cumulative lean across every episode you've analyzed. Not one episode's lean — your aggregate listening pattern over time. Updates after every analysis.</div>
-    </div>
-    <div style="padding:16px;background:var(--bg3);border-radius:10px">
-      <div style="font-size:20px;margin-bottom:8px">🔁</div>
-      <div style="font-size:14px;font-weight:600;margin-bottom:6px">Echo chamber score</div>
-      <div style="font-size:12px;color:var(--text2);line-height:1.6">Measures how <em>diverse</em> your listening actually is. A score of 0–25 means you're hearing multiple perspectives. 75+ means you're in a bubble. Scored 0–100, visible after 3+ analyses.</div>
-    </div>
-  </div>
-  <div style="margin-top:16px;font-size:12px;color:var(--text3)">Both metrics are available on Starter Lens and above. Free users see the score prompt after 3 analyses.</div>
-</div>
-
-<hr class="divider">
-
-<div class="faq">
-  <h2>Frequently asked questions</h2>
-
-  <div class="faq-item">
-    <div class="faq-q">Is this tool politically biased itself?</div>
-    <div class="faq-a">The same criteria that detect left-leaning framing detect right-leaning framing — symmetry is a hard requirement, not an aspiration. For the full technical explanation, see our <a href="/methodology.html">open methodology</a>.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">Can it analyze any podcast?</div>
-    <div class="faq-a">It works best with YouTube videos and podcast episodes with publicly available audio. Private videos, live streams, and content shorter than 5 minutes aren't currently supported.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">Is my data stored?</div>
-    <div class="faq-a">Transcripts are temporarily stored for caching (7 days) so you don't have to re-transcribe the same episode. Your analysis history lives in your browser and is never sent to our servers unless you're logged in.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">How accurate is it?</div>
-    <div class="faq-a">Podlens is a starting point for critical listening — not a verdict. The AI can miss irony, satire, and specialized context. We recommend reading the source citations and making your own judgement.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">Does Podlens use ads or sell data?</div>
-    <div class="faq-a">No. We're funded entirely by subscriber revenue. We have no advertising relationships and we don't sell or share user data.</div>
-  </div>
-</div>
-
-<div class="cta">
-  <h2>Try it on any episode</h2>
-  <p>Paste a YouTube URL and get your first analysis free.</p>
-  <a class="cta-btn" href="/" onclick="if(typeof showView==='function'){showView('analyze');return false}">Analyze an episode &rarr;</a>
-</div>
-
-
-
-<!-- FOOTER -->
-  </div>
-</div>
-
 <div class="view" id="view-pricing" style="display:none">
-<div class="hero">
-  <h1>Simple, transparent pricing</h1>
-  <p>Start free. Each tier unlocks a new level of understanding.</p>
-  <div class="billing-toggle">
-    <span class="bt-opt on" id="pg-bt-monthly" onclick="setBilling('monthly')">Monthly</span>
-    <span class="bt-opt" id="pg-bt-annual" onclick="setBilling('annual')">Annual</span>
-    <span class="bt-save" id="pg-annual-save-badge" style="display:none">Save 33%</span>
-  </div>
+<div class="founding-banner" id="pricing-founding-banner" style="display:none;position:relative">
+  <strong>&#11088; Founding Member Pricing</strong> &mdash; Lock in 33% off forever. 500 spots remaining.
+  <button onclick="document.getElementById('pricing-founding-banner').style.display='none';try{localStorage.setItem('pl-founding-dismissed','1')}catch(e){}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:inherit;opacity:.5;padding:4px 6px" aria-label="Dismiss">&times;</button>
 </div>
-
-<div class="plans">
-  <!-- Free -->
-  <div class="plan">
-    <div class="plan-name">Free</div>
-    <div class="plan-price-wrap">
-      <div class="plan-price">$0 <span>forever</span></div>
-    </div>
-    <div class="plan-desc">Start listening smarter. Discover, follow, and explore — plus 4 analyses per month, free forever.</div>
-    <div class="plan-features">
-      <div class="pf"><span class="pf-check">&#10003;</span>4 analyses per month</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>6-dimension bias scores</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Bias bar + label on every analysis</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Personal bias fingerprint</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Echo chamber score</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Discover page &mdash; browse 1M+ shows</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Follow shows + get alerts</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Weekly intelligence digest</div>
-    </div>
-    <a class="plan-btn" href="/">Get started free &rarr;</a>
+<div style="background:var(--bg)">
+<div style="max-width:1100px;margin:0 auto">
+  <div style="padding:72px 40px 0;text-align:center">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px">Pricing</div>
+    <h1 style="font-family:var(--ffs);font-size:clamp(28px,4vw,44px);font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:10px;line-height:1.15">Simple, transparent pricing</h1>
+    <p style="font-size:15px;color:var(--text2);margin-bottom:16px">Start free. Upgrade when you want more intelligence.</p>
+    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;color:var(--text2);font-weight:500;margin-bottom:28px">&#11088; Founding member pricing &mdash; 33% off forever &middot; 500 spots remaining</div>
+    <div class="billing-toggle"><span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span><span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span><span class="bt-save" id="annual-save-badge" style="display:none">Save 33%</span></div>
   </div>
-
-  <!-- Creator — Most Popular -->
-  <div class="plan featured">
-    <div class="plan-badge">Most Popular</div>
-    <div class="plan-name">Starter Lens</div>
-    <div class="plan-price-wrap">
-      <div class="plan-price-original" id="creator-original"></div>
-      <div class="plan-price"><span id="creator-price">$7</span> <span id="creator-period">/mo</span></div>
-      <div class="plan-founding-note" id="creator-founding-note" style="display:block">🔒 Founding price &mdash; locked in forever</div>
-    </div>
-    <div class="plan-desc">For the curious listener. Full bias scores, audio briefings, and 25 analyses per month.</div>
-    <div class="plan-features">
-      <div class="pf"><span class="pf-check">&#10003;</span>25 analyses per month</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>All 6 bias dimensions + key findings</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>2 transcript evidence quotes per dimension</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Host trust score on every analysis</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Audio briefings (AI-narrated)</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Live subtitles on any podcast</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Smart queue</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Everything in Free</div>
-    </div>
-    <button class="plan-btn" onclick="startCheckout('creator')">Start Starter Lens &rarr;</button>
-  </div>
-
-  <!-- Operator -->
-  <div class="plan">
-    <div class="plan-name">Pro Lens</div>
-    <div class="plan-price-wrap">
-      <div class="plan-price-original" id="operator-original"></div>
-      <div class="plan-price"><span id="operator-price">$19</span> <span id="operator-period">/mo</span></div>
-      <div class="plan-founding-note" id="operator-founding-note" style="display:block">🔒 Founding price &mdash; locked in forever</div>
-    </div>
-    <div class="plan-desc">For power listeners. Unlimited analyses, source citations, full transcripts, and deep research tools.</div>
-    <div class="plan-features">
-      <div class="pf"><span class="pf-check">&#10003;</span>Unlimited analyses</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Unlimited transcript evidence + timestamps</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Pre-episode audio brief</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>All 5 Unheard Stories per week</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Full searchable transcripts + timestamps</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Deep report + PDF export</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Show bias trend charts (30/90/180d)</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Voice interaction <span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:#f0f0e8;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-left:2px">Soon</span></div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Everything in Starter Lens</div>
-    </div>
-    <button class="plan-btn" onclick="startCheckout('operator')">Start Pro Lens &rarr;</button>
-  </div>
-
-  <!-- Studio -->
-  <div class="plan">
-    <div class="plan-name">Operator Lens</div>
-    <div class="plan-price-wrap">
-      <div class="plan-price-original" id="studio-original"></div>
-      <div class="plan-price"><span id="studio-price">$49</span> <span id="studio-period">/mo</span></div>
-      <div class="plan-founding-note" id="studio-founding-note" style="display:block">🔒 Founding price &mdash; locked in forever</div>
-    </div>
-    <div class="plan-desc">For teams and organizations. Everything in Pro Lens plus bulk scanning, brand monitoring, API access, and 10 team seats.</div>
-    <div class="plan-features">
-      <div class="pf"><span class="pf-check">&#10003;</span>Unlimited analyses</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>10 team seats</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Brand monitoring</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>API access</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Bulk scanner (20 URLs at once)</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>CSV export</div>
-      
-      <div class="pf"><span class="pf-check">&#10003;</span>Pre-analysis: unlimited shows</div>
-      <div class="pf"><span class="pf-check">&#10003;</span>Everything in Pro Lens</div>
-    </div>
-    <button class="plan-btn" onclick="startCheckout('studio')">Start Operator Lens &rarr;</button>
-  </div>
-</div>
-
-<p class="trial-note">No credit card required to start free. &nbsp;&middot;&nbsp; No ads. No conflicts of interest. Ever.</p>
-
-<div style="text-align:center;margin:20px 0 0">
-  <div style="display:inline-flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 16px">
-    <span style="font-size:12px;color:var(--text3)">Have a pilot code?</span>
-    <input id="pilot-code-input" type="text" placeholder="Enter code (e.g. PILOT2026)" maxlength="20"
-      style="font-size:13px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none;width:200px;text-transform:uppercase"
-      oninput="this.value=this.value.toUpperCase()"
-    />
-    <span id="pilot-code-status" style="font-size:11px;color:var(--text3)"></span>
-  </div>
-</div>
-
-<!-- ALWAYS FREE SECTION -->
-<div class="always-free-section">
-  <h2>Always free, no matter your plan</h2>
-  <p>These features are available to every Podlens account &mdash; forever.</p>
-  <div class="free-features-grid">
-    <div class="free-feature">
-      <span class="free-feature-icon">🔍</span>
-      <div>
-        <strong>Discover page</strong>
-        <p>Browse trending podcasts and their aggregate bias scores from 1M+ shows</p>
+  <div class="plans" style="padding:0 24px 16px">
+    <div class="plan">
+      <div class="plan-name">Free</div>
+      <div class="plan-price-wrap"><div class="plan-price">$0 <span>forever</span></div></div>
+      <div class="plan-desc">Start listening smarter. 4 analyses per month, free forever.</div>
+      <div class="plan-features">
+        <div class="pf"><span class="pf-check">&#10003;</span>4 analyses per month</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>All 6 bias dimension scores</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Bias fingerprint + echo chamber score</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Discover &mdash; browse 1M+ shows</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Follow shows + new episode alerts</div>
       </div>
+      <a class="plan-btn" href="/" onclick="if(typeof showView==='function'){showView('home');return false}">Get started free &rarr;</a>
     </div>
-    <div class="free-feature">
-      <span class="free-feature-icon">🧬</span>
-      <div>
-        <strong>Personal bias fingerprint &amp; echo chamber score</strong>
-        <p>See your listening patterns and political lean based on what you actually listen to</p>
+    <div class="plan featured">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-name">Starter Lens</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price-original" id="creator-original"></div>
+        <div class="plan-price">$<span id="creator-price">7</span><span id="creator-period">/mo</span></div>
+        <div class="plan-founding-note" id="creator-founding-note" style="display:block">&#128274; $4.69/mo founding rate &mdash; locked forever</div>
       </div>
-    </div>
-    <div class="free-feature">
-      <span class="free-feature-icon">📊</span>
-      <div>
-        <strong>Show profiles</strong>
-        <p>View any show&rsquo;s aggregate bias, episode history and host scores</p>
+      <div class="plan-desc">For curious listeners who want the full picture on every episode.</div>
+      <div class="plan-features">
+        <div class="pf"><span class="pf-check">&#10003;</span>25 analyses per month</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>All 6 bias dimensions + key findings</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>2 transcript evidence quotes per dimension</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Audio briefing &mdash; AI-narrated before you listen</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Host trust + guest score (when guest detected)</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Live transcript sync (word-by-word)</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Pre-analysis tracking (3 shows)</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Smart queue + everything in Free</div>
       </div>
+      <button class="plan-btn" onclick="startCheckout('creator')">Start Starter Lens &rarr;</button>
     </div>
-    <div class="free-feature">
-      <span class="free-feature-icon">🔔</span>
-      <div>
-        <strong>Follow + alerts</strong>
-        <p>Follow any show and get notified when new episodes are analyzed by anyone on the platform</p>
+    <div class="plan">
+      <div class="plan-name">Pro Lens</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price-original" id="operator-original"></div>
+        <div class="plan-price">$<span id="operator-price">19</span><span id="operator-period">/mo</span></div>
+        <div class="plan-founding-note" id="operator-founding-note" style="display:block">&#128274; $12.73/mo founding rate &mdash; locked forever</div>
       </div>
-    </div>
-    <div class="free-feature">
-      <span class="free-feature-icon">📬</span>
-      <div>
-        <strong>Weekly digest</strong>
-        <p>The most interesting bias findings from the week, delivered every Monday</p>
+      <div class="plan-desc">For serious listeners, researchers, and journalists who need full depth.</div>
+      <div class="plan-features">
+        <div class="pf"><span class="pf-check">&#10003;</span>Unlimited analyses</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Everything in Starter Lens</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Unlimited transcript evidence + timestamps</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Pre-analysis tracking (5 shows)</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Show bias trend charts (30/90/180 days)</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Deep report + PDF export</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Unheard section &mdash; what was missing</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Voice preference for audio briefings</div>
       </div>
+      <button class="plan-btn" onclick="startCheckout('operator')">Start Pro Lens &rarr;</button>
     </div>
-
-  </div>
-</div>
-
-<div class="compare">
-  <h2>Full feature comparison</h2>
-
-  <!-- Critical features — always visible -->
-  <table class="compare-table">
-    <thead>
-      <tr><th>Feature</th><th>Free</th><th>Starter Lens</th><th>Pro Lens</th><th>Operator Lens</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Monthly analyses</td><td>4</td><td>25</td><td>&infin;</td><td>&infin;</td></tr>
-      <tr><td>Full bias scores + all findings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Host trust score</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Source citations</td><td class="check-n">&mdash;</td><td>5/analysis</td><td>All</td><td>All</td></tr>
-      <tr><td>Audio briefings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Pre-episode audio brief</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-      <tr><td>Team seats</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>10</td></tr>
-    </tbody>
-  </table>
-
-  <!-- Expandable full breakdown -->
-  <div style="text-align:center;margin-top:20px">
-    <button id="features-toggle" onclick="toggleAllFeatures()" style="background:none;border:1px solid var(--border2);border-radius:4px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff);transition:background .15s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
-      See all features &#8595;
-    </button>
-  </div>
-
-  <div id="features-full" style="display:none;margin-top:24px">
-    <table class="compare-table">
-      <thead>
-        <tr><th></th><th>Free</th><th>Starter Lens</th><th>Pro Lens</th><th>Operator Lens</th></tr>
-      </thead>
-      <tbody>
-        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Analysis</td></tr>
-        <tr><td>Monthly analyses</td><td>4</td><td>25</td><td>&infin;</td><td>&infin;</td></tr>
-        <tr><td>Bias bar + label</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>6-dimension bias scoring</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Transcript evidence quotes</td><td class="check-n">&mdash;</td><td>2/dimension</td><td>Unlimited</td><td>Unlimited</td></tr>
-        <tr><td>Full bias scores + all findings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Host trust score</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Source citations</td><td class="check-n">&mdash;</td><td>5/analysis</td><td>All</td><td>All</td></tr>
-        <tr><td>Bulk scanner (20 URLs)</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
-
-        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Audio</td></tr>
-        <tr><td>Audio briefings</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Pre-episode audio brief</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Live subtitles</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Translation</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Voice assistant</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td><span style="font-size:10px;color:#aaa">Soon</span></td><td><span style="font-size:10px;color:#aaa">Soon</span></td></tr>
-        
-
-        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Platform &mdash; always free for everyone</td></tr>
-        <tr><td>Discover page</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Show profiles + aggregate bias</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Personal bias fingerprint</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Echo chamber score</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Follow shows + alerts</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Weekly digest</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Unheard stories</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>All 5/week</td><td>All 5/week</td></tr>
-
-        <tr><td colspan="5" style="padding:14px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);border-bottom:none">Power features</td></tr>
-        <tr><td>Full transcript</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Pre-analysis tracking</td><td class="check-n">&mdash;</td><td>3 shows</td><td>5 shows</td><td>&infin;</td></tr>
-        <tr><td>Basic PDF export</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Full PDF export</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Brand monitoring</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>API access</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>CSV export</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
-        <tr><td>Team seats</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td>10</td></tr>
-        <tr><td>Usage dashboard</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-n">&mdash;</td><td class="check-y">&#10003;</td></tr>
-      </tbody>
-    </table>
-    <div style="text-align:center;margin-top:16px">
-      <button onclick="toggleAllFeatures()" style="background:none;border:1px solid var(--border2);border-radius:4px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
-        Hide details &#8593;
-      </button>
+    <div class="plan">
+      <div class="plan-name">Operator Lens</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price-original" id="studio-original"></div>
+        <div class="plan-price">$<span id="studio-price">49</span><span id="studio-period">/mo</span></div>
+        <div class="plan-founding-note" id="studio-founding-note" style="display:block">&#128274; $32.83/mo founding rate &mdash; locked forever</div>
+      </div>
+      <div class="plan-desc">For teams, brands, and researchers who need monitoring, delivery intelligence, and API access.</div>
+      <div class="plan-features">
+        <div class="pf"><span class="pf-check">&#10003;</span>Everything in Pro Lens</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Delivery analysis &mdash; vocal tone via Hume AI</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Team workspaces (10 seats)</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Brand monitoring</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Bulk scanner (20 URLs at once)</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>API access + CSV export</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Pre-analysis tracking (unlimited shows)</div>
+      </div>
+      <button class="plan-btn" onclick="startCheckout('studio')">Start Operator Lens &rarr;</button>
     </div>
   </div>
+  <p class="trial-note">No credit card required to start free. &nbsp;&middot;&nbsp; No ads. No conflicts of interest. Ever.</p>
+  <div style="text-align:center;margin:20px 0 8px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:10px 18px">
+      <span style="font-size:12px;color:var(--text3)">Have a pilot code?</span>
+      <input id="pilot-code-input" type="text" placeholder="Enter code (e.g. PILOT2026)" maxlength="20" style="font-size:13px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none;width:200px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
+      <span id="pilot-code-status" style="font-size:11px;color:var(--text3)"></span>
+    </div>
+  </div>
+  <div class="always-free-section">
+    <h2>Always free, no matter your plan</h2>
+    <p>These features are available to every Podlens account &mdash; forever.</p>
+    <div class="free-features-grid">
+      <div class="free-feature"><span class="free-feature-icon">&#128269;</span><div><strong>Discover page</strong><p>Browse trending podcasts and their aggregate bias scores from 1M+ shows</p></div></div>
+      <div class="free-feature"><span class="free-feature-icon">&#129516;</span><div><strong>Bias fingerprint &amp; echo chamber score</strong><p>See your listening patterns and political lean based on what you actually listen to (unlocks after 10 episodes)</p></div></div>
+      <div class="free-feature"><span class="free-feature-icon">&#128202;</span><div><strong>Show profiles</strong><p>View any show&rsquo;s aggregate bias, episode history, and host scores</p></div></div>
+      <div class="free-feature"><span class="free-feature-icon">&#127897;</span><div><strong>Audio player</strong><p>Play any podcast or YouTube video directly on Podlens with bias context</p></div></div>
+    </div>
+  </div>
+  <div style="padding:40px 24px 60px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px">
+      <h2 style="font-family:var(--ffs);font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.01em;margin:0">Compare plans in full</h2>
+      <button id="features-toggle" onclick="toggleAllFeatures()" style="background:none;border:1px solid var(--border2);border-radius:var(--r);padding:8px 18px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff);transition:background .15s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">See all features &#8595;</button>
+    </div>
+    <div style="overflow-x:auto;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:580px">
+        <thead><tr>
+          <th style="padding:12px 16px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:left;font-size:11px;letter-spacing:.05em;border-bottom:1px solid var(--border);width:34%">Feature</th>
+          <th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Free</th>
+          <th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Starter Lens</th>
+          <th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Pro Lens</th>
+          <th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Operator Lens</th>
+        </tr></thead>
+        <tbody>
+          <tr style="background:var(--bg2)"><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Analyses/month</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">4</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">25</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">Unlimited</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">Unlimited</td></tr>
+          <tr><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">All 6 bias dimensions</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td></tr>
+          <tr style="background:var(--bg2)"><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Audio briefing</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td></tr>
+          <tr><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Transcript evidence quotes</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">2 / dim</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">Unlimited</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">Unlimited</td></tr>
+          <tr style="background:var(--bg2)"><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Live transcript sync</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td></tr>
+          <tr><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Pre-analysis tracking</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">3 shows</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">5 shows</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600">Unlimited</td></tr>
+          <tr style="background:var(--bg2)"><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Show bias trend charts</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td></tr>
+          <tr><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Unheard (missing context)</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td></tr>
+          <tr style="background:var(--bg2)"><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">Delivery analysis (Hume AI)</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td></tr>
+          <tr><td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">API access + CSV export</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3)">&#8212;</td><td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700">&#10003;</td></tr>
+          <tr style="background:var(--bg3)"><td style="padding:12px 16px;font-weight:700;color:var(--text)">Monthly price</td><td style="padding:12px 12px;text-align:center;font-weight:800;color:var(--navy);font-size:15px">Free</td><td style="padding:12px 12px;text-align:center;font-weight:800;color:var(--navy);font-size:15px">$7</td><td style="padding:12px 12px;text-align:center;font-weight:800;color:var(--navy);font-size:15px">$19</td><td style="padding:12px 12px;text-align:center;font-weight:800;color:var(--navy);font-size:15px">$49</td></tr>
+          <tr><td style="padding:10px 16px;color:var(--text3);font-size:11px">Founding rate (33% off forever)</td><td style="padding:10px 12px;text-align:center;color:var(--text3);font-size:11px">&#8212;</td><td style="padding:10px 12px;text-align:center;font-size:11px;font-weight:600;color:var(--text2)">$4.69/mo</td><td style="padding:10px 12px;text-align:center;font-size:11px;font-weight:600;color:var(--text2)">$12.73/mo</td><td style="padding:10px 12px;text-align:center;font-size:11px;font-weight:600;color:var(--text2)">$32.83/mo</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="features-full" style="display:none;margin-top:24px"></div>
+  </div>
 </div>
-
-
-
-
-
-<!-- FOOTER -->
 </div>
-
-<!-- SHOW VIEW -->
-<!-- LIBRARY VIEW (inline — same SPA as discover/analyze) -->
 <div class="view" id="view-library" style="display:none">
   <div class="dash-3col">
     <div id="app-sidebar-lib"></div>
