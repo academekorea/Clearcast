@@ -4312,51 +4312,64 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
 </div>
 <!-- library-view.js loaded before init at end of body -->
 
-<!-- VIEW: Account (merged profile + billing + notifications + integrations) -->
+<!-- VIEW: Profile -->
+<div class="view" id="view-profile" style="display:none">
+  <div class="account-view-wrap">
+    <div class="account-view-inner">
+      <div class="account-header">
+        <div class="account-title">Profile</div>
+        <div class="account-sub">Manage your personal information and photo</div>
+      </div>
+      <div class="acct-card">
+        <div class="acct-card-title">Your profile</div>
+        <div class="acct-avatar-row" id="acct-avatar-row">
+          <div class="acct-av-wrap" onclick="document.getElementById('acct-av-input').click()">
+            <div class="acct-av" id="acct-av-circle">?</div>
+            <div class="acct-av-overlay"><svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+            <input type="file" id="acct-av-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+          </div>
+          <div>
+            <div class="acct-name" id="acct-display-name">Loading…</div>
+            <div class="acct-email" id="acct-display-email"></div>
+            <span class="acct-plan-badge" id="acct-plan-badge"></span>
+            <button class="acct-av-change-btn" onclick="document.getElementById('acct-av-input').click()">Change photo</button>
+          </div>
+        </div>
+        <div class="acct-field"><span class="acct-field-label">Full name</span><span class="acct-field-val" id="acct-field-name"></span><button class="acct-field-action" onclick="showDashSection('profile')">Edit</button></div>
+        <div class="acct-field"><span class="acct-field-label">Email</span><span class="acct-field-val" id="acct-field-email"></span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
+        <div class="acct-field"><span class="acct-field-label">Password</span><span class="acct-field-val" style="color:var(--text3)">••••••••••</span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
+      </div>
+      <div class="acct-card">
+        <div class="acct-card-title">Integrations</div>
+        <div class="acct-int-card"><div class="acct-int-icon" style="background:#E8F9EE">&#127925;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Import your podcast subscriptions and listening history</div></div><button class="acct-btn-primary" onclick="heroConnectSpotify()">Connect</button></div>
+        <div class="acct-int-card"><div class="acct-int-icon" style="background:#FEE2E2">&#9654;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">YouTube</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze video podcasts and YouTube channels</div></div><button class="acct-btn-primary" onclick="heroConnectYouTube()">Connect</button></div>
+        <div class="acct-int-card"><div class="acct-int-icon" style="background:var(--bg3)">&#128276;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Browser extension</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze any podcast directly from your browser</div></div><a class="acct-btn-secondary" href="/extension.html">Install</a></div>
+      </div>
+      <div class="acct-card">
+        <div class="acct-card-title">Danger zone</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-size:13px;font-weight:500">Delete account</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Permanently remove your account and all data</div></div>
+          <button class="acct-btn-danger" onclick="confirmDeleteAccount()">Delete account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /view-profile -->
+
+<!-- VIEW: Account (billing + notifications) -->
 <div class="view" id="view-account" style="display:none">
   <div class="account-view-wrap">
     <div class="account-view-inner">
       <div class="account-header">
         <div class="account-title">Account</div>
-        <div class="account-sub">Manage your profile, billing, and preferences</div>
+        <div class="account-sub">Manage your subscription, billing, and notifications</div>
       </div>
       <div class="account-tabs" role="tablist">
-        <button class="account-tab active" data-tab="profile" onclick="switchAccountTab('profile',this)">Profile</button>
-        <button class="account-tab" data-tab="billing" onclick="switchAccountTab('billing',this)">Billing</button>
+        <button class="account-tab active" data-tab="billing" onclick="switchAccountTab('billing',this)">Billing</button>
         <button class="account-tab" data-tab="notifications" onclick="switchAccountTab('notifications',this)">Notifications</button>
-        <button class="account-tab" data-tab="integrations" onclick="switchAccountTab('integrations',this)">Integrations</button>
-      </div>
-      <!-- Profile -->
-      <div class="account-panel active" id="acct-panel-profile">
-        <div class="acct-card">
-          <div class="acct-card-title">Your profile</div>
-          <div class="acct-avatar-row" id="acct-avatar-row">
-            <div class="acct-av-wrap" onclick="document.getElementById('acct-av-input').click()">
-              <div class="acct-av" id="acct-av-circle">?</div>
-              <div class="acct-av-overlay"><svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
-              <input type="file" id="acct-av-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
-            </div>
-            <div>
-              <div class="acct-name" id="acct-display-name">Loading…</div>
-              <div class="acct-email" id="acct-display-email"></div>
-              <span class="acct-plan-badge" id="acct-plan-badge"></span>
-              <button class="acct-av-change-btn" onclick="document.getElementById('acct-av-input').click()">Change photo</button>
-            </div>
-          </div>
-          <div class="acct-field"><span class="acct-field-label">Full name</span><span class="acct-field-val" id="acct-field-name"></span><button class="acct-field-action" onclick="showDashSection('profile')">Edit</button></div>
-          <div class="acct-field"><span class="acct-field-label">Email</span><span class="acct-field-val" id="acct-field-email"></span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
-          <div class="acct-field"><span class="acct-field-label">Password</span><span class="acct-field-val" style="color:var(--text3)">••••••••••</span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
-        </div>
-        <div class="acct-card">
-          <div class="acct-card-title">Danger zone</div>
-          <div style="display:flex;align-items:center;justify-content:space-between">
-            <div><div style="font-size:13px;font-weight:500">Delete account</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Permanently remove your account and all data</div></div>
-            <button class="acct-btn-danger" onclick="confirmDeleteAccount()">Delete account</button>
-          </div>
-        </div>
       </div>
       <!-- Billing -->
-      <div class="account-panel" id="acct-panel-billing">
+      <div class="account-panel active" id="acct-panel-billing">
         <div class="acct-card" id="acct-billing-content">
           <div class="acct-card-title">Current plan</div>
           <div id="acct-plan-row"></div>
@@ -4375,12 +4388,6 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">New feature updates</div><div class="acct-toggle-desc">Product announcements and new analysis capabilities</div></div><label class="acct-toggle"><input type="checkbox" id="notif-updates" onchange="saveNotifPref('updates',this.checked)"><span class="acct-toggle-slider"></span></label></div>
           <div class="acct-toggle-row"><div class="acct-toggle-info"><div class="acct-toggle-label">Billing receipts</div><div class="acct-toggle-desc">Invoices and payment confirmations</div></div><label class="acct-toggle"><input type="checkbox" id="notif-billing" checked onchange="saveNotifPref('billing',this.checked)"><span class="acct-toggle-slider"></span></label></div>
         </div>
-      </div>
-      <!-- Integrations -->
-      <div class="account-panel" id="acct-panel-integrations">
-        <div class="acct-int-card"><div class="acct-int-icon" style="background:#E8F9EE">&#127925;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Import your podcast subscriptions and listening history</div></div><button class="acct-btn-primary" onclick="heroConnectSpotify()">Connect</button></div>
-        <div class="acct-int-card"><div class="acct-int-icon" style="background:#FEE2E2">&#9654;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">YouTube</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze video podcasts and YouTube channels</div></div><button class="acct-btn-primary" onclick="heroConnectYouTube()">Connect</button></div>
-        <div class="acct-int-card"><div class="acct-int-icon" style="background:var(--bg3)">&#128276;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Browser extension</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze any podcast directly from your browser</div></div><a class="acct-btn-secondary" href="/extension.html">Install</a></div>
       </div>
     </div>
   </div>
@@ -5000,8 +5007,8 @@ function _renderNavAvatar(u) {
     + '<div class="dropdown-tier">' + tierLabel + ' plan</div></div></div>'
     + '<div class="dropdown-divider"></div>'
     + adminRows
-    + '<a href="javascript:void(0)" onclick="closeUserMenu();showView(\'account\')" class="dropdown-item">Profile</a>'
-    + '<a href="javascript:void(0)" onclick="closeUserMenu();showView(\'account\');setTimeout(function(){switchAccountTab(\'billing\',document.querySelector(\'[data-tab=billing]\'))},100)" class="dropdown-item">Account &amp; billing</a>'
+    + '<a href="javascript:void(0)" onclick="closeUserMenu();showView(\'profile\')" class="dropdown-item">Profile</a>'
+    + '<a href="javascript:void(0)" onclick="closeUserMenu();showView(\'account\')" class="dropdown-item">Account &amp; billing</a>'
     + '<a href="javascript:void(0)" onclick="closeUserMenu();showView(\'settings\')" class="dropdown-item">Settings</a>'
     + '<div class="dropdown-divider"></div>'
     + '<a href="/support.html" target="_blank" rel="noopener" class="dropdown-item">Support</a>'
@@ -6391,7 +6398,7 @@ window.saveNotifPref = function(key, val) {
   } catch(e) {}
 };
 
-window.renderAccountView = function() {
+window.renderProfileView = function() {
   var u; try { u = JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) { u = null; }
   if (!u) return;
   var name = u.name || u.email || '';
@@ -6414,6 +6421,12 @@ window.renderAccountView = function() {
   el = document.getElementById('acct-field-email'); if (el) el.textContent = email;
   el = document.getElementById('acct-plan-badge');
   if (el) { el.textContent = plan.charAt(0).toUpperCase() + plan.slice(1); }
+};
+
+window.renderAccountView = function() {
+  var u; try { u = JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) { u = null; }
+  if (!u) return;
+  var plan = u.plan || 'free';
   var planNames = { free:'Free', starter:'Starter Lens', creator:'Starter Lens', operator:'Pro Lens', studio:'Operator Lens', trial:'Trial' };
   var planPrices = { free:'Free forever', starter:'$4.69/month', creator:'$4.69/month', operator:'$12.73/month', studio:'$32.83/month', trial:'Trial period' };
   var pr = document.getElementById('acct-plan-row');
@@ -6465,7 +6478,7 @@ window.handleAvatarUpload = function(input) {
       if (!u) return;
       u.avatar_custom_url = dataUrl;
       localStorage.setItem('pl-user', JSON.stringify(u));
-      if (typeof renderAccountView === 'function') renderAccountView();
+      if (typeof renderProfileView === 'function') renderProfileView();
       if (typeof renderNavbar === 'function') renderNavbar();
       fetch('/api/update-profile', {
         method: 'PATCH',
@@ -6541,6 +6554,7 @@ function showView(name) {
     library: '/library',
     show: '/show',
     admin: '/admin',
+    profile: '/profile',
     account: '/account',
     settings: '/settings'
   };
@@ -6559,15 +6573,18 @@ function showView(name) {
     pricing: 'Pricing — Podlens',
     show: 'Show profile — Podlens',
     admin: 'Admin — Podlens',
+    profile: 'Profile — Podlens',
     account: 'Account — Podlens',
     settings: 'Settings — Podlens'
   };
   document.title = titles[name] || 'Podlens';
   if (name === 'library' && typeof initLibraryView === 'function') { initLibraryView(window._pendingLibTab); window._pendingLibTab = null; }
   if (name === 'pricing' && typeof initPricingView === 'function') initPricingView();
+  if (name === 'profile') {
+    if (typeof renderProfileView === 'function') setTimeout(renderProfileView, 50);
+  }
   if (name === 'account' || name === 'settings') {
     if (typeof renderAccountView === 'function') setTimeout(renderAccountView, 50);
-    if (typeof sidebarSetActive === 'function') sidebarSetActive(name);
   }
   if (name === 'discover') { initDiscover(); }
   if (name === 'analyze') {
@@ -9774,7 +9791,12 @@ function handleUrlRouting() {
     showView('library');
     return true;
   }
-  if (path === '/account' || path === '/profile') {
+  if (path === '/profile') {
+    history.replaceState({ view: 'profile' }, '', '/profile');
+    showView('profile');
+    return true;
+  }
+  if (path === '/account') {
     history.replaceState({ view: 'account' }, '', '/account');
     showView('account');
     return true;
@@ -14035,7 +14057,7 @@ window.addEventListener('popstate', function(e) {
 
 function _viewFromPath(path) {
   if (!path || path === '/' || path.startsWith('/dashboard')) return 'home';
-  var map = { '/discover': 'discover', '/analyze': 'analyze', '/library': 'library', '/account': 'account', '/profile': 'account', '/settings': 'settings', '/show': 'show', '/admin': 'admin', '/how-it-works': 'how-it-works', '/pricing': 'pricing' };
+  var map = { '/discover': 'discover', '/analyze': 'analyze', '/library': 'library', '/profile': 'profile', '/account': 'account', '/settings': 'settings', '/show': 'show', '/admin': 'admin', '/how-it-works': 'how-it-works', '/pricing': 'pricing' };
   return map[path] || map[path.replace(/\/$/, '')] || 'home';
 }
 function startSpotifyImport() {
