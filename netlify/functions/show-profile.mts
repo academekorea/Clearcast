@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { getSupabaseAdmin } from "./lib/supabase.js";
 
 async function fetchYouTubeChannelData(channelId: string): Promise<{
   subscriberCount?: string; videoCount?: string; viewCount?: string;
@@ -67,17 +68,62 @@ export default async (req: Request) => {
     const jobStore = getStore("podlens-jobs");
 
     const show = await showStore.get(slug, { type: "json" }).catch(() => null) as any;
-    if (!show) {
+
+    let completed: any[] = [];
+
+    if (show) {
+      // Primary: read from blob store
+      const ids: string[] = (show.episodeIds || []).slice(0, 50);
+      const epData = await Promise.all(
+        ids.map((id: string) => jobStore.get(id, { type: "json" }).catch(() => null))
+      );
+      completed = epData.filter((e: any) => e && e.status === "complete") as any[];
+    }
+
+    // Fallback: query Supabase analyses table if blob store has no data
+    if (completed.length === 0) {
+      try {
+        const sb = getSupabaseAdmin();
+        if (sb) {
+          const showName = slug.replace(/-/g, " ");
+          const { data: rows } = await sb
+            .from("analyses")
+            .select("job_id, episode_title, show_name, bias_score, bias_label, bias_left_pct, bias_center_pct, bias_right_pct, host_trust_score, factuality_label, duration_minutes, analyzed_at, show_category, dim_perspective_balance, dim_factual_density, dim_source_diversity, dim_framing_patterns, dim_host_credibility, dim_omission_risk")
+            .ilike("show_name", showName)
+            .order("analyzed_at", { ascending: false })
+            .limit(50);
+          if (rows && rows.length > 0) {
+            completed = rows.map((r: any) => ({
+              status: "complete",
+              jobId: r.job_id,
+              episodeTitle: r.episode_title,
+              showName: r.show_name,
+              biasScore: r.bias_score,
+              biasLabel: r.bias_label,
+              audioLean: (r.bias_left_pct != null) ? { leftPct: r.bias_left_pct, centerPct: r.bias_center_pct, rightPct: r.bias_right_pct } : null,
+              hostTrustScore: r.host_trust_score,
+              factualityLabel: r.factuality_label,
+              duration: r.duration_minutes ? r.duration_minutes * 60 : null,
+              createdAt: r.analyzed_at ? new Date(r.analyzed_at).getTime() : Date.now(),
+              dimensions: {
+                perspectiveBalance: r.dim_perspective_balance != null ? { score: r.dim_perspective_balance } : null,
+                factualDensity: r.dim_factual_density != null ? { score: r.dim_factual_density } : null,
+                sourceDiversity: r.dim_source_diversity != null ? { score: r.dim_source_diversity } : null,
+                framingPatterns: r.dim_framing_patterns != null ? { score: r.dim_framing_patterns } : null,
+                hostCredibility: r.dim_host_credibility != null ? { score: r.dim_host_credibility } : null,
+                omissionRisk: r.dim_omission_risk != null ? { score: r.dim_omission_risk } : null,
+              },
+            }));
+          }
+        }
+      } catch {}
+    }
+
+    if (!show && completed.length === 0) {
       return new Response(JSON.stringify({ show: null, episodes: [], metrics: {} }), {
         status: 200, headers: { "Content-Type": "application/json" },
       });
     }
-
-    const ids: string[] = (show.episodeIds || []).slice(0, 50);
-    const epData = await Promise.all(
-      ids.map((id: string) => jobStore.get(id, { type: "json" }).catch(() => null))
-    );
-    const completed = epData.filter((e: any) => e && e.status === "complete") as any[];
 
     // ── Bias scores ──
     const scores = completed.map((e: any) => e.biasScore).filter((s: any) => typeof s === "number");
