@@ -3819,6 +3819,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           <div class="disc-mood" style="background:#0f3d2e" onclick="discFilterByMood('balanced',this)"><h4>Balanced picks</h4><p>Both sides, grounded</p></div>
           <div class="disc-mood" style="background:#2d1a4a" onclick="discFilterByMood('quick',this)"><h4>Quick takes</h4><p>Under 30 min, high signal</p></div>
         </div>
+        <div class="disc-shows-row" id="disc-mood-row" style="display:none"></div>
       </div>
     </div>
     <div class="disc-rc">
@@ -6768,20 +6769,6 @@ function initDiscover() {
         loadForyouShows(region, u);
       });
 
-    // Load trending topics from Supabase
-    fetch('/api/trending-topics')
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        var el = document.getElementById('disc-rc-mid');
-        if (!el || !d.topics || !d.topics.length) return;
-        el.innerHTML = '<div class="disc-rc-title">Most analyzed</div>'
-          + d.topics.slice(0,5).map(function(t){
-              return '<div class="disc-topic-row">'
-                +'<span class="disc-topic-name">'+t.name+'</span>'
-                +'<span class="disc-topic-count">'+t.count+' analyses</span>'
-                +'</div>';
-            }).join('');
-      }).catch(function(){});
   } else {
     if (greet) greet.textContent = 'Explore podcasts';
     if (sub) sub.textContent = 'Browse freely. Analyze any episode free.';
@@ -6796,6 +6783,20 @@ function initDiscover() {
   discRenderShows();
   discRenderEpisodes();
   loadDiscTrendingNews();
+  // Load trending topics from Supabase (all users)
+  fetch('/api/trending-topics')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var el = document.getElementById('disc-rc-mid');
+      if (!el || !d.topics || !d.topics.length) return;
+      el.innerHTML = '<div class="disc-rc-title">Most analyzed</div>'
+        + d.topics.slice(0,5).map(function(t){
+            return '<div class="disc-topic-row">'
+              +'<span class="disc-topic-name">'+_escHtml(t.name)+'</span>'
+              +'<span class="disc-topic-count">'+t.count+' analyses</span>'
+              +'</div>';
+          }).join('');
+    }).catch(function(){});
   _renderCategoryBiasContext(_discCat);
 }
 
@@ -7058,8 +7059,9 @@ function discFilterByMood(mood, clickedEl) {
   if (mood === 'deepdive') filtered = CURATED_SHOWS.filter(function(s){ return s.cat==='society'||s.cat==='tech'||s.cat==='business'; });
   if (mood === 'quick')    filtered = CURATED_SHOWS.filter(function(s){ return s.cat==='news'||s.cat==='comedy'; });
   if (!filtered || !filtered.length) filtered = CURATED_SHOWS.slice(0, 10);
-  var el = document.getElementById('disc-shows-row');
+  var el = document.getElementById('disc-mood-row');
   if (!el) return;
+  el.style.display = '';
   el.innerHTML = filtered.map(function(s) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var safeUrl = _escHtml(s.feedUrl).replace(/'/g,'&#39;');
@@ -7074,7 +7076,7 @@ function discFilterByMood(mood, clickedEl) {
       '</div>';
   }).join('');
   addScrollDrag(el);
-  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   document.querySelectorAll('.disc-mood').forEach(function(m){ m.style.outline='none'; });
   if (clickedEl) clickedEl.style.outline='2px solid rgba(255,255,255,.5)';
 }
