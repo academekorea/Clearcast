@@ -47,6 +47,7 @@ export default async (req: Request) => {
   const region = url.searchParams.get("region") || "international";
   const genreId = GENRE_IDS[genre] ?? GENRE_IDS["all"] ?? "";
   const term = SEARCH_TERMS[genre] || "podcast";
+  const country = region === "international" ? "us" : region;
 
   try {
     let podcasts: any[] = [];

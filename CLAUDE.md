@@ -111,11 +111,12 @@ New columns added April 2026:
 - `podlens-cache/show-meta-{slug}` — show profiles
 - `podlens-cache/show-meta-youtube-{channelSlug}` — YouTube-only show profiles
 
-## Current Active Issues (April 13, 2026)
-1. **netlify.toml broken redirects** — /pricing and /how-it-works routing to deleted .html files. Fix: change `to = "/pricing.html"` and `to = "/how-it-works.html"` to `to = "/index.html"` in netlify.toml
-2. **Spotify import broken** — startSpotifyImport() undefined, auth-spotify-callback redirects to deleted settings.html, token never reaches browser sessionStorage
-3. **Analysis not registering** — trackAnalysis() may not refresh Library view or recalculate fingerprint immediately
-4. **Social share reverted** — was working, reverted while diagnosing site issue. Ready to re-apply.
+## Current Active Issues (April 15, 2026)
+1. ~~**netlify.toml broken redirects**~~ — RESOLVED. /pricing and /how-it-works now route to /index.html
+2. ~~**Spotify import broken**~~ — RESOLVED. startSpotifyImport() exists, OAuth flow intact
+3. ~~**Analysis not registering**~~ — RESOLVED. trackAnalysis() fully implemented with Library refresh
+4. ~~**Social share reverted**~~ — RESOLVED. shareAnalysis() + showShareModal() fully functional
+5. **Google OAuth unverified app warning** — Google Console needs: publish app to production (scopes are non-sensitive, no review required). Consent screen must have privacy/terms URLs and podlens.app as authorized domain.
 
 ## CLAUDE.md Update Instructions
 When significant architecture, features, or decisions change, update this file to reflect current state. Version and date at top. Keep sections current — stale info causes Claude Code to make wrong decisions.
