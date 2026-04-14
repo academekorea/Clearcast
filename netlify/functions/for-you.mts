@@ -87,29 +87,42 @@ export default async (req: Request) => {
     try {
       const sb = getSupabaseAdmin();
       if (sb) {
-        const [userRes, catsRes] = await Promise.allSettled([
+        const [userRes, histRes] = await Promise.allSettled([
           sb.from("users").select("interests").eq("id", userId).single(),
           sb
             .from("analyses")
-            .select("show_category")
+            .select("show_name")
             .eq("user_id", userId)
-            .not("show_category", "is", null)
-            .limit(20),
+            .not("show_name", "is", null)
+            .order("created_at", { ascending: false })
+            .limit(30),
         ]);
 
         if (userRes.status === "fulfilled") {
           interests = (userRes.value.data as any)?.interests || [];
         }
-        if (catsRes.status === "fulfilled") {
+        if (histRes.status === "fulfilled") {
+          // Derive categories from show names using genre map
+          const showCatMap: Record<string, string> = {
+            "the daily": "news", "npr politics podcast": "news", "pod save america": "news",
+            "up first": "news", "the ben shapiro show": "news", "the megyn kelly show": "news",
+            "cnn 5 things": "news", "bbc global news podcast": "news",
+            "lex fridman podcast": "tech", "huberman lab": "science", "all-in podcast": "tech",
+            "acquired": "business", "the prof g pod": "business", "how i built this": "business",
+            "joe rogan experience": "comedy", "smartless": "comedy", "conan o'brien needs a friend": "comedy",
+            "serial": "crime", "crime junkie": "crime", "my favorite murder": "crime",
+            "the tim ferriss show": "health", "on purpose with jay shetty": "health",
+          };
           const catCounts: Record<string, number> = {};
-          ((catsRes.value.data as any[]) || []).forEach((a: any) => {
-            if (a.show_category)
-              catCounts[a.show_category] = (catCounts[a.show_category] || 0) + 1;
+          ((histRes.value.data as any[]) || []).forEach((a: any) => {
+            const name = (a.show_name || "").toLowerCase().trim();
+            const cat = showCatMap[name];
+            if (cat) catCounts[cat] = (catCounts[cat] || 0) + 1;
           });
           historyInterests = Object.entries(catCounts)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3)
-            .map(([k]) => k.toLowerCase());
+            .map(([k]) => k);
         }
       }
     } catch {}
