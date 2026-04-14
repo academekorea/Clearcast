@@ -6064,7 +6064,8 @@ function renderDashFollowedShows(u) {
 function _isRawJobId(t) {
   if (!t) return true;
   // Job IDs: all-caps alphanumeric, 10+ chars, no spaces — e.g. GLT6476784414, AAI-xxx
-  return /^[A-Z0-9_-]{8,}$/.test(t.trim()) || t === 'Episode' || t === 'Podcast Episode';
+  var s = t.trim();
+  return /^[A-Z0-9_-]{8,}$/.test(s) || s === 'Episode' || s === 'Podcast Episode' || s === 'Default' || s === 'default' || s === 'Untitled';
 }
 
 function renderDashRecent() {
@@ -10864,7 +10865,9 @@ function trackAnalysis(data) {
     }
     var recent=getRecent();
     var al=data.audioLean||{};
-    recent.unshift({title:data.episodeTitle||data.showName||'Episode',biasLabel:data.biasLabel||'',url:data.url||'',showName:data.showName||'',artwork:data.artworkUrl||data.artwork||'',leftPct:al.leftPct,centerPct:al.centerPct,rightPct:al.rightPct});
+    var _epTitle = data.episodeTitle;
+    if (!_epTitle || _isRawJobId(_epTitle)) _epTitle = data.showName ? data.showName + ' — ' + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'Episode';
+    recent.unshift({title:_epTitle,biasLabel:data.biasLabel||'',url:data.url||'',showName:data.showName||'',artwork:data.artworkUrl||data.artwork||'',leftPct:al.leftPct,centerPct:al.centerPct,rightPct:al.rightPct});
     recent=recent.slice(0,10);
     localStorage.setItem('pl-recent',JSON.stringify(recent));
     renderRecentlyAnalyzed();

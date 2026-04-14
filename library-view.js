@@ -369,7 +369,7 @@
       var viewUrl = ep.jobId?'/?jobId='+ep.jobId:'#';
       var score = ep.credibilityScore||ep.hostTrustScore||'';
       return '<div class="history-row" onclick="window.location=\''+esc(viewUrl)+'\'">'
-        + '<div class="hr-ep"><div class="hr-title">'+esc(ep.episodeTitle||'Episode')+'</div><div class="hr-show">'+esc(ep.showName||'')+'</div></div>'
+        + '<div class="hr-ep"><div class="hr-title">'+esc(ep.episodeTitle && ep.episodeTitle !== 'Default' && ep.episodeTitle !== 'Podcast Episode' ? ep.episodeTitle : (ep.showName ? ep.showName + ' episode' : 'Episode'))+'</div><div class="hr-show">'+esc(ep.showName||'')+'</div></div>'
         + '<div class="hr-date">'+esc(timeAgo(ep.analyzedAt))+'</div>'
         + '<div class="hr-lean">'+(pillLabel?'<span class="bias-pill '+pillCls+'" style="font-size:9px;padding:2px 6px">'+esc(pillLabel)+'</span>':'')+'</div>'
         + '<div class="hr-score">'+(score?esc(String(score)):'\u2014')+'</div></div>';

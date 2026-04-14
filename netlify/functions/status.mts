@@ -460,7 +460,7 @@ export default async (req: Request) => {
     jobId,
     url: job.url,
     canonicalKey: job.canonicalKey,
-    episodeTitle: job.episodeTitle || "Podcast Episode",
+    episodeTitle: job.episodeTitle || (job.showName ? job.showName + " — " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Podcast Episode"),
     showName: job.showName || "",
     duration: audioDuration ? `${Math.round(audioDuration / 60)} min` : "Unknown",
     ...analysis,
