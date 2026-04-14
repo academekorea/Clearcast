@@ -84,10 +84,10 @@ function genericCard(): string {
   <text x="600" y="260" text-anchor="middle" font-family="Georgia, serif" font-size="56" letter-spacing="0.08em" fill="white">
     <tspan font-weight="400">POD</tspan><tspan font-weight="700">LENS</tspan>
   </text>
-  <text x="600" y="320" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="20" fill="rgba(255,255,255,0.5)">
+  <text x="600" y="320" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="20" fill="white" fill-opacity="0.5">
     Know what you're actually listening to
   </text>
-  <text x="600" y="560" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="14" fill="rgba(255,255,255,0.35)">
+  <text x="600" y="560" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="14" fill="white" fill-opacity="0.35">
     PODLENS.APP
   </text>
 </svg>`;
@@ -150,8 +150,8 @@ function analysisCard(job: any): string {
     const trustText = `Host trust: ${hostTrust}/100`;
     const trustW = trustText.length * 7.5 + 24;
     chips.push(`
-    <rect x="${chipX}" y="${chipY}" width="${trustW}" height="30" rx="15" fill="rgba(255,255,255,0.12)"/>
-    <text x="${chipX + trustW / 2}" y="${chipY + 20}" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="13" font-weight="500" fill="rgba(255,255,255,0.8)">${escapeXml(trustText)}</text>
+    <rect x="${chipX}" y="${chipY}" width="${trustW}" height="30" rx="15" fill="white" fill-opacity="0.12"/>
+    <text x="${chipX + trustW / 2}" y="${chipY + 20}" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="13" font-weight="500" fill="white" fill-opacity="0.8">${escapeXml(trustText)}</text>
     `);
     chipX += trustW + 14;
   }
@@ -161,8 +161,8 @@ function analysisCard(job: any): string {
     const flagText = `${flagsCount} flag${flagsCount > 1 ? "s" : ""}`;
     const flagW = flagText.length * 8 + 24;
     chips.push(`
-    <rect x="${chipX}" y="${chipY}" width="${flagW}" height="30" rx="15" fill="rgba(255,255,255,0.12)"/>
-    <text x="${chipX + flagW / 2}" y="${chipY + 20}" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="13" font-weight="500" fill="rgba(255,255,255,0.8)">${escapeXml(flagText)}</text>
+    <rect x="${chipX}" y="${chipY}" width="${flagW}" height="30" rx="15" fill="white" fill-opacity="0.12"/>
+    <text x="${chipX + flagW / 2}" y="${chipY + 20}" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="13" font-weight="500" fill="white" fill-opacity="0.8">${escapeXml(flagText)}</text>
     `);
   }
 
@@ -178,18 +178,18 @@ function analysisCard(job: any): string {
 
   <!-- Artwork placeholder -->
   <rect x="${artworkX}" y="${artworkY}" width="${artworkSize}" height="${artworkSize}" rx="16" fill="#1a3a4a"/>
-  <text x="${artworkX + artworkSize / 2}" y="${artworkY + artworkSize / 2 + 6}" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="14" fill="rgba(255,255,255,0.3)">PODCAST</text>
+  <text x="${artworkX + artworkSize / 2}" y="${artworkY + artworkSize / 2 + 6}" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="14" fill="white" fill-opacity="0.3">PODCAST</text>
 
   <!-- Episode title -->
   ${titleSvg}
 
   <!-- Show name -->
-  <text x="${contentX}" y="${afterTitleY}" font-family="Inter, -apple-system, sans-serif" font-size="18" fill="rgba(255,255,255,0.6)">${showNameSafe}</text>
+  <text x="${contentX}" y="${afterTitleY}" font-family="Inter, -apple-system, sans-serif" font-size="18" fill="white" fill-opacity="0.6">${showNameSafe}</text>
 
   <!-- Bias bar -->
   <g transform="translate(${contentX}, ${afterTitleY + 24})">
     <!-- Bar background -->
-    <rect width="${barWidth}" height="14" rx="7" fill="rgba(255,255,255,0.08)"/>
+    <rect width="${barWidth}" height="14" rx="7" fill="white" fill-opacity="0.08"/>
     <!-- Left (red) -->
     <rect width="${leftW}" height="14" rx="${leftW > 0 ? 7 : 0}" fill="#E24B4A"/>
     <!-- Center (gray) -->
@@ -215,10 +215,10 @@ function analysisCard(job: any): string {
   </text>
 
   <!-- Footer URL -->
-  <text x="1140" y="560" text-anchor="end" font-family="Inter, -apple-system, sans-serif" font-size="14" fill="rgba(255,255,255,0.4)">PODLENS.APP</text>
+  <text x="1140" y="560" text-anchor="end" font-family="Inter, -apple-system, sans-serif" font-size="14" fill="white" fill-opacity="0.4">PODLENS.APP</text>
 
   <!-- Divider line -->
-  <line x1="60" y1="520" x2="1140" y2="520" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <line x1="60" y1="520" x2="1140" y2="520" stroke="white" stroke-opacity="0.08" stroke-width="1"/>
 </svg>`;
 }
 

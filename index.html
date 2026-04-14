@@ -3428,7 +3428,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
               <div class="th-hl th-blur"><div class="th-bar left"></div><div class="th-body"><div class="th-top"><span class="th-time">52:10</span><span class="th-w left">+left</span></div><div class="th-quote">&ldquo;The energy cost of training a single model is equivalent to hundreds of transatlantic flights.&rdquo;</div><span class="th-tag left">Left-leaning</span></div></div>
               <div class="th-hl th-blur"><div class="th-bar right"></div><div class="th-body"><div class="th-top"><span class="th-time">1:02:33</span><span class="th-w right">+right</span></div><div class="th-quote">&ldquo;Export controls on chips are ultimately self-defeating.&rdquo;</div><span class="th-tag right">Right-leaning</span></div></div>
             </div>
-            <div class="th-gate" id="sia-hl-gate"><span class="th-gate-txt" id="sia-hl-gate-txt">More highlights unlock with Starter Lens</span><button class="th-gate-btn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
+            <div class="th-gate" id="sia-th-gate"><span class="th-gate-txt" id="sia-th-gate-txt">More highlights unlock with Starter Lens</span><button class="th-gate-btn" onclick="openModal('signup')">Sign up free &#8594;</button></div>
           </div>
         </div>
 
@@ -10520,25 +10520,7 @@ var PODLENS_PRICES = {
     .catch(function(){});
 })();
 
-function startCheckout(planName, billing) {
-  var u = plUser();
-  if (!u) { openSignupGate(); return; }
-  billing = billing || 'monthly';
-  var key = planName + '_' + billing;
-  var priceId = PODLENS_PRICES[key] || '';
-  if (!priceId) {
-    window.location.href = 'mailto:hello@podlens.app?subject=' + encodeURIComponent('Upgrade to ' + planName);
-    return;
-  }
-  fetch('/api/create-checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ priceId: priceId, userEmail: u.email, userId: u.id, planName: planName, couponCode: (window._pilotCode || '').toUpperCase() || undefined })
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })
-  .catch(function(){ alert('Could not start checkout. Try again.'); });
-}
+// startCheckout is defined once near PL_PRICE_IDS — uses _plBilling global
 
 
 function restoreConnections(u) {

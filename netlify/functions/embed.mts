@@ -87,7 +87,7 @@ export default async function(req: Request, context: Context) {
   if (!slug) {
     return new Response(renderNotFound(), {
       status: 404,
-      headers: { "Content-Type": "text/html; charset=utf-8" },
+      headers: { "Content-Type": "text/html; charset=utf-8", "X-Frame-Options": "ALLOWALL" },
     });
   }
 
@@ -111,7 +111,7 @@ export default async function(req: Request, context: Context) {
   if (!show) {
     return new Response(renderNotFound(), {
       status: 404,
-      headers: { "Content-Type": "text/html; charset=utf-8" },
+      headers: { "Content-Type": "text/html; charset=utf-8", "X-Frame-Options": "ALLOWALL" },
     });
   }
 
@@ -120,6 +120,7 @@ export default async function(req: Request, context: Context) {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": "public, max-age=3600",
+      "X-Frame-Options": "ALLOWALL",
     },
   });
 }
