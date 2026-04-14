@@ -10264,9 +10264,14 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     // Channel description
     var ytDesc=yt.channelDescription||(rss&&rss.description)||null;
     if (ytDesc) {
-      var ytShort=ytDesc.length>400?ytDesc.substring(0,400)+'…':ytDesc;
       html+='<div class="sp-section"><div class="sp-section-lbl">About this channel</div>';
-      html+='<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+ytShort+'</div></div>';
+      if (ytDesc.length>400) {
+        var ytDescId='sp-yt-desc-'+Date.now();
+        html+='<div style="font-size:14px;line-height:1.65;color:var(--text2)"><span id="'+ytDescId+'-short">'+_esc(ytDesc.substring(0,400))+'&hellip; <a onclick="document.getElementById(\''+ytDescId+'-short\').style.display=\'none\';document.getElementById(\''+ytDescId+'-full\').style.display=\'inline\'" style="color:var(--navy);cursor:pointer;font-weight:600;font-size:13px">Read more</a></span><span id="'+ytDescId+'-full" style="display:none">'+_esc(ytDesc)+' <a onclick="document.getElementById(\''+ytDescId+'-full\').style.display=\'none\';document.getElementById(\''+ytDescId+'-short\').style.display=\'inline\'" style="color:var(--navy);cursor:pointer;font-weight:600;font-size:13px">Show less</a></span></div>';
+      } else {
+        html+='<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(ytDesc)+'</div>';
+      }
+      html+='</div>';
     }
     // Recent videos grid
     if (yt.recentVideos&&yt.recentVideos.length) {
@@ -10368,7 +10373,12 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       if (cleanedD && cleanedD !== 'No description available.') {
         mainHtml += '<div class="sp-3col-card" data-sp-section="overview">';
     mainHtml += '<div class="sp-3col-sec-lbl">About</div>';
-        mainHtml += '<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(cleanedD.slice(0,400))+(cleanedD.length>400?'&hellip;':'')+'</div>';
+        if (cleanedD.length > 400) {
+          var descId = 'sp-about-desc-' + Date.now();
+          mainHtml += '<div style="font-size:14px;line-height:1.65;color:var(--text2)"><span id="'+descId+'-short">'+_esc(cleanedD.slice(0,400))+'&hellip; <a onclick="document.getElementById(\''+descId+'-short\').style.display=\'none\';document.getElementById(\''+descId+'-full\').style.display=\'inline\'" style="color:var(--navy);cursor:pointer;font-weight:600;font-size:13px">Read more</a></span><span id="'+descId+'-full" style="display:none">'+_esc(cleanedD)+' <a onclick="document.getElementById(\''+descId+'-full\').style.display=\'none\';document.getElementById(\''+descId+'-short\').style.display=\'inline\'" style="color:var(--navy);cursor:pointer;font-weight:600;font-size:13px">Show less</a></span></div>';
+        } else {
+          mainHtml += '<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(cleanedD)+'</div>';
+        }
         mainHtml += '</div>';
       }
     }
