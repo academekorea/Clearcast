@@ -3764,7 +3764,8 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div style="margin:0 32px 24px;display:flex;gap:10px;align-items:center">
         <div style="flex:1;position:relative">
           <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3)" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input id="disc-search-input" type="text" placeholder="Search shows, episodes, topics..." style="width:100%;padding:10px 14px 10px 36px;border:0.5px solid var(--border2);border-radius:8px;font-size:14px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none" oninput="discLiveSearch(this.value)" onkeydown="if(event.key==='Enter')discSearch(this.value.trim())"/>
+          <input id="disc-search-input" type="text" placeholder="Search shows, episodes, topics..." autocomplete="off" style="width:100%;padding:10px 14px 10px 36px;border:0.5px solid var(--border2);border-radius:8px;font-size:14px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none" oninput="discLiveSearch(this.value)" onkeydown="if(event.key==='Enter'){discSearch(this.value.trim());document.getElementById('disc-search-dropdown').style.display='none';}"/>
+          <div id="disc-search-dropdown" style="display:none;position:absolute;left:0;right:0;top:44px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:20;max-height:320px;overflow-y:auto"></div>
         </div>
         <button onclick="discSearch(document.getElementById('disc-search-input').value.trim())" style="padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap">Search</button>
       </div>
@@ -7327,26 +7328,44 @@ function discRenderRecentFeed(el) {
 
 var _discSearchTimer = null;
 function discLiveSearch(q) {
-  if (!q || q.length < 2) return;
-  // First: instant results from CURATED_SHOWS
-  var el = document.getElementById('disc-shows-row');
-  if (!el) return;
+  var dd = document.getElementById('disc-search-dropdown');
+  if (!dd) return;
+  if (!q || q.length < 1) { dd.style.display = 'none'; return; }
   var lower = q.toLowerCase();
+  // Instant results from CURATED_SHOWS
   var curated = CURATED_SHOWS.filter(function(s){
     return s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || (s.cat||'').includes(lower);
-  });
+  }).slice(0, 5);
   if (curated.length) {
-    el.innerHTML = curated.slice(0,4).map(function(s) {
+    dd.style.display = 'block';
+    dd.innerHTML = curated.map(function(s) {
       var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-      var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
-      var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
-      return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+_heartBtn(s.feedUrl,s.name,s.artist,s.artwork)+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'</div>';
+      var art = s.artwork ? '<img src="'+s.artwork+'" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" alt="" onerror="this.style.display=\'none\'">' : '<div style="width:36px;height:36px;border-radius:6px;background:var(--bg3);flex-shrink:0"></div>';
+      var biasPill = s.bias && s.bias.label ? '<span style="font-size:10px;padding:1px 6px;border-radius:3px;background:var(--bg3);color:var(--text3)">'+_escHtml(s.bias.label)+'</span>' : '';
+      return '<div onclick="document.getElementById(\'disc-search-dropdown\').style.display=\'none\';document.getElementById(\'disc-search-input\').value=\'\';showView(\'show\');loadShowProfile(\''+slug+'\',null)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:0.5px solid var(--border)">'+art+'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text)">'+_escHtml(s.name)+'</div><div style="font-size:11px;color:var(--text3)">'+_escHtml(s.artist)+'</div></div>'+biasPill+'</div>';
     }).join('');
   }
-  // Then: debounced iTunes search for anything beyond curated
+  // Debounced iTunes search for non-curated shows
   clearTimeout(_discSearchTimer);
-  _discSearchTimer = setTimeout(function() { discSearch(q, true); }, 400);
+  _discSearchTimer = setTimeout(function(){
+    fetch('/api/podcast-search?q='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(d){
+      if (!d.results || !d.results.length) return;
+      var curVal = (document.getElementById('disc-search-input')||{}).value||'';
+      if (curVal.toLowerCase() !== q.toLowerCase()) return;
+      dd.style.display = 'block';
+      var hits = d.results.slice(0, 5);
+      dd.innerHTML = hits.map(function(s){
+        var slug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        return '<div onclick="document.getElementById(\'disc-search-dropdown\').style.display=\'none\';document.getElementById(\'disc-search-input\').value=\'\';showView(\'show\');loadShowProfile(\''+slug+'\',null)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:0.5px solid var(--border)"><img src="'+(s.artwork||'')+'" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" alt="" onerror="this.style.display=\'none\'"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text)">'+_escHtml(s.name||'')+'</div><div style="font-size:11px;color:var(--text3)">'+_escHtml(s.artist||'')+'</div></div></div>';
+      }).join('');
+    }).catch(function(){});
+  }, 300);
 }
+// Close dropdown on outside click
+document.addEventListener('click', function(e){
+  var dd = document.getElementById('disc-search-dropdown');
+  if (dd && !e.target.closest('#disc-search-dropdown') && e.target.id !== 'disc-search-input') dd.style.display = 'none';
+});
 
 function loadDiscTrendingNews() {
   var el = document.getElementById('disc-trending-news');
