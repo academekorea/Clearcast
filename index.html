@@ -3814,10 +3814,10 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="disc-shelf">
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Explore by bias profile</div></div>
         <div class="disc-mood-grid">
-          <div class="disc-mood" style="background:#1e3a5f" onclick="discFilterByMood('deepdive')"><h4>Deep dives</h4><p>2h+ &middot; worth the full listen</p></div>
-          <div class="disc-mood" style="background:#3d1a1a" onclick="discFilterByMood('heavy')"><h4>Heavy bias</h4><p>Know before you listen</p></div>
-          <div class="disc-mood" style="background:#0f3d2e" onclick="discFilterByMood('balanced')"><h4>Balanced picks</h4><p>Both sides, grounded</p></div>
-          <div class="disc-mood" style="background:#2d1a4a" onclick="discFilterByMood('quick')"><h4>Quick takes</h4><p>Under 30 min, high signal</p></div>
+          <div class="disc-mood" style="background:#1e3a5f" onclick="discFilterByMood('deepdive',this)"><h4>Deep dives</h4><p>2h+ &middot; worth the full listen</p></div>
+          <div class="disc-mood" style="background:#3d1a1a" onclick="discFilterByMood('heavy',this)"><h4>Heavy bias</h4><p>Know before you listen</p></div>
+          <div class="disc-mood" style="background:#0f3d2e" onclick="discFilterByMood('balanced',this)"><h4>Balanced picks</h4><p>Both sides, grounded</p></div>
+          <div class="disc-mood" style="background:#2d1a4a" onclick="discFilterByMood('quick',this)"><h4>Quick takes</h4><p>Under 30 min, high signal</p></div>
         </div>
       </div>
     </div>
@@ -6712,20 +6712,17 @@ function initDiscover() {
     if (heroCard) heroCard.style.display = 'none';
     discRenderRightCol(true, u);
 
-    // Load For You shelf
+    // Load For You shelf — single fetch, handle both rendering and prompt
     var region = localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region') || 'us';
     if (foryouShelf) foryouShelf.style.display = '';
-    loadForyouShows(region, u);
-
-    // After load, check personalization state and set reason text
+    var foryouEl = document.getElementById('foryou-trending');
     fetch('/api/for-you?region=' + encodeURIComponent(region) + '&userId=' + encodeURIComponent(u.id), { signal: AbortSignal.timeout(6000) })
       .then(function(r){ return r.json(); })
       .then(function(data){
         if (!data.personalized) {
           // No interests and no history — show prompt card
-          var foryouDiv = document.getElementById('foryou-trending');
-          if (foryouDiv) {
-            foryouDiv.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px">'
+          if (foryouEl) {
+            foryouEl.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px">'
               + '<div><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">Personalise your Discover feed</div>'
               + '<div style="font-size:13px;color:var(--text2)">Pick your interests and we\'ll surface shows tailored to you — takes 10 seconds.</div></div>'
               + '<button onclick="openModal(\'onboarding\')" style="padding:9px 20px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap;flex-shrink:0">Set interests \u2192</button>'
@@ -6733,6 +6730,32 @@ function initDiscover() {
           }
           if (foryouReason) foryouReason.textContent = '';
         } else {
+          // Render personalized shows using the data we already have
+          if (foryouEl && data.sections) {
+            var html = '';
+            var seenKeys = Object.keys(data.sections);
+            seenKeys.forEach(function(key) {
+              var shows = data.sections[key];
+              if (!shows || !shows.length) return;
+              var catLabel = key === 'trending' ? '🔥 Trending Podcasts' : key.charAt(0).toUpperCase() + key.slice(1);
+              var interests = data.interests || [];
+              if (key !== 'trending' && interests.length) catLabel = 'Based on: ' + key;
+              html += '<div class="foryou-section"><div class="foryou-section-label">'+_escHtml(catLabel)+'</div><div class="foryou-grid">';
+              html += shows.slice(0,6).map(function(s) {
+                var safeName = (s.name||'').replace(/'/g,"\\'");
+                var onClick = s.itunesId
+                  ? 'window.open(\'https://podcasts.apple.com/podcast/id'+s.itunesId+'\',\'_blank\')'
+                  : 'document.getElementById(\'url-input\').value=\''+safeName+'\';showView(\'analyze\')';
+                return '<div class="foryou-card" onclick="'+onClick+'">'
+                  +'<img class="foryou-art" src="'+_escHtml(s.artwork||'')+'" alt="'+_escHtml(s.name||'')+'" loading="lazy" onerror="this.style.display=\'none\'">'
+                  +'<div class="foryou-name">'+_escHtml(s.name||'')+'</div>'
+                  +'<div class="foryou-host">'+_escHtml(s.host||s.category||'')+'</div>'
+                  +'</div>';
+              }).join('');
+              html += '</div></div>';
+            });
+            if (html) foryouEl.innerHTML = html;
+          }
           var interests = data.interests || [];
           if (foryouReason) {
             foryouReason.textContent = interests.length
@@ -6740,7 +6763,10 @@ function initDiscover() {
               : 'Based on your listening history';
           }
         }
-      }).catch(function(){});
+      }).catch(function(){
+        // On failure, fall back to loadForyouShows which has its own error handling
+        loadForyouShows(region, u);
+      });
 
     // Load trending topics from Supabase
     fetch('/api/trending-topics')
@@ -7025,7 +7051,7 @@ function discSetCat(cat, btn) {
   discRenderEpisodes();
 }
 
-function discFilterByMood(mood) {
+function discFilterByMood(mood, clickedEl) {
   var filtered;
   if (mood === 'heavy')    filtered = CURATED_SHOWS.filter(function(s){ return Math.abs(s.bias&&s.bias.score||0) > 60; });
   if (mood === 'balanced') filtered = CURATED_SHOWS.filter(function(s){ return Math.abs(s.bias&&s.bias.score||0) <= 20; });
@@ -7036,21 +7062,21 @@ function discFilterByMood(mood) {
   if (!el) return;
   el.innerHTML = filtered.map(function(s) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
+    var safeUrl = _escHtml(s.feedUrl).replace(/'/g,'&#39;');
+    var safeName = _escHtml(s.name).replace(/'/g,'&#39;');
     var art = _showArtImg(s.artwork, s.name, 'disc-show-art');
-    return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\')">'+
+    return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null)">'+
       _heartBtn(s.feedUrl,s.name,s.artist,s.artwork)+art+
-      '<div class="disc-show-name">'+s.name+'</div>'+
-      '<div class="disc-show-sub">'+s.artist+'</div>'+
+      '<div class="disc-show-name">'+_escHtml(s.name)+'</div>'+
+      '<div class="disc-show-sub">'+_escHtml(s.artist)+'</div>'+
       _biasMini(s.bias)+
-      '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="margin-top:auto;padding-top:8px;width:100%;padding:8px 6px 6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'+
+      '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+_escJs(s.name)+'\',\''+_escJs(s.feedUrl)+'\',\''+_escJs(s.artwork)+'\',this)" style="margin-top:auto;padding-top:8px;width:100%;padding:8px 6px 6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'+
       '</div>';
   }).join('');
   addScrollDrag(el);
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   document.querySelectorAll('.disc-mood').forEach(function(m){ m.style.outline='none'; });
-  if (event && event.currentTarget) event.currentTarget.style.outline='2px solid rgba(255,255,255,.5)';
+  if (clickedEl) clickedEl.style.outline='2px solid rgba(255,255,255,.5)';
 }
 
 function discSetTab(tab, btn) {
