@@ -6060,9 +6060,10 @@ function renderDashRecent() {
   el.innerHTML = recent.slice(0, 5).map(function(r) {
     var safeUrl = (r.url||'').replace(/"/g,'&quot;');
     var artSrc = r.artwork ? artworkProxy(r.artwork) : '';
+    var _artId = 'ep-art-' + (r.jobId||r.url||'').replace(/[^a-z0-9]/gi,'').slice(0,16);
     var artHtml = artSrc
       ? '<img class="episode-artwork" src="'+artSrc+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
-      : '<div class="episode-artwork"></div>';
+      : '<div class="episode-artwork" id="'+_artId+'"></div>';
     var bar = (r.leftPct !== undefined)
       ? '<div class="episode-bias-bar"><div style="width:'+r.leftPct+'%;background:var(--left-bar)"></div><div style="width:'+r.centerPct+'%;background:var(--center-bar)"></div><div style="width:'+r.rightPct+'%;background:var(--right-bar)"></div></div>' : '';
     var label = r.biasLabel ? '<span>'+r.biasLabel+'</span>' : '';
@@ -6075,6 +6076,36 @@ function renderDashRecent() {
         + bar
       + '</div></div>';
   }).join('');
+
+  // Lazy-load missing artwork via iTunes for any card that has no artwork
+  recent.slice(0,5).forEach(function(r) {
+    if (r.artwork) return;
+    var _artId = 'ep-art-' + (r.jobId||r.url||'').replace(/[^a-z0-9]/gi,'').slice(0,16);
+    var placeholder = document.getElementById(_artId);
+    if (!placeholder) return;
+    var query = r.showName || r.title || '';
+    if (!query) return;
+    _itunesArtwork(query).then(function(url) {
+      if (!url) return;
+      // Update the placeholder
+      var el2 = document.getElementById(_artId);
+      if (el2) {
+        var img = document.createElement('img');
+        img.className = 'episode-artwork';
+        img.src = artworkProxy(url);
+        img.alt = '';
+        img.loading = 'lazy';
+        img.onerror = function(){ this.style.display='none'; };
+        el2.parentNode.replaceChild(img, el2);
+      }
+      // Also save to recent so we don't re-fetch next time
+      try {
+        var saved = JSON.parse(localStorage.getItem('pl-recent') || '[]');
+        var match = saved.find(function(s){ return (s.jobId||s.url||'') === (r.jobId||r.url||''); });
+        if (match && !match.artwork) { match.artwork = url; localStorage.setItem('pl-recent', JSON.stringify(saved)); }
+      } catch(e) {}
+    }).catch(function(){});
+  });
 }
 
 function renderBiasFingerprint() {
