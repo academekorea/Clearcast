@@ -196,7 +196,7 @@
   // ── Helper: get all sidebar containers ────────────────────────────────────────
   function getAllSidebars() {
     var result = [];
-    ['app-sidebar', 'app-sidebar-lib'].forEach(function (id) {
+    ['app-sidebar', 'app-sidebar-lib', 'app-sidebar-analyze'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) result.push(el);
     });
@@ -206,7 +206,7 @@
   // ── Toggle dropdown ──────────────────────────────────────────────────────────
   window._sbToggle = function (id) {
     // Toggle in both primary (sb-) and secondary (sb2-) sidebars
-    ['sb-', 'sb2-'].forEach(function (prefix) {
+    ['sb-', 'sb2-', 'sb3-'].forEach(function (prefix) {
       var el = document.getElementById(prefix + 'drop-' + id);
       var arr = document.getElementById(prefix + 'arr-' + id);
       if (!el) return;
@@ -270,11 +270,27 @@
     var primary = document.getElementById('app-sidebar');
     if (primary) primary.innerHTML = html;
     // Secondary sidebars get IDs prefixed to avoid duplicates
-    ['app-sidebar-lib'].forEach(function (containerId) {
+    var prefixMap = { 'app-sidebar-lib': 'sb2-', 'app-sidebar-analyze': 'sb3-' };
+    ['app-sidebar-lib', 'app-sidebar-analyze'].forEach(function (containerId) {
       var el = document.getElementById(containerId);
       if (!el) return;
-      el.innerHTML = html.replace(/id="sb-/g, 'id="sb2-');
+      var prefix = prefixMap[containerId] || 'sb2-';
+      el.innerHTML = html.replace(/id="sb-/g, 'id="' + prefix);
     });
+
+    // Append Recent analyses section to analyze sidebar
+    var analyzeEl = document.getElementById('app-sidebar-analyze');
+    if (analyzeEl) {
+      var sbTop = analyzeEl.querySelector('.sb-top');
+      if (sbTop) {
+        var recentSection = document.createElement('div');
+        recentSection.innerHTML =
+          '<div class="sb-div"></div>' +
+          '<div class="sb-lbl">Recent</div>' +
+          '<div id="analyze-nav-recent" style="padding:0 12px"></div>';
+        sbTop.appendChild(recentSection);
+      }
+    }
   }
 
   // Run on DOM ready

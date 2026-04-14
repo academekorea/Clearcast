@@ -2921,6 +2921,34 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 }
 </style>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
+<!-- Sentry error tracking (async, never blocks render) -->
+<script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" crossorigin="anonymous"></script>
+<script>
+if (typeof Sentry !== 'undefined') {
+  Sentry.init({
+    dsn: "https://952fc25783296c73506f94f055badc79@o4511169229029376.ingest.us.sentry.io/4511169237680128",
+    environment: window.location.hostname === 'podlens.app' ? 'production' : 'development',
+    tracesSampleRate: 0.1,
+    beforeSend: function(event) {
+      try {
+        var u = JSON.parse(localStorage.getItem('pl-user') || 'null');
+        if (u && u.id) event.user = { id: u.id, email: u.email, username: u.name };
+      } catch(e) {}
+      return event;
+    }
+  });
+}
+</script>
+<!-- PostHog product analytics (async, never blocks render) -->
+<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+" (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
+  api_host: 'https://app.posthog.com',
+  autocapture: true,
+  capture_pageview: true,
+  session_recording: { maskAllInputs: true }
+});
+</script>
 </head>
 <body>
 
@@ -3813,23 +3841,8 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 <div class="view" id="view-analyze">
   <div class="analyze-2col-grid" style="display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px);align-items:start">
     <!-- Left nav - same as dashboard -->
-    <div class="analyze-2col-nav" style="background:#0a1a20;display:flex;flex-direction:column;min-height:calc(100vh - 60px);position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);overflow:hidden">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;padding:16px 20px 8px;color:#fff">Menu</div>
-      <button onclick="var d=document.getElementById('ana-home-drop');var a=document.getElementById('ana-home-arr');if(d){var o=d.style.display==='flex';d.style.display=o?'none':'flex';if(a)a.style.transform=o?'':'rotate(90deg)'}" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home<span id="ana-home-arr" style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.2);transition:transform .15s">&rsaquo;</span></button>
-      <div id="ana-home-drop" style="display:none;flex-direction:column">
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');if(typeof showDashSection==='function')showDashSection('intelligence')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</button>
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');if(typeof showDashSection==='function')showDashSection('queue')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
-      </div>
-      <button onclick="showView('discover')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
-      <button onclick="showView('analyze')" style="display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;border:none;background:rgba(255,255,255,.13);width:100%;text-align:left;cursor:pointer;color:#fff;font-family:var(--ff)"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
-      <div style="height:0.5px;background:rgba(255,255,255,.1);margin:6px 20px"></div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;padding:16px 20px 8px;color:#fff">Recent</div>
-      <div id="analyze-nav-recent" style="padding:0 12px"></div>
-      <div style="flex:1"></div>
-      <div style="height:0.5px;background:rgba(255,255,255,.1);margin:6px 20px"></div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;padding:16px 20px 8px;color:#fff">Resources</div>
-      <a href="/faq.html" style="display:flex;align-items:center;gap:10px;padding:6px 20px;font-size:11px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.35);font-family:var(--ff);text-decoration:none"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>FAQ</a>
-      <a href="/contact.html" style="display:flex;align-items:center;gap:10px;padding:6px 20px 16px;font-size:11px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.35);font-family:var(--ff);text-decoration:none"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Contact</a>
+    <div class="analyze-2col-nav" id="app-sidebar-analyze" style="background:#0a1a20;display:flex;flex-direction:column;min-height:calc(100vh - 60px);position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);overflow:hidden">
+      <!-- Populated by sidebar.js + Recent section appended after render -->
     </div>
     <!-- Main content -->
     <div class="analyze-wrap">
@@ -5162,8 +5175,8 @@ function doLogin() {
     renderNavAuth();
     showHome();            // navigates to home view AND calls renderHomeState()
     syncPlanFromStripe(loginUser);
-    if (loginUser.id) restoreUserDataFromServer(loginUser.id);
-  } catch(e) { errEl.textContent = 'Login failed. Try again.'; errEl.classList.add('on'); }
+    if (loginUser.id) { restoreUserDataFromServer(loginUser.id); if(typeof posthog!=='undefined')posthog.identify(loginUser.id,{email:loginUser.email,plan:loginUser.plan,name:loginUser.name}); }
+  } catch(e) { if(typeof Sentry!=='undefined')Sentry.captureException(e); errEl.textContent = 'Login failed. Try again.'; errEl.classList.add('on'); }
 }
 
 function doSignup() {
@@ -5200,6 +5213,7 @@ function doSignup() {
     analysesThisWeek: 0, weekResetDate: weekResetDate, joinedAt: now };
   u.emailVerified = false;
   setPlUser(u);
+  if(typeof posthog!=='undefined')posthog.identify(u.id,{email:u.email,plan:u.plan,name:u.name});
   closeModal('signup');
   errEl.classList.remove('on');
   renderNavAuth();
@@ -5848,6 +5862,7 @@ function toggleFollowShow(name, feedUrl, artwork, btn) {
     u.followedShows = followed;
     setPlUser(u);
     plToast('Following ' + name, 2500);
+    if(typeof posthog!=='undefined')posthog.capture('show_followed',{showName:name});
     // Save to Supabase
     safeFetch('/api/follow-show', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: u.id, action: 'follow', showName: name, feedUrl: feedUrl || '', artwork: artwork || '' }) }).catch(function(){});
@@ -8431,7 +8446,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
       }
       pollStatus(d.jobId, audioUrl);
     })
-    .catch(function(err){ showAnalyzeErr(friendlyError(err,'start-analysis')); resetBtn(); });
+    .catch(function(err){ if(typeof Sentry!=='undefined')Sentry.captureException(err); if(typeof posthog!=='undefined')posthog.capture('analysis_failed',{error:String(err&&err.message||err)}); showAnalyzeErr(friendlyError(err,'start-analysis')); resetBtn(); });
   }); // end _resolvePromise.then
 }
 
@@ -10499,6 +10514,7 @@ function trackAnalysis(data) {
     }
     // Sync to server
     syncToServer('analyzed_episodes', cu2.analyzedEpisodes || cu.analyzedEpisodes);
+    if(typeof posthog!=='undefined')posthog.capture('analysis_completed',{showName:data.showName||'',biasLabel:(data.audioLean&&data.audioLean.plainEnglishLabel)||'',plan:plUser()&&plUser().plan});
   } catch(e){}
 }
 function renderRecentlyAnalyzed() {
@@ -12218,7 +12234,7 @@ function handleSocialLogin(userData) {
   // Always hide founding banner for logged-in users
   if (plUser()) { var _fb = document.getElementById('founding-banner'); if (_fb) _fb.style.display = 'none'; }
   syncPlanFromStripe(u);
-  if (u.id) restoreUserDataFromServer(u.id);
+  if (u.id) { restoreUserDataFromServer(u.id); if(typeof posthog!=='undefined')posthog.identify(u.id,{email:u.email,plan:u.plan,name:u.name}); }
   if (userData.isNewUser) {
     if (u.foundingMember) {
       showToast('Welcome, Early User #' + (u.signupCount || '?') + ' — 33% off locked in forever');
@@ -12767,6 +12783,7 @@ function plRenderPrices() {
 }
 
 function startCheckout(planName) {
+  if(typeof posthog!=='undefined')posthog.capture('checkout_started',{plan:planName});
   var key = planName + '_' + (_plBilling === 'annual' ? 'annual' : 'monthly');
   var priceId = PL_PRICE_IDS[key] || '';
   var u = plUser();
@@ -12781,7 +12798,7 @@ function startCheckout(planName) {
   })
   .then(function(r){ return r.json(); })
   .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })
-  .catch(function(){ alert('Could not start checkout. Please try again.'); });
+  .catch(function(e){ if(typeof Sentry!=='undefined')Sentry.captureException(e||new Error('checkout_failed')); alert('Could not start checkout. Please try again.'); });
 }
 
 function toggleAllFeatures() {
