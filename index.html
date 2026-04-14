@@ -5921,9 +5921,13 @@ function renderDashIntelligence(u) {
     return;
   }
 
-  // Bias bar
-  var leftPct = fp.leftPct || 0, centerPct = fp.centerPct || 0, rightPct = fp.rightPct || 0;
-  var label = leftPct > rightPct + 20 ? 'You lean left' : rightPct > leftPct + 20 ? 'You lean right' : "You're mostly balanced";
+  // Bias bar — check activation threshold before showing
+  var fpCalc = (typeof calcBiasFingerprint === 'function') ? calcBiasFingerprint(recent.length ? recent : getRecent().filter(function(r){ return r.leftPct !== undefined; })) : null;
+  var fpActive = fpCalc && fpCalc.hasData;
+  var leftPct = fpActive ? (fpCalc.leftPct || 0) : (fp.leftPct || 0);
+  var centerPct = fpActive ? (fpCalc.centerPct || 0) : (fp.centerPct || 0);
+  var rightPct = fpActive ? (fpCalc.rightPct || 0) : (100 - leftPct - centerPct);
+  var label = !fpActive ? 'Analyzing your media diet...' : leftPct > rightPct + 20 ? 'You lean left' : rightPct > leftPct + 20 ? 'You lean right' : "You're mostly balanced";
   var topTopics = {};
   recent.forEach(function(r){ var t = r.topic || r.category || 'General'; topTopics[t] = (topTopics[t]||0)+1; });
   var topicList = Object.keys(topTopics).sort(function(a,b){return topTopics[b]-topTopics[a];}).slice(0,6);
@@ -5958,9 +5962,18 @@ function renderDashIntelligence(u) {
     + '<div><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Bias fingerprint</div>'
     + '<div style="font-size:28px;font-weight:700;font-family:var(--ffs)">'+label+'</div></div>'
     + '<div style="font-size:13px;color:var(--text3)">Based on '+recent.length+' episode'+(recent.length===1?'':'s')+'</div></div>'
-    + '<div style="display:flex;justify-content:space-between;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px"><span>Left</span><span>Center</span><span>Right</span></div>'
-    + '<div style="height:10px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:8px"><div style="background:#e0352b;width:'+leftPct+'%"></div><div style="background:var(--border2);width:'+centerPct+'%"></div><div style="background:#378ADD;width:'+rightPct+'%"></div></div>'
-    + '<div style="font-size:12px;color:var(--text3)">'+leftPct+'% left · '+centerPct+'% center · '+rightPct+'% right</div></div>'
+    + (fpActive
+      ? '<div style="display:flex;justify-content:space-between;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px"><span>Left</span><span>Center</span><span>Right</span></div>'
+        + '<div style="height:10px;border-radius:5px;overflow:hidden;display:flex;margin-bottom:8px"><div style="background:#e0352b;width:'+leftPct+'%"></div><div style="background:var(--border2);width:'+centerPct+'%"></div><div style="background:#378ADD;width:'+rightPct+'%"></div></div>'
+        + '<div style="font-size:12px;color:var(--text3)">'+leftPct+'% left · '+centerPct+'% center · '+rightPct+'% right</div>'
+      : (function(){ var fpProg = fpCalc && fpCalc.progress ? fpCalc.progress : { current: recent.length, needed: 10, daysRecorded: 0, daysNeeded: 7 };
+          return '<div style="font-size:12px;color:var(--text3);margin-bottom:8px">Keep listening — unlocks after 1 week or 10 episodes.</div>'
+            + '<div style="display:flex;gap:12px;font-size:11px;color:var(--text3)">'
+            + '<span>' + fpProg.current + ' of ' + fpProg.needed + ' episodes</span>'
+            + '<span>' + fpProg.daysRecorded + ' of ' + fpProg.daysNeeded + ' days</span></div>'
+            + '<div style="height:4px;border-radius:2px;background:var(--bg3);overflow:hidden;margin-top:6px"><div style="height:100%;width:' + Math.min(100, Math.round(Math.max(fpProg.current / fpProg.needed, fpProg.daysRecorded / fpProg.daysNeeded) * 100)) + '%;background:var(--navy);border-radius:2px"></div></div>';
+        })())
+    + '</div>'
     // Shows followed
     + '<div class="sidebar-card"><div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Shows following</div>'
     + (followed.length ? followed.slice(0,6).map(function(s){
@@ -6128,7 +6141,7 @@ function renderBiasFingerprint() {
   }
   // Check threshold via calcBiasFingerprint
   var fpCheck = (typeof calcBiasFingerprint === 'function') ? calcBiasFingerprint(recent) : null;
-  if (fpCheck && !fpCheck.hasData) {
+  if (!fpCheck || !fpCheck.hasData) {
     if (dotEl) dotEl.style.left = '50%';
     var prog = fpCheck.progress || { current: 0, needed: 10, daysRecorded: 0, daysNeeded: 7 };
     if (countsEl) countsEl.innerHTML = '<div style="color:var(--text3);font-size:11px;margin-bottom:6px">' + (fpCheck.description || 'Keep listening — your fingerprint unlocks after 1 week or 10 episodes.') + '</div>'
