@@ -10569,6 +10569,13 @@ async function restoreUserDataFromServer(userId) {
     if (d.region && !localStorage.getItem('pl_prefs_region')) {
       try { localStorage.setItem('pl_prefs_region', d.region); } catch(e) {}
     }
+    // Restore platform connections
+    if (d.spotify_connected) {
+      try { localStorage.setItem('pl-spotify-connected', '1'); } catch(e) {}
+    }
+    if (d.youtube_connected) {
+      try { localStorage.setItem('pl-youtube-connected', '1'); } catch(e) {}
+    }
     // Write back to localStorage
     try { localStorage.setItem('pl-user', JSON.stringify(u)); } catch(e) {}
     // Refresh UI
