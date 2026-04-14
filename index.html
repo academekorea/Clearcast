@@ -10475,7 +10475,7 @@ function trackAnalysis(data) {
     }
     var recent=getRecent();
     var al=data.audioLean||{};
-    recent.unshift({title:data.episodeTitle||data.showName||'Episode',biasLabel:data.biasLabel||'',url:data.url||'',showName:data.showName||'',leftPct:al.leftPct,centerPct:al.centerPct,rightPct:al.rightPct});
+    recent.unshift({title:data.episodeTitle||data.showName||'Episode',biasLabel:data.biasLabel||'',url:data.url||'',showName:data.showName||'',artwork:data.artworkUrl||data.artwork||'',leftPct:al.leftPct,centerPct:al.centerPct,rightPct:al.rightPct});
     recent=recent.slice(0,10);
     localStorage.setItem('pl-recent',JSON.stringify(recent));
     renderRecentlyAnalyzed();
