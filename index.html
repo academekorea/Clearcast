@@ -1654,6 +1654,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-rc-sub{font-size:10px;color:var(--text3)}
 .disc-topic-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border)}
 .disc-topic-row:last-child{border-bottom:none}
+.disc-topic-row[style*="cursor"]:hover{background:var(--bg3);border-radius:4px}
 .disc-topic-name{font-size:12px;color:var(--text);font-weight:500}
 .disc-topic-count{font-size:10px;color:var(--text3)}
 .disc-compare-inp{width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:7px;font-size:12px;background:var(--bg);color:var(--text);outline:none;font-family:var(--ff);margin-bottom:8px}
@@ -6743,10 +6744,8 @@ function initDiscover() {
               if (key !== 'trending' && interests.length) catLabel = 'Based on: ' + key;
               html += '<div class="foryou-section"><div class="foryou-section-label">'+_escHtml(catLabel)+'</div><div class="foryou-grid">';
               html += shows.slice(0,6).map(function(s) {
-                var safeName = (s.name||'').replace(/'/g,"\\'");
-                var onClick = s.itunesId
-                  ? 'window.open(\'https://podcasts.apple.com/podcast/id'+s.itunesId+'\',\'_blank\')'
-                  : 'document.getElementById(\'url-input\').value=\''+safeName+'\';showView(\'analyze\')';
+                var fSlug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+                var onClick = 'showView(\'show\');loadShowProfile(\''+fSlug+'\',null)';
                 return '<div class="foryou-card" onclick="'+onClick+'">'
                   +'<img class="foryou-art" src="'+_escHtml(s.artwork||'')+'" alt="'+_escHtml(s.name||'')+'" loading="lazy" onerror="this.style.display=\'none\'">'
                   +'<div class="foryou-name">'+_escHtml(s.name||'')+'</div>'
@@ -6791,7 +6790,8 @@ function initDiscover() {
       if (!el || !d.topics || !d.topics.length) return;
       el.innerHTML = '<div class="disc-rc-title">Most analyzed</div>'
         + d.topics.slice(0,5).map(function(t){
-            return '<div class="disc-topic-row">'
+            var tSlug = t.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+            return '<div class="disc-topic-row" style="cursor:pointer" onclick="showView(\'show\');loadShowProfile(\''+tSlug+'\',null)">'
               +'<span class="disc-topic-name">'+_escHtml(t.name)+'</span>'
               +'<span class="disc-topic-count">'+t.count+' analyses</span>'
               +'</div>';
@@ -7880,10 +7880,8 @@ async function loadForyouShows(region, user) {
       var countryLabel = data.country === 'kr' ? '🇰🇷 한국 인기 팟캐스트' : '🔥 Trending Podcasts';
       html += '<div class="foryou-section"><div class="foryou-section-label">'+countryLabel+'</div><div class="foryou-grid">';
       html += data.sections.trending.slice(0, 6).map(function(s) {
-        var safeName = (s.name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        var onClick = s.itunesId
-          ? 'window.open(\'https://podcasts.apple.com/podcast/id'+s.itunesId+'\',\'_blank\')'
-          : 'document.getElementById(\'url-input\').value=\''+safeName+'\';showView(\'analyze\')';
+        var fSlug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        var onClick = 'showView(\'show\');loadShowProfile(\''+fSlug+'\',null)';
         return '<div class="foryou-card" onclick="'+onClick+'">'
           +'<img class="foryou-art" src="'+_escHtml(s.artwork||'')+'" alt="'+_escHtml(s.name||'')+'" loading="lazy" onerror="this.style.display=\'none\'">'
           +'<div class="foryou-name">'+_escHtml(s.name||'')+'</div>'
@@ -7902,10 +7900,8 @@ async function loadForyouShows(region, user) {
       if (interests[i]) catLabel = 'Based on: ' + interests[i];
       html += '<div class="foryou-section"><div class="foryou-section-label">'+_escHtml(catLabel)+'</div><div class="foryou-grid">';
       html += shows.slice(0,6).map(function(s) {
-        var safeName = (s.name||'').replace(/'/g,"\\'");
-        var onClick = s.itunesId
-          ? 'window.open(\'https://podcasts.apple.com/podcast/id'+s.itunesId+'\',\'_blank\')'
-          : 'document.getElementById(\'url-input\').value=\''+safeName+'\';showView(\'analyze\')';
+        var fSlug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        var onClick = 'showView(\'show\');loadShowProfile(\''+fSlug+'\',null)';
         return '<div class="foryou-card" onclick="'+onClick+'">'
           +'<img class="foryou-art" src="'+_escHtml(s.artwork||'')+'" alt="'+_escHtml(s.name||'')+'" loading="lazy" onerror="this.style.display=\'none\'">'
           +'<div class="foryou-name">'+_escHtml(s.name||'')+'</div>'
@@ -10425,8 +10421,9 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     sideHtml += '<div>';
     sideHtml += '<div class="sp-3col-sec-lbl">Compare with another show</div>';
     sideHtml += '<div style="font-size:12px;font-weight:600;color:var(--text2);padding:8px 12px;border:0.5px solid var(--border2);border-radius:6px;margin-bottom:8px;background:var(--bg3)">'+displayName+'</div>';
-    sideHtml += '<input id="sp-compare-input" type="text" placeholder="Add a show to compare..." style="width:100%;padding:8px 12px;border:0.5px solid var(--border2);border-radius:6px;font-size:13px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:8px">';
-    sideHtml += '<button onclick="(function(){var v=document.getElementById(\'sp-compare-input\').value.trim();if(!v)return;var cSlug=v.toLowerCase().replace(/[^a-z0-9]+/g,\'-\').replace(/^-|-$/g,\'\');loadShowProfile(\''+_spSlug||slug+'\',cSlug);})()" style="width:100%;padding:9px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Compare &rarr;</button>';
+    sideHtml += '<div style="position:relative"><input id="sp-compare-input" type="text" placeholder="Add a show to compare..." autocomplete="off" style="width:100%;padding:8px 12px;border:0.5px solid var(--border2);border-radius:6px;font-size:13px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:8px">';
+    sideHtml += '<div id="sp-compare-results" style="display:none;position:absolute;left:0;right:0;top:38px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:10;max-height:180px;overflow-y:auto"></div></div>';
+    sideHtml += '<button id="sp-compare-btn" onclick="_spDoCompare()" style="width:100%;padding:9px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Compare &rarr;</button>';
     sideHtml += '</div>';
 
     // Embed this score
@@ -10603,6 +10600,32 @@ function filterCompareOptions(q) {
   opts.innerHTML=filtered.map(function(p){var slug2=slugify(p.name);var art=p.artwork?'<img class="sp-compare-art" src="'+p.artwork+'" alt="" onerror="this.style.display=\'none\'">':'<div class="sp-compare-art"></div>';return '<div class="sp-compare-opt" onclick="startCompare(&quot;'+slug2+'&quot;)">'+art+'<div><div class="sp-compare-optname">'+p.name+'</div><div class="sp-compare-optauthor">'+p.artist+'</div></div></div>';}).join('');
 }
 function showCompareSearch(){ var box=document.getElementById('sp-compare-search-box'); if(box)box.style.display=box.style.display==='none'?'block':'none'; }
+var _spCompareTimer=null;
+function _spDoCompare(){var v=document.getElementById('sp-compare-input');if(!v||!v.value.trim())return;var cSlug=v.value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');var curSlug=_spSlug||'';loadShowProfile(curSlug,cSlug);}
+function _spCompareSearch(q){
+  var res=document.getElementById('sp-compare-results');if(!res)return;
+  if(!q||q.length<1){res.style.display='none';return;}
+  // First show curated matches instantly
+  var local=CURATED_SHOWS.filter(function(p){return p.name.toLowerCase().includes(q.toLowerCase())||p.artist.toLowerCase().includes(q.toLowerCase());}).slice(0,3);
+  if(local.length){
+    res.style.display='block';
+    res.innerHTML=local.map(function(p){var slug2=slugify(p.name);var art=p.artwork?'<img style="width:30px;height:30px;border-radius:4px;object-fit:cover;flex-shrink:0" src="'+p.artwork+'" alt="" onerror="this.style.display=\'none\'">':'<div style="width:30px;height:30px;border-radius:4px;background:var(--bg3);flex-shrink:0"></div>';return '<div onclick="document.getElementById(\'sp-compare-input\').value=\''+_escJs(p.name)+'\';document.getElementById(\'sp-compare-results\').style.display=\'none\';_spDoCompare()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;border-bottom:0.5px solid var(--border)">'+art+'<div style="min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">'+_escHtml(p.name)+'</div><div style="font-size:10px;color:var(--text3)">'+_escHtml(p.artist)+'</div></div></div>';}).join('');
+  }
+  // Also search iTunes for non-curated shows
+  clearTimeout(_spCompareTimer);
+  _spCompareTimer=setTimeout(function(){
+    fetch('/api/podcast-search?q='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(d){
+      if(!d.results||!d.results.length)return;
+      var curVal=(document.getElementById('sp-compare-input')||{}).value||'';
+      if(curVal.toLowerCase()!==q.toLowerCase())return;
+      var hits=d.results.slice(0,3);
+      res.style.display='block';
+      res.innerHTML=hits.map(function(p){return '<div onclick="document.getElementById(\'sp-compare-input\').value=\''+_escJs(p.name)+'\';document.getElementById(\'sp-compare-results\').style.display=\'none\';_spDoCompare()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;border-bottom:0.5px solid var(--border)"><img style="width:30px;height:30px;border-radius:4px;object-fit:cover;flex-shrink:0" src="'+(p.artwork||'')+'" alt="" onerror="this.style.display=\'none\'"><div style="min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">'+_escHtml(p.name)+'</div><div style="font-size:10px;color:var(--text3)">'+_escHtml(p.artist||'')+'</div></div></div>';}).join('');
+    }).catch(function(){});
+  },300);
+}
+document.addEventListener('input',function(e){if(e.target&&e.target.id==='sp-compare-input')_spCompareSearch(e.target.value.trim());});
+document.addEventListener('click',function(e){var res=document.getElementById('sp-compare-results');if(res&&!e.target.closest('#sp-compare-results')&&e.target.id!=='sp-compare-input')res.style.display='none';});
 async function startCompare(compareSlug) {
   _spCompareSlug=compareSlug;
   history.pushState({show:_spSlug,compare:compareSlug},'','/show/'+encodeURIComponent(_spSlug)+'?compare='+encodeURIComponent(compareSlug));
