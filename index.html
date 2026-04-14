@@ -10646,7 +10646,7 @@ function renderComparePanel(dataA,dataB) {
   var leanBarB=leanB?buildMiniLeanBar(leanB):'<span style="font-size:10px;color:var(--text3)">No data</span>';
   var rows=[
     {key:'Bias label',a:mA.biasLabel||'—',b:mB.biasLabel||'—',wins:[false,false]},
-    {key:'Host trust',a:mA.avgTrustScore!==null?mA.avgTrustScore:'—',b:mB.avgTrustScore!==null?mB.avgTrustScore:'—',wins:cmpVal(mA.avgTrustScore,mB.avgTrustScore,true)},
+    {key:'Host trust',a:mA.avgTrustScore!==null?mA.avgTrustScore:'—',b:mB.avgTrustScore!==null?mB.avgTrustScore:'—',wins:cmpVal(mA.avgTrustScore,mB.avgTrustScore,false)},
     {key:'Consistency',a:mA.consistencyScore!==null?mA.consistencyScore:'—',b:mB.consistencyScore!==null?mB.consistencyScore:'—',wins:cmpVal(mA.consistencyScore,mB.consistencyScore,false)},
     {key:'Factual rate',a:mA.factualPct!==null?mA.factualPct+'%':'—',b:mB.factualPct!==null?mB.factualPct+'%':'—',wins:cmpVal(mA.factualPct,mB.factualPct,false)},
     {key:'Sponsor rate',a:mA.sponsorRate!==null?mA.sponsorRate+'%':'—',b:mB.sponsorRate!==null?mB.sponsorRate+'%':'—',wins:cmpVal(mA.sponsorRate,mB.sponsorRate,true)},
