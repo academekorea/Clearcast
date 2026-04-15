@@ -423,7 +423,21 @@ export default async (req: Request) => {
     return new Response(JSON.stringify(updated), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
-  const claudeData = await claudeRes.json();
+  let claudeData: any;
+  try {
+    const bodyController = new AbortController();
+    const bodyTimeout = setTimeout(() => bodyController.abort(), 30000);
+    const bodyText = await claudeRes.text();
+    clearTimeout(bodyTimeout);
+    claudeData = JSON.parse(bodyText);
+  } catch (bodyErr: any) {
+    console.error("[status] Failed to read Claude response body:", bodyErr.message);
+    // Save transcript so next poll retries Claude
+    await store.setJSON(jobId, { ...job, status: "transcribed", transcript: transcriptText, words: transcriptWords });
+    return new Response(JSON.stringify({ status: "analyzing", jobId, step: "Re-analyzing..." }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
+  }
   const rawText = claudeData.content?.[0]?.text || "{}";
 
   let analysis: any;
