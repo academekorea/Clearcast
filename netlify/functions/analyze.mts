@@ -745,22 +745,69 @@ export default async (req: Request, context: Context) => {
         }
       }
 
-      // Truly no options left
+      // ── Last resort: broader iTunes search using episode title keywords ──
+      // Channel name may not match a podcast, but the episode title might find it
+      if (lastCode !== "PRIVATE_VIDEO" && resolvedEpisodeTitle) {
+        try {
+          // Extract meaningful keywords from title (skip common words)
+          const titleWords = resolvedEpisodeTitle.replace(/[^a-zA-Z0-9\s]/g, " ").split(/\s+/).filter((w: string) => w.length > 3);
+          const searchQuery = titleWords.slice(0, 5).join(" ");
+          if (searchQuery.length > 8) {
+            console.log(`[analyze] Last-resort iTunes search by title keywords: ${searchQuery}`);
+            const lastRes = await fetch(
+              `https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&media=podcast&entity=podcastEpisode&limit=5`,
+              { signal: AbortSignal.timeout(8000) }
+            );
+            if (lastRes.ok) {
+              const lastData = await lastRes.json() as any;
+              for (const ep of (lastData.results || [])) {
+                if (ep.episodeUrl || ep.feedUrl) {
+                  const audioUrl = ep.episodeUrl || "";
+                  if (audioUrl && /\.(mp3|m4a|aac)/i.test(audioUrl)) {
+                    console.log(`[analyze] Last-resort found episode audio: ${ep.trackName} → ${audioUrl}`);
+                    const aaiKey = Netlify.env.get("ASSEMBLYAI_API_KEY");
+                    if (aaiKey) {
+                      const { id: lrTranscriptId } = await submitTranscription(aaiKey, audioUrl, { timeout: 30000 });
+                      await store.setJSON(jobId, {
+                        status: "transcribing", jobId, url, canonicalKey: canonical,
+                        episodeTitle: resolvedEpisodeTitle || ep.trackName || "",
+                        showName: resolvedShowName || ep.collectionName || "",
+                        hostNames: resolvedHostNames,
+                        transcriptId: lrTranscriptId,
+                        videoId: url.match(/(?:[?&]v=|youtu\.be\/|shorts\/|embed\/)([a-zA-Z0-9_-]{11})/)?.[1] || null,
+                        createdAt: Date.now(),
+                        pendingTimeoutAt: Date.now() + TIMEOUT_MS,
+                      });
+                      return; // Success — analysis will proceed via status polling
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } catch (e: any) {
+          console.warn("[analyze] Last-resort title search failed:", e.message);
+        }
+      }
+
+      // Truly no options left — include videoId so frontend can still embed the player
+      const videoId = url.match(/(?:[?&]v=|youtu\.be\/|shorts\/|embed\/)([a-zA-Z0-9_-]{11})/)?.[1] || null;
       const userMessage = lastCode === "PRIVATE_VIDEO"
         ? "This video is private and cannot be analyzed."
-        : lastCode === "UNAVAILABLE"
-        ? "This video is unavailable in this region."
         : lastCode === "AGE_RESTRICTED"
-        ? "This video is age-restricted. Connect your Google account to analyze it, or paste the RSS feed URL instead."
+        ? "This video is age-restricted. Connect your Google account to analyze it."
         : lastCode === "NETWORK_ERROR"
         ? "Audio extraction service is temporarily unavailable. Please try again in a few minutes."
-        : "YouTube analysis failed. Try pasting the show's RSS feed or Apple Podcasts URL instead.";
+        : "We couldn't extract the transcript for this video. Connect your Google account for reliable YouTube analysis.";
 
       await store.setJSON(jobId, {
         status: "error", jobId,
         error: userMessage,
         code: lastCode,
-        suggestion: lastCode === "AGE_RESTRICTED" ? "connect_google" : (lastCode === "BOT_DETECTED" ? "connect_google" : null),
+        videoId,
+        episodeTitle: resolvedEpisodeTitle,
+        showName: resolvedShowName,
+        suggestion: "connect_google",
       });
     })();
 
