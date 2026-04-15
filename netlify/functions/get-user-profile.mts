@@ -25,6 +25,7 @@ export default async (req: Request) => {
     sb
       .from("users")
       .select(
+        "analyzed_episodes, listen_history, liked_episodes, " +
         "spotify_connected, youtube_connected, theme, region, " +
         "interests, voice_preference"
       )
@@ -101,10 +102,31 @@ export default async (req: Request) => {
     }
   }
 
+  // Merge: prefer analyses table (has user_id), fall back to JSONB column (synced from frontend)
+  const jsonbEpisodes = (userData as any)?.analyzed_episodes;
+  const finalEpisodes = analyzedEpisodes.length > 0
+    ? analyzedEpisodes
+    : Array.isArray(jsonbEpisodes) && jsonbEpisodes.length > 0
+      ? jsonbEpisodes
+      : [];
+
+  const jsonbListenHistory = (userData as any)?.listen_history;
+  const finalListenHistory = listenHistory.length > 0
+    ? listenHistory
+    : Array.isArray(jsonbListenHistory) && jsonbListenHistory.length > 0
+      ? jsonbListenHistory
+      : [];
+
+  const jsonbLikedEpisodes = (userData as any)?.liked_episodes;
+
+  // Strip JSONB columns from userData to avoid sending raw DB columns
+  const { analyzed_episodes: _ae, listen_history: _lh, liked_episodes: _le, ...cleanUserData } = userData as any;
+
   const result = {
-    ...userData,
-    analyzed_episodes: analyzedEpisodes,
-    listen_history: listenHistory.length > 0 ? listenHistory : undefined,
+    ...cleanUserData,
+    analyzed_episodes: finalEpisodes,
+    listen_history: finalListenHistory.length > 0 ? finalListenHistory : undefined,
+    liked_episodes: Array.isArray(jsonbLikedEpisodes) && jsonbLikedEpisodes.length > 0 ? jsonbLikedEpisodes : undefined,
   };
 
   return new Response(JSON.stringify(result), {
