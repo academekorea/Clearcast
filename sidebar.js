@@ -140,15 +140,15 @@
     var style = document.createElement('style');
     style.id = 'sb-styles';
     style.textContent = [
-      '#app-sidebar,#app-sidebar-lib,#app-sidebar-analyze{background:#0a1a20;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);min-width:220px;overflow:hidden}',
+      '#app-sidebar,#app-sidebar-lib,#app-sidebar-analyze,#app-sidebar-show{background:#0a1a20;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);min-width:220px;overflow:hidden}',
       '.sb-top{flex:1;overflow-y:auto;padding:0}',
       '.sb-bottom{flex-shrink:0;padding:4px 0 8px;border-top:0.5px solid rgba(255,255,255,.08)}',
       '.sb-bot{font-size:11px!important;padding:6px 20px!important;color:rgba(255,255,255,.35)!important}',
       '.sb-bot:hover{color:rgba(255,255,255,.65)!important}',
       '.sb-bot.active{color:#fff!important;background:rgba(255,255,255,.08)!important}',
       '.sb-bot svg{width:11px!important;height:11px!important}',
-      '#app-sidebar *,#app-sidebar-lib *,#app-sidebar-analyze *{color:#fff}',
-      '#app-sidebar a,#app-sidebar-lib a,#app-sidebar-analyze a{text-decoration:none}',
+      '#app-sidebar *,#app-sidebar-lib *,#app-sidebar-analyze *,#app-sidebar-show *{color:#fff}',
+      '#app-sidebar a,#app-sidebar-lib a,#app-sidebar-analyze a,#app-sidebar-show a{text-decoration:none}',
 
       '.sb-lbl{padding:16px 20px 8px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4}',
 
@@ -174,7 +174,7 @@
       '.sb-soon{margin-left:auto;font-size:9px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.3);padding:1px 5px;border-radius:10px}',
       '.sb-muted{color:rgba(255,255,255,.3);font-style:italic}',
 
-      '@media(max-width:1100px){#app-sidebar,#app-sidebar-lib,#app-sidebar-analyze{display:none}}',
+      '@media(max-width:1100px){#app-sidebar,#app-sidebar-lib,#app-sidebar-analyze,#app-sidebar-show{display:none}}',
     ].join('\n');
     document.head.appendChild(style);
   }
@@ -182,7 +182,7 @@
   // ── Helper: get all sidebar containers ────────────────────────────────────────
   function getAllSidebars() {
     var result = [];
-    ['app-sidebar', 'app-sidebar-lib', 'app-sidebar-analyze'].forEach(function (id) {
+    ['app-sidebar', 'app-sidebar-lib', 'app-sidebar-analyze', 'app-sidebar-show'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) result.push(el);
     });
@@ -192,7 +192,7 @@
   // ── Toggle dropdown ──────────────────────────────────────────────────────────
   window._sbToggle = function (id) {
     // Toggle in both primary (sb-) and secondary (sb2-) sidebars
-    ['sb-', 'sb2-', 'sb3-'].forEach(function (prefix) {
+    ['sb-', 'sb2-', 'sb3-', 'sb4-'].forEach(function (prefix) {
       var el = document.getElementById(prefix + 'drop-' + id);
       var arr = document.getElementById(prefix + 'arr-' + id);
       if (!el) return;
@@ -256,8 +256,8 @@
     var primary = document.getElementById('app-sidebar');
     if (primary) primary.innerHTML = html;
     // Secondary sidebars get IDs prefixed to avoid duplicates
-    var prefixMap = { 'app-sidebar-lib': 'sb2-', 'app-sidebar-analyze': 'sb3-' };
-    ['app-sidebar-lib', 'app-sidebar-analyze'].forEach(function (containerId) {
+    var prefixMap = { 'app-sidebar-lib': 'sb2-', 'app-sidebar-analyze': 'sb3-', 'app-sidebar-show': 'sb4-' };
+    ['app-sidebar-lib', 'app-sidebar-analyze', 'app-sidebar-show'].forEach(function (containerId) {
       var el = document.getElementById(containerId);
       if (!el) return;
       var prefix = prefixMap[containerId] || 'sb2-';
