@@ -3564,6 +3564,21 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
             <input type="text" id="dash-url-input-b" class="analyze-input" placeholder="Paste a YouTube, Spotify, or RSS URL…" autocomplete="url" onkeydown="if(event.key==='Enter')handleDashAnalyzeB()"/>
             <button class="analyze-btn" onclick="handleDashAnalyzeB()">Analyze &rarr;</button>
           </div>
+          <!-- Featured hero card (same as Discover) -->
+          <div class="disc-hero" id="dash-hero-card" style="margin:16px 0 24px;display:none">
+            <div class="disc-hero-l">
+              <div>
+                <div class="disc-hero-eye" id="dash-hero-eye">Featured episode</div>
+                <div class="disc-hero-title" id="dash-hero-title"></div>
+                <div class="disc-hero-host" id="dash-hero-host"></div>
+              </div>
+              <div class="disc-hero-btns">
+                <button class="disc-hero-play" id="dash-hero-play-btn" onclick="discHeroPlay()">&#9654; Play</button>
+                <button class="disc-hero-analyze" id="dash-hero-analyze-btn">Analyze &rarr;</button>
+              </div>
+            </div>
+            <div class="disc-hero-r" id="dash-hero-video"></div>
+          </div>
           <div id="dash-new-user-cta" style="display:none">
             <div class="section-header"><span class="section-title">Connect your sources</span></div>
             <div class="connect-cta-grid">
@@ -5610,6 +5625,45 @@ function renderHomeState() {
     // Render all dashboard data
     renderDashRecent();
     renderBiasFingerprint();
+    // Populate dashboard hero card from live data
+    fetch('/api/trending-topics', { signal: AbortSignal.timeout(5000) })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var heroes = d.heroes || [];
+        var hero = heroes.find(function(h) { return h.category === 'all'; }) || heroes[0];
+        if (!hero) return;
+        var dur = hero.durationMinutes ? (hero.durationMinutes >= 60 ? Math.floor(hero.durationMinutes/60)+'h '+Math.round(hero.durationMinutes%60)+'m' : Math.round(hero.durationMinutes)+'m') : '';
+        var eyeEl = document.getElementById('dash-hero-eye');
+        var titleEl = document.getElementById('dash-hero-title');
+        var hostEl = document.getElementById('dash-hero-host');
+        var videoEl = document.getElementById('dash-hero-video');
+        var analyzeBtn = document.getElementById('dash-hero-analyze-btn');
+        if (eyeEl) eyeEl.textContent = 'Trending on Podlens';
+        if (titleEl) titleEl.textContent = hero.episodeTitle || '';
+        if (hostEl) hostEl.textContent = (hero.showName || '') + (dur ? ' \u00b7 ' + dur : '');
+        if (videoEl) {
+          if (hero.ytId) {
+            videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
+          } else if (hero.showName) {
+            _itunesArtwork(hero.showName).then(function(url) {
+              if (url && videoEl) videoEl.innerHTML = '<img src="'+url+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
+            });
+          }
+        }
+        if (analyzeBtn) {
+          var safeUrl = (hero.url || '').replace(/'/g, "\\'");
+          var safeTitle = (hero.episodeTitle || '').replace(/'/g, "\\'");
+          var safeShow = (hero.showName || '').replace(/'/g, "\\'");
+          analyzeBtn.setAttribute('onclick', "analyzeEp(null,'"+safeUrl+"','"+safeTitle+"','"+safeShow+"',true)");
+        }
+        // Show the hero card
+        var heroCard = document.getElementById('dash-hero-card');
+        if (heroCard) heroCard.style.display = '';
+      }).catch(function() {
+        // Hide hero if no data
+        var heroCard = document.getElementById('dash-hero-card');
+        if (heroCard) heroCard.style.display = 'none';
+      });
   // Update echo chamber nudge in analysis results
   try {
     var _recentForEcho = getRecent ? getRecent().filter(function(r){ return r.leftPct !== undefined; }) : [];
