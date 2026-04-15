@@ -10169,6 +10169,13 @@ function _updateOgMeta(data, analysisUrl, jobId) {
   setMeta('twitter:image', ogImage);
 }
 
+function cleanDescription(s) {
+  if (!s) return '';
+  s = s.replace(/<[^>]*>/g,' ').replace(/&nbsp;/gi,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#\d+;/g,'');
+  s = s.replace(/\s{2,}/g,' ').trim();
+  if (/^No description available\.?$/i.test(s)) return '';
+  return s;
+}
 function _escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function _escJs(s) { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
