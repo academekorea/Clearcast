@@ -365,6 +365,8 @@ export default async (req: Request) => {
   for (let attempt = 0; attempt < delays.length; attempt++) {
     if (delays[attempt] > 0) await new Promise(r => setTimeout(r, delays[attempt]));
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000);
       claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -377,8 +379,9 @@ export default async (req: Request) => {
           max_tokens: 4096,
           messages: [{ role: "user", content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${sampledTranscript}` }],
         }),
-        signal: AbortSignal.timeout(60000),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       if (claudeRes.ok) break;
       const errBody = await claudeRes.text().catch(() => "");
       if (claudeRes.status === 429) {
