@@ -8959,6 +8959,20 @@ function pollStatus(jobId, audioUrl) {
           showEpisodePickerFromYT(d.feedUrl, d.showName || d.channelName || '', d.showArtwork || '', d.channelName || '');
           return;
         }
+        // Before showing error, check if we have a community analysis for this show
+        var _showName = d.showName || d.episodeTitle || '';
+        if (_showName && d.code !== 'PRIVATE_VIDEO') {
+          try {
+            var cbRes = await safeFetch('/api/community-bias?mode=show&show=' + encodeURIComponent(_showName));
+            if (cbRes && cbRes.found && cbRes.jobId) {
+              // We have an existing analysis — load it instead of showing error
+              console.log('[analyze] Community analysis found for:', _showName);
+              plToast('Found existing community analysis for this show');
+              window.location.href = '/?jobId=' + cbRes.jobId;
+              return;
+            }
+          } catch(e) {}
+        }
         var errMsg = d.error || 'Analysis failed.';
         // Map railway error codes to friendly messages
         if (d.code === 'PRIVATE_VIDEO') errMsg = 'This video is private or unavailable.';
@@ -9197,6 +9211,8 @@ function tryAdvUrl(inputId) {
 }
 function showAnalyzeErr(msg, suggestion, sourceUrl) {
   document.getElementById('loading').classList.remove('on');
+  var stripEl = document.getElementById('ar-progress-strip'); if (stripEl) stripEl.classList.add('hidden');
+  var dockEl = document.getElementById('ar-dock'); if (dockEl) dockEl.classList.add('hidden');
   document.getElementById('atabs').classList.add('on');
   document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
   document.getElementById('apanel-results').classList.add('on');
@@ -9218,7 +9234,14 @@ function showAnalyzeErr(msg, suggestion, sourceUrl) {
       + '<a href="/api/connect-youtube?userId='+userId+'" style="display:inline-block;padding:8px 16px;background:var(--navy);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">Connect Google &#8594;</a>'
       + '</div>';
   }
-  document.getElementById('results').innerHTML=embedHtml+'<div class="err-card">'+msg+'</div>'+extra;
+  // Alternative pathway: paste a direct audio URL instead
+  var altHtml = '<div style="margin-top:14px;padding:14px;background:var(--bg2);border-radius:8px;border:0.5px solid var(--border)">'
+    + '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">&#127911; Have the audio file or RSS feed?</div>'
+    + '<div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5">Paste the podcast\'s RSS feed URL, Apple Podcasts link, or direct .mp3 URL to analyze the audio directly.</div>'
+    + '<div style="display:flex;gap:8px"><input type="text" id="alt-audio-input" placeholder="Paste RSS feed, Apple Podcasts, or .mp3 URL" style="flex:1;padding:8px 12px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;font-family:var(--ff);background:var(--bg);color:var(--text)">'
+    + '<button onclick="var v=document.getElementById(\'alt-audio-input\').value.trim();if(v){startAnalysis(v)}" style="padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap">Analyze &#8594;</button>'
+    + '</div></div>';
+  document.getElementById('results').innerHTML=embedHtml+'<div class="err-card">'+msg+'</div>'+extra+altHtml;
 }
 // FIX 1: Try to find a matching RSS feed on iTunes before showing recovery panel.
 // If found with high confidence (>= 0.6 word overlap), redirect to episode picker.
