@@ -10844,7 +10844,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       + '<div class="sp-host-avatar">'+hostInitials+'</div>'
       + '<div style="flex:1;min-width:0">'
       + '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px">'+_esc(hostName||displayName)+'</div>'
-      + '<div style="font-size:11px;color:var(--text3);line-height:1.6">'+(description ? _esc((typeof cleanDescription==='function'?cleanDescription(description):description).substring(0,180))+(description.length>180?'&hellip;':'') : 'Analyze episodes to build a bias and trust intelligence profile for this host.')+'</div>'
+      + '<div style="font-size:11px;color:var(--text3);line-height:1.6">'+(data.episodeCount > 0 ? 'Host of '+_esc(displayName)+'. Based on '+data.episodeCount+' analyzed episode'+(data.episodeCount!==1?'s':'')+' on Podlens.' : 'Host of '+_esc(displayName)+'. Analyze episodes to build a bias and trust intelligence profile.')+'</div>'
       + '</div>'
       + '</div>';
 
