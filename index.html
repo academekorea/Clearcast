@@ -14703,6 +14703,14 @@ function _renderAdminTab(tab, d) {
       + _admStat(d.dau, 'DAU', d.wau + ' WAU')
       + _admStat(d.totalAnalyses, 'Total Analyses', d.analyses24h + ' today / ' + d.analyses7d + ' 7d')
       + _admStat('$' + (d.mrr/100).toFixed(0), 'MRR', 'Monthly recurring')
+      + _admStat(d.usersWithAnalyses || 0, 'Users Analyzed', 'Have run analyses')
+      + '</div>';
+    // Platform connections
+    html += '<div class="adm-stat-grid" style="margin-top:12px">'
+      + _admStat(d.spotifyConnected || 0, 'Spotify Connected', (d.spotifyAccounts || 0) + ' accounts')
+      + _admStat(d.youtubeConnected || 0, 'YouTube Connected', (d.youtubeAccounts || 0) + ' accounts')
+      + _admStat(d.totalFollows || 0, 'Total Follows', (d.spotifyFollows || 0) + ' Spotify / ' + (d.youtubeFollows || 0) + ' YouTube')
+      + _admStat(d.smartQueueEnabled || 0, 'Smart Queue Users', (d.smartQueueShows || 0) + ' shows queued')
       + '</div>';
 
     // Plan breakdown

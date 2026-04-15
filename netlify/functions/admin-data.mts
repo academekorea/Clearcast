@@ -94,11 +94,13 @@ export default async (req: Request) => {
 };
 
 async function getOverview() {
-  const [users, analyses, subs, events] = await Promise.all([
-    sbGet("users?select=id,tier,created_at,last_seen_at&order=created_at.desc"),
-    sbGet("analyses?select=id,created_at&order=created_at.desc&limit=1000"),
+  const [users, analyses, subs, events, follows, connections] = await Promise.all([
+    sbGet("users?select=id,tier,created_at,last_seen_at,spotify_connected,youtube_connected,smart_queue_enabled&order=created_at.desc"),
+    sbGet("analyses?select=id,created_at,user_id&order=created_at.desc&limit=1000"),
     sbGet("subscriptions?select=id,status,plan,amount&status=eq.active"),
     sbGet("events?select=created_at,event_type&order=created_at.desc&limit=500"),
+    sbGet("followed_shows?select=id,platform,smart_queue"),
+    sbGet("connected_accounts?select=id,provider"),
   ]);
 
   const now = Date.now();
@@ -135,8 +137,23 @@ async function getOverview() {
     };
   });
 
+  // Platform connection stats
+  const spotifyConnected = users.filter((u: any) => u.spotify_connected).length;
+  const youtubeConnected = users.filter((u: any) => u.youtube_connected).length;
+  const smartQueueEnabled = users.filter((u: any) => u.smart_queue_enabled).length;
+  const totalFollows = follows.length;
+  const spotifyFollows = follows.filter((f: any) => f.platform === "spotify").length;
+  const youtubeFollows = follows.filter((f: any) => f.platform === "youtube").length;
+  const smartQueueShows = follows.filter((f: any) => f.smart_queue).length;
+  const spotifyAccounts = connections.filter((c: any) => c.provider === "spotify").length;
+  const youtubeAccounts = connections.filter((c: any) => c.provider === "youtube").length;
+  const usersWithAnalyses = new Set(analyses.filter((a: any) => a.user_id).map((a: any) => a.user_id)).size;
+
   return json({ totalUsers, newToday, new7d, new30d, dau, wau,
-    planCounts, totalAnalyses, analyses24h, analyses7d, mrr, dauTrend });
+    planCounts, totalAnalyses, analyses24h, analyses7d, mrr, dauTrend,
+    spotifyConnected, youtubeConnected, smartQueueEnabled,
+    totalFollows, spotifyFollows, youtubeFollows, smartQueueShows,
+    spotifyAccounts, youtubeAccounts, usersWithAnalyses });
 }
 
 async function getUsers(url: URL) {
