@@ -420,13 +420,26 @@ export default async (req: Request) => {
 
   let analysis: any;
   try {
-    analysis = JSON.parse(rawText.replace(/```json|```/g, "").trim());
+    // Strip markdown fences and any preamble before the JSON
+    let cleaned = rawText.replace(/```json\s*|```\s*/g, "").trim();
+    // Find the first { and last } to extract just the JSON object
+    const firstBrace = cleaned.indexOf("{");
+    const lastBrace = cleaned.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+    }
+    analysis = JSON.parse(cleaned);
     // Validate it's a real analysis, not a dummy
     if (typeof analysis.biasScore !== "number") throw new Error("Invalid analysis shape");
-  } catch {
-    const updated = { ...job, status: "error", error: "Analysis could not be parsed. Please try again." };
-    await store.setJSON(jobId, updated);
-    return new Response(JSON.stringify(updated), { status: 200, headers: { "Content-Type": "application/json" } });
+  } catch (parseErr: any) {
+    console.error(`[status] JSON parse failed for job ${jobId}:`, parseErr.message, "raw (first 500):", rawText.slice(0, 500));
+    // Don't mark as permanent error — reset to "transcribed" so next poll retries with Claude
+    await store.setJSON(jobId, { ...job, status: "transcribed", transcript: transcriptText, words: transcriptWords });
+    return new Response(JSON.stringify({
+      status: "analyzing",
+      jobId,
+      step: "Re-analyzing transcript — almost there...",
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
   // ── Compute plain-English bias label from score (CLAUDE.md spec) ────────────
