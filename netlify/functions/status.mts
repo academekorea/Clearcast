@@ -357,6 +357,11 @@ export default async (req: Request) => {
 
   // ── Claude analysis with retry + exponential backoff ──────────────────────
   const anthropicKey = Netlify.env.get("ANTHROPIC_API_KEY");
+  if (!anthropicKey) {
+    const updated = { ...job, status: "error", error: "Analysis service not configured." };
+    await store.setJSON(jobId, updated);
+    return new Response(JSON.stringify(updated), { status: 200, headers: { "Content-Type": "application/json" } });
+  }
   let claudeRes: Response | null = null;
   let claudeErr: any = null;
   let wasRateLimited = false;
@@ -366,7 +371,7 @@ export default async (req: Request) => {
     if (delays[attempt] > 0) await new Promise(r => setTimeout(r, delays[attempt]));
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
       claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -375,7 +380,7 @@ export default async (req: Request) => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-6",
           max_tokens: 4096,
           messages: [{ role: "user", content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${sampledTranscript}` }],
         }),
