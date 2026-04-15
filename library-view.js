@@ -254,7 +254,7 @@
       var bLabel = biasPillLabel(l,r); var bCls = biasPillClass(l,r);
       var showName = s.name||s.showName||'';
       var showEps = analyses.filter(function(ep){ return (ep.showName||'').toLowerCase()===showName.toLowerCase(); });
-      var analyzeUrl = s.feedUrl||s.youtubeUrl||'';
+      var analyzeUrl = s.feedUrl||s.youtubeUrl||s.spotifyUrl||(s.youtubeChannelId?'https://www.youtube.com/channel/'+s.youtubeChannelId:'')||'';
       html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;transition:border-color .12s">';
       html += '<div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">';
       html += artHtml(s.artwork,showName,'show-art-lg');
@@ -304,12 +304,15 @@
         return '<div class="sah-trend-bar" style="height:'+h+'%;background:'+col+';opacity:.7"></div>';
       }).join('');
       var sqHtml = showSQ?'<label class="sq-toggle" title="Smart Queue"><input type="checkbox" '+(s.smartQueue?'checked':'')+' onchange="toggleSmartQueue('+i+',this.checked)"><span class="sq-slider"></span></label>':'';
-      var analyzeUrl = s.feedUrl||s.youtubeUrl||'';
+      var analyzeUrl = s.feedUrl||s.youtubeUrl||s.spotifyUrl||(s.youtubeChannelId?'https://www.youtube.com/channel/'+s.youtubeChannelId:'')||'';
       var hasEps = showEps.length>0;
       html += '<div class="show-archive-block">';
       html += '<div class="show-archive-hd'+(hasEps?' has-eps':'')+'">';
       html += artEl;
-      html += '<div class="sah-info"><div class="sah-name">'+esc(showName)+'</div>';
+      var platformBadge = s.platform === 'spotify' ? '<span class="sah-platform" style="color:#1DB954" title="From Spotify">\u266B</span>'
+        : s.platform === 'youtube' ? '<span class="sah-platform" style="color:#FF0000" title="From YouTube">\u25B6</span>'
+        : '';
+      html += '<div class="sah-info"><div class="sah-name">'+platformBadge+esc(showName)+'</div>';
       html += '<div class="sah-meta">'+(s.host?esc(s.host)+' \u00b7 ':'')+(hasEps?showEps.length+' analyzed':'No analyses yet')+'</div></div>';
       if (trendBars) html += '<div class="sah-trend">'+trendBars+'</div>';
       if (bLabel && (bias.l !== undefined || bias.leftPct !== undefined)) html += '<span class="bias-pill '+bCls+'">'+esc(bLabel)+'</span>';

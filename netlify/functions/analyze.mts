@@ -38,7 +38,7 @@ function canonicalKey(url: string): string {
 // ── URL TYPE DETECTOR ─────────────────────────────────────────────────────────
 function detectUrlType(url: string): "youtube" | "spotify" | "apple" | "rss" | "audio" | "unknown" {
   if (/youtube\.com|youtu\.be/.test(url)) return "youtube";
-  if (/spotify\.com/.test(url)) return "spotify";
+  if (/open\.spotify\.com/.test(url)) return "spotify";
   if (/podcasts\.apple\.com/.test(url)) return "apple";
   if (/\.(mp3|m4a|ogg|wav|aac|opus)(\?|$)/i.test(url) || /podtrac|pdst\.fm|blubrry|audio/.test(url)) return "audio";
   if (/\.(xml|rss)(\?|$)/i.test(url) || /feeds\.|\/feed|\/rss|rss\.|podcast\.rss|\/podcast$|anchor\.fm.*\/rss|podbean\.com.*\/feed|buzzsprout\.com\/.*\/podcast|omnycontent\.com|art19\.com|simplecast\.com|megaphone\.fm|podtrac\.com\/pts\/redirect/.test(url)) return "rss";
@@ -680,7 +680,7 @@ export default async (req: Request, context: Context) => {
             const best = results.find((r: any) => {
               const normName = normalise(r.collectionName || r.trackName || "");
               return normName.includes(normChannel) || normChannel.includes(normName);
-            }) || results[0];
+            });
 
             if (best?.feedUrl) {
               console.log(`[analyze] iTunes fallback found: ${best.collectionName} → ${best.feedUrl}`);
@@ -752,6 +752,8 @@ export default async (req: Request, context: Context) => {
         ? "This video is unavailable in this region."
         : lastCode === "AGE_RESTRICTED"
         ? "This video is age-restricted. Connect your Google account to analyze it, or paste the RSS feed URL instead."
+        : lastCode === "NETWORK_ERROR"
+        ? "Audio extraction service is temporarily unavailable. Please try again in a few minutes."
         : "YouTube analysis failed. Try pasting the show's RSS feed or Apple Podcasts URL instead.";
 
       await store.setJSON(jobId, {
@@ -862,8 +864,40 @@ export default async (req: Request, context: Context) => {
       if (!resolvedShowName) resolvedShowName = resolved.showName;
       resolvedHostNames = resolved.hostNames || [];
     } else {
-      await store.setJSON(jobId, { status: "error", jobId, error: "Could not find audio in the RSS feed. Make sure the feed contains episode audio files." });
-      return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+      // RSS feed failed — try iTunes lookup as fallback (feed may have moved)
+      const slugMatch = url.match(/\/([^\/\?#]+)(?:\?|#|$)/);
+      const searchTerm = (slugMatch?.[1] || "").replace(/[-_]/g, " ").trim();
+      if (searchTerm) {
+        try {
+          console.log(`[analyze] RSS feed failed, trying iTunes fallback for: ${searchTerm}`);
+          const itunesRes = await fetch(
+            `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&media=podcast&entity=podcast&limit=3`,
+            { signal: AbortSignal.timeout(8000) }
+          );
+          if (itunesRes.ok) {
+            const itunesData = await itunesRes.json() as any;
+            for (const result of (itunesData.results || [])) {
+              if (result.feedUrl) {
+                const retryResolved = await resolveRssFeedToAudio(result.feedUrl);
+                if (retryResolved.audioUrl) {
+                  resolvedAudioUrl = retryResolved.audioUrl;
+                  if (!resolvedEpisodeTitle) resolvedEpisodeTitle = retryResolved.episodeTitle;
+                  if (!resolvedShowName) resolvedShowName = retryResolved.showName || result.collectionName || "";
+                  resolvedHostNames = retryResolved.hostNames || [];
+                  console.log(`[analyze] iTunes fallback success: ${resolvedShowName} via ${result.feedUrl}`);
+                  break;
+                }
+              }
+            }
+          }
+        } catch (e: any) {
+          console.warn(`[analyze] iTunes RSS fallback failed:`, e.message);
+        }
+      }
+      if (!resolvedAudioUrl) {
+        await store.setJSON(jobId, { status: "error", jobId, error: "Could not find audio in the RSS feed. The feed may have moved or been removed." });
+        return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+      }
     }
   }
 

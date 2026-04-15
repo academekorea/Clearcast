@@ -79,15 +79,16 @@ export default async (req: Request) => {
 
   const country = "us";
 
-  // Get user interests from DB if logged in
+  // Get user interests + followed shows from DB if logged in
   let interests: string[] = [];
   let historyInterests: string[] = [];
+  let followedShows: ShowItem[] = [];
 
   if (userId) {
     try {
       const sb = getSupabaseAdmin();
       if (sb) {
-        const [userRes, histRes] = await Promise.allSettled([
+        const [userRes, histRes, followsRes] = await Promise.allSettled([
           sb.from("users").select("interests").eq("id", userId).single(),
           sb
             .from("analyses")
@@ -96,6 +97,12 @@ export default async (req: Request) => {
             .not("show_category", "is", null)
             .order("created_at", { ascending: false })
             .limit(30),
+          sb
+            .from("followed_shows")
+            .select("show_name, artwork_url, feed_url, platform, spotify_url")
+            .eq("user_id", userId)
+            .order("created_at", { ascending: false })
+            .limit(12),
         ]);
 
         if (userRes.status === "fulfilled") {
@@ -113,6 +120,17 @@ export default async (req: Request) => {
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3)
             .map(([k]) => k);
+        }
+        if (followsRes.status === "fulfilled") {
+          followedShows = ((followsRes.value.data as any[]) || []).map((row: any) => ({
+            id: `follow-${(row.show_name || "").replace(/\s/g, "-").toLowerCase()}`,
+            name: row.show_name || "",
+            host: "",
+            artwork: row.artwork_url || "",
+            category: row.platform || "",
+            itunesId: "",
+            country,
+          }));
         }
       }
     } catch {}
@@ -144,6 +162,12 @@ export default async (req: Request) => {
     });
 
   const sections: Record<string, ShowItem[]> = {};
+
+  // "Your Shows" section first — from Spotify/YouTube follows
+  if (followedShows.length > 0) {
+    sections["your shows"] = dedup(followedShows).slice(0, 6);
+  }
+
   requests.forEach(([label], i) => {
     const res = results[i];
     sections[label] = dedup(res.status === "fulfilled" ? res.value : []).slice(0, 6);

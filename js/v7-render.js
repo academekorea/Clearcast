@@ -614,10 +614,17 @@ function renderResults(data) {
   // iTunes fetch — populates artwork AND guest card when API returns no guest data
   var q = showName || epTitle;
   if (q && data.jobId !== 'demo') {
-    fetch('https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=podcast&entity=podcast&limit=1', {signal:AbortSignal.timeout(5000)})
+    fetch('https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=podcast&entity=podcast&limit=5', {signal:AbortSignal.timeout(5000)})
       .then(function(r){return r.json();})
       .then(function(d){
-        var p = d.results && d.results[0];
+        var results = d.results || [];
+        if (!results.length) return;
+        // Find best match — prefer exact or substring match on show name
+        var qLower = q.toLowerCase();
+        var p = results.find(function(r) {
+          var name = (r.collectionName || '').toLowerCase();
+          return name === qLower || name.indexOf(qLower) >= 0 || qLower.indexOf(name) >= 0;
+        }) || (showName ? null : results[0]);
         if (!p) return;
         var artUrl = (p.artworkUrl100||'').replace('100x100bb','600x600bb');
         var smallArtUrl = p.artworkUrl100 || '';

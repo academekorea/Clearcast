@@ -5002,7 +5002,8 @@ function _renderNavAvatar(u) {
   var headerAvatarHtml = avatarUrl
     ? '<img src="' + _escHtml(avatarUrl) + '" alt="' + _escHtml(displayName) + '" class="dropdown-avatar" onerror="this.outerHTML=getDropdownInitialsAvatar(\'' + _escHtml(displayName).replace(/'/g, "\\'") + '\')">'
     : '<div class="dropdown-avatar-initials" style="background:' + _getAvatarColor(displayName) + '">' + _getInitials(displayName) + '</div>';
-  var tierLabel = u.plan || 'free';
+  var tierNames = { free: 'Free', trial: 'Trial', creator: 'Starter Lens', operator: 'Pro Lens', studio: 'Operator Lens' };
+  var tierLabel = tierNames[(u.plan || 'free').toLowerCase()] || u.plan || 'Free';
   var isSuperAdmin = u.email === 'academekorea@gmail.com' || u.isSuperAdmin;
   var adminRows = isSuperAdmin
     ? '<button class="dropdown-item" onclick="closeUserMenu();showView(\'admin\')" style="color:#dc2626;font-weight:600;background:none;border:none;cursor:pointer;text-align:left;width:100%">\uD83D\uDD34 Admin Panel</button><div class="dropdown-divider"></div>'
@@ -5909,9 +5910,12 @@ function toggleFollowShow(name, feedUrl, artwork, btn) {
 function renderDashIntelligence(u) {
   var el = document.getElementById('dash-intelligence-content');
   if (!el) return;
-  var recent = [];
-  try { recent = JSON.parse(localStorage.getItem('pl_analysis_history') || '[]'); } catch(e){}
-  var fp = (u && u.biasFingerprint) || {};
+  var recent = (u && u.analyzedEpisodes) || [];
+  // Fallback to pl_analysis_history if analyzedEpisodes is empty
+  if (!recent.length) {
+    try { recent = JSON.parse(localStorage.getItem('pl_analysis_history') || '[]'); } catch(e){}
+  }
+  var fp = (typeof calcBiasFingerprint === 'function' && recent.length) ? calcBiasFingerprint(recent) : ((u && u.biasFingerprint) || {});
   var followed = (u && u.followedShows) || [];
 
   if (!recent.length && !followed.length) {
@@ -6202,7 +6206,7 @@ function renderEchoChamber(analyses) {
     + '<div style="height:100%;width:' + eco.score + '%;background:' + barColor + ';border-radius:3px;transition:width .4s ease"></div>'
     + '</div>'
     + '<div style="font-size:11px;color:var(--text3);line-height:1.5">' + eco.description + '</div>'
-    + '<div style="margin-top:6px;font-size:10px;color:var(--text3)">' + eco.totalAnalyses + ' episodes analyzed across ' + eco.showCount + ' show' + (eco.showCount !== 1 ? 's' : '') + '</div>';
+    + '<div style="margin-top:6px;font-size:10px;color:var(--text3)">' + (eco.totalSignals || 0) + ' episodes analyzed across ' + (eco.showCount || 0) + ' show' + (eco.showCount !== 1 ? 's' : '') + '</div>';
 }
 
 // ── PENDING ANALYZE (saved when gate intercepts) ──
@@ -6397,17 +6401,35 @@ var _CAT_CONTEXT = {
 function _renderCategoryBiasContext(cat) {
   var el = document.getElementById('disc-cat-bias');
   if (!el) return;
-  var ctx = _CAT_CONTEXT[cat];
-  if (!ctx || cat === 'all') {
-    el.innerHTML = '<span style="font-size:12px;color:var(--text3)">Community bias data — based on ' + CURATED_SHOWS.length + ' tracked shows</span>';
+  // Compute live from CURATED_SHOWS (which refresh from community data)
+  if (!cat || cat === 'all') {
+    var allWithBias = CURATED_SHOWS.filter(function(s){ return s.bias && (s.bias.leftPct || s.bias.rightPct); });
+    el.innerHTML = '<span style="font-size:12px;color:var(--text3)">Community bias data — based on ' + (allWithBias.length || CURATED_SHOWS.length) + ' tracked shows</span>';
     return;
   }
+  var catLabels = {news:'News & Politics',tech:'Technology',business:'Business',society:'Society & Culture',crime:'True Crime',comedy:'Comedy',health:'Health & Science',sports:'Sports'};
+  var catShows = CURATED_SHOWS.filter(function(s){ return s.cat === cat && s.bias && (s.bias.leftPct || s.bias.rightPct); });
+  if (!catShows.length) {
+    var fallback = _CAT_CONTEXT[cat];
+    if (fallback) {
+      el.innerHTML = '<span style="font-size:12px;color:var(--text3)"><strong style="color:var(--text)">' + fallback.label + ':</strong> ' + fallback.trend + '</span>';
+    } else {
+      el.innerHTML = '';
+    }
+    return;
+  }
+  var totL = 0, totC = 0, totR = 0;
+  catShows.forEach(function(s){ totL += s.bias.leftPct || 0; totC += s.bias.centerPct || 0; totR += s.bias.rightPct || 0; });
+  var n = catShows.length;
+  var l = Math.round(totL / n), c = Math.round(totC / n), r = Math.round(totR / n);
+  var diff = Math.abs(l - r);
+  var trend = diff < 15 ? 'Mostly balanced' : l > r ? (diff > 30 ? 'Left-leaning' : 'Lightly left-leaning') : (diff > 30 ? 'Right-leaning' : 'Lightly right-leaning');
   el.innerHTML = '<span style="font-size:12px;color:var(--text3)">'
-    + '<strong style="color:var(--text)">' + ctx.label + ':</strong> '
-    + ctx.trend + ' — '
-    + '<span style="color:#E24B4A">' + ctx.left + '% left</span> · '
-    + '<span style="color:#888">' + ctx.center + '% center</span> · '
-    + '<span style="color:#378ADD">' + ctx.right + '% right</span>'
+    + '<strong style="color:var(--text)">' + (catLabels[cat] || cat) + ':</strong> '
+    + trend + ' — '
+    + '<span style="color:#E24B4A">' + l + '% left</span> · '
+    + '<span style="color:#888">' + c + '% center</span> · '
+    + '<span style="color:#378ADD">' + r + '% right</span>'
     + '</span>';
 }
 
@@ -6432,6 +6454,36 @@ function _renderCategoryBiasContext(cat) {
     urls.forEach(function(url, i) { if (url) CURATED_SHOWS[i].artwork = url; });
     try { localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), urls: urls})); } catch(e) {}
   });
+})();
+
+// ── CURATED BIAS SELF-HEALING ──
+// Refreshes hardcoded bias scores from community analysis data.
+// Runs on page load, caches for 6 hours.
+(function refreshCuratedBias() {
+  var CACHE_KEY = 'pl_curated_bias_v1';
+  var TTL = 6 * 60 * 60 * 1000;
+  try {
+    var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (cached && cached.ts && (Date.now() - cached.ts) < TTL && cached.data) {
+      Object.keys(cached.data).forEach(function(name) {
+        var s = CURATED_SHOWS.find(function(c){ return c.name === name; });
+        if (s) s.bias = cached.data[name];
+      });
+      return;
+    }
+  } catch(e) {}
+  // Batch fetch bias data for curated shows (fire-and-forget)
+  safeFetch('/api/community-bias?mode=trending').then(function(d) {
+    if (!d || !d.trending) return;
+    var biasMap = {};
+    (d.trending || []).forEach(function(t) {
+      if (t.showName) biasMap[t.showName] = { score: t.biasScore || 0, label: t.biasLabel || '', leftPct: t.leftPct || 0, centerPct: t.centerPct || 0, rightPct: t.rightPct || 0 };
+    });
+    CURATED_SHOWS.forEach(function(s) {
+      if (biasMap[s.name]) s.bias = biasMap[s.name];
+    });
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: biasMap })); } catch(e) {}
+  }).catch(function(){});
 })();
 
 // ── VIEWS ──
@@ -6564,8 +6616,11 @@ function showView(name) {
   document.body.classList.toggle('authenticated', !!(_u && _u.id));
   document.documentElement.classList.toggle('pl-signed-in', !!(_u && _u.id));
 
-  // Auth gate
-  if (name === 'library' && !_u) { showToast('Sign in to access your Library', 3000); name = 'discover'; }
+  // Auth gate — prompt signup for gated views
+  if (!_u && (name === 'library' || name === 'show' || name === 'account' || name === 'settings' || name === 'profile')) {
+    openModal('signup');
+    return;
+  }
 
   // ── Step 1: Hide ALL views and home sub-divs ──
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); v.style.display = 'none'; });
@@ -6789,10 +6844,53 @@ function initDiscover() {
     if (tabs) tabs.style.display = 'none';
     if (unheardTeaser) unheardTeaser.style.display = 'none';
     if (heroCard) heroCard.style.display = '';
-    if (foryouShelf) foryouShelf.style.display = 'none';
     if (navLibSection) navLibSection.style.display = 'none';
     if (navCatSection) navCatSection.style.display = '';
     discRenderRightCol(false, null);
+
+    // Signed-out users also get live For You (trending, no personalization)
+    var region = localStorage.getItem('podlens-region') || 'us';
+    if (foryouShelf) foryouShelf.style.display = '';
+    var foryouEl = document.getElementById('foryou-trending');
+    fetch('/api/for-you?region=' + encodeURIComponent(region), { signal: AbortSignal.timeout(6000) })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if (foryouEl && data.sections) {
+          var html = '';
+          Object.keys(data.sections).forEach(function(key) {
+            var shows = data.sections[key];
+            if (!shows || !shows.length) return;
+            var catLabel = key === 'trending' ? '\uD83D\uDD25 Trending Podcasts' : key.charAt(0).toUpperCase() + key.slice(1);
+            html += '<div class="foryou-section"><div class="foryou-section-label">'+_escHtml(catLabel)+'</div><div class="foryou-grid">';
+            html += shows.slice(0,6).map(function(s) {
+              var safeName = (s.name||'').replace(/'/g,"\\'");
+              var safeSlug = safeName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+              return '<div class="foryou-card" onclick="showView(\'show\');loadShowProfile(\''+safeSlug+'\')">'
+                +'<img class="foryou-art" src="'+_escHtml(s.artwork||'')+'" alt="'+_escHtml(s.name||'')+'" loading="lazy" onerror="this.style.display=\'none\'">'
+                +'<div class="foryou-name">'+_escHtml(s.name||'')+'</div>'
+                +'<div class="foryou-host">'+_escHtml(s.host||s.category||'')+'</div>'
+                +'</div>';
+            }).join('');
+            html += '</div></div>';
+          });
+          if (html) foryouEl.innerHTML = html;
+        }
+      }).catch(function(){});
+
+    // Live trending topics for signed-out too
+    fetch('/api/trending-topics', { signal: AbortSignal.timeout(5000) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var el = document.getElementById('disc-rc-mid');
+        if (!el || !d.topics || !d.topics.length) return;
+        el.innerHTML = '<div class="disc-rc-title">Most analyzed</div>'
+          + d.topics.slice(0,5).map(function(t){
+              return '<div class="disc-topic-row">'
+                +'<span class="disc-topic-name">'+t.name+'</span>'
+                +'<span class="disc-topic-count">'+t.count+' analyses</span>'
+                +'</div>';
+            }).join('');
+      }).catch(function(){});
   }
   discRenderShows();
   discRenderEpisodes();
@@ -13404,6 +13502,7 @@ function isLiked(ep) {
 }
 
 function toggleLike(ep, btnEl) {
+  if (!plUser()) { openModal('signup'); return; }
   var liked = _getLiked();
   var id = _epId(ep);
   var idx = liked.findIndex ? liked.findIndex(function(e){return _epId(e)===id;}) : -1;
@@ -14418,14 +14517,14 @@ function heroConnectSpotify() {
     if (typeof startSpotifyImport === 'function') startSpotifyImport();
     return;
   }
-  // Start Spotify OAuth
+  // Start Spotify OAuth — encode userId in state so callback can store tokens correctly
   var clientId = window._plConfig && window._plConfig.spotifyClientId || '';
   var scopes = 'user-library-read user-read-recently-played user-top-read';
   var redirect = encodeURIComponent(window.location.origin + '/auth/spotify/callback');
-  var state = crypto.randomUUID();
+  var state = u.id;
   sessionStorage.setItem('spotify_oauth_state', state);
   window.location.href = 'https://accounts.spotify.com/authorize?response_type=code&client_id=' + clientId
-    + '&scope=' + encodeURIComponent(scopes) + '&redirect_uri=' + redirect + '&state=' + state;
+    + '&scope=' + encodeURIComponent(scopes) + '&redirect_uri=' + redirect + '&state=' + encodeURIComponent(state);
 }
 
 function heroConnectYouTube() {

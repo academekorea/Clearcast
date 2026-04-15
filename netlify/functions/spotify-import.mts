@@ -137,14 +137,15 @@ export default async (req: Request) => {
 
     try { await store.setJSON(cacheKey, result); } catch {}
 
-    // Write followed shows to Supabase for persistence + smart queue
+    // Write followed shows + listening data to Supabase for persistence + intelligence
     try {
       const supabaseUrl = Netlify.env.get("SUPABASE_URL");
       const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
       if (supabaseUrl && supabaseKey && userId) {
         const { createClient } = await import("@supabase/supabase-js");
         const sb = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
-        // Upsert each followed show
+
+        // 1. Upsert followed shows
         for (const show of showResults.slice(0, 20)) {
           try {
             await sb.from("followed_shows").upsert({
@@ -153,9 +154,81 @@ export default async (req: Request) => {
               artwork_url: show.artwork || null,
               spotify_id: show.spotifyId || null,
               spotify_url: show.spotifyUrl || null,
+              platform: "spotify",
               followed_at: new Date().toISOString(),
             }, { onConflict: "user_id,show_name" });
-          } catch(e) { /* skip duplicates */ }
+          } catch { /* skip duplicates */ }
+        }
+
+        // 2. Persist preliminary fingerprint + listening metadata to user profile
+        const updatePayload: Record<string, any> = {
+          spotify_connected: true,
+          spotify_show_count: followedShows.length,
+          spotify_imported_at: new Date().toISOString(),
+        };
+        if (preliminaryFingerprint) {
+          updatePayload.bias_fingerprint = preliminaryFingerprint;
+        }
+        // Build interest categories from followed show genres/names for For You personalization
+        const showCategories = followedShows
+          .map(s => s.publisher?.toLowerCase() || "")
+          .filter(Boolean);
+        if (showCategories.length > 0) {
+          // Infer top genres from publisher names + show descriptions
+          const genreHints: Record<string, number> = {};
+          for (const show of followedShows) {
+            const text = `${show.name} ${show.publisher} ${show.description}`.toLowerCase();
+            const genreKeywords: Record<string, string[]> = {
+              news: ["news", "daily", "report", "headline", "npr", "cnn", "bbc"],
+              politics: ["politic", "democrat", "republican", "vote", "election", "congress", "policy"],
+              technology: ["tech", "code", "software", "ai", "startup", "silicon"],
+              business: ["business", "finance", "economy", "invest", "market", "money"],
+              comedy: ["comedy", "funny", "humor", "laugh", "joke"],
+              "true-crime": ["crime", "murder", "detective", "investig", "serial"],
+              health: ["health", "wellness", "mental", "fitness", "medical"],
+              science: ["science", "research", "space", "physics", "biology"],
+              history: ["history", "historical", "war", "ancient", "century"],
+              sports: ["sports", "nfl", "nba", "football", "basketball", "soccer"],
+              society: ["society", "culture", "social", "race", "gender"],
+            };
+            for (const [genre, keywords] of Object.entries(genreKeywords)) {
+              if (keywords.some(kw => text.includes(kw))) {
+                genreHints[genre] = (genreHints[genre] || 0) + 1;
+              }
+            }
+          }
+          const topGenres = Object.entries(genreHints)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([g]) => g);
+          if (topGenres.length > 0) {
+            updatePayload.interests = topGenres;
+            updatePayload.interests_updated_at = new Date().toISOString();
+          }
+        }
+        try {
+          await sb.from("users").update(updatePayload).eq("id", userId);
+        } catch (e) {
+          console.warn("[spotify-import] user update failed:", e);
+        }
+
+        // 3. Record recently played episodes as listening events for intelligence system
+        for (const ep of recentEpisodes.slice(0, 10)) {
+          try {
+            await sb.from("events").insert({
+              user_id: userId,
+              event_type: "spotify_listen",
+              properties: {
+                showName: ep.showName,
+                episodeTitle: ep.episodeTitle,
+                spotifyUrl: ep.spotifyUrl,
+                durationMs: ep.durationMs,
+                playedAt: ep.playedAt,
+                source: "spotify_import",
+              },
+              created_at: ep.playedAt || new Date().toISOString(),
+            });
+          } catch { /* skip duplicates */ }
         }
       }
     } catch (sbErr) {
