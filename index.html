@@ -1114,6 +1114,61 @@ body.player-on .lap{bottom:72px}
 .sp-section-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:12px}
 .sp-intel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:visible;margin-bottom:16px}
 @media(max-width:500px){.sp-intel-grid{grid-template-columns:repeat(2,1fr)}}
+.sp-new-hero{background:linear-gradient(150deg,#2e1a1a 0%,#131320 100%);padding:20px 22px;display:flex;gap:16px;}
+.sp-new-body{display:grid;grid-template-columns:1fr 260px;}
+@media(max-width:700px){.sp-new-body{grid-template-columns:1fr;}.sp-new-hero{flex-direction:column;}}
+.sp-new-col-l{padding:16px 20px;border-right:0.5px solid var(--border);}
+.sp-new-col-r{padding:16px 14px;}
+.sp-bias-strip{padding:11px 22px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:14px;cursor:pointer;}
+.sp-bias-strip:hover{background:rgba(255,255,255,.015);}
+.sp-bias-track{flex:1;position:relative;height:7px;background:var(--bg3);border-radius:3.5px;overflow:visible;}
+.sp-bias-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;border:2px solid var(--bg);}
+.sp-intel-panel-new{padding:13px 22px;border-bottom:0.5px solid var(--border);background:var(--bg2);}
+.sp-intel-grid-new{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+@media(max-width:600px){.sp-intel-grid-new{grid-template-columns:repeat(2,1fr);}}
+.sp-intel-cell{background:var(--bg3);border:0.5px solid var(--border);border-radius:7px;padding:9px 10px 8px;}
+.sp-intel-cell-lbl{font-size:8px;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;display:flex;gap:3px;align-items:center;}
+.sp-intel-cell-val{font-size:15px;font-weight:600;margin-bottom:2px;}
+.sp-intel-cell-sub{font-size:9px;color:var(--text3);line-height:1.3;}
+.sp-intel-cell-bar{height:2px;background:var(--border);border-radius:1px;margin-top:5px;}
+.sp-intel-cell-fill{height:2px;border-radius:1px;}
+.sp-new-sec{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.sp-new-divider{border:none;border-top:0.5px solid var(--border);margin:14px 0;}
+.sp-new-sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.sp-new-badge{font-size:9px;background:rgba(74,158,255,.1);color:#4a9eff;border:0.5px solid rgba(74,158,255,.2);border-radius:20px;padding:2px 7px;}
+.sp-lean-pills{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;}
+.sp-lean-pill{font-size:10px;padding:3px 9px;border-radius:20px;border:0.5px solid var(--border2);color:var(--text3);cursor:pointer;background:transparent;font-family:var(--ff);}
+.sp-lean-pill.sp-lean-active{border-color:var(--border2);color:var(--text);background:var(--bg3);}
+.sp-new-ep-row{display:flex;gap:9px;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);}
+.sp-new-ep-row:last-child{border-bottom:none;}
+.sp-new-ep-art{width:38px;height:38px;border-radius:4px;background:var(--bg3);flex-shrink:0;object-fit:cover;}
+.sp-new-ep-art.sp-analyzed{border:0.5px solid rgba(74,158,255,.35);}
+.sp-new-ep-meta{flex:1;min-width:0;}
+.sp-new-ep-title{font-size:11px;color:var(--text);line-height:1.3;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sp-new-ep-date{font-size:10px;color:var(--text3);}
+.sp-new-ep-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.sp-new-heart{background:none;border:none;cursor:pointer;padding:2px;display:flex;align-items:center;opacity:.3;transition:opacity .15s;}
+.sp-new-heart:hover{opacity:.7;}
+.sp-new-heart.sp-liked{opacity:1;}
+.sp-new-analyze-link{font-size:10px;color:var(--text3);cursor:pointer;opacity:.4;background:none;border:none;font-family:var(--ff);}
+.sp-new-analyze-link:hover{opacity:1;color:var(--navy);}
+.sp-sort-btn{font-size:9px;color:var(--text3);border:0.5px solid var(--border2);border-radius:3px;padding:2px 7px;background:transparent;cursor:pointer;font-family:var(--ff);}
+.sp-rc-lbl{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.sp-rc-ep-row{display:flex;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);align-items:center;}
+.sp-rc-ep-row:last-child{border-bottom:none;}
+.sp-rc-art{width:30px;height:30px;border-radius:4px;background:var(--bg3);flex-shrink:0;object-fit:cover;}
+.sp-rc-title{font-size:10px;color:var(--text);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;}
+.sp-rc-date{font-size:9px;color:var(--text3);}
+.sp-sim-row{display:flex;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border);align-items:center;cursor:pointer;}
+.sp-sim-row:last-child{border-bottom:none;}
+.sp-sim-row:hover{opacity:.8;}
+.sp-sim-art{width:36px;height:36px;border-radius:5px;background:var(--bg3);flex-shrink:0;object-fit:cover;}
+.sp-sim-name{font-size:11px;color:var(--text);margin-bottom:2px;}
+.sp-sim-cat{font-size:9px;color:var(--text3);}
+.sp-host-card-new{display:flex;gap:10px;align-items:flex-start;background:var(--bg2);border:0.5px solid var(--border);border-radius:7px;padding:10px 12px;margin-bottom:14px;}
+.sp-host-avatar{width:34px;height:34px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:600;color:var(--text3);margin-top:1px;}
+.sp-share-icon-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+.sp-share-icon-btn:hover{background:rgba(255,255,255,.15);}
 .sp-metric{padding:14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
 .sp-metric:nth-child(3n){border-right:none}
 @media(max-width:500px){.sp-metric:nth-child(2n){border-right:none}}
@@ -10653,249 +10708,297 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       html+='</div></div>';
     }
   } else {
-    // ── 3-COLUMN SHOW PROFILE LAYOUT ─────────────────────────────────────────
+    // ── NEW 2-COLUMN SHOW PROFILE LAYOUT ─────────────────────────────────────
+    var spId = 'sp' + Date.now();
+
+    // Bias helpers
+    var biasScore = m.avgBiasScore || 0;
+    var biasDotLeft = ((biasScore + 100) / 2).toFixed(1) + '%';
+    var biasColor = biasScore < -20 ? 'var(--left-bar)' : biasScore > 20 ? 'var(--right-bar)' : 'var(--center-bar)';
+    var biasNumDisplay = (biasScore > 0 ? '+' : '') + Math.round(biasScore);
+
+    // User's analyses of this show
+    var userAnalyses = [];
+    try { userAnalyses = (typeof getRecent === 'function' ? getRecent() : []).filter(function(r){ return (r.showName||'').toLowerCase() === displayName.toLowerCase(); }); } catch(e){}
+
+    // User's liked episodes for this show
+    var likedEps = [];
+    try { likedEps = JSON.parse(localStorage.getItem('pl_liked_eps')||'[]').filter(function(e){ return (e.showName||'').toLowerCase() === displayName.toLowerCase(); }); } catch(e){}
+    var likedJobIds = {};
+    likedEps.forEach(function(l){ likedJobIds[l.jobId] = true; });
+
+    // Heart SVG builder
+    function _spHeart(liked, onclickStr) {
+      var fill = liked ? '#e05555' : 'none';
+      var stroke = liked ? '#e05555' : 'var(--text3)';
+      return '<button class="sp-new-heart'+(liked?' sp-liked':'')+'" style="opacity:'+(liked?'1':'')+'" onclick="'+onclickStr+';var isNowLiked=this.classList.toggle(\'sp-liked\');var p=this.querySelector(\'path\');p.setAttribute(\'fill\',isNowLiked?\'#e05555\':\'none\');p.setAttribute(\'stroke\',isNowLiked?\'#e05555\':\'var(--text3)\');this.style.opacity=isNowLiked?\'1\':\'\'">'
+        +'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12S1.5 8.5 1.5 4.5C1.5 3 2.7 1.5 4.5 1.5C5.6 1.5 6.4 2.1 7 2.8C7.6 2.1 8.4 1.5 9.5 1.5C11.3 1.5 12.5 3 12.5 4.5C12.5 8.5 7 12 7 12Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/></svg>'
+        +'</button>';
+    }
+
+    // Bias pill builder
+    function _spBiasPill(score) {
+      if (score === null || score === undefined || score === '') return '';
+      var s = Math.round(Number(score));
+      var bg = s < -20 ? 'rgba(74,158,255,.12)' : s > 20 ? 'rgba(255,107,74,.12)' : 'rgba(255,255,255,.07)';
+      var col = s < -20 ? '#4a9eff' : s > 20 ? '#ff6b4a' : 'var(--text3)';
+      return '<span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:'+bg+';color:'+col+';flex-shrink:0">'+(s>0?'+':'')+s+'</span>';
+    }
+
+    // Artwork img or placeholder
     var artHtml = artwork
-      ? '<img src="'+artwork+'" alt="" style="width:90px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.display=\'none\'">'
-      : '<div style="width:90px;height:90px;border-radius:10px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">&#127897;</div>';
+      ? '<img src="'+artwork+'" alt="" style="width:80px;height:80px;border-radius:9px;object-fit:cover;flex-shrink:0;border:0.5px solid var(--border)" onerror="this.style.display=\'none\'">'
+      : '<div style="width:80px;height:80px;border-radius:9px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">&#127897;</div>';
 
-    var artNavHtml = artwork
-      ? '<img class="sp-3col-nav-art" src="'+artwork+'" alt="" onerror="this.style.display=\'none\'">'
-      : '<div class="sp-3col-nav-art" style="background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:14px">&#127897;</div>';
+    var spUrl = window.location.origin + '/show/' + slug;
+    var spShareText = encodeURIComponent(displayName + ' — Bias: ' + (m.biasLabel||'Unrated') + ' · ' + spUrl + ' via @podlensapp');
+    var followBtn = '<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+'\''+',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\''+',\''+(artwork||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_followLabel(displayName)+'</button>';
 
-    // ── LEFT NAV ──────────────────────────────────────────────────────────────
-    var navHtml = '<div class="sp-3col-nav">'
-      + '<div>'
-      + '<div class="sp-3col-nav-lbl">Menu</div>'
-      + '<button class="sp-3col-nav-btn" onclick="navHome()"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>'
-      + '<button class="sp-3col-nav-btn" onclick="showView(\'discover\')"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>'
-      + '<button class="sp-3col-nav-btn" onclick="showView(\'analyze\')"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>'
+    // ── HERO ──────────────────────────────────────────────────────────────────
+    var cleanDesc = '';
+    if (description) {
+      cleanDesc = (typeof cleanDescription === 'function') ? cleanDescription(description) : description;
+      if (cleanDesc && cleanDesc !== 'No description available.') {
+        cleanDesc = _esc(cleanDesc.substring(0, 220)) + (cleanDesc.length > 220 ? '&hellip;' : '');
+      } else { cleanDesc = ''; }
+    }
+
+    html = '<div class="sp-new-hero">'
+      + artHtml
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:3px">Podcast'+(itunes&&itunes.category?' &middot; '+_esc(itunes.category):'')+'</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.2">'+_esc(displayName)+'</div>'
+      + (hostName ? '<div style="font-size:11px;color:var(--text3);margin-bottom:8px">by '+_esc(hostName)+'</div>' : '<div style="margin-bottom:8px"></div>')
+      + (cleanDesc ? '<div style="font-size:11px;color:var(--text2);line-height:1.65;margin-bottom:12px;max-width:520px">'+cleanDesc+'</div>' : '')
+      + '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
+      + followBtn
+      + '<div style="width:0.5px;height:18px;background:rgba(255,255,255,.1);flex-shrink:0"></div>'
+      + '<div style="display:flex;gap:8px">'
+      + '<button class="sp-share-icon-btn" title="Share on X" onclick="window.open(\'https://x.com/intent/tweet?text='+spShareText+'\',\'_blank\')"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M11 1.5H13L8.6 6.6L13.7 13H9.6L6.5 8.9L2.9 13H0.9L5.6 7.5L0.7 1.5H4.9L7.7 5.3L11 1.5ZM10.4 11.8H11.5L4.3 2.6H3.1L10.4 11.8Z" fill="currentColor"/></svg></button>'
+      + '<button class="sp-share-icon-btn" title="Share on Facebook" onclick="window.open(\'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(spUrl)+'\',\'_blank\')"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 0.875C3.62 0.875 0.875 3.62 0.875 7C0.875 10.07 3.09 12.6 6.02 13.07V8.79H4.45V7H6.02V5.67C6.02 4.12 6.95 3.26 8.36 3.26C9.04 3.26 9.75 3.38 9.75 3.38V4.9H8.97C8.2 4.9 7.97 5.37 7.97 5.85V7H9.68L9.4 8.79H7.97V13.07C10.91 12.6 13.12 10.07 13.12 7C13.12 3.62 10.38 0.875 7 0.875Z" fill="currentColor"/></svg></button>'
+      + '<button class="sp-share-icon-btn" title="Share on LinkedIn" onclick="window.open(\'https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(spUrl)+'\',\'_blank\')"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3.5 4.67H1.56V12.44H3.5V4.67ZM2.53 3.89C3.16 3.89 3.67 3.38 3.67 2.75C3.67 2.12 3.16 1.61 2.53 1.61C1.9 1.61 1.39 2.12 1.39 2.75C1.39 3.38 1.9 3.89 2.53 3.89ZM12.61 12.44H10.67V8.61C10.67 7.31 10.42 6.5 9.28 6.5C8.06 6.5 7.86 7.48 7.86 8.55V12.44H5.92V4.67H7.78V5.53C8.06 4.98 8.89 4.39 10.11 4.39C12.14 4.39 12.61 5.61 12.61 7.76V12.44Z" fill="currentColor"/></svg></button>'
+      + '<button class="sp-share-icon-btn" title="Copy link" onclick="navigator.clipboard.writeText(\''+spUrl+'\').then(function(){var b=event.target.closest(\'button\');var orig=b.innerHTML;b.innerHTML=\'<svg width=&quot;13&quot; height=&quot;13&quot; viewBox=&quot;0 0 13 13&quot; fill=&quot;none&quot;><path d=&quot;M2 7L5 10L11 3&quot; stroke=&quot;#5dcaa5&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/></svg>\';setTimeout(function(){b.innerHTML=orig},2000)})"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2.5H3C2.17 2.5 1.5 3.17 1.5 4V10C1.5 10.83 2.17 11.5 3 11.5H9C9.83 11.5 10.5 10.83 10.5 10V8M7.5 1.5H11.5M11.5 1.5V5.5M11.5 1.5L5.5 7.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
       + '</div>'
-      + '<div>'
-      + '<div class="sp-3col-nav-div"></div>'
-      + '<div class="sp-3col-nav-lbl">This show</div>'
-      + '<div class="sp-3col-nav-btn on" style="gap:12px">'
-      + artNavHtml
-      + '<div style="min-width:0"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+displayName+'</div>'
-      + (hostName ? '<div style="font-size:10px;opacity:.5;margin-top:2px">'+hostName+'</div>' : '')
-      + '</div></div>'
-      + '<div class="sp-3col-nav-div"></div>'
-      + '<button class="sp-3col-nav-btn on" id="sp-nav-overview" style="background:rgba(255,255,255,.13)" onclick="spShowSection(\'overview\',this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Overview</button>'
-      + '<button class="sp-3col-nav-btn" id="sp-nav-episodes" onclick="spShowSection(\'episodes\',this)"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Episodes</button>'
-      + '<button class="sp-3col-nav-btn" id="sp-nav-bias" onclick="spShowSection(\'bias\',this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Bias history</button>'
-      + '<button class="sp-3col-nav-btn" id="sp-nav-host" onclick="spShowSection(\'host\',this)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Host profile</button>'
-      + '<div class="sp-3col-nav-div"></div>'
-      + '<button class="sp-3col-nav-btn" onclick="goBack()" style="opacity:.6"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>'
+      + '</div>'
       + '</div>'
       + '</div>';
 
-    // ── MAIN CONTENT ──────────────────────────────────────────────────────────
-    var followBtn = '<button class="sp-follow-btn" id="sp-follow-btn" onclick="toggleFollowShow(\''+displayName.replace(/'/g,"\\'").replace(/"/g,'')+'\''+',\''+((feedUrl||'').replace(/'/g,"\\'").replace(/"/g,''))+'\''+',\''+(artwork||'').replace(/'/g,"\\'").replace(/"/g,'')+'\',this)">'+_followLabel(displayName)+'</button>';
+    // ── BIAS STRIP ────────────────────────────────────────────────────────────
+    html += '<div class="sp-bias-strip" id="'+spId+'-strip" onclick="var p=document.getElementById(\''+spId+'-intel\');var l=document.getElementById(\''+spId+'-strip-lbl\');var open=p.style.display===\'block\';p.style.display=open?\'none\':\'block\';l.textContent=open?\'View intelligence \u2193\':\'Collapse \u2191\'">'
+      + '<span class="sp-new-sec" style="margin:0;flex-shrink:0">Bias</span>'
+      + '<div class="sp-bias-track">'
+      + '<div style="position:absolute;left:50%;top:-1px;transform:translateX(-50%);width:1px;height:9px;background:var(--border2)"></div>'
+      + '<div class="sp-bias-dot" style="left:'+biasDotLeft+';background:'+biasColor+'"></div>'
+      + '</div>'
+      + '<span style="font-size:13px;font-weight:600;color:'+biasColor+';flex-shrink:0;width:36px;text-align:right">'+biasNumDisplay+'</span>'
+      + '<span id="'+spId+'-strip-lbl" style="font-size:10px;color:var(--text3);flex-shrink:0">View intelligence &#8595;</span>'
+      + '</div>';
 
-    var mainHtml = '<div class="sp-3col-main">';
-
-    // Header
-    mainHtml += '<div class="sp-3col-hdr">';
-    mainHtml += artHtml;
-    mainHtml += '<div style="flex:1;min-width:0">';
-    mainHtml += '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Podcast'+(itunes&&itunes.category?' &middot; '+itunes.category:'')+'</div>';
-    mainHtml += '<div style="font-family:var(--ffs);font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text)">'+displayName+'</div>';
-    if (hostName) mainHtml += '<div style="font-size:14px;color:var(--text2);margin-bottom:4px">by '+hostName+'</div>';
-    if (totalEpisodes) mainHtml += '<div style="font-size:12px;color:var(--text3);margin-bottom:12px">'+totalEpisodes.toLocaleString()+' episodes</div>';
-    // Platform links
-    mainHtml += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">';
-    mainHtml += '<a href="https://open.spotify.com/search/'+eName+'/podcasts" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:0.5px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Spotify</a>';
-    if (itunes&&itunes.itunesUrl) mainHtml += '<a href="'+itunes.itunesUrl+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:0.5px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; Apple Podcasts</a>';
-    mainHtml += '<a href="https://youtube.com/results?search_query='+eName+'+podcast" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:0.5px solid var(--border2);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text2);text-decoration:none">&#9654; YouTube</a>';
-    mainHtml += '</div>';
-    // Actions
-    mainHtml += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
-    mainHtml += '<button class="sp-analyze-btn" onclick="goAnalyzeShow()">Analyze an episode &rarr;</button>';
-    mainHtml += followBtn;
-    if (data.episodeCount>0) mainHtml += '<button class="sp-share-btn" id="sp-share-btn" onclick="generateShareCard()">Download card &#8599;</button>';
-    mainHtml += '</div>';
-    // Share bar with social icons
-    {
-      var spUrl = window.location.origin + '/show/' + slug;
-      var spMetrics = data.metrics || {};
-      var spBias = spMetrics.biasLabel || 'Unrated';
-      var spTrust = spMetrics.avgTrustScore;
-      var spTweetText = encodeURIComponent(displayName + ' — Bias: ' + spBias + (spTrust ? ' · Host trust: ' + spTrust + '/100' : '') + ' · ' + data.episodeCount + ' episodes analyzed\n\n' + spUrl + '\n\n#PodcastBias via @podlensapp');
-      mainHtml += '<div style="display:flex;gap:6px;align-items:center;margin-top:10px">';
-      mainHtml += '<span style="font-size:11px;color:var(--text3);margin-right:4px">Share:</span>';
-      mainHtml += '<button onclick="window.open(\'https://x.com/intent/tweet?text='+spTweetText+'\',\'_blank\')" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2)" title="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>';
-      mainHtml += '<button onclick="window.open(\'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(spUrl)+'\',\'_blank\')" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center" title="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></button>';
-      mainHtml += '<button onclick="window.open(\'https://wa.me/?text='+encodeURIComponent(displayName+' bias profile on Podlens '+spUrl)+'\',\'_blank\')" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center" title="WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button>';
-      mainHtml += '<button onclick="window.open(\'https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(spUrl)+'\',\'_blank\')" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center" title="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></button>';
-      mainHtml += '<button onclick="navigator.clipboard.writeText(\''+spUrl+'\').then(function(){var b=event.target.closest(\'button\');b.title=\'Copied!\';setTimeout(function(){b.title=\'Copy link\'},2000)})" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2)" title="Copy link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>';
-      mainHtml += '</div>';
+    // ── INTEL PANEL (hidden by default) ───────────────────────────────────────
+    function _spCell(label, val, sub, barPct, barColor, qKey) {
+      var qb = qKey ? _metricQ(qKey) : '';
+      var pct = Math.min(100, Math.max(0, barPct || 0));
+      return '<div class="sp-intel-cell">'
+        + '<div class="sp-intel-cell-lbl">'+label+qb+'</div>'
+        + '<div class="sp-intel-cell-val" style="color:'+barColor+'">'+val+'</div>'
+        + '<div class="sp-intel-cell-sub">'+sub+'</div>'
+        + '<div class="sp-intel-cell-bar"><div class="sp-intel-cell-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div>'
+        + '</div>';
     }
-    mainHtml += '</div></div>';
+    var consistencyPct = m.consistency === 'High' ? 85 : m.consistency === 'Medium' ? 50 : m.consistency ? 25 : 0;
+    var trustVal = m.avgTrustScore ? Math.round(m.avgTrustScore)+'%' : '—';
+    var factualVal = m.avgFactualRate ? Math.round(m.avgFactualRate)+'%' : '—';
+    var sponsorVal = m.avgSponsorRate ? Math.round(m.avgSponsorRate)+'%' : '—';
 
-    // About card
-    if (description) {
-      var cleanedD = (typeof cleanDescription === 'function') ? cleanDescription(description) : description;
-      if (cleanedD && cleanedD !== 'No description available.') {
-        mainHtml += '<div class="sp-3col-card" data-sp-section="overview">';
-    mainHtml += '<div class="sp-3col-sec-lbl">About</div>';
-        if (cleanedD.length > 400) {
-          var descId = 'sp-about-desc-' + Date.now();
-          mainHtml += '<div style="font-size:14px;line-height:1.65;color:var(--text2)"><span id="'+descId+'-short">'+_esc(cleanedD.slice(0,400))+'&hellip; <a onclick="document.getElementById(\''+descId+'-short\').style.display=\'none\';document.getElementById(\''+descId+'-full\').style.display=\'inline\'" style="color:var(--navy);cursor:pointer;font-weight:600;font-size:13px">Read more</a></span><span id="'+descId+'-full" style="display:none">'+_esc(cleanedD)+' <a onclick="document.getElementById(\''+descId+'-full\').style.display=\'none\';document.getElementById(\''+descId+'-short\').style.display=\'inline\'" style="color:var(--navy);cursor:pointer;font-weight:600;font-size:13px">Show less</a></span></div>';
-        } else {
-          mainHtml += '<div style="font-size:14px;line-height:1.65;color:var(--text2)">'+_esc(cleanedD)+'</div>';
+    html += '<div class="sp-intel-panel-new" id="'+spId+'-intel" style="display:none">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
+      + '<span class="sp-new-sec" style="margin:0">Intelligence overview</span>'
+      + '<div style="display:flex;align-items:center;gap:10px">'
+      + '<span style="font-size:10px;color:var(--text3)">'+data.episodeCount+' episode'+(data.episodeCount===1?'':'s')+' analyzed</span>'
+      + '<button onclick="var p=document.getElementById(\''+spId+'-intel\');var l=document.getElementById(\''+spId+'-strip-lbl\');p.style.display=\'none\';l.textContent=\'View intelligence \u2193\'" style="font-size:10px;color:var(--text3);border:0.5px solid var(--border);border-radius:4px;padding:2px 8px;background:transparent;cursor:pointer;font-family:var(--ff)">Collapse &#8593;</button>'
+      + '</div></div>'
+      + '<div class="sp-intel-grid-new">'
+      + _spCell('Bias label', m.biasLabel||'—', 'Based on analyzed episodes', Math.abs(biasScore), biasColor, 'bias')
+      + _spCell('Host trust', trustVal, 'Parasocial language score', m.avgTrustScore||0, 'var(--good,#5dcaa5)', 'trust')
+      + _spCell('Consistency', m.consistency||'—', 'Stability episode to episode', consistencyPct, 'var(--good,#5dcaa5)', 'consistency')
+      + _spCell('Factual rate', factualVal, 'Episodes mostly factual', m.avgFactualRate||0, 'var(--text3)', 'factual')
+      + _spCell('Sponsor rate', sponsorVal, 'Episodes with sponsor influence', m.avgSponsorRate||0, '#ef9f27', 'sponsor')
+      + '</div>'
+      + '</div>';
+
+    // ── BODY ──────────────────────────────────────────────────────────────────
+    var colL = '';
+    var colR = '';
+
+    // HOST CARD
+    var hostInitials = (hostName||displayName||'?').split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase();
+    colL += '<div class="sp-new-sec">Host</div>'
+      + '<div class="sp-host-card-new">'
+      + '<div class="sp-host-avatar">'+hostInitials+'</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px">'+_esc(hostName||displayName)+'</div>'
+      + '<div style="font-size:11px;color:var(--text3);line-height:1.6">'+(description ? _esc((typeof cleanDescription==='function'?cleanDescription(description):description).substring(0,180))+(description.length>180?'&hellip;':'') : 'Analyze episodes to build a bias and trust intelligence profile for this host.')+'</div>'
+      + '</div>'
+      + '</div>';
+
+    colL += '<hr class="sp-new-divider">';
+
+    // ANALYZED EPISODES SECTION
+    var analyzedEpsHtml = '';
+    if (userAnalyses.length) {
+      userAnalyses.forEach(function(r) {
+        var epScore = (r.audioLean&&r.audioLean.score!=null) ? r.audioLean.score : (r.biasScore!=null ? r.biasScore : null);
+        var artEl = (r.artwork||artwork) ? '<img class="sp-new-ep-art sp-analyzed" src="'+_escHtml(r.artwork||artwork)+'" alt="" onerror="this.className=\'sp-new-ep-art sp-analyzed\';this.style.background=\'var(--bg3)\'">' : '<div class="sp-new-ep-art sp-analyzed"></div>';
+        var isLiked = likedJobIds[r.jobId] || false;
+        var likeCall = 'toggleLike && toggleLike(\''+r.jobId+'\',\''+_escHtml((r.episodeTitle||r.title||'').replace(/'/g,"\\'"))+'\',\''+_escHtml(displayName.replace(/'/g,"\\'")+'\',\''+(r.artwork||artwork||'').replace(/'/g,"\\'"))+'\')'
+        analyzedEpsHtml += '<div class="sp-new-ep-row" data-bias-score="'+(epScore!=null?epScore:'')+'">'
+          + artEl
+          + '<div class="sp-new-ep-meta"><div class="sp-new-ep-title">'+_esc(r.episodeTitle||r.title||'Episode')+'</div>'
+          + '<div class="sp-new-ep-date">'+(r.analyzedAt ? new Date(r.analyzedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '')+'</div></div>'
+          + '<div class="sp-new-ep-right">'
+          + _spHeart(isLiked, likeCall)
+          + (epScore!=null ? _spBiasPill(epScore) : '')
+          + '</div>'
+          + '</div>';
+      });
+    } else {
+      analyzedEpsHtml = '<div style="font-size:12px;color:var(--text3);padding:12px 0">Analyze an episode to see your bias data for this show.</div>';
+    }
+
+    colL += '<div class="sp-new-sec-hdr">'
+      + '<span class="sp-new-sec" style="margin:0">Analyzed episodes</span>'
+      + (userAnalyses.length ? '<span class="sp-new-badge">'+userAnalyses.length+' episode'+(userAnalyses.length===1?'':'s')+'</span>' : '')
+      + '</div>';
+
+    if (userAnalyses.length) {
+      colL += '<div class="sp-lean-pills" id="'+spId+'-lean-pills">'
+        + '<button class="sp-lean-pill sp-lean-active" data-lean="all" onclick="spLeanFilter(\''+spId+'\',\'all\',this)">All</button>'
+        + '<button class="sp-lean-pill" data-lean="left" onclick="spLeanFilter(\''+spId+'\',\'left\',this)">Left</button>'
+        + '<button class="sp-lean-pill" data-lean="balanced" onclick="spLeanFilter(\''+spId+'\',\'balanced\',this)">Balanced</button>'
+        + '<button class="sp-lean-pill" data-lean="right" onclick="spLeanFilter(\''+spId+'\',\'right\',this)">Right</button>'
+        + '</div>';
+    }
+
+    colL += '<div id="'+spId+'-analyzed-eps">'+analyzedEpsHtml+'</div>';
+
+    colL += '<hr class="sp-new-divider">';
+
+    // ALL EPISODES SECTION
+    var rssEpsSorted = rssEpisodes.slice();
+    var allEpsSortAsc = false;
+
+    function _buildAllEps(eps, ascending) {
+      var sorted = eps.slice();
+      if (ascending) sorted.reverse();
+      var rows = '';
+      var shown = sorted.slice(0, 20);
+      shown.forEach(function(ep) {
+        var epTitle = ep.title || '';
+        var epDate = ep.pubDate ? new Date(ep.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+        var epDur = ep.duration ? formatDuration(ep.duration) : '';
+        var epMeta = [epDate, epDur].filter(Boolean).join(' · ');
+        var isAnalyzed = userAnalyses.find(function(r){ return (r.episodeTitle||r.title||'').toLowerCase().trim() === epTitle.toLowerCase().trim(); });
+        var artCls = 'sp-new-ep-art' + (isAnalyzed ? ' sp-analyzed' : '');
+        var artEl = artwork ? '<img class="'+artCls+'" src="'+_escHtml(artwork)+'" alt="" loading="lazy" onerror="this.style.background=\'var(--bg3)\'">' : '<div class="'+artCls+'"></div>';
+        var epScore = isAnalyzed ? ((isAnalyzed.audioLean&&isAnalyzed.audioLean.score!=null)?isAnalyzed.audioLean.score:(isAnalyzed.biasScore!=null?isAnalyzed.biasScore:null)) : null;
+        var safeEpUrl = _escHtml((ep.url||feedUrl||'').replace(/"/g,'&quot;'));
+        var epRightHtml = isAnalyzed
+          ? _spHeart(likedJobIds[isAnalyzed.jobId]||false, 'toggleLike && toggleLike(\''+isAnalyzed.jobId+'\',\''+_escHtml(epTitle.replace(/'/g,"\\'")+'\',\''+displayName.replace(/'/g,"\\'")+'\',\''+(artwork||'').replace(/'/g,"\\'"))+'\')')
+            + (epScore!=null ? _spBiasPill(epScore) : '')
+          : _spHeart(false, '')
+            + '<button class="sp-new-analyze-link" onclick="goAnalyze(\''+safeEpUrl+'\')">Analyze &#8594;</button>';
+        rows += '<div class="sp-new-ep-row">'
+          + artEl
+          + '<div class="sp-new-ep-meta"><div class="sp-new-ep-title">'+_esc(epTitle)+'</div>'
+          + (epMeta ? '<div class="sp-new-ep-date">'+epMeta+'</div>' : '')
+          + '</div>'
+          + '<div class="sp-new-ep-right">'+epRightHtml+'</div>'
+          + '</div>';
+      });
+      if (sorted.length > 20) rows += '<div style="font-size:11px;color:var(--text3);padding:8px 0;cursor:pointer" onclick="this.parentNode.innerHTML+=\'\'">+ '+(sorted.length-20)+' more</div>';
+      return rows || '<div style="font-size:12px;color:var(--text3);padding:12px 0">No episodes found.</div>';
+    }
+
+    colL += '<div class="sp-new-sec-hdr">'
+      + '<span class="sp-new-sec" style="margin:0">All episodes</span>'
+      + '<button class="sp-sort-btn" id="'+spId+'-sort-btn" onclick="var c=document.getElementById(\''+spId+'-all-eps\');var asc=this.dataset.asc===\'1\';this.dataset.asc=asc?\'0\':\'1\';this.textContent=asc?\'Newest \u2193\':\'Oldest \u2191\';c.innerHTML=_buildAllEpsForId(\''+spId+'\',!asc)" data-asc="0">Newest &#8595;</button>'
+      + '</div>'
+      + '<div id="'+spId+'-all-eps">'+_buildAllEps(rssEpsSorted, false)+'</div>';
+
+    // ── RIGHT COLUMN ──────────────────────────────────────────────────────────
+
+    // LIKED EPISODES
+    colR += '<div class="sp-rc-lbl">Liked episodes</div>';
+    if (likedEps.length) {
+      likedEps.slice(0,5).forEach(function(e){
+        var rArt = e.artwork||artwork||'';
+        colR += '<div class="sp-rc-ep-row">'
+          + (rArt ? '<img class="sp-rc-art" src="'+_escHtml(rArt)+'" alt="" onerror="this.style.background=\'var(--bg3)\'">' : '<div class="sp-rc-art"></div>')
+          + '<div style="flex:1;min-width:0"><div class="sp-rc-title">'+_esc(e.episodeTitle||e.title||'Episode')+'</div>'
+          + '<div class="sp-rc-date">'+(e.analyzedAt?new Date(e.analyzedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'')+'</div></div>'
+          + '<svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M7 12S1.5 8.5 1.5 4.5C1.5 3 2.7 1.5 4.5 1.5C5.6 1.5 6.4 2.1 7 2.8C7.6 2.1 8.4 1.5 9.5 1.5C11.3 1.5 12.5 3 12.5 4.5C12.5 8.5 7 12 7 12Z" fill="#e05555" stroke="#e05555" stroke-width="1"/></svg>'
+          + '</div>';
+      });
+    } else {
+      colR += '<div style="font-size:11px;color:var(--text3);padding:4px 0 8px">Like episodes to save them here.</div>';
+    }
+
+    // SIMILAR PODCASTS
+    if (similar && similar.length) {
+      colR += '<hr class="sp-new-divider">';
+      colR += '<div class="sp-rc-lbl">Similar podcasts</div>';
+      similar.slice(0,5).forEach(function(s){
+        var simSlug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        var simBiasScore = null;
+        if (typeof CURATED_SHOWS !== 'undefined') {
+          var cm = CURATED_SHOWS.find(function(c){ return c.name.toLowerCase() === (s.name||'').toLowerCase(); });
+          if (cm && cm.bias) simBiasScore = cm.bias.score;
         }
-        mainHtml += '</div>';
-      }
-    }
-
-    // Host card
-    if (hostName) {
-      var hInit = (hostName.charAt(0)||'?').toUpperCase();
-      var hBio = data.episodeCount > 0
-        ? 'Host of '+displayName+'. Based on '+data.episodeCount+' analyzed episode'+(data.episodeCount!==1?'s':'')+' on Podlens.'
-        : 'Host of '+displayName+'. Analyze episodes to build an intelligence profile of their hosting style, bias patterns, and trust score.';
-      mainHtml += '<div class="sp-3col-card"><div class="sp-3col-sec-lbl">Host</div>';
-      mainHtml += '<div style="display:flex;gap:12px;align-items:flex-start">';
-      mainHtml += '<div style="width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0">'+hInit+'</div>';
-      mainHtml += '<div><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px">'+_escHtml(hostName)+'</div>';
-      mainHtml += '<div style="font-size:12px;color:var(--text2);line-height:1.5">'+_escHtml(hBio)+'</div></div></div></div>';
-    }
-
-    // Intelligence overview card
-    mainHtml += '<div class="sp-3col-card" data-sp-section="overview">';
-    mainHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div class="sp-3col-sec-lbl" style="margin-bottom:0">Intelligence overview</div>' + _metricQ('bias') + '</div>';
-    mainHtml += '<div class="sp-intel-grid">';
-    mainHtml += spMetric('Bias label',m.biasLabel||'&mdash;','Based on analyzed episodes',m.biasLabel?60:0,'var(--center-bar)');
-    mainHtml += spMetric('Host trust',m.avgTrustScore!=null?m.avgTrustScore:'&mdash;','Parasocial language score',m.avgTrustScore!=null?m.avgTrustScore:0,m.avgTrustScore>60?'var(--left-bar)':m.avgTrustScore>30?'var(--amber)':'var(--center-bar)');
-    mainHtml += spMetric('Consistency',m.consistencyScore!=null?m.consistencyScore:'&mdash;','Stability episode to episode',m.consistencyScore!=null?m.consistencyScore:0,'var(--center-bar)');
-    mainHtml += spMetric('Factual rate',m.factualPct!=null?m.factualPct+'%':'&mdash;','Episodes rated mostly factual',m.factualPct!=null?m.factualPct:0,'var(--center-bar)');
-    mainHtml += spMetric('Sponsor rate',m.sponsorRate!=null?m.sponsorRate+'%':'&mdash;','Episodes with sponsor influence',m.sponsorRate!=null?m.sponsorRate:0,m.sponsorRate>50?'var(--amber)':'var(--center-bar)');
-    mainHtml += spMetric('Episodes analyzed',data.episodeCount||0,'Analyzed by Podlens users',100,'var(--border2)');
-    mainHtml += '</div></div>';
-
-
-    // Bias trend chart (loads from Supabase community data)
-    mainHtml += '<div class="sp-3col-card" id="sp-trend-card">';
-    mainHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">';
-    mainHtml += '<div class="sp-3col-sec-lbl" style="margin-bottom:0">Bias trend</div>';
-    mainHtml += '<div style="display:flex;gap:4px" id="sp-trend-tabs">';
-    mainHtml += '<button onclick="loadShowTrend(\''+displayName+'\',30,this)" class="sp-trend-tab on" style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;border:0.5px solid var(--border2);background:var(--navy);color:#fff;cursor:pointer;font-family:var(--ff)">30d</button>';
-    mainHtml += '<button onclick="loadShowTrend(\''+displayName+'\',90,this)" class="sp-trend-tab" style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;border:0.5px solid var(--border2);background:none;color:var(--text3);cursor:pointer;font-family:var(--ff)">90d</button>';
-    mainHtml += '<button onclick="loadShowTrend(\''+displayName+'\',180,this)" class="sp-trend-tab" style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;border:0.5px solid var(--border2);background:none;color:var(--text3);cursor:pointer;font-family:var(--ff)">180d</button>';
-    mainHtml += '</div></div>';
-    mainHtml += '<div id="sp-trend-chart" style="height:80px;position:relative"><div style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0">Loading trend data&hellip;</div></div>';
-    mainHtml += '</div>';
-
-    // Recently analyzed card (episodes from DB)
-    if (episodes.length) {
-      mainHtml += '<div class="sp-3col-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
-      mainHtml += '<div class="sp-3col-sec-lbl" style="margin-bottom:0">Recently analyzed</div>';
-      mainHtml += '<span style="font-size:11px;color:var(--text3)">'+episodes.length+' total</span></div>';
-      episodes.slice(0,5).forEach(function(ep){
-        var bpCls = {['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[ep.biasLabel]||'bp-center';
-        var dateStr = ep.createdAt ? new Date(ep.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
-        var epArt2 = ep.artwork || artwork || '';
-        mainHtml += '<div class="sp-3col-ep-row" style="cursor:pointer" onclick="viewAnalysis(\''+ep.jobId+'\')">'+(epArt2?'<img class="sp-3col-ep-art" src="'+_escHtml(epArt2)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="sp-3col-ep-art"></div>');
-        mainHtml += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px">'+(ep.episodeTitle||'Untitled')+'</div>';
-        mainHtml += '<div style="font-size:11px;color:var(--text3)">'+dateStr+'</div></div>';
-        if (ep.biasLabel) mainHtml += '<span class="bpill '+bpCls+'" style="font-size:10px;padding:2px 7px;flex-shrink:0">'+ep.biasLabel+'</span>';
-        mainHtml += '<button class="sp-3col-view-btn" onclick="event.stopPropagation();viewAnalysis(\''+ep.jobId+'\')">View &rarr;</button></div>';
+        colR += '<div class="sp-sim-row" onclick="showView(\'show\');loadShowProfile(\''+simSlug+'\',null)">'
+          + (s.artwork ? '<img class="sp-sim-art" src="'+_escHtml(s.artwork)+'" alt="" onerror="this.style.background=\'var(--bg3)\'">' : '<div class="sp-sim-art"></div>')
+          + '<div style="flex:1;min-width:0"><div class="sp-sim-name">'+_esc(s.name||'')+'</div>'
+          + '<div class="sp-sim-cat">'+_esc(s.genre||s.category||'')+'</div></div>'
+          + (simBiasScore!=null ? _spBiasPill(simBiasScore) : '')
+          + '</div>';
       });
-      mainHtml += '</div>';
     }
 
-    // Topic map
-    if (m.topicMap&&m.topicMap.length) {
-      mainHtml += '<div class="sp-3col-card"><div class="sp-3col-sec-lbl">Topics covered</div>';
-      var maxC = m.topicMap[0].count||1;
-      m.topicMap.forEach(function(t){
-        var col = t.lean==='left'?'var(--left-bar)':t.lean==='right'?'var(--right-bar)':'var(--center-bar)';
-        mainHtml += '<div class="sp-topic-row"><div class="sp-topic-name">'+t.topic+'</div><div class="sp-topic-track"><div class="sp-topic-fill" style="width:'+Math.round((t.count/maxC)*100)+'%;background:'+col+'"></div></div><div class="sp-topic-count">'+t.count+'</div></div>';
-      });
-      mainHtml += '</div>';
-    }
-
-    mainHtml += '</div>'; // close sp-3col-main
-
-    // ── RIGHT SIDEBAR ─────────────────────────────────────────────────────────
-    var sideHtml = '<div class="sp-3col-sidebar">';
-
-    // Section 1: Latest episodes to analyze (from RSS)
-    // Add ? to sidebar sections
-    var _bq = _metricQ('bias');
-    sideHtml += '<div style="margin-bottom:20px;padding-bottom:20px;border-bottom:0.5px solid var(--border)">';
-    sideHtml += '<div class="sp-3col-sec-lbl">Latest episodes</div>';
-    if (rssEpisodes.length) {
-      rssEpisodes.slice(0,6).forEach(function(ep){
-        var safeUrl = (ep.url||'').replace(/"/g,'&quot;');
-        var dateStr = '';
-        if (ep.pubDate) { try { dateStr = new Date(ep.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch(e){} }
-        var dur = ep.duration ? formatDuration(ep.duration) : '';
-        var meta = [dateStr,dur].filter(Boolean).join(' · ');
-        sideHtml += '<div class="sp-3col-ep-row">';
-        var epArt = ep.artwork || artwork || '';
-        sideHtml += epArt ? '<img class="sp-3col-ep-art" src="'+_escHtml(epArt)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="sp-3col-ep-art"></div>';
-        sideHtml += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+ep.title+'</div>';
-        sideHtml += '<div style="font-size:11px;color:var(--text3)">'+meta+'</div></div>';
-        if (safeUrl) sideHtml += '<button class="sp-3col-analyze-btn" onclick="goAnalyze(&quot;'+safeUrl+'&quot;)">Analyze</button>';
-        sideHtml += '</div>';
-      });
-    } else {
-      sideHtml += '<div style="font-size:13px;color:var(--text3);padding:8px 0">No episodes found yet.</div>';
-    }
-    sideHtml += '</div>';
-
-    // Section 2: Your analyses of this show (from local history)
-    var localAnalyses = getRecent ? getRecent().filter(function(r){ return (r.showName||'').toLowerCase() === displayName.toLowerCase(); }) : [];
-    sideHtml += '<div style="margin-bottom:20px;padding-bottom:20px;border-bottom:0.5px solid var(--border)">';
-    sideHtml += '<div class="sp-3col-sec-lbl">Your analyses of this show</div>';
-    if (localAnalyses.length) {
-      localAnalyses.slice(0,4).forEach(function(r){
-        var bpCls = {['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[r.biasLabel]||'bp-center';
-        var rArt = r.artwork || artwork || '';
-        sideHtml += '<div class="sp-3col-ep-row" style="cursor:pointer" onclick="viewAnalysis(\''+r.jobId+'\')">'+(rArt?'<img class="sp-3col-ep-art" src="'+_escHtml(rArt)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="sp-3col-ep-art"></div>');
-        sideHtml += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+(r.episodeTitle||r.title||'Episode')+'</div>';
-        if (r.biasLabel) sideHtml += '<span class="bpill '+bpCls+'" style="font-size:10px;padding:1px 6px">'+r.biasLabel+'</span>';
-        sideHtml += '</div><button class="sp-3col-view-btn" onclick="event.stopPropagation();viewAnalysis(\''+r.jobId+'\')">View</button></div>';
-      });
-      if (localAnalyses.length > 4) sideHtml += '<div style="font-size:11px;color:var(--text3);padding:8px 0 0">+' + (localAnalyses.length-4) + ' more &rarr;</div>';
-    } else {
-      sideHtml += '<div style="font-size:13px;color:var(--text3);padding:8px 0">You have not analyzed any episodes from this show yet.</div>';
-    }
-    sideHtml += '</div>';
-
-    // Section 3: Compare with another show
-    sideHtml += '<div>';
-    sideHtml += '<div class="sp-3col-sec-lbl">Compare with another show</div>';
-    sideHtml += '<div style="font-size:12px;font-weight:600;color:var(--text2);padding:8px 12px;border:0.5px solid var(--border2);border-radius:6px;margin-bottom:8px;background:var(--bg3)">'+displayName+'</div>';
-    sideHtml += '<div style="position:relative"><input id="sp-compare-input" type="text" placeholder="Add a show to compare..." autocomplete="off" style="width:100%;padding:8px 12px;border:0.5px solid var(--border2);border-radius:6px;font-size:13px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:8px">';
-    sideHtml += '<div id="sp-compare-results" style="display:none;position:absolute;left:0;right:0;top:38px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:10;max-height:180px;overflow-y:auto"></div></div>';
-    sideHtml += '<button id="sp-compare-btn" onclick="_spDoCompare()" style="width:100%;padding:9px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff)">Compare &rarr;</button>';
-    sideHtml += '</div>';
-
-    // Embed this score
-    var embedSlug = slug || _spSlug || '';
-    if (embedSlug && data.episodeCount > 0) {
-      var embedUrl = 'https://podlens.app/embed/show/' + encodeURIComponent(embedSlug);
-      var iframeCode = '<iframe src="' + embedUrl + '" width="380" height="80" frameborder="0" style="border:none;border-radius:8px"></iframe>';
-      sideHtml += '<div style="margin-top:16px">';
-      sideHtml += '<button onclick="var el=document.getElementById(\'sp-embed-section\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'" style="font-size:11px;font-weight:600;color:var(--text3);background:none;border:none;cursor:pointer;font-family:var(--ff);padding:0;letter-spacing:.04em;text-transform:uppercase">&#60;/&#62; Embed this score &#x25BE;</button>';
-      sideHtml += '<div id="sp-embed-section" style="display:none;margin-top:10px">';
-      sideHtml += '<div style="font-size:11px;color:var(--text3);margin-bottom:8px">Add to your show notes, website, or media page</div>';
-      sideHtml += '<div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:8px"><iframe src="' + embedUrl + '" width="100%" height="80" frameborder="0" style="border:none;display:block"></iframe></div>';
-      sideHtml += '<div style="position:relative"><textarea id="sp-embed-code" readonly style="width:100%;height:52px;padding:8px 36px 8px 8px;font-size:11px;font-family:monospace;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text2);resize:none">' + _escHtml(iframeCode) + '</textarea>';
-      sideHtml += '<button onclick="var ta=document.getElementById(\'sp-embed-code\');ta.select();document.execCommand(\'copy\');if(typeof showToast===\'function\')showToast(\'Embed code copied\',2000)" style="position:absolute;right:6px;top:6px;background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:3px 6px;font-size:10px;cursor:pointer;color:var(--text3);font-family:var(--ff)">Copy</button></div>';
-      sideHtml += '</div></div>';
-    }
-
-    sideHtml += '</div>'; // close sp-3col-sidebar
-
-    // ── ASSEMBLE ──────────────────────────────────────────────────────────────
-    html = '<div class="sp-3col">' + navHtml + mainHtml + sideHtml + '</div>';
+    // ASSEMBLE
+    html += '<div class="sp-new-body">'
+      + '<div class="sp-new-col-l">'+colL+'</div>'
+      + '<div class="sp-new-col-r">'+colR+'</div>'
+      + '</div>';
   }
 
   el.innerHTML=html;
   if (compareSlug&&_spCompareData) renderComparePanel(data,_spCompareData);
 }
+function spLeanFilter(spId, lean, btn) {
+  document.querySelectorAll('#'+spId+'-lean-pills .sp-lean-pill').forEach(function(p){ p.classList.remove('sp-lean-active'); });
+  if (btn) btn.classList.add('sp-lean-active');
+  var rows = document.querySelectorAll('#'+spId+'-analyzed-eps .sp-new-ep-row');
+  rows.forEach(function(row) {
+    var score = parseFloat(row.dataset.biasScore);
+    var show = lean === 'all'
+      || (lean === 'left' && score < -20)
+      || (lean === 'balanced' && score >= -20 && score <= 20)
+      || (lean === 'right' && score > 20);
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+function _buildAllEpsForId(spId, ascending) {
+  var container = document.getElementById(spId + '-all-eps');
+  if (!container) return '';
+  var rows = Array.from(container.querySelectorAll('.sp-new-ep-row'));
+  if (ascending) rows.reverse();
+  var frag = document.createDocumentFragment();
+  rows.forEach(function(r){ frag.appendChild(r); });
+  container.innerHTML = '';
+  container.appendChild(frag);
+  return container.innerHTML;
+}
+
 function formatDuration(d) {
   if (!d) return '';
   if (typeof d === 'string' && d.includes(':')) {
