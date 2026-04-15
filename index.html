@@ -6921,8 +6921,49 @@ function discNavCat(cat, btn) {
   var labels = {all:'Trending across all categories',news:'Trending in News & Politics',tech:'Trending in Technology',business:'Trending in Business',society:'Trending in Society',crime:'Trending in True Crime',comedy:'Trending in Comedy',health:'Trending in Health',sports:'Trending in Sports'};
   if (sub && !plUser()) sub.textContent = labels[cat] || 'Trending shows';
   _renderCategoryBiasContext(cat);
+  // Update hero card for this category
+  var hero = (typeof CATEGORY_HEROES !== 'undefined' && CATEGORY_HEROES[cat]) || _discDefaultHero;
+  _discSetHero(hero);
   discRenderShows();
   discRenderEpisodes();
+}
+
+function _discSetHero(hero) {
+  var eyeEl = document.getElementById('disc-hero-eye');
+  var titleEl = document.getElementById('disc-hero-title');
+  var hostEl = document.getElementById('disc-hero-host');
+  var videoEl = document.getElementById('disc-hero-video');
+  var playBtn = document.getElementById('disc-hero-play-btn');
+  var analyzeBtn = document.getElementById('disc-hero-analyze-btn');
+  if (eyeEl) eyeEl.textContent = hero.eye || 'Featured episode';
+  if (titleEl) titleEl.innerHTML = hero.title || '';
+  if (hostEl) hostEl.textContent = hero.host || hero.show || '';
+  _discCurrentHeroUrl = hero.url || '';
+  _discCurrentHeroShow = hero.show || '';
+  _discCurrentHeroTitle = hero.title ? hero.title.replace(/&[^;]+;/g, '') : '';
+  if (videoEl) {
+    if (hero.ytId) {
+      videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
+    } else {
+      // Non-YouTube: show artwork or podcast icon
+      videoEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:var(--navy)">'
+        + '<div style="text-align:center;color:rgba(255,255,255,.5)"><div style="font-size:48px;margin-bottom:8px">&#127911;</div><div style="font-size:13px">'+_escHtml(hero.show || '')+'</div></div></div>';
+      // Try to load artwork from iTunes
+      if (hero.show) {
+        _itunesArtwork(hero.show).then(function(url) {
+          if (url && videoEl) videoEl.innerHTML = '<img src="'+url+'" alt="" style="width:100%;height:100%;object-fit:cover">';
+        });
+      }
+    }
+  }
+  if (analyzeBtn) {
+    var safeUrl = (hero.url || '').replace(/'/g, "\\'");
+    var safeTitle = (hero.title || '').replace(/&[^;]+;/g, '').replace(/'/g, "\\'");
+    var safeShow = (hero.show || '').replace(/'/g, "\\'");
+    analyzeBtn.setAttribute('onclick', "analyzeEp(null,'"+safeUrl+"','"+safeTitle+"','"+safeShow+"',true)");
+  }
+  // Make host text clickable to show profile
+  if (hostEl && hero.show) _discMakeShowClickable(hostEl, hero.show, hero.url);
 }
 
 // [removed duplicate — see later definition]
@@ -7584,6 +7625,18 @@ var _discDefaultHero = {
   eye:'Featured episode', title:'Jensen Huang &mdash; NVIDIA &amp; the AI Revolution',
   show:'Lex Fridman Podcast', host:'Lex Fridman Podcast &middot; 2h 18m',
   url:'https://www.youtube.com/watch?v=vif8NQcjVf0', ytId:'vif8NQcjVf0'
+};
+
+var CATEGORY_HEROES = {
+  all:      _discDefaultHero,
+  news:     { eye:'News & Politics', title:'Trump 2.0 &mdash; What Happened in 100 Days', show:'Pod Save America', host:'Pod Save America &middot; 1h 12m', url:'https://feeds.megaphone.fm/pod-save-america', ytId:null },
+  tech:     { eye:'Technology', title:'Sam Altman &mdash; OpenAI, GPT-5 &amp; the Future of AI', show:'Lex Fridman Podcast', host:'Lex Fridman Podcast &middot; 2h 45m', url:'https://www.youtube.com/watch?v=jvqFAi7vkBc', ytId:'jvqFAi7vkBc' },
+  business: { eye:'Business', title:'Markets in Chaos &mdash; What Is Actually Happening', show:'Planet Money', host:'Planet Money &middot; 29m', url:'https://feeds.npr.org/510289/podcast.xml', ytId:null },
+  society:  { eye:'Society & Culture', title:'How Social Media Rewired Politics', show:'The Ezra Klein Show', host:'The Ezra Klein Show &middot; 1h 18m', url:'https://feeds.simplecast.com/82FI35Px', ytId:null },
+  crime:    { eye:'True Crime', title:'The Case That Changed Everything', show:'Crime Junkie', host:'Crime Junkie &middot; 45m', url:'https://feeds.simplecast.com/qm_9xx0g', ytId:null },
+  comedy:   { eye:'Comedy', title:'Bad Friends with Andrew Santino &amp; Bobby Lee', show:'Bad Friends', host:'Bad Friends &middot; 1h 15m', url:'https://www.youtube.com/watch?v=aeqSrVrhi_8', ytId:'aeqSrVrhi_8' },
+  health:   { eye:'Health & Science', title:'Why American Healthcare Costs So Much', show:'Maintenance Phase', host:'Maintenance Phase &middot; 1h 22m', url:'https://feeds.megaphone.fm/maintenancephase', ytId:null },
+  sports:   { eye:'Sports', title:'World Cup 2026 &mdash; The Host City Battle', show:'The Bill Simmons Podcast', host:'The Bill Simmons Podcast &middot; 1h 15m', url:'https://feeds.megaphone.fm/billsimmons', ytId:null },
 };
 var _discCurrentHeroUrl = _discDefaultHero.url;
 var _discCurrentHeroShow = _discDefaultHero.show;
