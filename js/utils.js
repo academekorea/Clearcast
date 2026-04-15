@@ -408,8 +408,8 @@ function calcBiasFingerprint(analyses, listenEvents) {
  */
 function calcEchoChamber(analyses, listenEvents) {
   var events = _mergeSignals(analyses, listenEvents || getListenHistory());
-  // Only count events with meaningful bias data
-  events = events.filter(function(e) { return e.leftPct || e.rightPct; });
+  // Only count events with meaningful bias data AND a show name
+  events = events.filter(function(e) { return (e.leftPct || e.rightPct) && e.showName; });
 
   // Count distinct shows and analysis/listen counts for basis
   var showSetAll = {};
@@ -420,17 +420,20 @@ function calcEchoChamber(analyses, listenEvents) {
   });
   var distinctShows = Object.keys(showSetAll).length;
 
-  // Activation threshold: 10+ analyzed episodes OR 7+ days of data
+  // Activation threshold: 10+ analyzed episodes AND at least 3 distinct shows
   var oldestDate = events.length ? events[events.length - 1].date : null;
   var newestDate = events.length ? events[0].date : null;
   var daysSinceFirst = oldestDate ? Math.floor((Date.now() - new Date(oldestDate).getTime()) / 86400000) : 0;
-  var thresholdMet = analysisCount >= 10 || daysSinceFirst >= 7;
+  var thresholdMet = analysisCount >= 10 && distinctShows >= 3;
 
   if (!thresholdMet) {
     return {
-      score: 0, label: '', description: 'Keep listening — your score unlocks after 1 week or 10 episodes.',
+      score: 0, label: '',
+      description: analysisCount >= 10 && distinctShows < 3
+        ? 'Analyze episodes across ' + (3 - distinctShows) + ' more show' + (3 - distinctShows !== 1 ? 's' : '') + ' to unlock your score.'
+        : 'Analyze 3+ episodes across different shows to see your score.',
       hasData: false,
-      progress: { current: analysisCount, needed: 10, daysRecorded: daysSinceFirst, daysNeeded: 7 },
+      progress: { current: analysisCount, needed: 10, daysRecorded: daysSinceFirst, daysNeeded: 7, showCount: distinctShows, showsNeeded: 3 },
       basis: { episodeCount: analysisCount, listenCount: listenCount, weekCount: 0, oldestDate: oldestDate, newestDate: newestDate, showCount: distinctShows }
     };
   }
