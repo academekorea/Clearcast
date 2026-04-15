@@ -360,7 +360,7 @@ export default async (req: Request) => {
   let claudeRes: Response | null = null;
   let claudeErr: any = null;
   let wasRateLimited = false;
-  const delays = [0, 5000, 15000, 30000]; // 4 attempts: immediate, 5s, 15s, 30s
+  const delays = [0, 3000, 10000]; // 3 attempts: immediate, 3s, 10s
 
   for (let attempt = 0; attempt < delays.length; attempt++) {
     if (delays[attempt] > 0) await new Promise(r => setTimeout(r, delays[attempt]));
@@ -374,7 +374,7 @@ export default async (req: Request) => {
         },
         body: JSON.stringify({
           model: "claude-sonnet-4-6",
-          max_tokens: 2000,
+          max_tokens: 4096,
           messages: [{ role: "user", content: `${ANALYSIS_PROMPT}\n\nTranscript:\n${sampledTranscript}` }],
         }),
         signal: AbortSignal.timeout(60000),
