@@ -8964,7 +8964,8 @@ function pollStatus(jobId, audioUrl) {
         if (d.code === 'PRIVATE_VIDEO') errMsg = 'This video is private or unavailable.';
         else if (d.code === 'AGE_RESTRICTED') errMsg = 'This video is age-restricted. Connect your Google account to analyze it.';
         else if (d.code === 'BOT_DETECTED') errMsg = 'YouTube is blocking automated access. Try connecting your Google account for reliable analysis.';
-        showAnalyzeErr(errMsg, d.suggestion);
+        else if (d.code === 'UNAVAILABLE') errMsg = 'Our server couldn\'t access this video. Connect your Google account or try again later.';
+        showAnalyzeErr(errMsg, d.suggestion, audioUrl);
         resetBtn();
         return;
       }
@@ -9194,11 +9195,19 @@ function tryAdvUrl(inputId) {
   document.getElementById('url-input').value=url;
   startAnalysis(url);
 }
-function showAnalyzeErr(msg, suggestion) {
+function showAnalyzeErr(msg, suggestion, sourceUrl) {
   document.getElementById('loading').classList.remove('on');
   document.getElementById('atabs').classList.add('on');
   document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('on');}); document.querySelectorAll('.atab')[0].classList.add('on');
   document.getElementById('apanel-results').classList.add('on');
+  var embedHtml = '';
+  var vid = sourceUrl ? ytId(sourceUrl) : null;
+  if (vid) {
+    embedHtml = '<div style="aspect-ratio:16/9;border-radius:8px;overflow:hidden;margin-bottom:16px;background:#000">'
+      + '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="width:100%;height:100%;border:none"></iframe>'
+      + '</div>'
+      + '<div style="font-size:12px;color:var(--text3);margin-bottom:12px">You can still watch the video above while we resolve the transcript issue.</div>';
+  }
   var extra = '';
   if (suggestion === 'connect_google') {
     var u = plUser();
@@ -9209,7 +9218,7 @@ function showAnalyzeErr(msg, suggestion) {
       + '<a href="/api/connect-youtube?userId='+userId+'" style="display:inline-block;padding:8px 16px;background:var(--navy);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none">Connect Google &#8594;</a>'
       + '</div>';
   }
-  document.getElementById('results').innerHTML='<div class="err-card">'+msg+'</div>'+extra;
+  document.getElementById('results').innerHTML=embedHtml+'<div class="err-card">'+msg+'</div>'+extra;
 }
 // FIX 1: Try to find a matching RSS feed on iTunes before showing recovery panel.
 // If found with high confidence (>= 0.6 word overlap), redirect to episode picker.
