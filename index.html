@@ -3734,8 +3734,8 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="disc-nav-lbl">Menu</div>
       <button class="disc-nav-btn" onclick="var d=document.getElementById('disc-home-drop');var a=document.getElementById('disc-home-arr');if(d){var o=d.style.display==='flex';d.style.display=o?'none':'flex';if(a)a.style.transform=o?'':'rotate(90deg)'}"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home<span id="disc-home-arr" style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.2);transition:transform .15s">&rsaquo;</span></button>
       <div id="disc-home-drop" style="display:none;flex-direction:column">
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');if(typeof showDashSection==='function')showDashSection('intelligence')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</button>
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="showView('home');if(typeof showDashSection==='function')showDashSection('queue')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
+        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="if(!plUser()){openModal('signup');return}showView('home');if(typeof showDashSection==='function')showDashSection('intelligence')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</button>
+        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="if(!plUser()){openModal('signup');return}showView('home');if(typeof showDashSection==='function')showDashSection('queue')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
       </div>
       <button class="disc-nav-btn on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
       <button class="disc-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
@@ -6620,8 +6620,9 @@ function showView(name) {
   document.body.classList.toggle('authenticated', !!(_u && _u.id));
   document.documentElement.classList.toggle('pl-signed-in', !!(_u && _u.id));
 
-  // Auth gate — prompt signup for gated views
-  if (!_u && (name === 'library' || name === 'show' || name === 'account' || name === 'settings' || name === 'profile')) {
+  // Auth gate — only discover, home, pricing, how-it-works are public
+  var _publicViews = ['discover', 'home', 'pricing', 'how-it-works'];
+  if (!_u && _publicViews.indexOf(name) === -1) {
     openModal('signup');
     return;
   }
@@ -6736,12 +6737,7 @@ function showView(name) {
     if (_loading) _loading.classList.remove('on');
   }
   if (name === 'admin') { var _au = plUser(); if (_au && (_au.isSuperAdmin || _au.email === 'academekorea@gmail.com')) { adminLoad('overview'); } else { showView('home'); } }
-  if (name === 'analyze' && !plUser()) {
-    // Don't show analyze view to guests — show auth gate then redirect to discover
-    showView('discover');
-    setTimeout(function(){ _showAnalysisAuthGate('', '', ''); }, 300);
-    return;
-  }
+  // analyze gate now handled by the global auth check above
   // Hide footer when in non-home views (except show)
   var footer = document.getElementById('site-footer');
   var _footerAuth = !!(plUser() && plUser().id);
