@@ -566,18 +566,28 @@ export default async (req: Request, context: Context) => {
               resolvedAudioUrl = autoMatchedAudioUrl;
               resolvedShowName = resolvedShowName || showNameForFallback;
             } else {
-              // No auto-match — show episode picker
-              await store.setJSON(jobId, {
-                status: "error", jobId,
-                error: "youtube_fallback_found",
-                code: "YOUTUBE_FALLBACK",
-                feedUrl: bestQuick.feedUrl,
-                showName: showNameForFallback,
-                showArtwork: showArtworkForFallback,
-                channelName: channelForItunes,
-                suggestion: "episode_picker",
-              });
-              return new Response(JSON.stringify({ jobId }), { status: 200, headers: { "Content-Type": "application/json" } });
+              // No title match — just use the latest episode from the feed (seamless UX)
+              try {
+                const latestFeedRes = await fetch(bestQuick.feedUrl, {
+                  headers: { "User-Agent": "Podlens/1.0 (+https://podlens.app)" },
+                  signal: AbortSignal.timeout(8000),
+                });
+                if (latestFeedRes.ok) {
+                  const latestXml = await latestFeedRes.text();
+                  const latestItems = latestXml.match(/<item[\s\S]*?<\/item>/g) || [];
+                  for (const item of latestItems.slice(0, 5)) {
+                    const enc = item.match(/<enclosure[^>]+url=["']([^"']+)["']/i);
+                    if (enc?.[1]) {
+                      resolvedAudioUrl = enc[1];
+                      const tMatch = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/);
+                      if (tMatch?.[1] && !resolvedEpisodeTitle) resolvedEpisodeTitle = tMatch[1].trim();
+                      resolvedShowName = resolvedShowName || showNameForFallback;
+                      console.log(`[analyze] iTunes fallback — using latest episode: ${resolvedEpisodeTitle}`);
+                      break;
+                    }
+                  }
+                }
+              } catch {}
             }
           }
         }
@@ -727,17 +737,41 @@ export default async (req: Request, context: Context) => {
                   } catch {}
                 }
               }
-              await store.setJSON(jobId, {
-                status: "error", jobId,
-                error: "youtube_fallback_found",
-                code: "YOUTUBE_FALLBACK",
-                feedUrl: best.feedUrl,
-                showName: best.collectionName || channelName,
-                showArtwork: best.artworkUrl600 || best.artworkUrl100 || "",
-                channelName,
-                suggestion: "episode_picker",
-              });
-              return;
+              // No title match — use latest episode from feed (seamless UX, no picker)
+              try {
+                const latestRes2 = await fetch(best.feedUrl, {
+                  headers: { "User-Agent": "Podlens/1.0 (+https://podlens.app)" },
+                  signal: AbortSignal.timeout(8000),
+                });
+                if (latestRes2.ok) {
+                  const latestXml2 = await latestRes2.text();
+                  const items3 = latestXml2.match(/<item[\s\S]*?<\/item>/g) || [];
+                  for (const item3 of items3.slice(0, 5)) {
+                    const enc3 = item3.match(/<enclosure[^>]+url=["']([^"']+)["']/i);
+                    if (enc3?.[1]) {
+                      const aaiKey3 = Netlify.env.get("ASSEMBLYAI_API_KEY");
+                      if (aaiKey3) {
+                        const tMatch3 = item3.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/);
+                        const epTitle3 = tMatch3?.[1]?.trim() || "";
+                        console.log(`[analyze] Post-Railway fallback — using latest episode: ${epTitle3}`);
+                        const { id: latestTid } = await submitTranscription(aaiKey3, enc3[1], { timeout: 30000 });
+                        await store.setJSON(jobId, {
+                          status: "transcribing", jobId, url, canonicalKey: canonical,
+                          episodeTitle: resolvedEpisodeTitle || epTitle3,
+                          showName: resolvedShowName || best.collectionName || channelName,
+                          hostNames: resolvedHostNames,
+                          transcriptId: latestTid,
+                          createdAt: Date.now(),
+                          pendingTimeoutAt: Date.now() + TIMEOUT_MS,
+                        });
+                        return;
+                      }
+                    }
+                  }
+                }
+              } catch {}
+              // If even latest episode extraction fails, continue to next fallback
+
             }
           }
         } catch (e: any) {
