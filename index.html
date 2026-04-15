@@ -6877,19 +6877,39 @@ function initDiscover() {
         }
       }).catch(function(){});
 
-    // Live trending topics for signed-out too
+    // Live trending topics + heroes for signed-out
     fetch('/api/trending-topics', { signal: AbortSignal.timeout(5000) })
       .then(function(r){ return r.json(); })
       .then(function(d){
+        // Sidebar: most analyzed
         var el = document.getElementById('disc-rc-mid');
-        if (!el || !d.topics || !d.topics.length) return;
-        el.innerHTML = '<div class="disc-rc-title">Most analyzed</div>'
-          + d.topics.slice(0,5).map(function(t){
-              return '<div class="disc-topic-row">'
-                +'<span class="disc-topic-name">'+t.name+'</span>'
-                +'<span class="disc-topic-count">'+t.count+' analyses</span>'
-                +'</div>';
-            }).join('');
+        if (el && d.topics && d.topics.length) {
+          el.innerHTML = '<div class="disc-rc-title">Most analyzed</div>'
+            + d.topics.slice(0,5).map(function(t){
+                return '<div class="disc-topic-row">'
+                  +'<span class="disc-topic-name">'+t.name+'</span>'
+                  +'<span class="disc-topic-count">'+t.count+' analyses</span>'
+                  +'</div>';
+              }).join('');
+        }
+        // Update CATEGORY_HEROES with live data from DB
+        if (d.heroes && d.heroes.length) {
+          d.heroes.forEach(function(h) {
+            var dur = h.durationMinutes ? (h.durationMinutes >= 60 ? Math.floor(h.durationMinutes/60)+'h '+Math.round(h.durationMinutes%60)+'m' : Math.round(h.durationMinutes)+'m') : '';
+            CATEGORY_HEROES[h.category] = {
+              eye: h.category === 'all' ? 'Featured episode' : (h.category.charAt(0).toUpperCase() + h.category.slice(1)),
+              title: _escHtml(h.episodeTitle || ''),
+              show: h.showName || '',
+              host: h.showName + (dur ? ' &middot; ' + dur : ''),
+              url: h.url || '',
+              ytId: h.ytId || null,
+            };
+          });
+          // Update current hero if on default category
+          if (_discCat === 'all' && CATEGORY_HEROES['all']) {
+            _discSetHero(CATEGORY_HEROES['all']);
+          }
+        }
       }).catch(function(){});
   }
   discRenderShows();
@@ -6943,15 +6963,15 @@ function _discSetHero(hero) {
   _discCurrentHeroTitle = hero.title ? hero.title.replace(/&[^;]+;/g, '') : '';
   if (videoEl) {
     if (hero.ytId) {
-      videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
+      videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
     } else {
-      // Non-YouTube: show artwork or podcast icon
-      videoEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:var(--navy)">'
-        + '<div style="text-align:center;color:rgba(255,255,255,.5)"><div style="font-size:48px;margin-bottom:8px">&#127911;</div><div style="font-size:13px">'+_escHtml(hero.show || '')+'</div></div></div>';
-      // Try to load artwork from iTunes
+      // Non-YouTube: full-bleed artwork background with overlay text
+      videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%)">'
+        + '<div style="text-align:center;color:rgba(255,255,255,.5)"><div style="font-size:64px;margin-bottom:12px">&#127911;</div><div style="font-size:14px;font-weight:500">'+_escHtml(hero.show || '')+'</div></div></div>';
+      // Replace with real artwork from iTunes (full bleed)
       if (hero.show) {
         _itunesArtwork(hero.show).then(function(url) {
-          if (url && videoEl) videoEl.innerHTML = '<img src="'+url+'" alt="" style="width:100%;height:100%;object-fit:cover">';
+          if (url && videoEl) videoEl.innerHTML = '<img src="'+url+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
         });
       }
     }
