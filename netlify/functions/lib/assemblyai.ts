@@ -19,8 +19,17 @@ export async function submitTranscription(
 
   if (!res.ok) {
     const text = await res.text();
-    let msg = "Transcription service error";
-    try { const j = JSON.parse(text); if (j.error) msg = `Transcription service error: ${j.error}`; } catch { /* */ }
+    let msg = "Analysis temporarily unavailable. Please try again in a few minutes.";
+    try {
+      const j = JSON.parse(text);
+      if (j.error) {
+        console.error("[assemblyai] API error:", j.error);
+        // Don't expose internal billing/API errors to users
+        if (/balance|billing|payment|quota|limit/i.test(j.error)) {
+          msg = "Analysis service is temporarily at capacity. Please try again shortly.";
+        }
+      }
+    } catch { /* */ }
     throw new Error(msg);
   }
 
