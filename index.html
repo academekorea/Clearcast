@@ -6961,6 +6961,47 @@ function discRenderRightCol(isLoggedIn, user) {
 function discRenderEpisodes() {
   var el = document.getElementById('disc-ep-row');
   if (!el) return;
+
+  // Try to load recently analyzed from community (live data)
+  loadPlatformTrending().then(function(trending) {
+    if (trending && trending.length >= 3) {
+      _renderLiveEpisodes(el, trending.slice(0, 9));
+      return;
+    }
+    _renderCuratedEpisodes(el);
+  }).catch(function() { _renderCuratedEpisodes(el); });
+}
+
+function _renderLiveEpisodes(el, episodes) {
+  var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
+  el.innerHTML = episodes.map(function(ep, i) {
+    var showName = ep.showName || ep.show_name || '';
+    var epTitle = ep.episodeTitle || ep.episode_title || showName;
+    var slug = showName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var safeName = showName.replace(/"/g,'').replace(/'/g,'');
+    var biasLabel = ep.biasLabel || ep.bias_label || '';
+    var biasPill = biasLabel ? '<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);margin-left:6px">'+biasLabel+'</span>' : '';
+    var artId = 'disc-live-art-' + i;
+    return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
+      +'<div class="disc-ep-art" id="'+artId+'" style="background:'+bgs[i % 3]+'"></div>'
+      +'<div class="disc-ep-body"><div class="disc-ep-show">'+showName+'</div>'
+      +'<div class="disc-ep-title">'+epTitle+'</div>'
+      +'<div class="disc-ep-dur">Recently analyzed'+biasPill+'</div></div></div>';
+  }).join('');
+  // Lazy-load artwork from iTunes
+  episodes.forEach(function(ep, i) {
+    var name = ep.showName || ep.show_name || '';
+    if (!name) return;
+    _itunesArtwork(name).then(function(url) {
+      if (!url) return;
+      var artEl = document.getElementById('disc-live-art-' + i);
+      if (artEl) artEl.innerHTML = '<img src="'+url+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">';
+    });
+  });
+  addScrollDrag(el);
+}
+
+function _renderCuratedEpisodes(el) {
   var shows = _discCat === 'all' ? CURATED_SHOWS.slice(0,9) : CURATED_SHOWS.filter(function(s){ return s.cat===_discCat; }).slice(0,9);
   if (!shows.length) shows = CURATED_SHOWS.slice(0,9);
   var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
@@ -7469,28 +7510,50 @@ function loadDiscTrendingNews() {
   var el = document.getElementById('disc-trending-news');
   if (!el) return;
 
-  var topics = [
+  // Default topics as instant render, then replace with live data
+  var fallbackTopics = [
     'Artificial Intelligence', 'Trump Administration', 'Federal Reserve',
-    'Gaza Ceasefire', 'Climate Policy', 'Big Tech Regulation',
-    'Immigration', 'World Cup 2026', 'Healthcare Costs', 'Elon Musk',
+    'Climate Policy', 'Big Tech Regulation', 'Healthcare Costs',
     'Ukraine War', 'Stock Market', 'Supreme Court', 'Social Media',
-    'Nuclear Energy', 'Cryptocurrency', 'China Trade War', 'NATO',
+    'Cryptocurrency', 'China Trade War',
   ];
 
-  el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3);padding:6px 0">'
-    + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
-    + '</div>'
-    + topics.map(function(topic) {
-        var safe = topic.replace(/'/g, "\'");
-        return '<button onclick="discTopicHero(\''+safe+'\')" '
-          + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
-          + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
-          + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
-          + 'white-space:nowrap">'
-          + topic
-          + ' <span style="color:var(--text3);font-size:11px">+</span>'
-          + '</button>';
-      }).join('');
+  function renderPills(topics) {
+    el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3);padding:6px 0">'
+      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
+      + '</div>'
+      + topics.map(function(topic) {
+          var safe = topic.replace(/'/g, "\\'");
+          return '<button onclick="discTopicHero(\''+safe+'\')" '
+            + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
+            + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
+            + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
+            + 'white-space:nowrap">'
+            + topic
+            + ' <span style="color:var(--text3);font-size:11px">+</span>'
+            + '</button>';
+        }).join('');
+  }
+
+  // Render fallback immediately
+  renderPills(fallbackTopics);
+
+  // Fetch live trending from Supabase (most analyzed shows + topics)
+  fetch('/api/trending-topics', { signal: AbortSignal.timeout(5000) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var liveTopics = (d.topics || []).map(function(t) { return t.name; }).filter(Boolean);
+      if (liveTopics.length >= 5) {
+        renderPills(liveTopics.slice(0, 18));
+      } else if (liveTopics.length > 0) {
+        // Merge live topics first, then fill with fallbacks
+        var merged = liveTopics.slice();
+        var seen = {};
+        liveTopics.forEach(function(t) { seen[t.toLowerCase()] = true; });
+        fallbackTopics.forEach(function(t) { if (!seen[t.toLowerCase()] && merged.length < 18) merged.push(t); });
+        renderPills(merged);
+      }
+    }).catch(function() {});
 }
 
 
