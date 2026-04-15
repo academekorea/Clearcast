@@ -63,20 +63,20 @@ export default async (req: Request) => {
   // Map analyses rows to the frontend analyzedEpisodes format
   const analyzedEpisodes: any[] = [];
   if (analysesRes.status === "fulfilled" && analysesRes.value.data) {
-    for (const row of analysesRes.value.data) {
+    for (const r of analysesRes.value.data as any[]) {
       analyzedEpisodes.push({
-        jobId: row.job_id,
-        episodeTitle: row.episode_title || "",
-        showName: row.show_name || "",
-        biasScore: row.bias_score,
-        biasLabel: row.bias_label || "",
-        leftPct: row.bias_left_pct ?? 0,
-        centerPct: row.bias_center_pct ?? 0,
-        rightPct: row.bias_right_pct ?? 0,
-        durationMinutes: row.duration_minutes,
-        url: row.url || "",
-        analyzedAt: row.analyzed_at,
-        hostTrustScore: row.host_trust_score,
+        jobId: r.job_id,
+        episodeTitle: r.episode_title || "",
+        showName: r.show_name || "",
+        biasScore: r.bias_score,
+        biasLabel: r.bias_label || "",
+        leftPct: r.bias_left_pct ?? 0,
+        centerPct: r.bias_center_pct ?? 0,
+        rightPct: r.bias_right_pct ?? 0,
+        durationMinutes: r.duration_minutes,
+        url: r.url || "",
+        analyzedAt: r.analyzed_at,
+        hostTrustScore: r.host_trust_score,
       });
     }
   }
@@ -84,7 +84,7 @@ export default async (req: Request) => {
   // Map listen events to frontend format
   const listenHistory: any[] = [];
   if (listenRes.status === "fulfilled" && listenRes.value.data) {
-    for (const row of listenRes.value.data) {
+    for (const row of listenRes.value.data as any[]) {
       const p = row.properties || {};
       listenHistory.push({
         showName: p.showName || "",
