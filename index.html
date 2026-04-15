@@ -10286,14 +10286,14 @@ async function loadShowTrend(showName, days, btn) {
   }
 }
 
-async function loadShowProfile(slug,compareSlug) {
+async function loadShowProfile(slug,compareSlug,exactName) {
   _spSlug=slug; _spCompareSlug=compareSlug||null;
   var el=document.getElementById('sp-content');
   el.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3);font-size:12px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading show intelligence&hellip;</div>';
   try {
     var data=await fetch('/api/show-profile?id='+encodeURIComponent(slug)).then(function(r){return r.json();});
-    // Enrich with real iTunes metadata
-    var showName=(data.show&&data.show.name)||slug;
+    // Enrich with real iTunes metadata — prefer exact name over slug
+    var showName=exactName||(data.show&&data.show.name)||slug;
     var itunesMeta=await fetchItunesMeta(showName);
     // Fetch RSS episodes + description in parallel with iTunes
     var rssFeedUrl=(itunesMeta&&itunesMeta.feedUrl)||(data.show&&data.show.feedUrl)||null;
