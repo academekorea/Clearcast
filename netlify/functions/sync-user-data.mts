@@ -10,6 +10,12 @@ const ALLOWED_FIELDS = new Set([
   "youtube_connected",
   "theme",
   "region",
+  "voice_preference",
+  "notification_prefs",
+  "language",
+  "bias_fingerprint",
+  "echo_chamber",
+  "topic_affinity",
 ]);
 
 export default async (req: Request) => {

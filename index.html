@@ -6505,6 +6505,7 @@ window.saveNotifPref = function(key, val) {
     var prefs = JSON.parse(localStorage.getItem('pl-notif-prefs') || '{}');
     prefs[key] = val;
     localStorage.setItem('pl-notif-prefs', JSON.stringify(prefs));
+    if (typeof syncToServer === 'function') syncToServer('notification_prefs', prefs);
   } catch(e) {}
 };
 
@@ -11057,6 +11058,18 @@ function trackAnalysis(data) {
     }
     // Sync to server
     syncToServer('analyzed_episodes', cu2.analyzedEpisodes || cu.analyzedEpisodes);
+    // Recompute and sync intelligence scores after every analysis
+    try {
+      var _allEps = cu2.analyzedEpisodes || [];
+      if (_allEps.length >= 1) {
+        var fp = (typeof calcBiasFingerprint === 'function') ? calcBiasFingerprint(_allEps) : null;
+        if (fp && fp.hasData) syncToServer('bias_fingerprint', fp);
+        var eco = (typeof calcEchoChamber === 'function') ? calcEchoChamber(_allEps) : null;
+        if (eco && eco.hasData) syncToServer('echo_chamber', eco);
+        var ta = (typeof calcTopicAffinity === 'function') ? calcTopicAffinity() : null;
+        if (ta && ta.topTopics && ta.topTopics.length) syncToServer('topic_affinity', ta);
+      }
+    } catch(e2) {}
     if(typeof posthog!=='undefined')posthog.capture('analysis_completed',{showName:data.showName||'',biasLabel:(data.audioLean&&data.audioLean.plainEnglishLabel)||'',plan:plUser()&&plUser().plan});
   } catch(e){}
 }
@@ -11245,6 +11258,18 @@ async function restoreUserDataFromServer(userId) {
     if (d.youtube_connected) {
       try { localStorage.setItem('pl-youtube-connected', '1'); } catch(e) {}
     }
+    // Restore voice preference
+    if (d.voice_preference) {
+      try { localStorage.setItem('pl_voice_id', d.voice_preference); } catch(e) {}
+    }
+    // Restore notification prefs
+    if (d.notification_prefs && typeof d.notification_prefs === 'object') {
+      try { localStorage.setItem('pl-notif-prefs', JSON.stringify(d.notification_prefs)); } catch(e) {}
+    }
+    // Restore intelligence scores to user object
+    if (d.bias_fingerprint) u.biasFingerprint = d.bias_fingerprint;
+    if (d.echo_chamber) u.echoChamber = d.echo_chamber;
+    if (d.topic_affinity) u.topicAffinity = d.topic_affinity;
     // Write back to localStorage
     try { localStorage.setItem('pl-user', JSON.stringify(u)); } catch(e) {}
     // Refresh UI

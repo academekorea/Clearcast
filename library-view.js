@@ -490,6 +490,22 @@
     u.followedShows[idx].smartQueue = val;
     localStorage.setItem('pl-user', JSON.stringify(u));
     follows = u.followedShows.slice();
+    // Sync to Supabase via smart-queue API
+    var show = u.followedShows[idx];
+    var showSlug = (show.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    fetch('/api/smart-queue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: u.id, action: 'toggle_show', showSlug: showSlug, enabled: val })
+    }).then(function(r) { return r.json(); }).then(function(d) {
+      if (d.limitReached) {
+        u.followedShows[idx].smartQueue = false;
+        localStorage.setItem('pl-user', JSON.stringify(u));
+        follows = u.followedShows.slice();
+        renderFollowing();
+        if (typeof plToast === 'function') plToast(d.error || 'Smart Queue limit reached');
+      }
+    }).catch(function() {});
   };
 
   window.unfollowShow = function(idx) {

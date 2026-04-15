@@ -25,9 +25,10 @@ export default async (req: Request) => {
     sb
       .from("users")
       .select(
-        "analyzed_episodes, listen_history, liked_episodes, " +
+        "analyzed_episodes, listen_history, liked_episodes, playlists, " +
         "spotify_connected, youtube_connected, theme, region, " +
-        "interests, voice_preference"
+        "interests, voice_preference, notification_prefs, language, " +
+        "bias_fingerprint, echo_chamber, topic_affinity"
       )
       .eq("id", userId)
       .maybeSingle(),
