@@ -6113,7 +6113,10 @@ function renderDashRecent() {
     if (!placeholder) return;
     var query = r.showName || r.title || '';
     if (!query) return;
-    _itunesArtwork(query).then(function(url) {
+    // Clean up mangled YouTube titles: strip episode numbers, "E123", "Ch", "Ep", etc.
+    var cleanQuery = query.replace(/\b(E|Ep|EP|Ch|Episode|Part|Vol)\.?\s*\d*\b/gi, '').replace(/\d{2,}/g, '').replace(/[|#\-:]+$/g, '').replace(/\s{2,}/g, ' ').trim();
+    if (cleanQuery.length < 4) cleanQuery = query;
+    _itunesArtwork(cleanQuery).then(function(url) {
       if (!url) return;
       // Update the placeholder
       var el2 = document.getElementById(_artId);
