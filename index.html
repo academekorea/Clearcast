@@ -3975,6 +3975,18 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     <div class="apanel on" id="apanel-results">
       <div class="empty-state" id="empty-state">Paste a URL above and click Analyze to get started.</div>
       <div id="results"></div>
+      <!-- Share bar — shown by v7-render.js after results render -->
+      <div id="results-share-bar" style="display:none;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid var(--border);background:var(--bg2);flex-wrap:wrap">
+        <span id="results-share-label" style="flex:1;min-width:0;font-size:12px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <button onclick="shareAnalysis(window._currentJobId)" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);flex-shrink:0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Share
+        </button>
+        <button onclick="if(window._currentJobId){navigator.clipboard.writeText(window.location.origin+'/analysis/'+window._currentJobId).then(function(){showToast('Link copied',2000)})}" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--ff);flex-shrink:0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy link
+        </button>
+      </div>
     </div>
     <div class="apanel" id="apanel-transcript">
       <div id="transcript-content"></div>
