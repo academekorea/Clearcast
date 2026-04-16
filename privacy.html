@@ -99,115 +99,75 @@ document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getIt
 
 <div class="doc">
   <h1>Privacy Policy</h1>
-  <div class="meta">Effective date: January 1, 2026 &middot; hello@podlens.app</div>
+  <div class="meta">Effective date: April 16, 2026 &middot; <a href="mailto:hello@podlens.app">hello@podlens.app</a></div>
 
   <h2>What we collect</h2>
-  <p>When you use Podlens, we collect only what is necessary to provide the service:</p>
+  <p>When you use Podlens, we collect what is necessary to provide the service and improve it over time:</p>
   <ul>
-    <li><strong>URLs you submit</strong> — to fetch and transcribe the podcast or video.</li>
-    <li><strong>Transcripts</strong> — temporarily cached for 7 days to avoid re-processing the same content. Transcripts are never sold or shared with third parties.</li>
-    <li><strong>Account information</strong> (if you sign up) — your email address and a hashed password. We do not collect payment information directly; payments are handled by a third-party processor.</li>
-    <li><strong>Usage logs</strong> — standard server logs (IP address, timestamp, response code) retained for 30 days for security and debugging purposes.</li>
+    <li><strong>URLs you submit</strong> &#8212; to fetch and transcribe the podcast or video.</li>
+    <li><strong>Transcripts</strong> &#8212; processed to generate analysis. Episode transcripts are cached to avoid re-processing the same content. Transcripts are not sold or shared with third parties.</li>
+    <li><strong>Account information</strong> (if you sign up) &#8212; your email address and a securely hashed password, or your name and email if you sign in via Google, Spotify, or KakaoTalk OAuth. We do not store payment card details; payments are processed securely by Stripe.</li>
+    <li><strong>Usage and preference data</strong> &#8212; analyses you run, shows you follow or like, topics you select during onboarding, and voice preferences. This data powers your library, your personal intelligence features, and personalized recommendations.</li>
+    <li><strong>Intelligence signals</strong> &#8212; if you use features like the Bias Fingerprint or Echo Chamber Score, listen events are stored locally in your browser (in localStorage) to calculate those scores on-device. If you are logged in, these signals may be associated with your account to enable cross-device continuity of your intelligence profile.</li>
+    <li><strong>Connected account data</strong> &#8212; if you connect Spotify, Google, or KakaoTalk, we receive and store the OAuth access tokens and basic profile information (name, email) returned by those services to enable library import and authentication. We do not access payment data from connected accounts.</li>
+    <li><strong>Usage logs</strong> &#8212; standard server logs (IP address, timestamp, response code) retained for up to 30 days for security and debugging.</li>
+    <li><strong>Error and performance data</strong> &#8212; anonymized error reports and performance metrics to help us diagnose and fix issues.</li>
   </ul>
 
-  <h2>What we do not collect</h2>
+  <h2>How we use your data</h2>
   <ul>
-    <li>We do not build behavioral profiles or track you across the web.</li>
-    <li>We do not sell data to advertisers or data brokers.</li>
-    <li>We do not use tracking pixels, fingerprinting, or third-party analytics that phone home to ad networks.</li>
-    <li>Your analysis history is stored in your browser's localStorage unless you are logged in, in which case it is associated with your account only.</li>
+    <li>To provide analysis results, your library, and personalized intelligence features</li>
+    <li>To authenticate your account and manage your subscription</li>
+    <li>To improve analysis accuracy and platform reliability</li>
+    <li>To send transactional emails (account confirmation, billing receipts) and, if you opt in, product updates</li>
+    <li>We do not use your data to serve advertising</li>
   </ul>
 
   <h2>Third-party services</h2>
-  <p>To provide the service we use the following third-party APIs:</p>
+  <p>To provide the service we use the following third-party processors. Each is bound by their own privacy and data processing agreements:</p>
   <ul>
-    <li><strong>AssemblyAI</strong> — transcription. Audio files are processed and discarded; AssemblyAI's privacy policy governs their handling of transcript data.</li>
-    <li><strong>Anthropic (Claude API)</strong> — transcript analysis. Transcripts are sent to Anthropic's API for analysis. Anthropic does not train on API data submitted by default. See Anthropic's usage policies for details.</li>
-    <li><strong>YouTube Data API</strong> — to verify video metadata. No personal data is sent.</li>
+    <li><strong>AssemblyAI</strong> &#8212; audio transcription. Audio is transmitted to AssemblyAI for processing. See AssemblyAI&#8217;s privacy policy for their data handling practices.</li>
+    <li><strong>Anthropic (Claude API)</strong> &#8212; transcript analysis. Episode transcripts are sent to Anthropic&#8217;s API. Anthropic does not train on API-submitted data by default. See Anthropic&#8217;s usage policies for details.</li>
+    <li><strong>Stripe</strong> &#8212; payment processing. All billing is handled by Stripe. We do not store or have access to your card number or full payment details.</li>
+    <li><strong>Supabase</strong> &#8212; database and authentication infrastructure. Account data, analyses, and preferences are stored in our Supabase-hosted database.</li>
+    <li><strong>YouTube Data API</strong> &#8212; to verify video metadata. No personal data is sent beyond the URL being analyzed.</li>
+    <li><strong>PostHog</strong> &#8212; product analytics. We use PostHog to understand how features are used in aggregate. Data is pseudonymous. You can opt out by using browser-level Do Not Track settings.</li>
+    <li><strong>Hotjar</strong> &#8212; heatmaps and session recording. We use Hotjar to understand UI usage patterns. Hotjar masks sensitive form inputs by default. See Hotjar&#8217;s privacy policy for opt-out options.</li>
+    <li><strong>Sentry</strong> &#8212; error monitoring. Crash reports and stack traces are sent to Sentry to help us identify and fix bugs. These reports do not include personally identifiable content.</li>
+    <li><strong>Google, Spotify, KakaoTalk</strong> &#8212; OAuth authentication providers. We receive only the data you authorize during the OAuth flow.</li>
   </ul>
 
-  <h2>Cookies</h2>
-  <p>We use a single session cookie if you are logged in to Podlens. We do not use third-party cookies or advertising cookies.</p>
+  <h2>Community analysis cache</h2>
+  <p>Completed analyses are stored in a shared cache. When another user analyzes the same episode, they receive the cached result rather than triggering a new analysis. Cached analyses are not linked to any individual user&#8217;s identity. This is how Podlens delivers fast results to everyone on the platform.</p>
+
+  <h2>Cookies and local storage</h2>
+  <p>We use a session cookie when you are logged in. We use your browser&#8217;s localStorage to store listen events, analysis history, and UI preferences for users who are not logged in. We do not use third-party advertising cookies.</p>
 
   <h2>Data retention</h2>
   <ul>
-    <li>Cached transcripts: 7 days</li>
-    <li>Analysis job records: 30 days</li>
-    <li>Account data: retained until account deletion</li>
+    <li>Cached transcripts: up to 30 days</li>
+    <li>Community analysis cache: indefinite (powers shared results for all users)</li>
+    <li>Account data: retained until you delete your account</li>
     <li>Server logs: 30 days</li>
+    <li>Connected account tokens: until you disconnect the integration or delete your account</li>
   </ul>
 
   <h2>Your rights</h2>
-  <p>You may request deletion of your account and all associated data at any time by emailing <a href="mailto:hello@podlens.app">hello@podlens.app</a>. We will complete deletion within 14 business days.</p>
+  <p>Depending on your location, you may have rights to access, correct, delete, or export your personal data. You may also have the right to object to certain processing or to withdraw consent where processing is based on consent.</p>
+  <ul>
+    <li><strong>Access and export</strong> &#8212; you can view and export your analysis history from your account library at any time.</li>
+    <li><strong>Deletion</strong> &#8212; you may delete your account and all associated personal data from Settings &#8594; Account &#8594; Delete account. We will complete deletion within 14 business days. Anonymized, non-identifiable data in the community analysis cache is not deleted as it is not linked to your identity.</li>
+    <li><strong>Correction</strong> &#8212; contact <a href="mailto:hello@podlens.app">hello@podlens.app</a> to correct inaccurate account information.</li>
+    <li><strong>Opt-out of analytics</strong> &#8212; you can use browser-level Do Not Track settings or privacy extensions to limit PostHog and Hotjar data collection.</li>
+  </ul>
 
   <h2>Children</h2>
-  <p>Podlens is not directed to children under 13. We do not knowingly collect data from anyone under 13.</p>
+  <p>Podlens is not directed to children under 13. We do not knowingly collect data from anyone under 13. If you believe we have inadvertently collected data from a minor, contact us and we will delete it promptly.</p>
 
   <h2>Changes to this policy</h2>
-  <p>We may update this policy from time to time. Material changes will be communicated by email to registered users and by updating the effective date above.</p>
+  <p>We may update this policy from time to time. Material changes will be communicated by email to registered users and by updating the effective date above. Continued use of the service after the updated effective date constitutes acceptance of the revised policy.</p>
 
   <h2>Contact</h2>
-  <p>Questions about this policy: <a href="mailto:hello@podlens.app">hello@podlens.app</a></p>
-</div>
+  <p>Privacy questions or data requests: <a href="mailto:hello@podlens.app">hello@podlens.app</a></p>
 
 
-
-<!-- FOOTER -->
-<footer class="site-footer" id="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <a href="/" class="footer-logo-link">
-        <img src="/favicon.svg" class="pl-lockup-icon" alt="Podlens" width="28" height="28">
-        <img src="/logo-wordmark.png" alt="PODLENS" height="16" style="height:16px;width:auto;display:block;opacity:.9">
-      </a>
-      <p class="footer-tagline">A force of clarity in the age of noise.</p>
-      <div class="footer-social">
-        <a href="#" class="footer-social-link" aria-label="X (Twitter)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-        <a href="#" class="footer-social-link" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
-        <a href="#" class="footer-social-link" aria-label="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.15a8.16 8.16 0 004.77 1.52V7.24a4.85 4.85 0 01-1-.55z"/></svg></a>
-        <a href="#" class="footer-social-link" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
-        <a href="#" class="footer-social-link" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
-      </div>
-    </div>
-    <div>
-      <div class="footer-col-title">DISCOVER</div>
-      <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/">Trending</a>
-        <a href="/pricing.html">Unheard</a>
-        <a href="/?view=analyze">Analyze a show</a>
-      </div>
-    </div>
-    <div>
-      <div class="footer-col-title">COMPANY</div>
-      <div class="footer-links">
-        <a href="/mission.html">Our mission</a>
-        <a href="/how-it-works.html">How it works</a>
-        <a href="/methodology.html">Methodology</a>
-        <a href="/pricing.html">Pricing</a>
-      </div>
-    </div>
-    <div>
-      <div class="footer-col-title">HELP</div>
-      <div class="footer-links">
-        <a href="mailto:hello@podlens.app">Contact</a>
-        <a href="/faq.html">FAQ</a>
-        <a href="/privacy.html">Privacy Policy</a>
-        <a href="/terms.html">Terms of Service</a>
-      </div>
-    </div>
-    <div>
-      <div class="footer-col-title">TOOLS</div>
-      <div class="footer-links">
-        <a href="/extension.html">Browser Extension</a>
-        <a href="/">Daily Newsletter</a>
-      </div>
-    </div>
-  </div>
-  <div class="footer-bottom-row">
-    <p class="footer-copy">&copy; 2026 Podlens. All rights reserved.</p>
-    <p class="footer-made">A force of clarity in the age of noise.</p>
-  </div>
-</footer>
-</body>
-</html>

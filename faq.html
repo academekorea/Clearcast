@@ -92,8 +92,8 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
     </span>
   </a>
   <div style="display:flex;align-items:center;gap:4px;margin-left:auto">
-    <a href="/how-it-works.html" style="padding:7px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:6px;font-weight:500;font-family:var(--ff);transition:background .15s,color .15s">How it works</a>
-    <a href="/pricing.html" style="padding:7px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:6px;font-weight:500;font-family:var(--ff);transition:background .15s,color .15s">Pricing</a>
+    <a href="/how-it-works" style="padding:7px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:6px;font-weight:500;font-family:var(--ff);transition:background .15s,color .15s">How it works</a>
+    <a href="/pricing" style="padding:7px 14px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:6px;font-weight:500;font-family:var(--ff);transition:background .15s,color .15s">Pricing</a>
     <button onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')" style="padding:7px 10px;background:none;border:none;cursor:pointer;font-size:14px;border-radius:6px">☀️</button>
     <a href="/" style="margin-left:6px;padding:8px 20px;background:var(--navy);color:#fff;text-decoration:none;border-radius:999px;font-size:13px;font-weight:600;font-family:var(--ff);letter-spacing:.01em;white-space:nowrap">Sign in / up</a>
   </div>
@@ -157,10 +157,14 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
       <div class="faq-q">What is the Bias Fingerprint?</div>
       <div class="faq-a">Your Bias Fingerprint is your personal media diet score. Every episode you analyze contributes to it, weighted by episode length. Over time it shows the aggregate left/center/right distribution of the media you consume — helping you spot blind spots in your listening habits.</div>
     </div>
+      <div class="faq-item">
+        <div class="faq-q">What is the Echo Chamber Score?</div>
+        <div class="faq-a">Your Echo Chamber Score (0&#8211;100) measures the perspective diversity of the podcasts you engage with. A low score means you are hearing a range of political viewpoints. A high score suggests your listening is concentrated in one part of the political spectrum. It activates after 10 or more combined signals, or 7 days of data. Clicking the score opens a breakdown showing which shows are contributing to it.</div>
+      </div>
 
     <div class="faq-item">
       <div class="faq-q">What is Unheard?</div>
-      <div class="faq-a">Unheard is a Pro Lens feature that surfaces the stories one side of the political spectrum covers in depth while the other ignores — updated every Monday. It's designed to show you the gap in coverage between left-leaning and right-leaning podcast ecosystems.</div>
+      <div class="faq-a">Unheard surfaces the stories one side of the political spectrum covers deeply while the other ignores — showing you the gap in coverage between left-leaning and right-leaning podcast ecosystems. It is currently being rolled out across paid plans.</div>
     </div>
   </div>
 
@@ -170,7 +174,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 
     <div class="faq-item">
       <div class="faq-q">Is Podlens free?</div>
-      <div class="faq-a">Yes. The free plan includes 4 analyses per month, a personal bias fingerprint, access to our discovery platform, and a weekly digest. No credit card required. <a href="/pricing.html">Paid plans</a> start at $4.69/month (founding member price) or $7/month for 25 analyses per month plus audio briefings, full bias scores, and deeper reports.</div>
+      <div class="faq-a">Yes. The free plan includes 4 analyses per month, a personal bias fingerprint, and full access to our discovery platform. No credit card required. <a href="/pricing">Paid plans</a> start at $4.69/month (founding member price) or $7/month for 25 analyses per month plus audio briefings, full bias scores, and deeper reports.</div>
     </div>
 
     <div class="faq-item">
@@ -200,7 +204,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 
     <div class="faq-item">
       <div class="faq-q">Do you store my listening history?</div>
-      <div class="faq-a">We store the analyses you run so you can access them later from your library. We don't track which podcasts you listen to unless you analyze them. You can delete your analysis history and account data at any time from Settings.</div>
+      <div class="faq-a">We store the analyses you run so you can access them from your library. If you use features like the Bias Fingerprint or Echo Chamber Score, listen events are stored locally in your browser to power those calculations — this data stays on your device unless you are logged in, in which case it is associated with your account. You can delete your analysis history and account data at any time from Settings.</div>
     </div>
 
     <div class="faq-item">
@@ -210,7 +214,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 
     <div class="faq-item">
       <div class="faq-q">Do you sell user data?</div>
-      <div class="faq-a">No. We do not sell, share, or rent personal data to third parties. See our <a href="/privacy.html">Privacy Policy</a> for full details.</div>
+      <div class="faq-a">No. We do not sell, share, or rent personal data to third parties. See our <a href="/privacy">Privacy Policy</a> for full details.</div>
     </div>
   </div>
 
@@ -244,7 +248,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
       <div class="footer-links">
         <a href="/">Home</a>
         <a href="/">Trending</a>
-        <a href="/pricing.html">Unheard</a>
+        <a href="/pricing">Unheard</a>
         <a href="/?view=analyze">Analyze a show</a>
       </div>
     </div>
@@ -252,9 +256,9 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
       <div class="footer-col-title">COMPANY</div>
       <div class="footer-links">
         <a href="/mission.html">Our mission</a>
-        <a href="/how-it-works.html">How it works</a>
+        <a href="/how-it-works">How it works</a>
         <a href="/methodology.html">Methodology</a>
-        <a href="/pricing.html">Pricing</a>
+        <a href="/pricing">Pricing</a>
       </div>
     </div>
     <div>
@@ -262,15 +266,15 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
       <div class="footer-links">
         <a href="mailto:hello@podlens.app">Contact</a>
         <a href="/faq.html">FAQ</a>
-        <a href="/privacy.html">Privacy Policy</a>
-        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
       </div>
     </div>
     <div>
       <div class="footer-col-title">TOOLS</div>
       <div class="footer-links">
         <a href="/extension.html">Browser Extension</a>
-        <a href="/">Daily Newsletter</a>
+        
       </div>
     </div>
   </div>
