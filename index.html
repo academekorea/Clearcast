@@ -6164,12 +6164,14 @@ var CURATED_SHOWS = [
 // _biasMini(b) — renders a compact 3-segment bar + lean label pill
 // Always visible to all users. Score percentages are always shown.
 function _heartBtn(feedUrl, name, artist, artwork) {
+  // Heart on show cards = Follow (not Like). Liked Episodes is strictly for
+  // episodes; shows go in Following. Visual fill reflects follow state.
   var safeUrl = (feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
   var safeName = (name||'').replace(/'/g,'').replace(/"/g,'');
   var safeArtist = (artist||'').replace(/'/g,'').replace(/"/g,'');
   var safeArt = (artwork||'').replace(/'/g,'').replace(/"/g,'');
-  var liked = isLiked({url:feedUrl});
-  return '<button data-kind="show" data-url="'+safeUrl+'" data-title="'+safeName+'" data-artist="'+safeArtist+'" data-art="'+safeArt+'" onclick="event.stopPropagation();_likeFromBtn(this);this.textContent=this.textContent===\'\u2661\'?\'\u2665\':\'\u2661\';this.style.color=this.textContent===\'\u2665\'?\'#e24b4a\':\'rgba(0,0,0,.3)\'" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:28px;height:28px;font-size:16px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;color:'+(liked?'#e24b4a':'rgba(0,0,0,.3)')+'">'+(liked?'\u2665':'\u2661')+'</button>';
+  var following = _isFollowingShow(name);
+  return '<button data-kind="show" data-url="'+safeUrl+'" data-title="'+safeName+'" data-artist="'+safeArtist+'" data-art="'+safeArt+'" title="'+(following?'Unfollow':'Follow')+'" onclick="event.stopPropagation();_likeFromBtn(this);this.textContent=this.textContent===\'\u2661\'?\'\u2665\':\'\u2661\';this.style.color=this.textContent===\'\u2665\'?\'#e24b4a\':\'rgba(0,0,0,.3)\'" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:28px;height:28px;font-size:16px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;color:'+(following?'#e24b4a':'rgba(0,0,0,.3)')+'">'+(following?'\u2665':'\u2661')+'</button>';
 }
 
 function _biasMini(b) {
@@ -6754,11 +6756,14 @@ function _discSetHero(hero) {
   if (videoEl) {
     if (hero.ytId) {
       videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
+    } else if (hero.artwork) {
+      // We already have artwork (e.g. from /api/marketplace) — use it directly,
+      // no extra iTunes fetch.
+      videoEl.innerHTML = '<img src="'+hero.artwork+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
     } else {
-      // Non-YouTube: full-bleed artwork background with overlay text
+      // Non-YouTube + no artwork: gradient placeholder, then resolve iTunes artwork.
       videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%)">'
         + '<div style="text-align:center;color:rgba(255,255,255,.5)"><div style="font-size:64px;margin-bottom:12px">&#127911;</div><div style="font-size:14px;font-weight:500">'+_escHtml(hero.show || '')+'</div></div></div>';
-      // Replace with real artwork from iTunes (full bleed)
       if (hero.show) {
         _itunesArtwork(hero.show).then(function(url) {
           if (url && videoEl) videoEl.innerHTML = '<img src="'+url+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
@@ -7513,8 +7518,6 @@ var _DISC_HERO_EYE = {
 
 function loadDefaultHero(cat) {
   cat = cat || _discCat || 'all';
-  // Build the cache key including the user identity so a different user
-  // (or a sign-in/sign-out) refetches with the right personalization.
   var u = plUser();
   var personalize = !!(u && u.id && cat === 'all' && Array.isArray(u.interests) && u.interests.length);
   var cacheKey = cat + (personalize ? ':' + (u.id || '') + ':' + u.interests[0] : '');
@@ -7523,33 +7526,55 @@ function loadDefaultHero(cat) {
     return;
   }
   _discDefaultHeroLoadedFor = cacheKey;
-  var query, eye;
-  if (personalize) {
-    // Use the user's top interest as the search query — gives a hero
-    // episode that's actually relevant to them, not just generic top podcast.
-    query = u.interests[0] + ' podcast';
-    eye = 'For you · ' + u.interests[0];
-  } else {
-    query = _DISC_HERO_QUERY[cat] || 'top podcast';
-    eye = _DISC_HERO_EYE[cat] || 'Featured episode';
-  }
   var region = (typeof localStorage !== 'undefined' && (localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region'))) || 'us';
-  fetch('/api/stories?q=' + encodeURIComponent(query) + '&region=' + encodeURIComponent(region) + '&limit=1', { signal: AbortSignal.timeout(8000) })
+
+  // For "all" + signed-in with interests → personalized YouTube episode (current behavior).
+  // For "all" without interests → top YouTube podcast for the region.
+  // For specific categories (news, tech, etc.) → top iTunes SHOW for the category,
+  //   randomized among top 5 for variety. Hero displays the show, Play loads its
+  //   latest episode.
+  if (cat === 'all') {
+    var query = personalize ? (u.interests[0] + ' podcast') : (_DISC_HERO_QUERY['all'] || 'top podcast');
+    var eye = personalize ? ('For you · ' + u.interests[0]) : (_DISC_HERO_EYE['all'] || 'Featured episode');
+    fetch('/api/stories?q=' + encodeURIComponent(query) + '&region=' + encodeURIComponent(region) + '&limit=1', { signal: AbortSignal.timeout(8000) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (cat !== _discCat) return;
+        var ep = (d.results || [])[0];
+        if (!ep) return;
+        var url = ep.youtubeUrl || ep.feedUrl || '';
+        var ytMatch = url.match(/[?&]v=([\w-]{11})|youtu\.be\/([\w-]{11})/);
+        var ytId = ytMatch ? (ytMatch[1] || ytMatch[2]) : '';
+        _discDefaultHero = {
+          eye: eye,
+          title: ep.epTitle || 'Top episode',
+          show: ep.showName || '',
+          host: (ep.showName || '') + (ep.duration ? ' · ' + ep.duration : ''),
+          url: url, ytId: ytId
+        };
+        _discSetHero(_discDefaultHero);
+      }).catch(function(){});
+    return;
+  }
+
+  // Category-specific: top iTunes show for that category
+  var marketCat = (typeof _DISC_MARKET_CAT !== 'undefined' && _DISC_MARKET_CAT[cat]) || cat;
+  var eyeLabel = _DISC_HERO_EYE[cat] || 'Featured show';
+  fetch('/api/marketplace?category=' + encodeURIComponent(marketCat) + '&region=' + encodeURIComponent(region), { signal: AbortSignal.timeout(8000) })
     .then(function(r){ return r.json(); })
     .then(function(d){
-      if (cat !== _discCat) return; // user switched category mid-fetch
-      var ep = (d.results || [])[0];
-      if (!ep) return;
-      var url = ep.youtubeUrl || ep.feedUrl || '';
-      var ytMatch = url.match(/[?&]v=([\w-]{11})|youtu\.be\/([\w-]{11})/);
-      var ytId = ytMatch ? (ytMatch[1] || ytMatch[2]) : '';
+      if (cat !== _discCat) return;
+      var shows = (d.podcasts || []).slice(0, 5); // rotate among top 5 for variety
+      if (!shows.length) return;
+      var pick = shows[Math.floor(Math.random() * shows.length)];
       _discDefaultHero = {
-        eye: eye,
-        title: ep.epTitle || 'Top episode',
-        show: ep.showName || '',
-        host: (ep.showName || '') + (ep.duration ? ' · ' + ep.duration : ''),
-        url: url,
-        ytId: ytId
+        eye: eyeLabel,
+        title: pick.name || 'Top show',
+        show: pick.name || '',
+        host: (pick.artist || '') + (pick.category ? ' · ' + pick.category : ''),
+        url: pick.feedUrl || pick.itunesUrl || '',
+        ytId: '',
+        artwork: pick.artwork || ''
       };
       _discSetHero(_discDefaultHero);
     }).catch(function(){});
@@ -13837,41 +13862,29 @@ function showEchoChamberModal() {
 }
 
 function _likeFromBtn(btn) {
-  // Heart buttons on Discover attach show-level data (data-title = show name,
-  // data-artist = publisher, data-url = feed URL). The previous flow stored
-  // "NPR Politics Podcast" as the episode title in Liked Episodes, because no
-  // specific episode was identified at click time. Fix: when kind === 'show',
-  // optimistically save with show-only fields, then async-fetch the latest
-  // episode from the feed and upgrade the saved entry to a real episode.
+  // Heart on show cards = toggle FOLLOW (shows go in Following).
+  // Heart on episode cards = toggle LIKE (episodes go in Liked Episodes).
+  // The data-kind attribute distinguishes them.
   var kind = btn.dataset.kind || 'episode';
   var feedUrl = btn.dataset.url || '';
   var dataTitle = btn.dataset.title || '';
   var dataArtist = btn.dataset.artist || '';
   var dataArt = btn.dataset.art || '';
 
-  if (kind === 'show' && feedUrl && /^https?:\/\//.test(feedUrl)) {
-    // Optimistic save — title left blank so the UI renders a placeholder until
-    // the async upgrade replaces it with the real latest-episode title.
-    var ep = {
-      url: feedUrl,
-      feedUrl: feedUrl,
-      title: '',                // filled by upgrade
-      showName: dataTitle,      // the show itself (e.g., "Crime Junkie")
-      artist: dataArtist,       // publisher (e.g., "Audiochuck") — kept for reference
-      artwork: dataArt,
-    };
-    toggleLike(ep, btn);
-    // Fire-and-forget upgrade. If the user unlikes before it resolves, it's a no-op.
-    _upgradeShowLikeToLatestEpisode(feedUrl, dataTitle, dataArt);
-  } else {
-    var ep2 = {
-      url: feedUrl,
-      title: dataTitle,
-      showName: dataArtist,     // legacy callers still use this shape
-      artwork: dataArt,
-    };
-    toggleLike(ep2, btn);
+  if (kind === 'show') {
+    // Routes to follow logic. data-title is the show name in this case.
+    toggleFollowShow(dataTitle, feedUrl, dataArt, btn);
+    return;
   }
+
+  // Episode like
+  var ep = {
+    url: feedUrl,
+    title: dataTitle,
+    showName: dataArtist,     // legacy callers still use this shape
+    artwork: dataArt,
+  };
+  toggleLike(ep, btn);
 }
 
 // Replaces the placeholder stored by a show-level like with the actual latest
