@@ -308,7 +308,9 @@
         var col = (ep.leftPct||0)>(ep.rightPct||0)?'var(--left)':(ep.rightPct||0)>(ep.leftPct||0)?'var(--right)':'var(--center)';
         return '<div class="sah-trend-bar" style="height:'+h+'%;background:'+col+';opacity:.7"></div>';
       }).join('');
-      var sqHtml = showSQ?'<label class="sq-toggle" title="Smart Queue"><input type="checkbox" '+(s.smartQueue?'checked':'')+' onchange="toggleSmartQueue('+i+',this.checked)"><span class="sq-slider"></span></label>':'';
+      var sqHtml = showSQ
+        ? '<label class="sq-toggle" title="Smart Queue — auto-analyze new episodes" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" '+(s.smartQueue?'checked':'')+' onchange="toggleSmartQueue('+i+',this.checked)"><span class="sq-slider"></span><span style="font-size:11px;color:var(--text2);font-weight:500;white-space:nowrap">Auto-analyze</span></label>'
+        : '';
       var analyzeUrl = s.feedUrl||s.youtubeUrl||s.spotifyUrl||(s.youtubeChannelId?'https://www.youtube.com/channel/'+s.youtubeChannelId:'')||'';
       var hasEps = showEps.length>0;
       html += '<div class="show-archive-block">';

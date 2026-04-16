@@ -7230,14 +7230,117 @@ function _renderDashFingerprintSection() {
 }
 
 function _renderDashQueueSection(u) {
-  // Smart queue content — show enabled shows or upgrade prompt
+  // Smart queue content — render followed-shows list with per-show toggles +
+  // pending/recent queue items, OR upgrade prompt for free users.
   var el = document.getElementById('sq-main-content');
   if (!el || !u) return;
   var plan = String(u.plan || 'free').toLowerCase();
   var isEligible = u.email === 'academekorea@gmail.com' || u.isSuperAdmin || ['creator','operator','studio','trial'].includes(plan);
   if (!isEligible) {
-    el.innerHTML = '<div style="padding:40px 0;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚡</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue is a Starter Lens+ feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Automatically queue new episodes from shows you follow.</div><a href="/pricing" onclick="showView(\'pricing\');return false" style="display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">See plans &rarr;</a></div>';
+    el.innerHTML = '<div style="padding:40px 0;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚡</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue is a Starter Lens+ feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Auto-analyze new episodes from shows you follow.</div><a href="/pricing" onclick="showView(\'pricing\');return false" style="display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">See plans &rarr;</a></div>';
+    return;
   }
+
+  // Eligible — load full state from server (auth-of-truth) so the per-show
+  // toggles reflect what the cron actually checks.
+  el.innerHTML = '<div style="padding:24px 0;text-align:center;color:var(--text3);font-size:13px">Loading your Smart Queue...</div>';
+  fetch('/api/smart-queue?userId=' + encodeURIComponent(u.id) + '&action=status')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) { el.innerHTML = '<div style="padding:24px 0;text-align:center;color:#e24b4a;font-size:13px">'+_escHtml(d.error)+'</div>'; return; }
+      var shows = d.shows || [];
+      var pending = d.pending || [];
+      var completed = d.completed || [];
+      var tier = d.tier || 'free';
+      var tierLimits = { creator: 3, operator: 5, studio: 999 };
+      var max = tierLimits[tier] || 0;
+      var enabledCount = shows.filter(function(s){ return s.smart_queue; }).length;
+
+      var html = '';
+      // Header strip with quota
+      html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'
+        + '<div><div style="font-size:13px;font-weight:600;color:var(--text)">⚡ Auto-analyze new episodes</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-top:2px">When a followed show drops a new episode, we analyze it for you in the background.</div></div>'
+        + '<div style="font-size:12px;color:var(--text3);font-weight:500">'+enabledCount+(max<999?' / '+max:'')+' shows enabled</div>'
+        + '</div>';
+
+      // Pending queue items
+      if (pending.length) {
+        html += '<div style="margin-bottom:18px"><div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Analyzing now</div>';
+        pending.forEach(function(p){
+          html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'
+            + '<div class="feed-spin" style="width:14px;height:14px"></div>'
+            + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+_escHtml(p.episode_title||'Episode')+'</div>'
+            + '<div style="font-size:11px;color:var(--text3)">'+_escHtml(p.show_name||'')+' \u00b7 '+(p.status||'pending')+'</div></div>'
+            + '</div>';
+        });
+        html += '</div>';
+      }
+
+      // Completed queue items
+      if (completed.length) {
+        html += '<div style="margin-bottom:18px"><div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Recently auto-analyzed</div>';
+        completed.forEach(function(p){
+          html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'
+            + '<span style="color:#3B6D11;font-weight:700;font-size:14px">\u2713</span>'
+            + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+_escHtml(p.episode_title||'Episode')+'</div>'
+            + '<div style="font-size:11px;color:var(--text3)">'+_escHtml(p.show_name||'')+'</div></div>'
+            + (p.analysis_id ? '<button onclick="viewAnalysis(\''+p.analysis_id+'\')" style="padding:5px 10px;background:none;border:0.5px solid var(--border2);border-radius:6px;cursor:pointer;font-size:11px;color:var(--text2);font-family:var(--ff)">View</button>' : '')
+            + '</div>';
+        });
+        html += '</div>';
+      }
+
+      // Followed shows with per-show toggle
+      html += '<div><div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Your followed shows</div>';
+      if (!shows.length) {
+        html += '<div style="background:var(--bg2);border:1px dashed var(--border2);border-radius:10px;padding:32px 20px;text-align:center">'
+          + '<div style="font-size:28px;margin-bottom:8px">📌</div>'
+          + '<div style="font-size:13px;color:var(--text2);margin-bottom:14px">Follow a show first, then toggle Auto-analyze.</div>'
+          + '<button onclick="showView(\'discover\')" style="padding:9px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff)">Browse shows &rarr;</button>'
+          + '</div>';
+      } else {
+        shows.forEach(function(s){
+          var art = s.show_artwork ? '<img src="'+_escHtml(s.show_artwork)+'" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display=\'none\'">' : '<div style="width:36px;height:36px;border-radius:6px;background:var(--bg3);flex-shrink:0"></div>';
+          var disabledAttr = (!s.smart_queue && enabledCount >= max) ? 'disabled' : '';
+          var disabledHint = disabledAttr ? '<span style="font-size:10px;color:var(--text3)" title="Tier limit reached">Limit</span>' : '';
+          html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px">'
+            + art
+            + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+_escHtml(s.show_name||'')+'</div>'
+            + '<div style="font-size:11px;color:var(--text3)">'+(s.last_checked_at?'Last checked '+(new Date(s.last_checked_at).toLocaleString()):'Not checked yet')+'</div></div>'
+            + disabledHint
+            + '<label class="sq-toggle" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" '+(s.smart_queue?'checked':'')+' '+disabledAttr+' onchange="_sqToggleFromQueuePage(\''+s.id+'\',this.checked,this)"><span class="sq-slider"></span></label>'
+            + '</div>';
+        });
+      }
+      html += '</div>';
+
+      el.innerHTML = html;
+    }).catch(function(){
+      el.innerHTML = '<div style="padding:24px 0;text-align:center;color:#e24b4a;font-size:13px">Could not load Smart Queue. Try again.</div>';
+    });
+}
+
+// Toggle Smart Queue from the Queue page (uses showId from server)
+function _sqToggleFromQueuePage(showId, enabled, inputEl) {
+  var u = plUser(); if (!u) return;
+  fetch('/api/smart-queue', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: u.id, action: 'toggle_show', showId: showId, enabled: enabled })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) {
+        if (inputEl) inputEl.checked = !enabled;
+        plToast(d.error, 3500);
+        return;
+      }
+      plToast(enabled ? 'Auto-analyze ON' : 'Auto-analyze OFF', 1500);
+      // Refresh the list so the count + limit reflects the change
+      _renderDashQueueSection(u);
+    }).catch(function(){
+      if (inputEl) inputEl.checked = !enabled;
+      plToast('Could not update Smart Queue');
+    });
 }
 
 function discShowFollowing() { showView('home'); showDashSection('following'); }

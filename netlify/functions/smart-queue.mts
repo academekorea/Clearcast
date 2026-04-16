@@ -86,23 +86,30 @@ export default async (req: Request): Promise<Response> => {
       if (typeof enabled !== "boolean") return json({ error: "enabled required" }, 400);
       if (!showId && !showSlug) return json({ error: "showId or showSlug required" }, 400);
 
-      // Enforce Creator tier limit (max 5 shows)
+      // Tier-aware show limit (CLAUDE.md: creator=3, operator=5, studio=unlimited)
+      let userTier = "free";
       if (enabled) {
         const { data: user } = await sb.from("users")
           .select("tier")
           .eq("id", userId)
           .maybeSingle();
+        userTier = user?.tier || "free";
 
-        if (user?.tier === "creator") {
-          const { count } = await sb
-            .from("followed_shows")
-            .select("*", { count: "exact", head: true })
-            .eq("user_id", userId)
-            .eq("smart_queue", true);
+        const tierLimits: Record<string, number> = { creator: 3, operator: 5, studio: 999 };
+        const max = tierLimits[userTier] ?? 0;
+        if (max === 0) {
+          return json({ error: "Smart Queue requires Starter Lens or higher.", upgradeRequired: true }, 403);
+        }
 
-          if ((count || 0) >= 5) {
-            return json({ error: "Starter Lens allows up to 5 Smart Queue shows. Upgrade to Pro Lens for unlimited.", limitReached: true }, 403);
-          }
+        const { count } = await sb
+          .from("followed_shows")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("smart_queue", true);
+
+        if ((count || 0) >= max) {
+          const planName = userTier === "creator" ? "Starter Lens" : userTier === "operator" ? "Pro Lens" : "Operator Lens";
+          return json({ error: planName + " allows up to " + max + " Smart Queue shows. Upgrade for more.", limitReached: true }, 403);
         }
       }
 
@@ -110,6 +117,24 @@ export default async (req: Request): Promise<Response> => {
       if (showId) q = q.eq("id", showId);
       else q = q.eq("show_slug", showSlug);
       await q;
+
+      // CRITICAL FIX: also enable the user-level flag the cron checks. Without
+      // this, check-new-episodes.mts queries users WHERE smart_queue_enabled=true
+      // and skips this user entirely — Smart Queue never fires no matter how
+      // many per-show toggles are on. If user is turning OFF and they have no
+      // other shows enabled, also disable the user flag.
+      if (enabled) {
+        await sb.from("users").update({ smart_queue_enabled: true }).eq("id", userId);
+      } else {
+        const { count: remaining } = await sb
+          .from("followed_shows")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("smart_queue", true);
+        if ((remaining || 0) === 0) {
+          await sb.from("users").update({ smart_queue_enabled: false }).eq("id", userId);
+        }
+      }
 
       return json({ ok: true, smart_queue: enabled });
     }
