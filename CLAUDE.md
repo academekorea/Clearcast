@@ -6,7 +6,7 @@
 - **Tagline:** "A force of clarity in the age of noise"
 - **Mission:** World's first podcast bias intelligence platform. AI that tells you how to trust content, not just summarize it.
 - **Live site:** https://podlens.app
-- **GitHub:** https://github.com/academekorea/Clearcast
+- **GitHub:** https://github.com/academekorea/PODLENS
 - **Netlify site ID:** 336b4d9b-fcc0-4675-a7d8-f61022fc2cdc
 - **Supabase:** suqjdctajnitxivczjtg.supabase.co
 - **Super admin:** academekorea@gmail.com (Studio tier, unlimited, bypass_limits=true)
