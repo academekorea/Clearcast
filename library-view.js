@@ -152,7 +152,12 @@
       seenShows[sn] = true;
       var leanLabel = ep.biasLabel || biasFromEp(ep) || '';
       var leanCls = biasCls(ep);
-      html += '<div style="display:flex;align-items:center;gap:6px;padding:5px 9px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r,8px);flex-shrink:0;cursor:pointer;min-width:120px">';
+      // Click → open show profile. Pass exactName so iTunes lookup matches
+      // even when slug is ambiguous (handled by loadShowProfile's 3rd arg).
+      var slug = sn.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      var safeName = sn.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      var openProfile = "if(typeof showView==='function'){showView('show');loadShowProfile('"+slug+"',null,'"+safeName+"');}";
+      html += '<div onclick="'+openProfile+'" title="View show profile" style="display:flex;align-items:center;gap:6px;padding:5px 9px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r,8px);flex-shrink:0;cursor:pointer;min-width:120px">';
       html += artHtml(ep.artwork, sn, 'saved-art');
       html += '<div style="min-width:0"><div style="font-size:11px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(sn)+'</div>';
       if (leanLabel) html += '<span class="bias-pill '+leanCls+'" style="font-size:8px;padding:1px 4px;margin-top:2px;display:inline-block">'+esc(leanLabel)+'</span>';
