@@ -6831,8 +6831,9 @@ function discRenderEpisodes() {
 // relied on the hardcoded CURATED_SHOWS list.
 function _renderEpisodesFromStories(el, cat) {
   var query = (typeof _DISC_HERO_QUERY !== 'undefined' && _DISC_HERO_QUERY[cat]) || 'top podcast';
+  var region = (typeof localStorage !== 'undefined' && (localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region'))) || 'us';
   var reqCat = cat;
-  fetch('/api/stories?q=' + encodeURIComponent(query) + '&limit=9', { signal: AbortSignal.timeout(8000) })
+  fetch('/api/stories?q=' + encodeURIComponent(query) + '&region=' + encodeURIComponent(region) + '&limit=9', { signal: AbortSignal.timeout(8000) })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (reqCat !== _discCat) return; // user switched category mid-fetch
@@ -7532,7 +7533,8 @@ function loadDefaultHero(cat) {
     query = _DISC_HERO_QUERY[cat] || 'top podcast';
     eye = _DISC_HERO_EYE[cat] || 'Featured episode';
   }
-  fetch('/api/stories?q=' + encodeURIComponent(query) + '&limit=1', { signal: AbortSignal.timeout(8000) })
+  var region = (typeof localStorage !== 'undefined' && (localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region'))) || 'us';
+  fetch('/api/stories?q=' + encodeURIComponent(query) + '&region=' + encodeURIComponent(region) + '&limit=1', { signal: AbortSignal.timeout(8000) })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (cat !== _discCat) return; // user switched category mid-fetch
@@ -14012,6 +14014,23 @@ function addToPlaylist(ep) {
 })();
 enforcePlanRules();
 initNav();
+// One-time geo auto-detect — if the visitor has no region set yet, fetch
+// their country from Netlify edge geo and store it. Subsequent /api/stories
+// and /api/marketplace calls will then return locally-relevant content
+// instead of falling back to whatever the function host's IP suggests.
+(function _autoDetectRegion(){
+  try {
+    var hasRegion = localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region');
+    if (hasRegion) return;
+    fetch('/api/geo-detect', { signal: AbortSignal.timeout(3000) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d && d.country) {
+          try { localStorage.setItem('pl_prefs_region', d.country); } catch(e) {}
+        }
+      }).catch(function(){});
+  } catch(e) {}
+})();
 // Apply region, translations
 updateRegionUI();
 applyTranslations(_settings.lang);

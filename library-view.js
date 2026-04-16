@@ -386,10 +386,30 @@
   function getLiked() { try { return JSON.parse(localStorage.getItem(PL_LIKED_KEY)||'[]'); } catch(e){ return []; } }
   function getPlaylists() { try { return JSON.parse(localStorage.getItem(PL_PLAYLISTS_KEY)||'[]'); } catch(e){ return []; } }
 
+  // Show-level "likes" (heart on a show card whose upgrade-to-latest-episode
+  // failed) end up here with title === showName, no jobId, and url pointing at
+  // the RSS feed. They aren't actually episodes — filter them out so the page
+  // matches its name. Also silently prune them from localStorage.
+  function _isEpisodeEntry(ep) {
+    if (!ep) return false;
+    if (ep.jobId) return true; // came from a real analysis
+    var title = (ep.title || '').trim();
+    var show = (ep.showName || '').trim();
+    if (!title) return false; // pending upgrade — hide
+    if (title === show) return false; // show-level fallback
+    if (title === 'Episode' || title === 'Latest episode') return false; // generic placeholder
+    return true;
+  }
+
   function renderLiked() {
     var el = document.getElementById('liked-content');
     if (!el) return;
-    var liked = getLiked();
+    var rawLiked = getLiked();
+    // Prune show-level entries that leaked into Liked Episodes
+    var liked = rawLiked.filter(_isEpisodeEntry);
+    if (liked.length !== rawLiked.length) {
+      try { localStorage.setItem(PL_LIKED_KEY, JSON.stringify(liked)); } catch(e) {}
+    }
     var tc = document.getElementById('tc-liked');
     if (tc) tc.textContent = liked.length||0;
     if (!liked.length) {
@@ -397,10 +417,7 @@
       return;
     }
     el.innerHTML = '<div class="saved-grid">'+liked.map(function(ep,i) {
-      // Empty title means a just-liked show whose latest-episode fetch is
-      // still in flight. Render a transient placeholder rather than the
-      // generic "Episode" so the user sees something meaningful.
-      var titleText = ep.title ? ep.title : 'Fetching latest episode\u2026';
+      var titleText = ep.title;
       return '<div class="saved-card">'+artHtml(ep.artwork,ep.showName,'saved-art')
         + '<div class="saved-info"><div class="saved-show">'+esc(ep.showName||'')+'</div>'
         + '<div class="saved-title">'+esc(titleText)+'</div>'
