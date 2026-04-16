@@ -74,6 +74,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .footer-copy,.footer-made{font-size:.75rem;color:var(--text3)}
 @media(max-width:720px){.footer-inner{grid-template-columns:1fr 1fr;gap:20px}.footer-brand{grid-column:1/-1}}
 
+.pl-wm-img{filter:invert(1)}[data-theme="dark"] .pl-wm-img{filter:none}
 </style>
 <link rel="canonical" href="https://podlens.app/terms">
 <script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getIt
     <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="28" height="28">
     <span class="pl-lockup-divider"></span>
     <span class="pl-lockup-text">
-      <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
+      <img src="/logo-wordmark.png" alt="PODLENS" class="pl-wm-img" height="18" style="height:18px;width:auto;display:block;opacity:.95">
       <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
     </span>
   </a>
@@ -164,7 +165,7 @@ document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getIt
     <div class="footer-brand">
       <a href="/" class="footer-logo-link">
         <img src="/favicon.svg" class="pl-lockup-icon" alt="Podlens" width="28" height="28">
-        <span><span style="font-weight:400">POD</span>LENS</span>
+        <img src="/logo-wordmark.png" alt="PODLENS" height="16" style="height:16px;width:auto;display:block;opacity:.9">
       </a>
       <p class="footer-tagline">A force of clarity in the age of noise.</p>
       <div class="footer-social">

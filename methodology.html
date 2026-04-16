@@ -103,6 +103,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .footer-bottom-row{max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 .footer-copy,.footer-made{font-size:.75rem;color:var(--text3)}
 @media(max-width:720px){.footer-inner{grid-template-columns:1fr 1fr;gap:20px}.footer-brand{grid-column:1/-1}}
+.pl-wm-img{filter:invert(1)}[data-theme="dark"] .pl-wm-img{filter:none}
 </style>
 </head>
 <body>
@@ -112,7 +113,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
     <img src="/favicon.svg" class="pl-lockup-icon" alt="Podlens" width="28" height="28">
     <span class="pl-lockup-divider"></span>
     <span class="pl-lockup-text">
-      <span class="pl-lockup-wm"><span class="pl-wm-pod">POD</span><span class="pl-wm-lens">LENS</span></span>
+      <img src="/logo-wordmark.png" alt="PODLENS" class="pl-wm-img" height="18" style="height:18px;width:auto;display:block;opacity:.95">
       <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
     </span>
   </a>
@@ -368,7 +369,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 <footer class="site-footer" id="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <a href="/" class="footer-logo-link"><img src="/favicon-32x32.png" alt="Podlens" width="28" height="28" style="border-radius:4px"><span><span style="font-weight:400">POD</span>LENS</span></a>
+      <a href="/" class="footer-logo-link"><img src="/favicon-32x32.png" srcset="/android-chrome-192x192.png 3x" alt="Podlens" width="28" height="28" style="border-radius:4px"><img src="/logo-wordmark.png" alt="PODLENS" height="16" style="height:16px;width:auto;opacity:.9;display:block;filter:invert(0)"></a>
       <p class="footer-tagline">A force of clarity in the age of noise.</p>
       <div class="footer-social">
         <a href="#" class="footer-social-link" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
