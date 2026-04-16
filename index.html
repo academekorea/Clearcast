@@ -7366,65 +7366,32 @@ function loadDiscTrendingNews() {
   var el = document.getElementById('disc-trending-news');
   if (!el) return;
 
-  // Default topics as instant render, then replace with live data
-  var fallbackTopics = [
+  // News topics ONLY — never show names. Clicking surfaces popular shows/episodes
+  // covering that topic via discTopicHero() -> _buildRelatedEpisodes().
+  // Do NOT inject /api/trending-topics here — that returns analyzed show_names
+  // (e.g. "Huberman Lab"), which is the wrong primary function for this bar.
+  var topics = [
     'Artificial Intelligence', 'Trump Administration', 'Federal Reserve',
-    'Climate Policy', 'Big Tech Regulation', 'Healthcare Costs',
+    'Gaza Ceasefire', 'Climate Policy', 'Big Tech Regulation',
+    'Immigration', 'World Cup 2026', 'Healthcare Costs', 'Elon Musk',
     'Ukraine War', 'Stock Market', 'Supreme Court', 'Social Media',
-    'Cryptocurrency', 'China Trade War',
+    'Nuclear Energy', 'Cryptocurrency', 'China Trade War', 'NATO',
   ];
 
-  function renderPills(topics) {
-    el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3);padding:6px 0">'
-      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
-      + '</div>'
-      + topics.map(function(topic) {
-          var safe = topic.replace(/'/g, "\\'");
-          // Trending pills mix two kinds of things: topics (e.g. "AI Regulation")
-          // and show names from live DB data (e.g. "Huberman Lab"). Route each
-          // correctly so topic pills open a topic hero, and show pills open the
-          // show profile — otherwise the hero's video iframe gets stuck on
-          // whatever was last shown.
-          var isTopic = typeof TOPIC_HEROES !== 'undefined' && TOPIC_HEROES[topic];
-          var onclickJs;
-          if (isTopic) {
-            onclickJs = 'discTopicHero(\''+safe+'\')';
-          } else {
-            // Treat as a show — exactName passed so iTunes lookup finds it
-            // even when the slug ("huberman-lab") wouldn't match.
-            var pillSlug = topic.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-            onclickJs = 'showView(\'show\');loadShowProfile(\''+pillSlug+'\',null,\''+safe+'\')';
-          }
-          return '<button onclick="'+onclickJs+'" '
-            + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
-            + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
-            + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
-            + 'white-space:nowrap">'
-            + topic
-            + ' <span style="color:var(--text3);font-size:11px">+</span>'
-            + '</button>';
-        }).join('');
-  }
-
-  // Render fallback immediately
-  renderPills(fallbackTopics);
-
-  // Fetch live trending from Supabase (most analyzed shows + topics)
-  fetch('/api/trending-topics', { signal: AbortSignal.timeout(5000) })
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      var liveTopics = (d.topics || []).map(function(t) { return t.name; }).filter(Boolean);
-      if (liveTopics.length >= 5) {
-        renderPills(liveTopics.slice(0, 18));
-      } else if (liveTopics.length > 0) {
-        // Merge live topics first, then fill with fallbacks
-        var merged = liveTopics.slice();
-        var seen = {};
-        liveTopics.forEach(function(t) { seen[t.toLowerCase()] = true; });
-        fallbackTopics.forEach(function(t) { if (!seen[t.toLowerCase()] && merged.length < 18) merged.push(t); });
-        renderPills(merged);
-      }
-    }).catch(function() {});
+  el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3);padding:6px 0">'
+    + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
+    + '</div>'
+    + topics.map(function(topic) {
+        var safe = topic.replace(/'/g, "\\'");
+        return '<button onclick="discTopicHero(\''+safe+'\')" '
+          + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
+          + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
+          + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
+          + 'white-space:nowrap">'
+          + topic
+          + ' <span style="color:var(--text3);font-size:11px">+</span>'
+          + '</button>';
+      }).join('');
 }
 
 
@@ -7553,23 +7520,58 @@ function discTopicHero(topic) {
   _buildRelatedEpisodes(relatedList, topic, hero.url);
 }
 
+// Map news topics → relevant podcast categories (which shows are most likely to cover them)
+var TOPIC_CATS = {
+  'Artificial Intelligence': ['tech','business'],
+  'Trump Administration':    ['news'],
+  'Federal Reserve':         ['business','news'],
+  'Gaza Ceasefire':          ['news'],
+  'Climate Policy':          ['news','society'],
+  'Big Tech Regulation':     ['tech','news'],
+  'Immigration':             ['news'],
+  'World Cup 2026':          ['sports'],
+  'Healthcare Costs':        ['health','news'],
+  'Elon Musk':               ['business','tech'],
+  'Ukraine War':             ['news'],
+  'Stock Market':            ['business'],
+  'Supreme Court':           ['news'],
+  'Social Media':            ['tech','society'],
+  'Nuclear Energy':          ['business','news'],
+  'Cryptocurrency':          ['business','tech'],
+  'China Trade War':         ['news','business'],
+  'NATO':                    ['news'],
+};
+
 function _buildRelatedEpisodes(el, topic, excludeUrl) {
   if (!el) return;
-  var lower = topic.toLowerCase();
-  var related = CURATED_SHOWS.filter(function(s){
-    return (s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || s.cat.toLowerCase().includes(lower))
-      && s.feedUrl !== excludeUrl;
+  var lower = (topic || '').toLowerCase();
+  var cats = TOPIC_CATS[topic] || [];
+  // Pull popular shows from the relevant categories first, then keyword matches as backup
+  var byCat = CURATED_SHOWS.filter(function(s){
+    return cats.indexOf(s.cat) !== -1 && s.feedUrl && s.feedUrl !== excludeUrl;
   });
-  if (!related.length) related = CURATED_SHOWS.filter(function(s){ return s.feedUrl !== excludeUrl; }).slice(0,3);
-  var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
-  el.innerHTML = related.slice(0,3).map(function(s, i) {
+  var byKeyword = CURATED_SHOWS.filter(function(s){
+    return (s.name.toLowerCase().includes(lower) || (s.artist||'').toLowerCase().includes(lower))
+      && s.feedUrl && s.feedUrl !== excludeUrl
+      && byCat.indexOf(s) === -1;
+  });
+  var related = byCat.concat(byKeyword);
+  if (!related.length) related = CURATED_SHOWS.filter(function(s){ return s.feedUrl && s.feedUrl !== excludeUrl; });
+  // Sort: balanced/center bias first (more credible per-topic coverage)
+  related = related.slice().sort(function(a, b) {
+    var ba = a.bias ? Math.abs(a.bias.score) : 100;
+    var bb = b.bias ? Math.abs(b.bias.score) : 100;
+    return ba - bb;
+  });
+  var bgs = ['#1a3050','#0d1f2d','#1e0a3c','#2d1a4a','#1a2e0d','#3d1a1a'];
+  el.innerHTML = related.slice(0,6).map(function(s, i) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
+    var safeUrl = (s.feedUrl||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
     var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
     var artHtml = s.artwork ? '<img src="'+s.artwork+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">' : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+s.name.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
     var biasPill = s.bias ? '<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);margin-left:6px">'+s.bias.label+'</span>' : '';
     return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
-      +'<div class="disc-ep-art" style="background:'+bgs[i%3]+'">'+artHtml+'</div>'
+      +'<div class="disc-ep-art" style="background:'+bgs[i%bgs.length]+'">'+artHtml+'</div>'
       +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div><div class="disc-ep-title">'+s.name+'</div><div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
       +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\',true)">Analyze</button></div></div>';
   }).join('');
@@ -13429,6 +13431,59 @@ function toggleAllFeatures() {
   var el = document.getElementById('features-full');
   var btn = document.getElementById('features-toggle');
   if (!el || !btn) return;
+  // Populate on first open
+  if (!el.dataset.loaded) {
+    var rows = [
+      // [label, free, starter, pro, operator]
+      ['Bias fingerprint',                'check',         'check',     'check',     'check'],
+      ['Echo chamber score',              'check',         'check',     'check',     'check'],
+      ['Recommended lean (anti-echo)',    'check',         'check',     'check',     'check'],
+      ['Show profiles + aggregate bias',  'check',         'check',     'check',     'check'],
+      ['Audio player (RSS + YouTube)',    'check',         'check',     'check',     'check'],
+      ['Listen history',                  'check',         'check',     'check',     'check'],
+      ['Save / like analyses',            'check',         'check',     'check',     'check'],
+      ['Share analyses + show profiles',  'check',         'check',     'check',     'check'],
+      ['Smart Queue (priority analysis)', '\u2014',        'check',     'check',     'check'],
+      ['Background analysis',             '\u2014',        '\u2014',    'check',     'check'],
+      ['Spotify import',                  '\u2014',        'check',     'check',     'check'],
+      ['YouTube channel tracking',        '\u2014',        'check',     'check',     'check'],
+      ['Cross-show comparison',           '\u2014',        'check',     'check',     'check'],
+      ['Email notifications',             '\u2014',        'check',     'check',     'check'],
+      ['Embeddable bias widget',          '\u2014',        '\u2014',    'check',     'check'],
+      ['Bulk URL scan',                   '\u2014',        '\u2014',    '\u2014',    'check'],
+      ['Team seats',                      '\u2014',        '\u2014',    '\u2014',    'check'],
+      ['Webhooks',                        '\u2014',        '\u2014',    '\u2014',    'check'],
+      ['White-label embeds',              '\u2014',        '\u2014',    '\u2014',    'check'],
+      ['SSO + custom roles',              '\u2014',        '\u2014',    '\u2014',    'check'],
+      ['Priority support',                'Community',     'Email',     'Priority',  'Dedicated'],
+    ];
+    var cell = function(v, alt) {
+      var bg = alt ? 'var(--bg2)' : 'transparent';
+      if (v === 'check') return '<td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700;background:'+bg+'">&#10003;</td>';
+      if (v === '\u2014') return '<td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3);background:'+bg+'">\u2014</td>';
+      return '<td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600;font-size:11px;background:'+bg+'">'+v+'</td>';
+    };
+    var tableHtml = '<div style="overflow-x:auto;border:1px solid var(--border);border-radius:10px;overflow:hidden">'
+      + '<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:580px">'
+      + '<thead><tr>'
+      + '<th style="padding:12px 16px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:left;font-size:11px;letter-spacing:.05em;border-bottom:1px solid var(--border);width:34%">More features</th>'
+      + '<th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Free</th>'
+      + '<th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Starter Lens</th>'
+      + '<th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Pro Lens</th>'
+      + '<th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Operator Lens</th>'
+      + '</tr></thead><tbody>'
+      + rows.map(function(r, i) {
+          var alt = i % 2 === 0;
+          var rowBg = alt ? 'background:var(--bg2)' : '';
+          return '<tr style="'+rowBg+'">'
+            + '<td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">'+r[0]+'</td>'
+            + cell(r[1], alt) + cell(r[2], alt) + cell(r[3], alt) + cell(r[4], alt)
+            + '</tr>';
+        }).join('')
+      + '</tbody></table></div>';
+    el.innerHTML = tableHtml;
+    el.dataset.loaded = '1';
+  }
   var open = el.style.display !== 'none';
   el.style.display = open ? 'none' : 'block';
   btn.innerHTML = open ? 'See all features &#8595;' : 'Hide details &#8593;';
