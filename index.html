@@ -6692,29 +6692,15 @@ function initDiscover() {
                   +'</div>';
               }).join('');
         }
-        // Update CATEGORY_HEROES with live data from DB
-        if (d.heroes && d.heroes.length) {
-          d.heroes.forEach(function(h) {
-            var dur = h.durationMinutes ? (h.durationMinutes >= 60 ? Math.floor(h.durationMinutes/60)+'h '+Math.round(h.durationMinutes%60)+'m' : Math.round(h.durationMinutes)+'m') : '';
-            CATEGORY_HEROES[h.category] = {
-              eye: h.category === 'all' ? 'Featured episode' : (h.category.charAt(0).toUpperCase() + h.category.slice(1)),
-              title: _escHtml(h.episodeTitle || ''),
-              show: h.showName || '',
-              host: h.showName + (dur ? ' &middot; ' + dur : ''),
-              url: h.url || '',
-              ytId: h.ytId || null,
-            };
-          });
-          // Update current hero if on default category
-          if (_discCat === 'all' && CATEGORY_HEROES['all']) {
-            _discSetHero(CATEGORY_HEROES['all']);
-          }
-        }
+        // Hero is now owned by loadDefaultHero() — don't overwrite it from
+        // the trending-topics endpoint (which returns analyzed shows, not
+        // top podcast episodes for the category).
       }).catch(function(){});
   }
   discRenderShows();
   discRenderEpisodes();
   loadDiscTrendingNews();
+  loadDefaultHero(_discCat);
   // Load trending topics from Supabase (all users)
   fetch('/api/trending-topics')
     .then(function(r){ return r.json(); })
@@ -6741,9 +6727,8 @@ function discNavCat(cat, btn) {
   var labels = {all:'Trending across all categories',news:'Trending in News & Politics',tech:'Trending in Technology',business:'Trending in Business',society:'Trending in Society',crime:'Trending in True Crime',comedy:'Trending in Comedy',health:'Trending in Health',sports:'Trending in Sports'};
   if (sub && !plUser()) sub.textContent = labels[cat] || 'Trending shows';
   _renderCategoryBiasContext(cat);
-  // Update hero card for this category
-  var hero = (typeof CATEGORY_HEROES !== 'undefined' && CATEGORY_HEROES[cat]) || _discDefaultHero;
-  _discSetHero(hero);
+  // Live hero for this category — fetches top YT episode for the category query
+  loadDefaultHero(cat);
   discRenderShows();
   discRenderEpisodes();
 }
@@ -7372,10 +7357,11 @@ function loadDiscTrendingNews() {
   if (!el) return;
 
   // News topics ONLY — never show names. Clicking surfaces popular shows/episodes
-  // covering that topic via discTopicHero() -> _buildRelatedEpisodes().
-  // Do NOT inject /api/trending-topics here — that returns analyzed show_names
-  // (e.g. "Huberman Lab"), which is the wrong primary function for this bar.
-  var topics = [
+  // covering that topic via discTopicHero() (which fetches a top YT episode for
+  // the topic via /api/stories).
+  // Live topics come from /api/trending-news (Currents API, cached 1hr server-side).
+  // Falls back to a static list if the endpoint is down or the API key is missing.
+  var FALLBACK = [
     'Artificial Intelligence', 'Trump Administration', 'Federal Reserve',
     'Gaza Ceasefire', 'Climate Policy', 'Big Tech Regulation',
     'Immigration', 'World Cup 2026', 'Healthcare Costs', 'Elon Musk',
@@ -7383,20 +7369,31 @@ function loadDiscTrendingNews() {
     'Nuclear Energy', 'Cryptocurrency', 'China Trade War', 'NATO',
   ];
 
-  el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3);padding:6px 0">'
-    + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
-    + '</div>'
-    + topics.map(function(topic) {
-        var safe = topic.replace(/'/g, "\\'");
-        return '<button onclick="discTopicHero(\''+safe+'\')" '
-          + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
-          + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
-          + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
-          + 'white-space:nowrap">'
-          + topic
-          + ' <span style="color:var(--text3);font-size:11px">+</span>'
-          + '</button>';
-      }).join('');
+  function _renderTopicPills(topics) {
+    el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3);padding:6px 0">'
+      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
+      + '</div>'
+      + topics.map(function(topic) {
+          var safe = topic.replace(/'/g, "\\'");
+          return '<button onclick="discTopicHero(\''+safe+'\')" '
+            + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
+            + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
+            + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
+            + 'white-space:nowrap">'
+            + topic
+            + ' <span style="color:var(--text3);font-size:11px">+</span>'
+            + '</button>';
+        }).join('');
+  }
+
+  // Render fallback immediately (instant pills) then upgrade to live topics
+  _renderTopicPills(FALLBACK);
+  fetch('/api/trending-news', { signal: AbortSignal.timeout(6000) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d && d.topics && d.topics.length >= 6) _renderTopicPills(d.topics);
+    })
+    .catch(function(){ /* keep fallback already rendered */ });
 }
 
 
@@ -7423,26 +7420,80 @@ var TOPIC_HEROES = {
   'NATO':                    { title:'NATO at 75 — Still Relevant?', show:'The Daily', url:'https://feeds.simplecast.com/54nAGcIl', ytId:null, duration:'27m', cat:'news' },
 };
 
+// Mutable default hero — replaced on first discover load with a live top
+// trending episode from /api/stories (YouTube long-form podcasts). Static
+// values here are an instant placeholder so the hero never appears empty
+// before the live fetch resolves.
 var _discDefaultHero = {
-  eye:'Featured episode', title:'Jensen Huang &mdash; NVIDIA &amp; the AI Revolution',
-  show:'Lex Fridman Podcast', host:'Lex Fridman Podcast &middot; 2h 18m',
-  url:'https://www.youtube.com/watch?v=vif8NQcjVf0', ytId:'vif8NQcjVf0'
+  eye:'Featured episode', title:'Loading top episode...',
+  show:'', host:'',
+  url:'', ytId:''
 };
 
-var CATEGORY_HEROES = {
-  all:      _discDefaultHero,
-  news:     { eye:'News & Politics', title:'Trump 2.0 &mdash; What Happened in 100 Days', show:'Pod Save America', host:'Pod Save America &middot; 1h 12m', url:'https://feeds.megaphone.fm/pod-save-america', ytId:null },
-  tech:     { eye:'Technology', title:'Sam Altman &mdash; OpenAI, GPT-5 &amp; the Future of AI', show:'Lex Fridman Podcast', host:'Lex Fridman Podcast &middot; 2h 45m', url:'https://www.youtube.com/watch?v=jvqFAi7vkBc', ytId:'jvqFAi7vkBc' },
-  business: { eye:'Business', title:'Markets in Chaos &mdash; What Is Actually Happening', show:'Planet Money', host:'Planet Money &middot; 29m', url:'https://feeds.npr.org/510289/podcast.xml', ytId:null },
-  society:  { eye:'Society & Culture', title:'How Social Media Rewired Politics', show:'The Ezra Klein Show', host:'The Ezra Klein Show &middot; 1h 18m', url:'https://feeds.simplecast.com/82FI35Px', ytId:null },
-  crime:    { eye:'True Crime', title:'The Case That Changed Everything', show:'Crime Junkie', host:'Crime Junkie &middot; 45m', url:'https://feeds.simplecast.com/qm_9xx0g', ytId:null },
-  comedy:   { eye:'Comedy', title:'Bad Friends with Andrew Santino &amp; Bobby Lee', show:'Bad Friends', host:'Bad Friends &middot; 1h 15m', url:'https://www.youtube.com/watch?v=aeqSrVrhi_8', ytId:'aeqSrVrhi_8' },
-  health:   { eye:'Health & Science', title:'Why American Healthcare Costs So Much', show:'Maintenance Phase', host:'Maintenance Phase &middot; 1h 22m', url:'https://feeds.megaphone.fm/maintenancephase', ytId:null },
-  sports:   { eye:'Sports', title:'World Cup 2026 &mdash; The Host City Battle', show:'The Bill Simmons Podcast', host:'The Bill Simmons Podcast &middot; 1h 15m', url:'https://feeds.megaphone.fm/billsimmons', ytId:null },
-};
+// CATEGORY_HEROES retained as a no-op shape for any callers that read it;
+// per-category heroes are now fetched live in loadDefaultHero(cat).
+var CATEGORY_HEROES = { all: _discDefaultHero };
 var _discCurrentHeroUrl = _discDefaultHero.url;
 var _discCurrentHeroShow = _discDefaultHero.show;
 var _discCurrentHeroTitle = _discDefaultHero.title;
+var _discDefaultHeroLoadedFor = null; // category we last loaded the default for
+
+// Map UI category → /api/stories search query for default-hero rotation
+var _DISC_HERO_QUERY = {
+  all: 'top podcast',
+  news: 'news politics',
+  tech: 'technology',
+  business: 'business',
+  society: 'society culture',
+  crime: 'true crime',
+  comedy: 'comedy',
+  health: 'health',
+  sports: 'sports'
+};
+
+// Pretty eyebrow label per category
+var _DISC_HERO_EYE = {
+  all: 'Featured episode',
+  news: 'Top in News & Politics',
+  tech: 'Top in Technology',
+  business: 'Top in Business',
+  society: 'Top in Society',
+  crime: 'Top in True Crime',
+  comedy: 'Top in Comedy',
+  health: 'Top in Health',
+  sports: 'Top in Sports'
+};
+
+function loadDefaultHero(cat) {
+  cat = cat || _discCat || 'all';
+  // Skip refetch if already loaded for this category
+  if (_discDefaultHeroLoadedFor === cat && _discDefaultHero.url) {
+    _discSetHero(_discDefaultHero);
+    return;
+  }
+  _discDefaultHeroLoadedFor = cat;
+  var query = _DISC_HERO_QUERY[cat] || 'top podcast';
+  var eye = _DISC_HERO_EYE[cat] || 'Featured episode';
+  fetch('/api/stories?q=' + encodeURIComponent(query) + '&limit=1', { signal: AbortSignal.timeout(8000) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (cat !== _discCat) return; // user switched category mid-fetch
+      var ep = (d.results || [])[0];
+      if (!ep) return;
+      var url = ep.youtubeUrl || ep.feedUrl || '';
+      var ytMatch = url.match(/[?&]v=([\w-]{11})|youtu\.be\/([\w-]{11})/);
+      var ytId = ytMatch ? (ytMatch[1] || ytMatch[2]) : '';
+      _discDefaultHero = {
+        eye: eye,
+        title: ep.epTitle || 'Top episode',
+        show: ep.showName || '',
+        host: (ep.showName || '') + (ep.duration ? ' · ' + ep.duration : ''),
+        url: url,
+        ytId: ytId
+      };
+      _discSetHero(_discDefaultHero);
+    }).catch(function(){});
+}
 
 function _discMakeShowClickable(hostEl, showName, feedUrl) {
   if (!hostEl || !showName) return;
@@ -7588,25 +7639,11 @@ function _buildRelatedEpisodes(el, topic, excludeUrl) {
 }
 
 function discResetHero() {
-  var d = _discDefaultHero;
-  var eyeEl = document.getElementById('disc-hero-eye');
-  var titleEl = document.getElementById('disc-hero-title');
-  var hostEl = document.getElementById('disc-hero-host');
-  var videoEl = document.getElementById('disc-hero-video');
-  var playBtn = document.getElementById('disc-hero-play-btn');
-  var analyzeBtn = document.getElementById('disc-hero-analyze-btn');
   var relatedShelf = document.getElementById('disc-related-shelf');
-  if (eyeEl) eyeEl.textContent = d.eye;
-  if (titleEl) titleEl.innerHTML = d.title;
-  if (hostEl) hostEl.textContent = d.host;
-  if (videoEl) videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+d.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
-  _discCurrentHeroUrl = _discDefaultHero.url;
-  _discCurrentHeroShow = _discDefaultHero.show;
-  _discCurrentHeroTitle = _discDefaultHero.title;
-  if (playBtn) playBtn.onclick = discHeroPlay;
-  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,_discDefaultHero.url,_discDefaultHero.title,_discDefaultHero.show,true); }; }
-  _discMakeShowClickable(hostEl, _discDefaultHero.show, _discDefaultHero.url);
   if (relatedShelf) relatedShelf.style.display = 'none';
+  // Re-fetch (or reuse cached) default hero for the current category
+  _discDefaultHeroLoadedFor = null; // force refetch in case it's been a while
+  loadDefaultHero(_discCat);
   // Reset shows/episodes
   discRenderShows();
   discRenderEpisodes();
