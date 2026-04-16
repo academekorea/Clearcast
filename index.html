@@ -7380,7 +7380,22 @@ function loadDiscTrendingNews() {
       + '</div>'
       + topics.map(function(topic) {
           var safe = topic.replace(/'/g, "\\'");
-          return '<button onclick="discTopicHero(\''+safe+'\')" '
+          // Trending pills mix two kinds of things: topics (e.g. "AI Regulation")
+          // and show names from live DB data (e.g. "Huberman Lab"). Route each
+          // correctly so topic pills open a topic hero, and show pills open the
+          // show profile — otherwise the hero's video iframe gets stuck on
+          // whatever was last shown.
+          var isTopic = typeof TOPIC_HEROES !== 'undefined' && TOPIC_HEROES[topic];
+          var onclickJs;
+          if (isTopic) {
+            onclickJs = 'discTopicHero(\''+safe+'\')';
+          } else {
+            // Treat as a show — exactName passed so iTunes lookup finds it
+            // even when the slug ("huberman-lab") wouldn't match.
+            var pillSlug = topic.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+            onclickJs = 'showView(\'show\');loadShowProfile(\''+pillSlug+'\',null,\''+safe+'\')';
+          }
+          return '<button onclick="'+onclickJs+'" '
             + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
             + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
             + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
@@ -7486,6 +7501,19 @@ function discTopicHero(topic) {
     // No specific hero — just filter shows and show related
     if (titleEl) titleEl.innerHTML = 'Top podcasts on: ' + topic;
     if (hostEl) hostEl.textContent = 'Browse episodes below';
+    // CRITICAL: clear the video iframe too — otherwise a stale YouTube embed
+    // from the previous hero (e.g. default "Jensen Huang") stays visible,
+    // making it look like that video belongs to the new topic.
+    if (videoEl) {
+      videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%);color:rgba(255,255,255,.5);font-size:14px;text-align:center;padding:16px">'
+        + '<div><div style="font-size:48px;margin-bottom:10px;opacity:0.4">&#128269;</div>'
+        + 'Episodes about <strong style="color:#fff">' + _escHtml(topic) + '</strong> below</div></div>';
+    }
+    // Clear the current hero URL/show/title so the Play button doesn't trigger
+    // the previous hero's video.
+    _discCurrentHeroUrl = '';
+    _discCurrentHeroShow = '';
+    _discCurrentHeroTitle = '';
     discSearch(topic);
     if (relatedShelf) relatedShelf.style.display = '';
     if (relatedTitle) relatedTitle.textContent = 'Podcasts covering: ' + topic;
