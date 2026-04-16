@@ -6581,7 +6581,10 @@ function initDiscover() {
     if (sub) sub.textContent = 'Trending shows, new episodes, and what the podcasting world is talking about.';
     if (tabs) tabs.style.display = 'flex';
     if (unheardTeaser) unheardTeaser.style.display = '';
-    if (heroCard) heroCard.style.display = 'none';
+    // Show hero for signed-in users too — loadDefaultHero() will personalize
+    // it to their top interest (or fall back to category top trending if no
+    // interests are set yet).
+    if (heroCard) heroCard.style.display = '';
     discRenderRightCol(true, u);
 
     // Load For You shelf — single fetch, handle both rendering and prompt
@@ -7466,14 +7469,26 @@ var _DISC_HERO_EYE = {
 
 function loadDefaultHero(cat) {
   cat = cat || _discCat || 'all';
-  // Skip refetch if already loaded for this category
-  if (_discDefaultHeroLoadedFor === cat && _discDefaultHero.url) {
+  // Build the cache key including the user identity so a different user
+  // (or a sign-in/sign-out) refetches with the right personalization.
+  var u = plUser();
+  var personalize = !!(u && u.id && cat === 'all' && Array.isArray(u.interests) && u.interests.length);
+  var cacheKey = cat + (personalize ? ':' + (u.id || '') + ':' + u.interests[0] : '');
+  if (_discDefaultHeroLoadedFor === cacheKey && _discDefaultHero.url) {
     _discSetHero(_discDefaultHero);
     return;
   }
-  _discDefaultHeroLoadedFor = cat;
-  var query = _DISC_HERO_QUERY[cat] || 'top podcast';
-  var eye = _DISC_HERO_EYE[cat] || 'Featured episode';
+  _discDefaultHeroLoadedFor = cacheKey;
+  var query, eye;
+  if (personalize) {
+    // Use the user's top interest as the search query — gives a hero
+    // episode that's actually relevant to them, not just generic top podcast.
+    query = u.interests[0] + ' podcast';
+    eye = 'For you · ' + u.interests[0];
+  } else {
+    query = _DISC_HERO_QUERY[cat] || 'top podcast';
+    eye = _DISC_HERO_EYE[cat] || 'Featured episode';
+  }
   fetch('/api/stories?q=' + encodeURIComponent(query) + '&limit=1', { signal: AbortSignal.timeout(8000) })
     .then(function(r){ return r.json(); })
     .then(function(d){
