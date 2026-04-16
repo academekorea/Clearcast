@@ -4110,9 +4110,9 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
             <button class="acct-av-change-btn" onclick="document.getElementById('acct-av-input').click()">Change photo</button>
           </div>
         </div>
-        <div class="acct-field"><span class="acct-field-label">Full name</span><span class="acct-field-val" id="acct-field-name"></span><button class="acct-field-action" onclick="showDashSection('profile')">Edit</button></div>
-        <div class="acct-field"><span class="acct-field-label">Email</span><span class="acct-field-val" id="acct-field-email"></span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
-        <div class="acct-field"><span class="acct-field-label">Password</span><span class="acct-field-val" style="color:var(--text3)">••••••••••</span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
+        <div class="acct-field"><span class="acct-field-label">Full name</span><span class="acct-field-val" id="acct-field-name"></span><button class="acct-field-action" onclick="openEditNameModal()">Edit</button></div>
+        <div class="acct-field"><span class="acct-field-label">Email</span><span class="acct-field-val" id="acct-field-email"></span><button class="acct-field-action" onclick="openChangeEmailModal()">Change</button></div>
+        <div class="acct-field"><span class="acct-field-label">Sign-in method</span><span class="acct-field-val" id="acct-field-signin" style="color:var(--text3);font-size:12px">Magic link / Google — passwordless</span></div>
       </div>
       <div class="acct-card">
         <div class="acct-card-title">Integrations</div>
@@ -4622,6 +4622,119 @@ fetch('/api/public-config').then(function(r){ return r.json(); }).then(function(
 function plUser() {
   try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) { return null; }
 }
+// ── Account: edit name, change email (with OTP verification to NEW email) ──
+function openEditNameModal() {
+  var u = plUser(); if (!u) return;
+  var existing = document.getElementById('modal-edit-name');
+  if (existing) existing.remove();
+  document.body.insertAdjacentHTML('beforeend',
+    '<div id="modal-edit-name" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px" onclick="if(event.target===this)this.remove()">'
+    + '<div style="background:var(--bg);border-radius:12px;padding:24px;max-width:400px;width:100%;position:relative">'
+    + '<button onclick="document.getElementById(\'modal-edit-name\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);line-height:1">&times;</button>'
+    + '<div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:14px">Edit your name</div>'
+    + '<input id="edit-name-input" type="text" maxlength="100" value="'+_escHtml(u.name||'')+'" placeholder="Your name" style="width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;font-size:14px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:14px"/>'
+    + '<button onclick="_submitEditName()" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--ff)">Save</button>'
+    + '</div></div>');
+  setTimeout(function(){ var i = document.getElementById('edit-name-input'); if (i) i.focus(); }, 50);
+}
+function _submitEditName() {
+  var u = plUser(); if (!u) return;
+  var inp = document.getElementById('edit-name-input');
+  var newName = (inp.value || '').trim();
+  if (!newName) { inp.focus(); return; }
+  fetch('/api/update-profile', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: u.id, name: newName })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) { plToast(d.error || 'Failed to save'); return; }
+      u.name = newName; setPlUser(u);
+      var nameEl = document.getElementById('acct-field-name'); if (nameEl) nameEl.textContent = newName;
+      var displayEl = document.getElementById('acct-display-name'); if (displayEl) displayEl.textContent = newName;
+      document.getElementById('modal-edit-name').remove();
+      plToast('Name updated');
+    }).catch(function(){ plToast('Could not save name'); });
+}
+
+function openChangeEmailModal() {
+  var u = plUser(); if (!u) return;
+  var existing = document.getElementById('modal-change-email');
+  if (existing) existing.remove();
+  document.body.insertAdjacentHTML('beforeend',
+    '<div id="modal-change-email" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px" onclick="if(event.target===this)this.remove()">'
+    + '<div style="background:var(--bg);border-radius:12px;padding:24px;max-width:420px;width:100%;position:relative">'
+    + '<button onclick="document.getElementById(\'modal-change-email\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);line-height:1">&times;</button>'
+    + '<div id="ce-step1">'
+    + '<div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px">Change email</div>'
+    + '<div style="font-size:13px;color:var(--text3);margin-bottom:14px">We\'ll send a 6-digit code to your new email to verify it.</div>'
+    + '<input id="ce-new-email" type="email" placeholder="new@email.com" autocomplete="email" style="width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;font-size:14px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:12px"/>'
+    + '<div id="ce-err1" style="font-size:12px;color:#e24b4a;margin-bottom:10px;display:none"></div>'
+    + '<button onclick="_sendChangeEmailCode()" id="ce-send-btn" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--ff)">Send verification code</button>'
+    + '</div>'
+    + '<div id="ce-step2" style="display:none">'
+    + '<div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px">Enter code</div>'
+    + '<div style="font-size:13px;color:var(--text3);margin-bottom:14px">Check <span id="ce-target-email" style="font-weight:600;color:var(--text)"></span> for a 6-digit code (expires in 10 minutes).</div>'
+    + '<input id="ce-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" style="width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;font-size:18px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:12px;letter-spacing:6px;text-align:center"/>'
+    + '<div id="ce-err2" style="font-size:12px;color:#e24b4a;margin-bottom:10px;display:none"></div>'
+    + '<button onclick="_verifyChangeEmailCode()" id="ce-verify-btn" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--ff);margin-bottom:8px">Verify and update</button>'
+    + '<button onclick="document.getElementById(\'ce-step1\').style.display=\'block\';document.getElementById(\'ce-step2\').style.display=\'none\'" style="width:100%;padding:8px;background:none;color:var(--text3);border:none;font-size:12px;cursor:pointer;font-family:var(--ff)">&larr; Back</button>'
+    + '</div>'
+    + '</div></div>');
+  setTimeout(function(){ var i = document.getElementById('ce-new-email'); if (i) i.focus(); }, 50);
+}
+function _sendChangeEmailCode() {
+  var u = plUser(); if (!u) return;
+  var inp = document.getElementById('ce-new-email');
+  var newEmail = (inp.value || '').trim().toLowerCase();
+  var err = document.getElementById('ce-err1');
+  err.style.display = 'none';
+  if (!newEmail || !newEmail.includes('@')) { err.textContent = 'Enter a valid email'; err.style.display = 'block'; return; }
+  if (newEmail === (u.email||'').toLowerCase()) { err.textContent = 'New email must be different'; err.style.display = 'block'; return; }
+  var btn = document.getElementById('ce-send-btn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  fetch('/api/send-otp', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: newEmail, purpose: 'change_email' })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      btn.disabled = false; btn.textContent = 'Send verification code';
+      if (d.error) { err.textContent = d.error; err.style.display = 'block'; return; }
+      window._ceTargetEmail = newEmail;
+      document.getElementById('ce-target-email').textContent = newEmail;
+      document.getElementById('ce-step1').style.display = 'none';
+      document.getElementById('ce-step2').style.display = 'block';
+      setTimeout(function(){ var c = document.getElementById('ce-code'); if (c) c.focus(); }, 50);
+    }).catch(function(){
+      btn.disabled = false; btn.textContent = 'Send verification code';
+      err.textContent = 'Could not send code. Try again.'; err.style.display = 'block';
+    });
+}
+function _verifyChangeEmailCode() {
+  var u = plUser(); if (!u) return;
+  var code = (document.getElementById('ce-code').value || '').trim();
+  var err = document.getElementById('ce-err2');
+  err.style.display = 'none';
+  if (!/^\d{6}$/.test(code)) { err.textContent = 'Enter the 6-digit code'; err.style.display = 'block'; return; }
+  var btn = document.getElementById('ce-verify-btn');
+  btn.disabled = true; btn.textContent = 'Verifying...';
+  fetch('/api/change-email', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: u.id, currentEmail: u.email, newEmail: window._ceTargetEmail, code: code })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      btn.disabled = false; btn.textContent = 'Verify and update';
+      if (d.error) { err.textContent = d.error; err.style.display = 'block'; return; }
+      u.email = d.email; setPlUser(u);
+      var emailEl = document.getElementById('acct-field-email'); if (emailEl) emailEl.textContent = d.email;
+      var displayEmailEl = document.getElementById('acct-display-email'); if (displayEmailEl) displayEmailEl.textContent = d.email;
+      document.getElementById('modal-change-email').remove();
+      plToast('Email updated to ' + d.email);
+    }).catch(function(){
+      btn.disabled = false; btn.textContent = 'Verify and update';
+      err.textContent = 'Could not verify. Try again.'; err.style.display = 'block';
+    });
+}
+
 function setPlUser(obj) {
   var isAuth = !!(obj && obj.id);
   document.body.classList.toggle('authenticated', isAuth);
