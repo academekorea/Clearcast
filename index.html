@@ -6530,9 +6530,13 @@ function showView(name) {
         return '<button data-jid="'+r.jobId+'" onclick="viewAnalysis(this.dataset.jid)" style="display:block;width:100%;text-align:left;padding:8px 8px;font-size:11px;color:rgba(255,255,255,.6);background:none;border:none;cursor:pointer;font-family:var(--ff);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:4px" title="'+(r.episodeTitle||r.title||'Episode')+'">'+(r.showName||'Episode')+'</button>';
       }).join('') : '<div style="padding:8px;font-size:11px;color:rgba(255,255,255,.3)">No recent analyses</div>';
     }
-    // Reset analyze page to hero state
+    // Reset analyze page to hero state — UNLESS the caller is about to immediately
+    // trigger startAnalysis (e.g. from a Discover Analyze button). In that case,
+    // window._skipAnalyzeHeroReset is set so we don't briefly flash the empty
+    // hero/search bar before flipping to the analyzing skeleton.
     var _ah = document.getElementById('analyze-hero');
-    if (_ah) _ah.style.display = '';
+    if (_ah && !window._skipAnalyzeHeroReset) _ah.style.display = '';
+    window._skipAnalyzeHeroReset = false;
     // Restore left nav when returning to input
     (function() {
       var _avR = document.getElementById('view-analyze');
@@ -8935,8 +8939,16 @@ function analyzeEp(e, url, epTitle, showName, background) {
     });
     return;
   }
+  // Skip the empty-hero flash: tell showView to NOT reset the analyze view to
+  // its empty hero state, since we're about to immediately start an analysis.
+  window._skipAnalyzeHeroReset = true;
   showView('analyze');
   document.getElementById('url-input').value=url;
+  // Pre-hide the hero before startAnalysis even runs, in case its first paint
+  // beats the skeleton render. (startAnalysis also hides it; this is belt+
+  // suspenders.)
+  var _ahPre = document.getElementById('analyze-hero');
+  if (_ahPre) _ahPre.style.display = 'none';
   startAnalysis(url, epTitle||'', showName||'');
 }
 
