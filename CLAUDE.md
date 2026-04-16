@@ -111,12 +111,13 @@ New columns added April 2026:
 - `podlens-cache/show-meta-{slug}` — show profiles
 - `podlens-cache/show-meta-youtube-{channelSlug}` — YouTube-only show profiles
 
-## Current Active Issues (April 15, 2026)
+## Current Active Issues (April 16, 2026)
 1. ~~**netlify.toml broken redirects**~~ — RESOLVED. /pricing and /how-it-works now route to /index.html
 2. ~~**Spotify import broken**~~ — RESOLVED. startSpotifyImport() exists, OAuth flow intact
 3. ~~**Analysis not registering**~~ — RESOLVED. trackAnalysis() fully implemented with Library refresh
 4. ~~**Social share reverted**~~ — RESOLVED. shareAnalysis() + showShareModal() fully functional
 5. **Google OAuth unverified app warning** — Google Console needs: publish app to production (scopes are non-sensitive, no review required). Consent screen must have privacy/terms URLs and podlens.app as authorized domain.
+6. **CURRENTS_API_KEY not set on Netlify** — Trending news pills currently serve the static fallback list. Grab a key from currentsapi.services and add it as CURRENTS_API_KEY in Netlify environment variables (Site config → Environment variables). Once set, pills go fully live with real news topics. Not a bug — just a missing env var.
 
 ## CLAUDE.md Update Instructions
 When significant architecture, features, or decisions change, update this file to reflect current state. Version and date at top. Keep sections current — stale info causes Claude Code to make wrong decisions.
