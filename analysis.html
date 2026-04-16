@@ -30,6 +30,8 @@ nav{display:flex;align-items:center;padding:0 24px;height:60px;border-bottom:1px
 .pl-lockup-wm{font-family:'Playfair Display',Georgia,serif;font-size:16px;line-height:1;color:var(--navy);letter-spacing:0;display:block}
 [data-theme="dark"] .pl-lockup-wm{color:var(--text,#FAF9F6)}
 .pl-wm-pod{font-weight:400}.pl-wm-lens{font-weight:700}
+.pl-wm-img{filter:invert(1);opacity:.9}
+[data-theme="dark"] .pl-wm-img{filter:none;opacity:.95}
 .pl-lockup-tagline{display:block;font-size:9.5px;color:var(--text3);letter-spacing:.02em;line-height:1.3;white-space:nowrap}
 .nav-cta{padding:8px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);text-decoration:none;white-space:nowrap}
 .main{max-width:880px;margin:0 auto;padding:60px 24px}
@@ -90,10 +92,10 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
 <body>
 <nav>
   <a class="pl-lockup" href="/" aria-label="Podlens home">
-    <img src="/favicon.svg" class="pl-lockup-icon" alt="" width="28" height="28">
+    <img src="/favicon-32x32.png" srcset="/android-chrome-192x192.png 3x" class="pl-lockup-icon" alt="" width="28" height="28">
     <span class="pl-lockup-divider"></span>
     <span class="pl-lockup-text">
-      <img src="/logo-wordmark.png" alt="PODLENS" height="18" style="height:18px;width:auto;display:block;opacity:.95">
+      <img src="/logo-wordmark.png" alt="PODLENS" class="pl-wm-img" height="18" style="height:18px;width:auto;display:block">
       <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
     </span>
   </a>
@@ -206,13 +208,7 @@ body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6
     document.title = (d.episodeTitle || 'Episode') + ' — Podlens Analysis';
     document.getElementById('og-title').content = (d.episodeTitle || 'Episode') + ' — Podlens';
     document.getElementById('og-desc').content = d.biasLabel + ' — See the full analysis on Podlens.';
-    var cardUrl = '/api/share-card?id=' + shareId
-      + '&show=' + encodeURIComponent(d.showName || '')
-      + '&title=' + encodeURIComponent((d.episodeTitle || '').slice(0,60))
-      + '&label=' + encodeURIComponent(d.biasLabel || '')
-      + '&l=' + (d.audioLean?.leftPct || 0)
-      + '&c=' + (d.audioLean?.centerPct || 0)
-      + '&r=' + (d.audioLean?.rightPct || 0);
+    var cardUrl = '/api/og-image?jobId=' + encodeURIComponent(shareId);
     document.getElementById('og-image').content = 'https://podlens.app' + cardUrl;
     document.getElementById('tw-image').content = 'https://podlens.app' + cardUrl;
 

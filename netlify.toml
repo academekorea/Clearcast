@@ -127,6 +127,11 @@
   path = "/analysis/:jobId"
 
 [[redirects]]
+  from = "/analysis/*"
+  to = "/analysis.html"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
