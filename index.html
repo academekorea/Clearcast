@@ -7455,8 +7455,10 @@ function _discMakeShowClickable(hostEl, showName, feedUrl) {
   };
 }
 
+// Track in-flight topic-hero request so out-of-order responses don't clobber UI
+var _discHeroReqTopic = null;
+
 function discTopicHero(topic) {
-  var hero = TOPIC_HEROES[topic];
   var eyeEl = document.getElementById('disc-hero-eye');
   var titleEl = document.getElementById('disc-hero-title');
   var hostEl = document.getElementById('disc-hero-host');
@@ -7468,61 +7470,64 @@ function discTopicHero(topic) {
   var relatedList = document.getElementById('disc-related-list');
 
   if (eyeEl) eyeEl.textContent = topic;
-
-  if (!hero) {
-    // No specific hero — just filter shows and show related
-    if (titleEl) titleEl.innerHTML = 'Top podcasts on: ' + topic;
-    if (hostEl) hostEl.textContent = 'Browse episodes below';
-    // CRITICAL: clear the video iframe too — otherwise a stale YouTube embed
-    // from the previous hero (e.g. default "Jensen Huang") stays visible,
-    // making it look like that video belongs to the new topic.
-    if (videoEl) {
-      videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%);color:rgba(255,255,255,.5);font-size:14px;text-align:center;padding:16px">'
-        + '<div><div style="font-size:48px;margin-bottom:10px;opacity:0.4">&#128269;</div>'
-        + 'Episodes about <strong style="color:#fff">' + _escHtml(topic) + '</strong> below</div></div>';
-    }
-    // Clear the current hero URL/show/title so the Play button doesn't trigger
-    // the previous hero's video.
-    _discCurrentHeroUrl = '';
-    _discCurrentHeroShow = '';
-    _discCurrentHeroTitle = '';
-    discSearch(topic);
-    if (relatedShelf) relatedShelf.style.display = '';
-    if (relatedTitle) relatedTitle.textContent = 'Podcasts covering: ' + topic;
-    _buildRelatedEpisodes(relatedList, topic, null);
-    return;
-  }
-
-  // Update hero text
-  if (titleEl) titleEl.textContent = hero.title;
-  if (hostEl) hostEl.textContent = hero.show + ' · ' + hero.duration;
-
-  // Update video — use YouTube embed if ytId, otherwise show show artwork
+  if (titleEl) titleEl.innerHTML = 'Loading top episode on: ' + _escHtml(topic) + '...';
+  if (hostEl) hostEl.textContent = '';
   if (videoEl) {
-    if (hero.ytId) {
-      videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
-    } else {
-      // Find show artwork from CURATED_SHOWS
-      var show = CURATED_SHOWS.find(function(s){ return s.feedUrl === hero.url || s.name === hero.show; });
-      var art = (show && show.artwork) || '';
-      videoEl.innerHTML = art
-        ? '<img src="'+art+'" style="width:100%;height:100%;object-fit:cover" alt="">'
-        : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(255,255,255,.2)">&#9654;</div>';
-    }
+    videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%);color:rgba(255,255,255,.4);font-size:13px">Finding top episode...</div>';
   }
-
-  // Track current hero URL/show/title so discHeroPlay() always uses the right one
-  _discCurrentHeroUrl = hero.url;
-  _discCurrentHeroShow = hero.show;
-  _discCurrentHeroTitle = hero.title;
-  if (playBtn) { playBtn.onclick = discHeroPlay; }
-  if (analyzeBtn) { analyzeBtn.onclick = function(){ analyzeEp(null,hero.url,hero.title,hero.show,true); }; }
-  _discMakeShowClickable(hostEl, hero.show, hero.url);
-
-  // Show related episodes shelf
+  // Clear hero state until we have a live result
+  _discCurrentHeroUrl = '';
+  _discCurrentHeroShow = '';
+  _discCurrentHeroTitle = '';
   if (relatedShelf) relatedShelf.style.display = '';
-  if (relatedTitle) relatedTitle.textContent = 'More on: ' + topic;
-  _buildRelatedEpisodes(relatedList, topic, hero.url);
+  if (relatedTitle) relatedTitle.textContent = 'Podcasts covering: ' + topic;
+  _buildRelatedEpisodes(relatedList, topic, null);
+
+  // Fetch top episode for this topic from YouTube via /api/stories
+  _discHeroReqTopic = topic;
+  var region = (typeof localStorage !== 'undefined' && (localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region'))) || 'us';
+  fetch('/api/stories?q=' + encodeURIComponent(topic) + '&region=' + encodeURIComponent(region) + '&limit=1', { signal: AbortSignal.timeout(8000) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (_discHeroReqTopic !== topic) return; // stale response
+      var ep = (d.results || [])[0];
+      if (!ep) { _setHeroNoMatch(topic, titleEl, hostEl, videoEl); return; }
+      var url = ep.youtubeUrl || ep.feedUrl || '';
+      var ytId = '';
+      var ytMatch = url.match(/[?&]v=([\w-]{11})|youtu\.be\/([\w-]{11})/);
+      if (ytMatch) ytId = ytMatch[1] || ytMatch[2];
+      if (titleEl) titleEl.textContent = ep.epTitle || 'Top episode';
+      if (hostEl) hostEl.textContent = (ep.showName || '') + (ep.duration ? ' · ' + ep.duration : '');
+      if (videoEl) {
+        if (ytId) {
+          videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
+        } else if (ep.artwork) {
+          videoEl.innerHTML = '<img src="'+ep.artwork+'" style="width:100%;height:100%;object-fit:cover" alt="">';
+        } else {
+          videoEl.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(255,255,255,.2)">&#9654;</div>';
+        }
+      }
+      _discCurrentHeroUrl = url;
+      _discCurrentHeroShow = ep.showName || '';
+      _discCurrentHeroTitle = ep.epTitle || '';
+      if (playBtn) playBtn.onclick = discHeroPlay;
+      if (analyzeBtn) analyzeBtn.onclick = function(){ analyzeEp(null, url, ep.epTitle||'', ep.showName||'', true); };
+      _discMakeShowClickable(hostEl, ep.showName || '', url);
+    })
+    .catch(function(){
+      if (_discHeroReqTopic !== topic) return;
+      _setHeroNoMatch(topic, titleEl, hostEl, videoEl);
+    });
+}
+
+function _setHeroNoMatch(topic, titleEl, hostEl, videoEl) {
+  if (titleEl) titleEl.innerHTML = 'Top podcasts on: ' + _escHtml(topic);
+  if (hostEl) hostEl.textContent = 'Browse episodes below';
+  if (videoEl) {
+    videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%);color:rgba(255,255,255,.5);font-size:14px;text-align:center;padding:16px">'
+      + '<div><div style="font-size:48px;margin-bottom:10px;opacity:0.4">&#128269;</div>'
+      + 'Episodes about <strong style="color:#fff">' + _escHtml(topic) + '</strong> below</div></div>';
+  }
 }
 
 // Map news topics → relevant podcast categories (which shows are most likely to cover them)
@@ -7742,6 +7747,13 @@ function discLoadLiveShows(cat) {
     .catch(function() { container.innerHTML = ''; });
 }
 
+// Map UI categories to /api/marketplace category param
+var _DISC_MARKET_CAT = {
+  all: 'all', news: 'news', tech: 'technology', business: 'business',
+  society: 'society', crime: 'true-crime', comedy: 'comedy',
+  health: 'health', sports: 'sports'
+};
+
 function discRenderShows() {
   var el = document.getElementById('disc-shows-row');
   if (!el) return;
@@ -7767,15 +7779,45 @@ function discRenderShows() {
     return;
   }
 
-  // For you / Trending — show all shows for category (horizontal scroll)
-  var filtered = _discCat === 'all' ? CURATED_SHOWS.slice() : CURATED_SHOWS.filter(function(s){return s.cat===_discCat;});
-  var shows = filtered;
+  // Live iTunes top podcasts via /api/marketplace (replaces hardcoded CURATED_SHOWS).
+  // Render skeleton while loading.
+  el.innerHTML = '<div style="grid-column:1/-1;padding:18px 0;color:var(--text3);font-size:12px">Loading top podcasts...</div>';
+  var marketCat = _DISC_MARKET_CAT[_discCat] || 'all';
+  var region = (typeof localStorage !== 'undefined' && (localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region'))) || 'us';
+  var reqCat = _discCat;
+  fetch('/api/marketplace?category=' + encodeURIComponent(marketCat) + '&region=' + encodeURIComponent(region), { signal: AbortSignal.timeout(7000) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      // Avoid race: if user switched category mid-fetch, drop this response
+      if (reqCat !== _discCat) return;
+      var shows = (d.podcasts || []).slice(0, 24);
+      if (!shows.length) { _renderShowsFallback(el); return; }
+      el.innerHTML = shows.map(function(s) {
+        var name = s.name || '';
+        var slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        var safeUrl = (s.feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+        var safeName = name.replace(/"/g,"").replace(/'/g,"");
+        var safeArt = (s.artwork||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+        var art = _showArtImg(s.artwork, name, 'disc-show-art');
+        return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
+          + _heartBtn(s.feedUrl||'',name,s.artist||'',s.artwork||'')
+          + art + '<div class="disc-show-name">'+name+'</div>'
+          + '<div class="disc-show-sub">'+(s.artist||'')+'</div>'
+          + '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+safeArt+'\',this)" style="margin-top:auto;padding-top:8px;width:100%;padding:8px 6px 6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(name)?'✓ Following':'+ Follow')+'</button>'
+          + '</div>';
+      }).join('');
+      addScrollDrag(el);
+    })
+    .catch(function(){ _renderShowsFallback(el); });
+}
 
-  el.innerHTML = shows.map(function(s) {
+// Fallback to CURATED_SHOWS if /api/marketplace fails (network / iTunes outage)
+function _renderShowsFallback(el) {
+  var filtered = _discCat === 'all' ? CURATED_SHOWS.slice() : CURATED_SHOWS.filter(function(s){return s.cat===_discCat;});
+  el.innerHTML = filtered.map(function(s) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
     var safeName = s.name.replace(/"/g,"").replace(/'/g,"");
-    // Use artwork directly from CURATED_SHOWS — no cache lookup needed
     var art = _showArtImg(s.artwork, s.name, 'disc-show-art');
     return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
       + _heartBtn(s.feedUrl,s.name,s.artist,s.artwork)
@@ -7786,8 +7828,6 @@ function discRenderShows() {
       + '</div>';
   }).join('');
   addScrollDrag(el);
-  // Load live shows from Podcast Index
-  discLoadLiveShows(_discCat);
 }
 
 function discRenderRecent() {
