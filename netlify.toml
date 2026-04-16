@@ -1,6 +1,7 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+  edge_functions = "netlify/edge-functions"
 
 [functions]
   node_bundler = "esbuild"
@@ -120,6 +121,10 @@
   from = "/bulk-scan"
   to = "/bulk-scan.html"
   status = 200
+
+[[edge_functions]]
+  function = "analysis-meta"
+  path = "/analysis/:jobId"
 
 [[redirects]]
   from = "/*"
