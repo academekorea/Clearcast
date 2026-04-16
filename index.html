@@ -10555,8 +10555,11 @@ async function loadShowProfile(slug,compareSlug,exactName) {
   el.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3);font-size:12px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading show intelligence&hellip;</div>';
   try {
     var data=await fetch('/api/show-profile?id='+encodeURIComponent(slug)).then(function(r){return r.json();});
-    // Enrich with real iTunes metadata — prefer exact name over slug
-    var showName=exactName||(data.show&&data.show.name)||slug;
+    // Enrich with real iTunes metadata — prefer exact name over slug.
+    // If we only have the slug, un-slugify it (dashes → spaces) so iTunes
+    // search actually matches. "the-daily" searched as-is returns junk;
+    // "the daily" returns The Daily by The New York Times correctly.
+    var showName=exactName||(data.show&&data.show.name)||slug.replace(/-+/g, ' ').trim();
     var itunesMeta=await fetchItunesMeta(showName);
     // Fetch RSS episodes + description in parallel with iTunes
     var rssFeedUrl=(itunesMeta&&itunesMeta.feedUrl)||(data.show&&data.show.feedUrl)||null;
@@ -10668,9 +10671,17 @@ function _buildHostBlurb(hostName, showName, itunes, analyzedCount) {
   if (trackCount) stats.push(trackCount.toLocaleString() + ' episode' + (trackCount === 1 ? '' : 's'));
   if (country) stats.push(_esc(country));
   if (analyzedCount > 0) stats.push(analyzedCount + ' analyzed on Podlens');
-  if (stats.length) parts.push(stats.join(' \u00B7 ') + '.');
 
-  // Fallback if we have literally nothing informative.
+  if (stats.length) {
+    parts.push(stats.join(' \u00B7 ') + '.');
+  } else {
+    // No iTunes stats — this happens when the show profile was opened via a
+    // slug-only link and iTunes lookup failed (e.g. "the-daily"). Keep the
+    // action-oriented CTA so the user still gets a useful next step.
+    parts.push('Analyze an episode to build a bias and trust intelligence profile for this host.');
+  }
+
+  // Fallback if we have literally nothing informative (no showName and no host).
   if (!parts.length) {
     return 'Analyze episodes to build a bias and trust intelligence profile for this host.';
   }
@@ -10682,8 +10693,14 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
   var yt=data.youtubeChannel||null;
   var el=document.getElementById('sp-content');
 
+  // Last-resort display name when both iTunes and platform data are missing:
+  // un-slugify + title-case so we show "The Daily" instead of "the-daily".
+  function _niceNameFromSlug(s) {
+    return String(s || '').replace(/-+/g, ' ').trim().replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+  }
+
   // Fallback to CURATED_SHOWS bias data if no platform analyses exist
-  var displayName0=(itunes&&itunes.name)||show.name||slug;
+  var displayName0=(itunes&&itunes.name)||show.name||_niceNameFromSlug(slug);
   if (!m.biasLabel && typeof CURATED_SHOWS !== 'undefined') {
     var curMatch = CURATED_SHOWS.find(function(s){ return s.name.toLowerCase() === (displayName0||'').toLowerCase(); });
     if (curMatch && curMatch.bias) {
@@ -10696,7 +10713,7 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
   var artwork=(itunes&&itunes.artwork)||show.artwork||(yt&&yt.thumbnailHigh)||null;
   var biasClass={['Far left']:'bp-left',['Lean left']:'bp-lean-left',['Center']:'bp-center',['Lean right']:'bp-lean-right',['Far right']:'bp-right'}[m.biasLabel]||'bp-center';
   var biasBadge=m.biasLabel?'<span class="bpill '+biasClass+'"><span class="dot"></span>'+m.biasLabel+'</span>':'';
-  var displayName=(itunes&&itunes.name)||show.name||slug;
+  var displayName=(itunes&&itunes.name)||show.name||_niceNameFromSlug(slug);
   var feedUrl=(itunes&&itunes.feedUrl)||show.feedUrl||null;
   var eName=encodeURIComponent(displayName);
   var hostName=(itunes&&itunes.artist)||(rss&&rss.host)||show.host||null;
