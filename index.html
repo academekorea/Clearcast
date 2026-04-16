@@ -6582,18 +6582,21 @@ var _discTab = 'foryou';
 // users (e.g. a US visitor on a Korea VPN suddenly seeing Korean podcasts).
 // IP geo is still used to auto-apply the Korean UI for KR visitors — that's
 // language preference, not content region.
+// Only English-primary countries — our analysis pipeline (AssemblyAI English
+// transcription model + Claude bias prompt anchored in US/English political
+// framing) doesn't yet handle non-English content reliably. Until we wire
+// per-language transcription + a localized bias framework, switching to KR/JP/
+// DE/FR/etc. would surface podcasts the user can browse but couldn't analyze
+// with meaningful results — worse UX than just keeping the list focused.
 var _DISC_REGIONS = [
   { code:'us', flag:'🇺🇸', label:'United States' },
   { code:'gb', flag:'🇬🇧', label:'United Kingdom' },
   { code:'ca', flag:'🇨🇦', label:'Canada' },
   { code:'au', flag:'🇦🇺', label:'Australia' },
-  { code:'kr', flag:'🇰🇷', label:'Korea' },
-  { code:'jp', flag:'🇯🇵', label:'Japan' },
-  { code:'de', flag:'🇩🇪', label:'Germany' },
-  { code:'fr', flag:'🇫🇷', label:'France' },
+  { code:'ie', flag:'🇮🇪', label:'Ireland' },
+  { code:'nz', flag:'🇳🇿', label:'New Zealand' },
   { code:'in', flag:'🇮🇳', label:'India' },
-  { code:'br', flag:'🇧🇷', label:'Brazil' },
-  { code:'mx', flag:'🇲🇽', label:'Mexico' },
+  { code:'za', flag:'🇿🇦', label:'South Africa' },
 ];
 function _contentRegion() {
   try { return (localStorage.getItem('pl-content-region') || 'us').toLowerCase(); } catch(e) { return 'us'; }
@@ -6637,7 +6640,10 @@ function _setContentRegion(code) {
   var menu = document.getElementById('disc-region-menu');
   if (menu) menu.style.display = 'none';
   _renderRegionPill();
-  // Clear cached default hero so it refetches for the new region
+  // Invalidate caches — content is region-specific
+  _discMarketCache = {};
+  _discStoriesCache = {};
+  _discHeroCache = {};
   _discDefaultHeroLoadedFor = null;
   // Reload all region-driven discover content
   if (typeof loadDefaultHero === 'function') loadDefaultHero(_discCat);
@@ -6790,6 +6796,7 @@ function initDiscover() {
   discRenderEpisodes();
   loadDiscTrendingNews();
   loadDefaultHero(_discCat);
+  _renderRegionPill();
   // Load trending topics from Supabase (all users)
   fetch('/api/trending-topics')
     .then(function(r){ return r.json(); })
@@ -6919,37 +6926,47 @@ function discRenderEpisodes() {
 function _renderEpisodesFromStories(el, cat) {
   var query = (typeof _DISC_HERO_QUERY !== 'undefined' && _DISC_HERO_QUERY[cat]) || 'top podcast';
   var region = _contentRegion();
+  var cacheKey = region + ':' + cat;
+  if (_discStoriesCache[cacheKey]) {
+    _paintEpisodesFromStories(el, _discStoriesCache[cacheKey]);
+    return;
+  }
   var reqCat = cat;
   fetch('/api/stories?q=' + encodeURIComponent(query) + '&region=' + encodeURIComponent(region) + '&limit=9', { signal: AbortSignal.timeout(8000) })
     .then(function(r){ return r.json(); })
     .then(function(d){
-      if (reqCat !== _discCat) return; // user switched category mid-fetch
+      if (reqCat !== _discCat) return;
       var eps = (d.results || []).slice(0, 9);
-      if (!eps.length) { _renderCuratedEpisodes(el); return; } // last-ditch fallback
-      var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
-      el.innerHTML = eps.map(function(ep, i) {
-        var url = ep.youtubeUrl || ep.feedUrl || '';
-        var safeUrl = url.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        var showName = ep.showName || '';
-        var safeName = showName.replace(/"/g,'').replace(/'/g,'');
-        var slug = showName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-        var epTitle = ep.epTitle || 'Episode';
-        var artHtml = ep.artwork
-          ? '<img src="'+ep.artwork+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\'">'
-          : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+showName.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
-        var dur = ep.duration ? ('<span style="margin-left:6px;color:var(--text3);font-size:10px">'+ep.duration+'</span>') : '';
-        return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
-          +'<div class="disc-ep-art" style="background:'+bgs[i % 3]+'">'+artHtml+'</div>'
-          +'<div class="disc-ep-body"><div class="disc-ep-show">'+showName+'</div>'
-          +'<div class="disc-ep-title">'+epTitle+'</div>'
-          +'<div class="disc-ep-dur">Top trending'+dur+'</div></div>'
-          +'<div style="display:flex;gap:6px;align-items:center">'
-          +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\',true)">Analyze</button>'
-          +'</div></div>';
-      }).join('');
-      addScrollDrag(el);
+      if (!eps.length) { _renderCuratedEpisodes(el); return; }
+      _discStoriesCache[cacheKey] = eps;
+      _paintEpisodesFromStories(el, eps);
     })
     .catch(function(){ _renderCuratedEpisodes(el); });
+}
+
+function _paintEpisodesFromStories(el, eps) {
+  var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
+  el.innerHTML = eps.map(function(ep, i) {
+    var url = ep.youtubeUrl || ep.feedUrl || '';
+    var safeUrl = url.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var showName = ep.showName || '';
+    var safeName = showName.replace(/"/g,'').replace(/'/g,'');
+    var slug = showName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var epTitle = ep.epTitle || 'Episode';
+    var artHtml = ep.artwork
+      ? '<img src="'+ep.artwork+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\'">'
+      : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+showName.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
+    var dur = ep.duration ? ('<span style="margin-left:6px;color:var(--text3);font-size:10px">'+ep.duration+'</span>') : '';
+    return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
+      +'<div class="disc-ep-art" style="background:'+bgs[i % 3]+'">'+artHtml+'</div>'
+      +'<div class="disc-ep-body"><div class="disc-ep-show">'+showName+'</div>'
+      +'<div class="disc-ep-title">'+epTitle+'</div>'
+      +'<div class="disc-ep-dur">Top trending'+dur+'</div></div>'
+      +'<div style="display:flex;gap:6px;align-items:center">'
+      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\',true)">Analyze</button>'
+      +'</div></div>';
+  }).join('');
+  addScrollDrag(el);
 }
 
 function _renderLiveEpisodes(el, episodes) {
@@ -8010,6 +8027,31 @@ var _DISC_MARKET_CAT = {
   health: 'health', sports: 'sports'
 };
 
+// In-memory caches per (region, category). Once loaded, switching categories
+// is instant. Cleared by _setContentRegion when the user changes country.
+var _discMarketCache = {};   // key: region:cat → podcasts[]
+var _discStoriesCache = {};  // key: region:cat → episodes[]
+var _discHeroCache = {};     // key: region:cat → hero object
+
+function _renderShowsRow(el, shows) {
+  if (!shows || !shows.length) { _renderShowsFallback(el); return; }
+  el.innerHTML = shows.map(function(s) {
+    var name = s.name || '';
+    var slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var safeUrl = (s.feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var safeName = name.replace(/"/g,"").replace(/'/g,"");
+    var safeArt = (s.artwork||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var art = _showArtImg(s.artwork, name, 'disc-show-art');
+    return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
+      + _heartBtn(s.feedUrl||'',name,s.artist||'',s.artwork||'')
+      + art + '<div class="disc-show-name">'+name+'</div>'
+      + '<div class="disc-show-sub">'+(s.artist||'')+'</div>'
+      + '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+safeArt+'\',this)" style="margin-top:auto;padding-top:8px;width:100%;padding:8px 6px 6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(name)?'✓ Following':'+ Follow')+'</button>'
+      + '</div>';
+  }).join('');
+  addScrollDrag(el);
+}
+
 function discRenderShows() {
   var el = document.getElementById('disc-shows-row');
   if (!el) return;
@@ -8035,34 +8077,25 @@ function discRenderShows() {
     return;
   }
 
-  // Live iTunes top podcasts via /api/marketplace (replaces hardcoded CURATED_SHOWS).
-  // Render skeleton while loading.
-  el.innerHTML = '<div style="grid-column:1/-1;padding:18px 0;color:var(--text3);font-size:12px">Loading top podcasts...</div>';
   var marketCat = _DISC_MARKET_CAT[_discCat] || 'all';
   var region = _contentRegion();
+  var cacheKey = region + ':' + marketCat;
+
+  // Cache hit → instant render, no skeleton flash
+  if (_discMarketCache[cacheKey]) {
+    _renderShowsRow(el, _discMarketCache[cacheKey]);
+    return;
+  }
+
+  el.innerHTML = '<div style="grid-column:1/-1;padding:18px 0;color:var(--text3);font-size:12px">Loading top podcasts...</div>';
   var reqCat = _discCat;
   fetch('/api/marketplace?category=' + encodeURIComponent(marketCat) + '&region=' + encodeURIComponent(region), { signal: AbortSignal.timeout(7000) })
     .then(function(r){ return r.json(); })
     .then(function(d){
-      // Avoid race: if user switched category mid-fetch, drop this response
-      if (reqCat !== _discCat) return;
+      if (reqCat !== _discCat) return; // race guard
       var shows = (d.podcasts || []).slice(0, 24);
-      if (!shows.length) { _renderShowsFallback(el); return; }
-      el.innerHTML = shows.map(function(s) {
-        var name = s.name || '';
-        var slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-        var safeUrl = (s.feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        var safeName = name.replace(/"/g,"").replace(/'/g,"");
-        var safeArt = (s.artwork||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-        var art = _showArtImg(s.artwork, name, 'disc-show-art');
-        return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
-          + _heartBtn(s.feedUrl||'',name,s.artist||'',s.artwork||'')
-          + art + '<div class="disc-show-name">'+name+'</div>'
-          + '<div class="disc-show-sub">'+(s.artist||'')+'</div>'
-          + '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+safeArt+'\',this)" style="margin-top:auto;padding-top:8px;width:100%;padding:8px 6px 6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(name)?'✓ Following':'+ Follow')+'</button>'
-          + '</div>';
-      }).join('');
-      addScrollDrag(el);
+      _discMarketCache[cacheKey] = shows;
+      _renderShowsRow(el, shows);
     })
     .catch(function(){ _renderShowsFallback(el); });
 }

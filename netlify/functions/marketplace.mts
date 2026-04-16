@@ -1,4 +1,7 @@
 import type { Config } from "@netlify/functions";
+import { getStore } from "@netlify/blobs";
+
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 // Correct Apple Podcast RSS genre IDs
 const GENRE_IDS: Record<string, string> = {
@@ -48,6 +51,22 @@ export default async (req: Request) => {
   const genreId = GENRE_IDS[genre] ?? GENRE_IDS["all"] ?? "";
   const term = SEARCH_TERMS[genre] || "podcast";
   const country = region === "international" ? "us" : region;
+
+  // Check Netlify Blobs cache — iTunes top podcasts don't change minute-to-minute,
+  // 1hr TTL eliminates the iTunes RSS + lookup cost on every category click.
+  const cacheKey = `marketplace:${country}:${genre}`;
+  try {
+    const store = getStore("podlens-cache");
+    const cached = (await store.get(cacheKey, { type: "json" })) as
+      | { ts: number; podcasts: any[] }
+      | null;
+    if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL_MS && cached.podcasts?.length) {
+      return new Response(JSON.stringify({ podcasts: cached.podcasts, genre, region, country, cached: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300" },
+      });
+    }
+  } catch {}
 
   try {
     let podcasts: any[] = [];
@@ -130,9 +149,17 @@ export default async (req: Request) => {
       }
     }
 
+    // Save to cache for next request
+    if (podcasts.length) {
+      try {
+        const store = getStore("podlens-cache");
+        await store.setJSON(cacheKey, { ts: Date.now(), podcasts });
+      } catch {}
+    }
+
     return new Response(JSON.stringify({ podcasts, genre, region, country }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300" },
     });
   } catch (e) {
     return new Response(JSON.stringify({ error: String(e), podcasts: [] }), {
