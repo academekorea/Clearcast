@@ -1169,7 +1169,11 @@ body.player-on .lap{bottom:72px}
 .sp-sim-cat{font-size:9px;color:var(--text3);}
 .sp-host-card-new{display:flex;gap:10px;align-items:flex-start;background:var(--bg2);border:0.5px solid var(--border);border-radius:7px;padding:10px 12px;margin-bottom:14px;}
 .sp-host-avatar{width:34px;height:34px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:600;color:var(--text3);margin-top:1px;}
-.sp-share-icon-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+.sp-share-icon-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.75);}
+.sp-share-icon-btn:hover{background:rgba(255,255,255,.15);color:#fff;}
+.sp-new-hero .sp-follow-btn{border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.85);background:transparent;}
+.sp-new-hero .sp-follow-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.6);}
+.sp-new-hero .sp-follow-btn.following{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.5);}
 .sp-share-icon-btn:hover{background:rgba(255,255,255,.15);}
 .sp-metric{padding:14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
 .sp-metric:nth-child(3n){border-right:none}
@@ -3509,6 +3513,14 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           <div id="disc-search-dropdown" style="display:none;position:absolute;left:0;right:0;top:44px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:20;max-height:320px;overflow-y:auto"></div>
         </div>
         <button onclick="discSearch(document.getElementById('disc-search-input').value.trim())" style="padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap">Search</button>
+        <div style="position:relative">
+          <button id="disc-region-pill" onclick="_toggleRegionMenu()" title="Change content region" style="display:inline-flex;align-items:center;gap:6px;padding:10px 12px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:var(--ff);white-space:nowrap">
+            <span id="disc-region-pill-flag">🇺🇸</span>
+            <span id="disc-region-pill-label">US</span>
+            <span style="font-size:10px;color:var(--text3)">▾</span>
+          </button>
+          <div id="disc-region-menu" style="display:none;position:absolute;right:0;top:44px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:30;min-width:180px;overflow:hidden"></div>
+        </div>
       </div>
       <div class="disc-hero" id="disc-hero-card">
         <div class="disc-hero-l">
@@ -6564,6 +6576,76 @@ function showView(name) {
 var _discCat = 'all';
 var _discTab = 'foryou';
 
+// ── CONTENT REGION ──────────────────────────────────────────────────────────
+// Defaults to US until the user explicitly switches via the region pill on
+// Discover. The previous behavior auto-set this from IP geo, which surprised
+// users (e.g. a US visitor on a Korea VPN suddenly seeing Korean podcasts).
+// IP geo is still used to auto-apply the Korean UI for KR visitors — that's
+// language preference, not content region.
+var _DISC_REGIONS = [
+  { code:'us', flag:'🇺🇸', label:'United States' },
+  { code:'gb', flag:'🇬🇧', label:'United Kingdom' },
+  { code:'ca', flag:'🇨🇦', label:'Canada' },
+  { code:'au', flag:'🇦🇺', label:'Australia' },
+  { code:'kr', flag:'🇰🇷', label:'Korea' },
+  { code:'jp', flag:'🇯🇵', label:'Japan' },
+  { code:'de', flag:'🇩🇪', label:'Germany' },
+  { code:'fr', flag:'🇫🇷', label:'France' },
+  { code:'in', flag:'🇮🇳', label:'India' },
+  { code:'br', flag:'🇧🇷', label:'Brazil' },
+  { code:'mx', flag:'🇲🇽', label:'Mexico' },
+];
+function _contentRegion() {
+  try { return (localStorage.getItem('pl-content-region') || 'us').toLowerCase(); } catch(e) { return 'us'; }
+}
+function _renderRegionPill() {
+  var pill = document.getElementById('disc-region-pill-flag');
+  var lbl = document.getElementById('disc-region-pill-label');
+  if (!pill || !lbl) return;
+  var code = _contentRegion();
+  var match = _DISC_REGIONS.find(function(r){ return r.code === code; });
+  if (match) { pill.textContent = match.flag; lbl.textContent = match.code.toUpperCase(); }
+}
+function _toggleRegionMenu() {
+  var menu = document.getElementById('disc-region-menu');
+  if (!menu) return;
+  var isOpen = menu.style.display !== 'none';
+  if (isOpen) { menu.style.display = 'none'; return; }
+  var current = _contentRegion();
+  menu.innerHTML = _DISC_REGIONS.map(function(r){
+    var isCurrent = r.code === current;
+    return '<button onclick="_setContentRegion(\''+r.code+'\')" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;background:'+(isCurrent?'var(--bg3)':'transparent')+';border:none;cursor:pointer;font-family:var(--ff);font-size:13px;color:var(--text);text-align:left;'+(isCurrent?'font-weight:600':'')+'" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\''+(isCurrent?'var(--bg3)':'transparent')+'\'">'
+      + '<span style="font-size:16px">'+r.flag+'</span>'
+      + '<span>'+r.label+'</span>'
+      + (isCurrent ? '<span style="margin-left:auto;color:var(--text3);font-size:11px">current</span>' : '')
+      + '</button>';
+  }).join('');
+  menu.style.display = 'block';
+  // Close on outside click
+  setTimeout(function() {
+    function _close(ev) {
+      if (!menu.contains(ev.target) && ev.target.id !== 'disc-region-pill' && !document.getElementById('disc-region-pill').contains(ev.target)) {
+        menu.style.display = 'none';
+        document.removeEventListener('click', _close);
+      }
+    }
+    document.addEventListener('click', _close);
+  }, 0);
+}
+function _setContentRegion(code) {
+  try { localStorage.setItem('pl-content-region', code); } catch(e) {}
+  var menu = document.getElementById('disc-region-menu');
+  if (menu) menu.style.display = 'none';
+  _renderRegionPill();
+  // Clear cached default hero so it refetches for the new region
+  _discDefaultHeroLoadedFor = null;
+  // Reload all region-driven discover content
+  if (typeof loadDefaultHero === 'function') loadDefaultHero(_discCat);
+  if (typeof discRenderShows === 'function') discRenderShows();
+  if (typeof discRenderEpisodes === 'function') discRenderEpisodes();
+  if (typeof plToast === 'function') plToast('Region: ' + code.toUpperCase(), 1500);
+}
+
 function initDiscover() {
   var u = plUser();
   var greet = document.getElementById('disc-greeting');
@@ -6592,7 +6674,7 @@ function initDiscover() {
     discRenderRightCol(true, u);
 
     // Load For You shelf — single fetch, handle both rendering and prompt
-    var region = localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region') || 'us';
+    var region = _contentRegion();
     if (foryouShelf) foryouShelf.style.display = '';
     var foryouEl = document.getElementById('foryou-trending');
     fetch('/api/for-you?region=' + encodeURIComponent(region) + '&userId=' + encodeURIComponent(u.id), { signal: AbortSignal.timeout(6000) })
@@ -6836,7 +6918,7 @@ function discRenderEpisodes() {
 // relied on the hardcoded CURATED_SHOWS list.
 function _renderEpisodesFromStories(el, cat) {
   var query = (typeof _DISC_HERO_QUERY !== 'undefined' && _DISC_HERO_QUERY[cat]) || 'top podcast';
-  var region = (typeof localStorage !== 'undefined' && (localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region'))) || 'us';
+  var region = _contentRegion();
   var reqCat = cat;
   fetch('/api/stories?q=' + encodeURIComponent(query) + '&region=' + encodeURIComponent(region) + '&limit=9', { signal: AbortSignal.timeout(8000) })
     .then(function(r){ return r.json(); })
@@ -7526,7 +7608,7 @@ function loadDefaultHero(cat) {
     return;
   }
   _discDefaultHeroLoadedFor = cacheKey;
-  var region = (typeof localStorage !== 'undefined' && (localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region'))) || 'us';
+  var region = _contentRegion();
 
   // For "all" + signed-in with interests → personalized YouTube episode (current behavior).
   // For "all" without interests → top YouTube podcast for the region.
@@ -7623,7 +7705,7 @@ function discTopicHero(topic) {
 
   // Fetch top episode for this topic from YouTube via /api/stories
   _discHeroReqTopic = topic;
-  var region = (typeof localStorage !== 'undefined' && (localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region'))) || 'us';
+  var region = _contentRegion();
   fetch('/api/stories?q=' + encodeURIComponent(topic) + '&region=' + encodeURIComponent(region) + '&limit=1', { signal: AbortSignal.timeout(8000) })
     .then(function(r){ return r.json(); })
     .then(function(d){
@@ -7957,7 +8039,7 @@ function discRenderShows() {
   // Render skeleton while loading.
   el.innerHTML = '<div style="grid-column:1/-1;padding:18px 0;color:var(--text3);font-size:12px">Loading top podcasts...</div>';
   var marketCat = _DISC_MARKET_CAT[_discCat] || 'all';
-  var region = (typeof localStorage !== 'undefined' && (localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region'))) || 'us';
+  var region = _contentRegion();
   var reqCat = _discCat;
   fetch('/api/marketplace?category=' + encodeURIComponent(marketCat) + '&region=' + encodeURIComponent(region), { signal: AbortSignal.timeout(7000) })
     .then(function(r){ return r.json(); })
@@ -10774,10 +10856,10 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     html = '<div class="sp-new-hero">'
       + artHtml
       + '<div style="flex:1;min-width:0">'
-      + '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:3px">Podcast'+(itunes&&itunes.category?' &middot; '+_esc(itunes.category):'')+'</div>'
-      + '<div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.2">'+_esc(displayName)+'</div>'
-      + (hostName ? '<div style="font-size:11px;color:var(--text3);margin-bottom:8px">by '+_esc(hostName)+'</div>' : '<div style="margin-bottom:8px"></div>')
-      + (cleanDesc ? '<div style="font-size:11px;color:var(--text2);line-height:1.65;margin-bottom:12px;max-width:520px">'+cleanDesc+'</div>' : '')
+      + '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px">Podcast'+(itunes&&itunes.category?' &middot; '+_esc(itunes.category):'')+'</div>'
+      + '<div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:2px;line-height:1.2">'+_esc(displayName)+'</div>'
+      + (hostName ? '<div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:8px">by '+_esc(hostName)+'</div>' : '<div style="margin-bottom:8px"></div>')
+      + (cleanDesc ? '<div style="font-size:11px;color:rgba(255,255,255,.75);line-height:1.65;margin-bottom:12px;max-width:520px">'+cleanDesc+'</div>' : '')
       + '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
       + followBtn
       + '<div style="width:0.5px;height:18px;background:rgba(255,255,255,.1);flex-shrink:0"></div>'
@@ -14083,23 +14165,10 @@ function addToPlaylist(ep) {
 })();
 enforcePlanRules();
 initNav();
-// One-time geo auto-detect — if the visitor has no region set yet, fetch
-// their country from Netlify edge geo and store it. Subsequent /api/stories
-// and /api/marketplace calls will then return locally-relevant content
-// instead of falling back to whatever the function host's IP suggests.
-(function _autoDetectRegion(){
-  try {
-    var hasRegion = localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region');
-    if (hasRegion) return;
-    fetch('/api/geo-detect', { signal: AbortSignal.timeout(3000) })
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (d && d.country) {
-          try { localStorage.setItem('pl_prefs_region', d.country); } catch(e) {}
-        }
-      }).catch(function(){});
-  } catch(e) {}
-})();
+// No IP-based detection. Content defaults to US (changeable via the region
+// pill on Discover). UI stays in English — users can use Google Translate
+// or their browser's translation feature for non-English UX. Auto-detecting
+// language from IP misfires too often (VPNs, travelers, mobile carriers).
 // Apply region, translations
 updateRegionUI();
 applyTranslations(_settings.lang);
