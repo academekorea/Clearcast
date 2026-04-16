@@ -397,9 +397,13 @@
       return;
     }
     el.innerHTML = '<div class="saved-grid">'+liked.map(function(ep,i) {
+      // Empty title means a just-liked show whose latest-episode fetch is
+      // still in flight. Render a transient placeholder rather than the
+      // generic "Episode" so the user sees something meaningful.
+      var titleText = ep.title ? ep.title : 'Fetching latest episode\u2026';
       return '<div class="saved-card">'+artHtml(ep.artwork,ep.showName,'saved-art')
         + '<div class="saved-info"><div class="saved-show">'+esc(ep.showName||'')+'</div>'
-        + '<div class="saved-title">'+esc(ep.title||'Episode')+'</div>'
+        + '<div class="saved-title">'+esc(titleText)+'</div>'
         + '<div class="saved-card-actions">'
         + (ep.url?'<button class="btn-analyze" onclick="analyzeLatest(\''+esc(ep.url)+'\',\''+esc(ep.showName||'')+'\')">Analyze \u2192</button>':'')
         + '<button class="btn-remove" onclick="unlikeEp('+i+')">Unlike</button>'
@@ -412,6 +416,10 @@
     localStorage.setItem(PL_LIKED_KEY, JSON.stringify(liked));
     renderLiked();
   };
+
+  // Expose so index.html's async "show → latest episode" upgrade can refresh
+  // the panel after the like entry is rewritten with real episode data.
+  window.renderLiked = renderLiked;
 
   /* Playlists */
   function renderPlaylists() {

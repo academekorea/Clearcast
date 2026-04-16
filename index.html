@@ -6495,7 +6495,7 @@ function _heartBtn(feedUrl, name, artist, artwork) {
   var safeArtist = (artist||'').replace(/'/g,'').replace(/"/g,'');
   var safeArt = (artwork||'').replace(/'/g,'').replace(/"/g,'');
   var liked = isLiked({url:feedUrl});
-  return '<button data-url="'+safeUrl+'" data-title="'+safeName+'" data-artist="'+safeArtist+'" data-art="'+safeArt+'" onclick="event.stopPropagation();_likeFromBtn(this);this.textContent=this.textContent===\'\u2661\'?\'\u2665\':\'\u2661\';this.style.color=this.textContent===\'\u2665\'?\'#e24b4a\':\'rgba(0,0,0,.3)\'" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:28px;height:28px;font-size:16px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;color:'+(liked?'#e24b4a':'rgba(0,0,0,.3)')+'">'+(liked?'\u2665':'\u2661')+'</button>';
+  return '<button data-kind="show" data-url="'+safeUrl+'" data-title="'+safeName+'" data-artist="'+safeArtist+'" data-art="'+safeArt+'" onclick="event.stopPropagation();_likeFromBtn(this);this.textContent=this.textContent===\'\u2661\'?\'\u2665\':\'\u2661\';this.style.color=this.textContent===\'\u2665\'?\'#e24b4a\':\'rgba(0,0,0,.3)\'" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:28px;height:28px;font-size:16px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;color:'+(liked?'#e24b4a':'rgba(0,0,0,.3)')+'">'+(liked?'\u2665':'\u2661')+'</button>';
 }
 
 function _biasMini(b) {
@@ -7205,7 +7205,7 @@ function _renderCuratedEpisodes(el) {
       +'<div style="display:flex;gap:6px;align-items:center">'
       +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\',true)">Analyze</button>'
       +'<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="padding:5px 10px;background:none;border:0.5px solid var(--border2);border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
-      +'<button class="ep-like-btn" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 10px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:'+(isLiked({url:s.feedUrl})?'#e24b4a':'var(--text3)')+'">'+(isLiked({url:s.feedUrl})?'♥':'♡')+'</button>'
+      +'<button class="ep-like-btn" data-kind="show" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 10px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:'+(isLiked({url:s.feedUrl})?'#e24b4a':'var(--text3)')+'">'+(isLiked({url:s.feedUrl})?'♥':'♡')+'</button>'
       +'</div></div>';
   }).join('');
   addScrollDrag(el);
@@ -7497,7 +7497,7 @@ function discSearch(q, isLive) {
         +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div><div class="disc-ep-title">'+s.name+'</div><div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
         +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">Pick episode</button>'
         +'<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+s.artwork+'\',this)" style="padding:5px 10px;background:none;border:0.5px solid var(--border2);border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
-        +'<button class="ep-like-btn" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 8px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:var(--text3)">♡</button>'
+        +'<button class="ep-like-btn" data-kind="show" data-url="'+s.feedUrl+'" data-title="'+safeName+'" data-artist="'+s.artist+'" data-art="'+s.artwork+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="padding:6px 8px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:var(--text3)">♡</button>'
         +'</div></div>';
     }).join('');
   }
@@ -10646,6 +10646,37 @@ async function fetchRSSFeed(feedUrl) {
     return {description:desc, host:host, episodes:episodes};
   } catch(e) { return null; }
 }
+// Produces a concise, host-specific blurb for the HOST card. Uses iTunes
+// metadata (category, episode count, country) so every show gets a line
+// that actually describes the host/publisher, not a generic CTA. Avoids
+// repeating the hero's podcast description.
+function _buildHostBlurb(hostName, showName, itunes, analyzedCount) {
+  var category = (itunes && itunes.category) ? String(itunes.category) : '';
+  var trackCount = (itunes && itunes.trackCount) ? parseInt(itunes.trackCount, 10) : 0;
+  var country = (itunes && itunes.country) ? String(itunes.country) : '';
+  var subject = hostName ? _esc(hostName) : _esc(showName || 'This host');
+  var parts = [];
+
+  // Lead line: who they are relative to the show.
+  if (showName) {
+    parts.push((hostName ? subject + ' is the publisher of ' : 'Publisher of ') + _esc(showName) + '.');
+  }
+
+  // Stats line: category + episode count + country (all optional).
+  var stats = [];
+  if (category) stats.push(_esc(category));
+  if (trackCount) stats.push(trackCount.toLocaleString() + ' episode' + (trackCount === 1 ? '' : 's'));
+  if (country) stats.push(_esc(country));
+  if (analyzedCount > 0) stats.push(analyzedCount + ' analyzed on Podlens');
+  if (stats.length) parts.push(stats.join(' \u00B7 ') + '.');
+
+  // Fallback if we have literally nothing informative.
+  if (!parts.length) {
+    return 'Analyze episodes to build a bias and trust intelligence profile for this host.';
+  }
+  return parts.join(' ');
+}
+
 function renderShowProfile(data,slug,compareSlug,itunes,rss) {
   var show=data.show||{}, m=data.metrics||{}, episodes=data.episodes||[], driftData=data.driftData||[];
   var yt=data.youtubeChannel||null;
@@ -10852,13 +10883,19 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     var colR = '';
 
     // HOST CARD
+    // Previously this read "Host of {show}. Analyze episodes to build a bias and
+    // trust intelligence profile." — generic and identical across every show
+    // the user viewed. Now we build a blurb describing the host/publisher using
+    // iTunes metadata (category, episode count, country), which actually says
+    // something about *them*. We never repeat the hero's podcast description.
     var hostInitials = (hostName||displayName||'?').split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase();
+    var hostBlurb = _buildHostBlurb(hostName, displayName, itunes, data.episodeCount || 0);
     colL += '<div class="sp-new-sec">Host</div>'
       + '<div class="sp-host-card-new">'
       + '<div class="sp-host-avatar">'+hostInitials+'</div>'
       + '<div style="flex:1;min-width:0">'
       + '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px">'+_esc(hostName||displayName)+'</div>'
-      + '<div style="font-size:11px;color:var(--text3);line-height:1.6">'+(data.episodeCount > 0 ? 'Host of '+_esc(displayName)+'. Based on '+data.episodeCount+' analyzed episode'+(data.episodeCount!==1?'s':'')+' on Podlens.' : 'Host of '+_esc(displayName)+'. Analyze episodes to build a bias and trust intelligence profile.')+'</div>'
+      + '<div style="font-size:11px;color:var(--text3);line-height:1.6">'+hostBlurb+'</div>'
       + '</div>'
       + '</div>';
 
@@ -13862,8 +13899,88 @@ function showEchoChamberModal() {
 }
 
 function _likeFromBtn(btn) {
-  var ep = { url: btn.dataset.url, title: btn.dataset.title, showName: btn.dataset.artist, artwork: btn.dataset.art };
-  toggleLike(ep, btn);
+  // Heart buttons on Discover attach show-level data (data-title = show name,
+  // data-artist = publisher, data-url = feed URL). The previous flow stored
+  // "NPR Politics Podcast" as the episode title in Liked Episodes, because no
+  // specific episode was identified at click time. Fix: when kind === 'show',
+  // optimistically save with show-only fields, then async-fetch the latest
+  // episode from the feed and upgrade the saved entry to a real episode.
+  var kind = btn.dataset.kind || 'episode';
+  var feedUrl = btn.dataset.url || '';
+  var dataTitle = btn.dataset.title || '';
+  var dataArtist = btn.dataset.artist || '';
+  var dataArt = btn.dataset.art || '';
+
+  if (kind === 'show' && feedUrl && /^https?:\/\//.test(feedUrl)) {
+    // Optimistic save — title left blank so the UI renders a placeholder until
+    // the async upgrade replaces it with the real latest-episode title.
+    var ep = {
+      url: feedUrl,
+      feedUrl: feedUrl,
+      title: '',                // filled by upgrade
+      showName: dataTitle,      // the show itself (e.g., "Crime Junkie")
+      artist: dataArtist,       // publisher (e.g., "Audiochuck") — kept for reference
+      artwork: dataArt,
+    };
+    toggleLike(ep, btn);
+    // Fire-and-forget upgrade. If the user unlikes before it resolves, it's a no-op.
+    _upgradeShowLikeToLatestEpisode(feedUrl, dataTitle, dataArt);
+  } else {
+    var ep2 = {
+      url: feedUrl,
+      title: dataTitle,
+      showName: dataArtist,     // legacy callers still use this shape
+      artwork: dataArt,
+    };
+    toggleLike(ep2, btn);
+  }
+}
+
+// Replaces the placeholder stored by a show-level like with the actual latest
+// episode's title and audio URL. On failure (e.g., YouTube URL that /api/episodes
+// can't parse, or network error) falls back to storing the show name as the
+// title so the UI doesn't show "Fetching latest episode…" forever.
+function _upgradeShowLikeToLatestEpisode(feedUrl, showName, artwork) {
+  function _findPendingIdx(liked) {
+    for (var i = 0; i < liked.length; i++) {
+      if ((liked[i].feedUrl === feedUrl || liked[i].url === feedUrl) && !liked[i].title) return i;
+    }
+    return -1;
+  }
+  function _refreshPanelIfVisible() {
+    var panel = document.getElementById('liked-content');
+    if (panel && panel.offsetParent !== null && typeof window.renderLiked === 'function') window.renderLiked();
+  }
+  function _fallbackToShowName() {
+    var liked = _getLiked();
+    var idx = _findPendingIdx(liked);
+    if (idx === -1) return;
+    // Best we can do without episode data — show the show name as the title.
+    // Better than showing "Fetching latest episode…" indefinitely.
+    liked[idx].title = showName || 'Latest episode';
+    liked[idx].showName = showName;
+    _setLiked(liked);
+    _refreshPanelIfVisible();
+  }
+  try {
+    fetch('/api/episodes?url=' + encodeURIComponent(feedUrl))
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d) {
+        if (!d || !d.episodes || !d.episodes.length) { _fallbackToShowName(); return; }
+        var latest = d.episodes[0];
+        if (!latest || !latest.title) { _fallbackToShowName(); return; }
+        var liked = _getLiked();
+        var idx = _findPendingIdx(liked);
+        if (idx === -1) return; // unliked before we finished, or already upgraded
+        liked[idx].title = latest.title;
+        // Point the url at the episode's audio so "Analyze" kicks off the right job.
+        if (latest.audioUrl) liked[idx].url = latest.audioUrl;
+        liked[idx].showName = showName;
+        _setLiked(liked);
+        _refreshPanelIfVisible();
+      })
+      .catch(function(){ _fallbackToShowName(); });
+  } catch (e) { _fallbackToShowName(); }
 }
 
 function isLiked(ep) {
