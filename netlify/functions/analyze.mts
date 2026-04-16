@@ -515,17 +515,21 @@ export default async (req: Request, context: Context) => {
         );
         if (itunesQuickRes.ok) {
           const itunesQuick = await itunesQuickRes.json() as any;
-          const normalise = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-          const normCh = normalise(channelForItunes);
-          const bestQuick = (itunesQuick.results || []).find((r: any) => {
-            const n = normalise(r.collectionName || r.trackName || "");
-            return n.includes(normCh) || normCh.includes(n);
+          // Strict match: require all channel tokens present in iTunes collection name.
+          // Loose `includes` was false-positive matching wrong podcasts (e.g. "Dwarkesh Patel"
+          // matching Sharp Tech) and feeding wrong audio into transcription.
+          const tokenise = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean);
+          const chTokens = tokenise(channelForItunes);
+          const bestQuick = chTokens.length === 0 ? null : (itunesQuick.results || []).find((r: any) => {
+            const nameTokens = tokenise(r.collectionName || r.trackName || "");
+            if (nameTokens.length === 0) return false;
+            // Require every channel token to appear as a whole token in the iTunes name.
+            return chTokens.every(t => nameTokens.includes(t));
           });
           if (bestQuick?.feedUrl) {
             console.log(`[analyze] iTunes quick-path found before Railway: ${bestQuick.collectionName}`);
             // Try to auto-match the YouTube video title to an episode in the RSS feed
             const showNameForFallback = bestQuick.collectionName || channelForItunes;
-            const showArtworkForFallback = bestQuick.artworkUrl600 || bestQuick.artworkUrl100 || "";
             let autoMatchedAudioUrl: string | null = null;
             if (resolvedEpisodeTitle) {
               try {
@@ -566,28 +570,11 @@ export default async (req: Request, context: Context) => {
               resolvedAudioUrl = autoMatchedAudioUrl;
               resolvedShowName = resolvedShowName || showNameForFallback;
             } else {
-              // No title match — just use the latest episode from the feed (seamless UX)
-              try {
-                const latestFeedRes = await fetch(bestQuick.feedUrl, {
-                  headers: { "User-Agent": "Podlens/1.0 (+https://podlens.app)" },
-                  signal: AbortSignal.timeout(8000),
-                });
-                if (latestFeedRes.ok) {
-                  const latestXml = await latestFeedRes.text();
-                  const latestItems = latestXml.match(/<item[\s\S]*?<\/item>/g) || [];
-                  for (const item of latestItems.slice(0, 5)) {
-                    const enc = item.match(/<enclosure[^>]+url=["']([^"']+)["']/i);
-                    if (enc?.[1]) {
-                      resolvedAudioUrl = enc[1];
-                      const tMatch = item.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/);
-                      if (tMatch?.[1] && !resolvedEpisodeTitle) resolvedEpisodeTitle = tMatch[1].trim();
-                      resolvedShowName = resolvedShowName || showNameForFallback;
-                      console.log(`[analyze] iTunes fallback — using latest episode: ${resolvedEpisodeTitle}`);
-                      break;
-                    }
-                  }
-                }
-              } catch {}
+              // No title match — DO NOT fall back to "latest episode" from the feed.
+              // That path silently transcribed the wrong episode's audio while keeping
+              // the original title, poisoning the community cache with mismatched analyses.
+              // Fall through to Railway yt-dlp which transcribes the actual YouTube audio.
+              console.log(`[analyze] iTunes feed matched (${bestQuick.collectionName}) but episode title not found — falling back to Railway yt-dlp for actual YouTube audio`);
             }
           }
         }

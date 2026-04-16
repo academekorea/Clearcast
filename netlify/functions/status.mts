@@ -257,7 +257,22 @@ export default async (req: Request) => {
   }
 
   const store = getStore("podlens-jobs");
-  const job = await store.get(jobId, { type: "json" }) as any;
+  let job: any;
+  try {
+    job = await store.get(jobId, { type: "json" });
+  } catch (blobErr: any) {
+    // Corrupted JSON or transient Blobs failure — prior behavior was an uncaught
+    // throw that returned 502 with empty body, causing the frontend to show
+    // "Lost connection to analysis service" after 5 polls. Return a proper
+    // terminal error so the user sees an actionable message immediately.
+    console.error("[status] blob read failed for jobId=", jobId, blobErr?.message);
+    return new Response(JSON.stringify({
+      status: "error",
+      jobId,
+      error: "This analysis job is corrupted. Please retry the analysis.",
+      code: "JOB_CORRUPT",
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
+  }
 
   if (!job) {
     return new Response(JSON.stringify({ error: "Job not found" }), {
