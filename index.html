@@ -10648,13 +10648,18 @@ async function fetchItunesMeta(showName) {
     }
     if (!results.length) return null;
     var nl=showName.toLowerCase().replace(/[^a-z0-9 ]/g,'');
-    var best=results[0], bestScore=0;
+    var best=results[0], bestScore=0, bestCount=0;
     results.forEach(function(r){
       var name=(r.collectionName||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
       var wa=new Set(nl.split(' ').filter(Boolean)), wb=new Set(name.split(' ').filter(Boolean));
       var overlap=0; wa.forEach(function(w){if(wb.has(w))overlap++;});
       var score=overlap/Math.max(wa.size,wb.size,1);
-      if (score>bestScore){bestScore=score;best=r;}
+      var cnt=parseInt(r.trackCount,10)||0;
+      // Prefer higher score, OR same score with more episodes (avoids matching
+      // a low-episode trailer/promo feed when the real show is also a result).
+      if (score>bestScore || (score===bestScore && cnt>bestCount)) {
+        bestScore=score; best=r; bestCount=cnt;
+      }
     });
     // Collect similar shows — exclude self by collectionId AND name, deduplicate by collectionId
     var bestNameNorm=(best.collectionName||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
@@ -10700,9 +10705,12 @@ async function fetchRSSFeed(feedUrl) {
     var hostMatch=text.match(/<itunes:author><!\[CDATA\[(.*?)\]\]>/i)
       ||text.match(/<itunes:author>(.*?)<\/itunes:author>/i);
     var host=hostMatch?hostMatch[1].trim():'';
-    // Parse episodes
+    // Parse episodes — pull up to 50 so high-frequency podcasts (NPR News Now,
+    // The Daily, etc.) show a meaningful list. The renderer slices further
+    // for display; this just lets it have data to work with.
     var items=text.match(/<item>[\s\S]*?<\/item>/gi)||[];
-    var episodes=items.slice(0,10).map(function(item){
+    var totalCount=items.length;
+    var episodes=items.slice(0,50).map(function(item){
       var title=(item.match(/<title><!\[CDATA\[(.*?)\]\]>/i)||item.match(/<title>(.*?)<\/title>/i)||['',''])[1];
       var pubDate=(item.match(/<pubDate>(.*?)<\/pubDate>/i)||['',''])[1];
       var duration=(item.match(/<itunes:duration>(.*?)<\/itunes:duration>/i)||['',''])[1];
