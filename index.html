@@ -7726,17 +7726,22 @@ function discHeroPlay() {
     var ytMatch = url.match(/[?&]v=([\w-]{11})|youtu\.be\/([\w-]{11})/);
     var ytId = ytMatch ? (ytMatch[1] || ytMatch[2]) : '';
     if (!ytId) {
-      // Couldn't extract id — fall back to opening the URL
       window.open(url, '_blank', 'noopener');
       return;
     }
-    // Find the video container — look for the disc-hero-video on whichever
-    // surface is currently visible (discover or dashboard hero card).
-    var videoEl = document.getElementById('disc-hero-video') || document.getElementById('dash-hero-video');
+    // Find the VISIBLE hero video container — both disc-hero-video and
+    // dash-hero-video exist in the DOM at all times; we need the one currently
+    // on screen. offsetParent === null when an ancestor has display:none.
+    var ids = ['disc-hero-video', 'dash-hero-video'];
+    var videoEl = null;
+    for (var i = 0; i < ids.length; i++) {
+      var candidate = document.getElementById(ids[i]);
+      if (candidate && candidate.offsetParent !== null) { videoEl = candidate; break; }
+    }
+    if (!videoEl) videoEl = document.getElementById(ids[0]) || document.getElementById(ids[1]);
     if (videoEl) {
       videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
     } else {
-      // No iframe slot on the current page — open in new tab as last resort
       window.open(url, '_blank', 'noopener');
     }
     return;
@@ -10433,11 +10438,22 @@ async function loadShowProfile(slug,compareSlug,exactName) {
 // FIX 2: Fetch real artwork + metadata from iTunes
 async function fetchItunesMeta(showName) {
   if (!showName) return null;
+  // Try the exact name first, then broader queries. Some shows (e.g. YouTube
+  // channels named after the host like "Dwarkesh Patel") need "podcast" appended
+  // to find the iTunes listing ("Dwarkesh Podcast" by Dwarkesh Patel).
+  var queries = [showName, showName + ' podcast'];
+  // If multi-word, also try just the first word as a last resort
+  var firstWord = showName.split(/\s+/)[0];
+  if (firstWord && firstWord !== showName) queries.push(firstWord + ' podcast');
+  var results = [];
   try {
-    var res=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(showName)+'&media=podcast&entity=podcast&limit=10',{signal:AbortSignal.timeout(5000)});
-    if (!res.ok) return null;
-    var d=await res.json();
-    var results=d.results||[];
+    for (var qi = 0; qi < queries.length; qi++) {
+      var res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(queries[qi]) + '&media=podcast&entity=podcast&limit=10', { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) continue;
+      var d = await res.json();
+      results = d.results || [];
+      if (results.length) break;
+    }
     if (!results.length) return null;
     var nl=showName.toLowerCase().replace(/[^a-z0-9 ]/g,'');
     var best=results[0], bestScore=0;
