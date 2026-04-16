@@ -391,18 +391,26 @@
   function getLiked() { try { return JSON.parse(localStorage.getItem(PL_LIKED_KEY)||'[]'); } catch(e){ return []; } }
   function getPlaylists() { try { return JSON.parse(localStorage.getItem(PL_PLAYLISTS_KEY)||'[]'); } catch(e){ return []; } }
 
-  // Show-level "likes" (heart on a show card whose upgrade-to-latest-episode
-  // failed) end up here with title === showName, no jobId, and url pointing at
-  // the RSS feed. They aren't actually episodes — filter them out so the page
-  // matches its name. Also silently prune them from localStorage.
+  // Show-level "likes" leaked into Liked Episodes from older code paths:
+  //   - title === showName  (fallback after upgrade failure)
+  //   - title is a podcast/show name (NPR Politics Podcast) and URL is an RSS
+  //     feed (legacy _likeFromBtn else-branch saved title=dataTitle, url=feedUrl)
+  // Filter them out and prune from localStorage so the page matches its name.
   function _isEpisodeEntry(ep) {
     if (!ep) return false;
-    if (ep.jobId) return true; // came from a real analysis
+    if (ep.jobId) return true; // came from a real analysis — definitely an episode
     var title = (ep.title || '').trim();
     var show = (ep.showName || '').trim();
+    var url = (ep.url || '').trim();
     if (!title) return false; // pending upgrade — hide
-    if (title === show) return false; // show-level fallback
-    if (title === 'Episode' || title === 'Latest episode') return false; // generic placeholder
+    if (title === show) return false; // fallback wrote title=showName
+    if (title === 'Episode' || title === 'Latest episode') return false;
+    // RSS-feed-shaped URL with no jobId → it's a show entry that never resolved
+    // to an actual episode (legacy show-level like). Audio episodes have URLs
+    // like .mp3/.m4a/.aac/.ogg or specific episode-id paths.
+    var isAudioFile = /\.(mp3|m4a|aac|wav|ogg|opus|m4b)(\?|$)/i.test(url);
+    var looksLikeFeed = /\.(xml|rss)(\?|$)|\/rss\/|\/feed\/|feeds\.|\.rss$/i.test(url);
+    if (looksLikeFeed && !isAudioFile) return false;
     return true;
   }
 

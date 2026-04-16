@@ -5805,7 +5805,7 @@ function toggleFollowShow(name, feedUrl, artwork, btn) {
     followed.push({ name: name, feedUrl: feedUrl || '', artwork: artwork || '', addedAt: new Date().toISOString() });
     u.followedShows = followed;
     setPlUser(u);
-    plToast('Following ' + name, 2500);
+    plToast('Following ' + name + ' — view in Library → Following', 3000);
     if(typeof posthog!=='undefined')posthog.capture('show_followed',{showName:name});
     // Save to Supabase
     safeFetch('/api/follow-show', { method: 'POST', headers: { 'Content-Type': 'application/json' },
