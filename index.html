@@ -7773,20 +7773,58 @@ function discHeroPlay() {
     }
     return;
   }
-  // For RSS/audio URLs, play in dock
+  // RSS feed or iTunes URL → resolve to the show's latest episode audio first.
+  // The hero stores the feedUrl (or itunesUrl) for category shows from
+  // /api/marketplace, and Audio() can't play XML/HTML directly. /api/episodes
+  // parses the feed and returns the latest episode's enclosure URL.
+  var isAudioFile = /\.(mp3|m4a|aac|wav|ogg|opus)(\?|$)/i.test(url);
+  var isItunesUrl = /podcasts\.apple\.com|itunes\.apple\.com/i.test(url);
+  if (isItunesUrl) {
+    // iTunes web URL — open in new tab, we don't have the feed.
+    window.open(url, '_blank', 'noopener');
+    return;
+  }
+  if (!isAudioFile) {
+    // Treat as RSS feed: fetch latest episode, then play its audio.
+    if (typeof plToast === 'function') plToast('Loading latest episode...', 1500);
+    fetch('/api/episodes?url=' + encodeURIComponent(url), { signal: AbortSignal.timeout(8000) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var ep = (d && d.episodes || [])[0];
+        if (!ep || !ep.audioUrl) {
+          if (typeof plToast === 'function') plToast('No playable audio found', 2000);
+          return;
+        }
+        // Update hero title to reflect what's actually playing
+        _discCurrentHeroTitle = ep.title || _discCurrentHeroTitle;
+        _playInDock(ep.audioUrl, _discCurrentHeroShow || '', ep.title || _discCurrentHeroTitle || '');
+      })
+      .catch(function(){
+        if (typeof plToast === 'function') plToast('Could not load latest episode', 2000);
+      });
+    return;
+  }
+  // Direct audio URL — play immediately
+  _playInDock(url, _discCurrentHeroShow || _discDefaultHero.show || '', _discCurrentHeroTitle || _discDefaultHero.title || '');
+}
+
+function _playInDock(audioUrl, showName, epTitle) {
   if (_arMedia.audio) { _arMedia.audio.pause(); _arMedia.audio = null; }
-  var showName = _discCurrentHeroShow || _discDefaultHero.show || '';
-  var epTitle = _discCurrentHeroTitle || _discDefaultHero.title || '';
-  // Find artwork from CURATED_SHOWS
-  var curShow = (typeof CURATED_SHOWS !== 'undefined') && CURATED_SHOWS.find(function(s){ return s.name === showName || s.feedUrl === url; });
-  var artUrl = (curShow && curShow.artwork) || '';
+  var dock = document.getElementById('ar-dock');
+  var dockTitle = document.getElementById('ar-dock-title');
+  var dockShow = document.getElementById('ar-dock-show');
+  var dockArt = document.getElementById('ar-dock-art');
+  var dockPlay = document.getElementById('ar-dock-play');
+  var dockStatus = document.getElementById('ar-dock-status');
+  // Pull artwork from CURATED_SHOWS or the current default hero
+  var curShow = (typeof CURATED_SHOWS !== 'undefined') && CURATED_SHOWS.find(function(s){ return s.name === showName; });
+  var artUrl = (curShow && curShow.artwork) || (_discDefaultHero && _discDefaultHero.artwork) || '';
   if (dock) dock.classList.remove('hidden');
-  if (dockTitle) dockTitle.textContent = epTitle.replace(/&mdash;/g,'\u2014').replace(/&amp;/g,'&');
+  if (dockTitle) dockTitle.textContent = (epTitle || '').replace(/&mdash;/g,'\u2014').replace(/&amp;/g,'&');
   if (dockShow) dockShow.textContent = showName;
   if (dockArt && artUrl) dockArt.src = artUrl;
   if (dockStatus) { dockStatus.className = 'ar-dock-status'; dockStatus.textContent = ''; }
-  // Initialize native audio player
-  _arInitNativeAudio(url, { audioLean: {} });
+  _arInitNativeAudio(audioUrl, { audioLean: {} });
   if (_arMedia.audio) {
     _arMedia.audio.play().catch(function(){});
     _arSetPlayIcon(true, document.getElementById('ar-play-btn'), dockPlay);
