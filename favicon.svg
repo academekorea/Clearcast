@@ -1,3 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" width="64" height="64">
-  <image href="data:image/png;base64,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" width="64" height="64"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#0C1A24"/>
+  <defs>
+    <!--
+      Two teal crescents built with masks.
+      Geometry derived from source PNG:
+        Top-right lobe centroid: (912,316) in 1270×1070 canvas → scaled to 512: (368,151)
+        Bot-left lobe centroid:  (424,735) in 1270×1070 canvas → scaled to 512: (171,352)
+      Each circle r ≈ 210 in 512-space.
+      Each crescent = full circle masked by the sibling circle.
+    -->
+    <mask id="m-top">
+      <rect width="512" height="512" fill="white"/>
+      <!-- Hide the lower-left area (bot circle position) -->
+      <circle cx="174" cy="354" r="214" fill="black"/>
+    </mask>
+    <mask id="m-bot">
+      <rect width="512" height="512" fill="white"/>
+      <!-- Hide the upper-right area (top circle position) -->
+      <circle cx="338" cy="158" r="214" fill="black"/>
+    </mask>
+  </defs>
+
+  <!-- Top-right crescent -->
+  <circle cx="338" cy="158" r="214" fill="#07BAD2" mask="url(#m-top)"/>
+
+  <!-- Bottom-left crescent -->
+  <circle cx="174" cy="354" r="214" fill="#07BAD2" mask="url(#m-bot)"/>
+
+  <!--
+    Dark swoosh lines — two curved strokes that arc through the pinwheel centre.
+    Replicate the two dark brush strokes visible in the original logo.
+  -->
+  <path d="M 318 82 C 430 180 390 330 290 448"
+        stroke="#0C1A24" stroke-width="32" fill="none"
+        stroke-linecap="round"/>
+  <path d="M 296 66 C 390 180 360 340 252 458"
+        stroke="#0C1A24" stroke-width="16" fill="none"
+        stroke-linecap="round"/>
 </svg>
