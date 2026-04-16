@@ -49,23 +49,40 @@ export default async (req: Request) => {
   const deleted: string[] = [];
   const errors: Record<string, string> = {};
 
-  // Delete canon:{key} if a canonicalKey was provided. Also try to read the
-  // cached result to find the pinned jobId and delete that too — otherwise
-  // status polls for that jobId would still serve the poisoned analysis.
+  // Invalidate canon:{key} by overwriting with a non-"complete" status marker.
+  // Using store.delete() didn't stick — concurrent analyze() calls during the
+  // eventual-consistency window would resurrect the blob (the cache-hit path
+  // re-writes canon to increment analyzeCount). setJSON is strongly consistent,
+  // and analyze.mts's cache check skips any blob where status !== "complete",
+  // so the next user request triggers a fresh analysis and status.mts line 520
+  // overwrites canon with the correct result.
   if (canonicalKey) {
     const canonKey = `canon:${canonicalKey}`;
     try {
       const cached = await store.get(canonKey, { type: "json" }) as any;
       const pinnedJobId = cached?.jobId || null;
-      await store.delete(canonKey);
+      await store.setJSON(canonKey, {
+        status: "error",
+        error: "Cache invalidated by admin — a fresh analysis will overwrite this on next request.",
+        invalidatedAt: new Date().toISOString(),
+        invalidatedBy: email,
+      });
       deleted.push(canonKey);
+      // Also invalidate the pinned jobId so status polls don't serve the stale
+      // result either. Same approach: overwrite with status=error.
       if (pinnedJobId && typeof pinnedJobId === "string") {
         try {
-          await store.delete(pinnedJobId);
+          await store.setJSON(pinnedJobId, {
+            status: "error",
+            jobId: pinnedJobId,
+            error: "This analysis was invalidated — please re-run analyze for a fresh result.",
+            invalidatedAt: new Date().toISOString(),
+            invalidatedBy: email,
+          });
           deleted.push(pinnedJobId);
-        } catch (e: any) { errors[pinnedJobId] = e?.message || "delete failed"; }
+        } catch (e: any) { errors[pinnedJobId] = e?.message || "invalidate failed"; }
       }
-    } catch (e: any) { errors[canonKey] = e?.message || "delete failed"; }
+    } catch (e: any) { errors[canonKey] = e?.message || "invalidate failed"; }
   }
 
   // Also delete a specific jobId if provided (covers broken job blobs that
