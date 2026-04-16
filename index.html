@@ -1612,11 +1612,9 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 @media(max-width:480px){.nav .pl-lockup-divider,.nav .pl-lockup-text{display:none}.nav .pl-lockup-icon{width:30px;height:30px}}
 
 /* ── BRANDED SPLASH SCREEN ── */
-.pl-splash{position:fixed;inset:0;background:#0f2027;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:99999;transition:opacity .4s ease}
+
 .pl-tagline{color:rgba(255,255,255,.5);font-family:'Inter',-apple-system,sans-serif;font-size:16px}
-.pl-loader-bar{width:120px;height:2px;background:rgba(255,255,255,.2);border-radius:1px;overflow:hidden;margin-top:8px}
-.pl-loader-bar::after{content:'';display:block;height:100%;background:white;animation:pl-load 1.5s ease-in-out infinite}
-@keyframes pl-load{0%{width:0;transform:translateX(0)}50%{width:60%}100%{width:0;transform:translateX(200px)}}
+
 
 /* ── BUTTON SYSTEM ── */
 .btn-primary{background:var(--navy);color:white;border:none;border-radius:4px;padding:12px 24px;font-family:var(--ff);font-size:13px;font-weight:500;cursor:pointer;transition:background .15s}
@@ -3042,28 +3040,6 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     if (isAuth) document.body.classList.add("authenticated");
   } catch(e) {}
 })()</script>
-<!-- BRANDED SPLASH SCREEN -->
-<div class="pl-splash" id="pl-splash">
-  <div style="display:inline-flex;align-items:center;gap:16px">
-    <img src="/android-chrome-192x192.png" alt="" width="56" height="56" style="border-radius:10px;opacity:.95;flex-shrink:0">
-    <span style="width:1px;height:56px;background:rgba(255,255,255,.2);flex-shrink:0"></span>
-    <span style="display:flex;flex-direction:column;gap:6px">
-      <span class="podlens-wordmark large"><span class="pod">POD</span><span class="lens">LENS</span></span>
-      <span class="pl-tagline">A force of clarity in the age of noise</span>
-    </span>
-  </div>
-  <div class="pl-loader-bar"></div>
-</div>
-<script>
-// Failsafe: dismiss splash even if later JS errors block the main script
-(function(){
-  var _splashTimeout = setTimeout(function(){
-    var s = document.getElementById('pl-splash');
-    if(s){s.style.opacity='0';setTimeout(function(){s.style.display='none';},400);}
-  }, 3000);
-  window._splashTimeout = _splashTimeout;
-})();
-</script>
 
 <!-- NAV -->
 <nav class="nav-bar" id="main-nav">
@@ -12131,15 +12107,7 @@ function canAccess(feature) {
   return tiers[feature] ? tiers[feature].indexOf(plan) !== -1 : false;
 }
 
-// ── SPLASH SCREEN ──
-window.addEventListener('load', function() {
-  var s = document.getElementById('pl-splash');
-  if (!s) return;
-  setTimeout(function() {
-    s.style.opacity = '0';
-    setTimeout(function() { s.style.display = 'none'; }, 400);
-  }, 800);
-});
+
 
 // ── ROTATING INSIGHT CARDS ──
 var _icIdx = 0, _icTotal = 4, _icTimer = null;
