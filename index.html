@@ -6433,6 +6433,11 @@ function showView(name) {
   var el = document.getElementById('view-' + name);
   if (el) { el.classList.add('on'); el.style.display = 'block'; }
 
+  // Scroll to top so the new view is visible from the top, otherwise SPA
+  // navigation can land mid-page (e.g. clicking the founding banner from a
+  // scrolled discover page felt like "nothing happened").
+  try { window.scrollTo({ top: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); }
+
   // ── Step 3: If home, show the correct sub-div ──
   if (name === 'home') {
     if (_u && _u.id) {
@@ -7614,6 +7619,13 @@ function discHeroPlay() {
   var dockStatus = document.getElementById('ar-dock-status');
   // For YouTube URLs, fall back to analyze (can't direct-play YT audio)
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    // Signed-out users: show ONE auth gate, not two (showView('analyze')
+    // triggers the generic signup modal AND startAnalysis() triggers the
+    // contextual analysis gate — stacked modals).
+    if (!plUser()) {
+      _showAnalysisAuthGate(url, _discCurrentHeroTitle || '', _discCurrentHeroShow || '');
+      return;
+    }
     var inp = document.getElementById('url-input');
     if (inp) inp.value = url;
     showView('analyze');
