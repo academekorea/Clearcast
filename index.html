@@ -5382,6 +5382,8 @@ function renderHomeState() {
         if (eyeEl) eyeEl.textContent = 'Trending on Podlens';
         if (titleEl) titleEl.textContent = hero.episodeTitle || '';
         if (hostEl) hostEl.textContent = (hero.showName || '') + (dur ? ' \u00b7 ' + dur : '');
+        // Make the host name clickable → opens that show's profile (same UX as discover hero).
+        if (typeof _discMakeShowClickable === 'function') _discMakeShowClickable(hostEl, hero.showName || '', hero.url || '');
         if (videoEl) {
           if (hero.ytId) {
             videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
@@ -7558,7 +7560,9 @@ function _discMakeShowClickable(hostEl, showName, feedUrl) {
   hostEl.onclick = function() {
     var slug = (showName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     showView('show');
-    if (typeof loadShowProfile === 'function') loadShowProfile(slug, feedUrl || null);
+    // Pass exactName as 3rd arg so iTunes lookup matches even when slug is
+    // ambiguous (e.g. "the-daily" → "the daily" → The Daily by NYT).
+    if (typeof loadShowProfile === 'function') loadShowProfile(slug, null, showName);
   };
 }
 
@@ -7715,19 +7719,26 @@ function discHeroPlay() {
   var dockArt = document.getElementById('ar-dock-art');
   var dockPlay = document.getElementById('ar-dock-play');
   var dockStatus = document.getElementById('ar-dock-status');
-  // For YouTube URLs, fall back to analyze (can't direct-play YT audio)
+  // For YouTube URLs, just play the embedded video in place. The hero card
+  // already has a YouTube iframe — reload it with autoplay=1 to start playback.
+  // Browsers allow autoplay when triggered by a user click on the same gesture.
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Signed-out users: show ONE auth gate, not two (showView('analyze')
-    // triggers the generic signup modal AND startAnalysis() triggers the
-    // contextual analysis gate — stacked modals).
-    if (!plUser()) {
-      _showAnalysisAuthGate(url, _discCurrentHeroTitle || '', _discCurrentHeroShow || '');
+    var ytMatch = url.match(/[?&]v=([\w-]{11})|youtu\.be\/([\w-]{11})/);
+    var ytId = ytMatch ? (ytMatch[1] || ytMatch[2]) : '';
+    if (!ytId) {
+      // Couldn't extract id — fall back to opening the URL
+      window.open(url, '_blank', 'noopener');
       return;
     }
-    var inp = document.getElementById('url-input');
-    if (inp) inp.value = url;
-    showView('analyze');
-    setTimeout(function() { startAnalysis(url); }, 300);
+    // Find the video container — look for the disc-hero-video on whichever
+    // surface is currently visible (discover or dashboard hero card).
+    var videoEl = document.getElementById('disc-hero-video') || document.getElementById('dash-hero-video');
+    if (videoEl) {
+      videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
+    } else {
+      // No iframe slot on the current page — open in new tab as last resort
+      window.open(url, '_blank', 'noopener');
+    }
     return;
   }
   // For RSS/audio URLs, play in dock
