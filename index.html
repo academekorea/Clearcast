@@ -6811,14 +6811,55 @@ function discRenderEpisodes() {
   var el = document.getElementById('disc-ep-row');
   if (!el) return;
 
-  // Try to load recently analyzed from community (live data)
+  // Try Supabase analyzed first (signal: people on Podlens are actually
+  // analyzing these episodes). If too sparse, fall back to live YouTube
+  // top podcast episodes for the current category — never the hardcoded list.
+  el.innerHTML = '<div style="grid-column:1/-1;padding:18px 0;color:var(--text3);font-size:12px">Loading top episodes...</div>';
   loadPlatformTrending().then(function(trending) {
     if (trending && trending.length >= 3) {
       _renderLiveEpisodes(el, trending.slice(0, 9));
       return;
     }
-    _renderCuratedEpisodes(el);
-  }).catch(function() { _renderCuratedEpisodes(el); });
+    _renderEpisodesFromStories(el, _discCat);
+  }).catch(function() { _renderEpisodesFromStories(el, _discCat); });
+}
+
+// Live top episodes from /api/stories (YouTube long-form podcasts) for the
+// given category. Replaces the previous _renderCuratedEpisodes fallback that
+// relied on the hardcoded CURATED_SHOWS list.
+function _renderEpisodesFromStories(el, cat) {
+  var query = (typeof _DISC_HERO_QUERY !== 'undefined' && _DISC_HERO_QUERY[cat]) || 'top podcast';
+  var reqCat = cat;
+  fetch('/api/stories?q=' + encodeURIComponent(query) + '&limit=9', { signal: AbortSignal.timeout(8000) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (reqCat !== _discCat) return; // user switched category mid-fetch
+      var eps = (d.results || []).slice(0, 9);
+      if (!eps.length) { _renderCuratedEpisodes(el); return; } // last-ditch fallback
+      var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
+      el.innerHTML = eps.map(function(ep, i) {
+        var url = ep.youtubeUrl || ep.feedUrl || '';
+        var safeUrl = url.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+        var showName = ep.showName || '';
+        var safeName = showName.replace(/"/g,'').replace(/'/g,'');
+        var slug = showName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        var epTitle = ep.epTitle || 'Episode';
+        var artHtml = ep.artwork
+          ? '<img src="'+ep.artwork+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\'">'
+          : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+showName.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
+        var dur = ep.duration ? ('<span style="margin-left:6px;color:var(--text3);font-size:10px">'+ep.duration+'</span>') : '';
+        return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
+          +'<div class="disc-ep-art" style="background:'+bgs[i % 3]+'">'+artHtml+'</div>'
+          +'<div class="disc-ep-body"><div class="disc-ep-show">'+showName+'</div>'
+          +'<div class="disc-ep-title">'+epTitle+'</div>'
+          +'<div class="disc-ep-dur">Top trending'+dur+'</div></div>'
+          +'<div style="display:flex;gap:6px;align-items:center">'
+          +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\',true)">Analyze</button>'
+          +'</div></div>';
+      }).join('');
+      addScrollDrag(el);
+    })
+    .catch(function(){ _renderCuratedEpisodes(el); });
 }
 
 function _renderLiveEpisodes(el, episodes) {
