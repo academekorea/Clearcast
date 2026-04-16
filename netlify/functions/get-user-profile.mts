@@ -25,6 +25,7 @@ export default async (req: Request) => {
     sb
       .from("users")
       .select(
+        "name, bio, avatar_custom_url, " +
         "analyzed_episodes, listen_history, liked_episodes, playlists, " +
         "spotify_connected, youtube_connected, theme, region, " +
         "interests, voice_preference, notification_prefs, language, " +

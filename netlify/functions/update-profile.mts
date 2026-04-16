@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { getSupabaseAdmin } from "./lib/supabase.js";
 
 export default async (req: Request) => {
   if (req.method !== "PATCH" && req.method !== "POST") {
@@ -40,6 +41,8 @@ export default async (req: Request) => {
       });
     }
 
+    // Persist to Netlify Blobs (existing behavior — kept so consumers that
+    // read from /api/get-user-profile blobs path still work).
     const store = getStore("podlens-users");
     const key = `user-profile-${userId}`;
     let existing: any = {};
@@ -54,6 +57,26 @@ export default async (req: Request) => {
     };
 
     await store.setJSON(key, updated);
+
+    // ALSO persist to Supabase users table so the name survives across
+    // devices, browsers, and cache clears. The blobs store is a per-instance
+    // cache; Supabase is the source of truth.
+    const sb = getSupabaseAdmin();
+    if (sb) {
+      const sbUpdate: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (name !== undefined) sbUpdate.name = name.trim();
+      if (bio !== undefined) sbUpdate.bio = bio.trim();
+      if (avatar_custom_url !== undefined) sbUpdate.avatar_custom_url = avatar_custom_url;
+      const { error } = await sb.from("users").update(sbUpdate).eq("id", userId);
+      if (error) {
+        console.error("[update-profile] Supabase update failed:", error.message);
+        // Don't fail the whole request — blob write succeeded, user sees their
+        // name update locally. Surface a warning so frontend can re-try.
+        return new Response(JSON.stringify({ ok: true, profile: updated, warning: "Supabase sync failed — name may not persist across devices" }), {
+          status: 200, headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
 
     return new Response(JSON.stringify({ ok: true, profile: updated }), {
       status: 200, headers: { "Content-Type": "application/json" },

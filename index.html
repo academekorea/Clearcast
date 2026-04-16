@@ -6754,6 +6754,8 @@ function _toggleRegionMenu() {
 }
 function _setContentRegion(code) {
   try { localStorage.setItem('pl-content-region', code); } catch(e) {}
+  // Persist to Supabase so region survives cache clears + cross-device.
+  if (typeof syncToServer === 'function') syncToServer('region', code);
   var menu = document.getElementById('disc-region-menu');
   if (menu) menu.style.display = 'none';
   _renderRegionPill();
@@ -11924,9 +11926,27 @@ async function restoreUserDataFromServer(userId) {
     if (d.theme && !localStorage.getItem('pl-theme')) {
       try { localStorage.setItem('pl-theme', d.theme); } catch(e) {}
     }
-    // Restore region
-    if (d.region && !localStorage.getItem('pl_prefs_region')) {
-      try { localStorage.setItem('pl_prefs_region', d.region); } catch(e) {}
+    // Restore region — used both for legacy pl_prefs_region (language hints)
+    // and the new pl-content-region (Discover content). On a fresh device the
+    // user's last picked region is restored automatically.
+    if (d.region) {
+      if (!localStorage.getItem('pl_prefs_region')) {
+        try { localStorage.setItem('pl_prefs_region', d.region); } catch(e) {}
+      }
+      if (!localStorage.getItem('pl-content-region')) {
+        try { localStorage.setItem('pl-content-region', d.region); } catch(e) {}
+      }
+    }
+    // Restore display name from Supabase users.name (canonical) so a fresh
+    // device shows the user's actual chosen name, not the auth-provided one.
+    if (d.name && typeof d.name === 'string') {
+      u.name = d.name;
+    }
+    if (d.bio && typeof d.bio === 'string') {
+      u.bio = d.bio;
+    }
+    if (d.avatar_custom_url && typeof d.avatar_custom_url === 'string') {
+      u.avatar_custom_url = d.avatar_custom_url;
     }
     // Restore platform connections
     if (d.spotify_connected) {
