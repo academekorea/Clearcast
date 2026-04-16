@@ -2020,6 +2020,8 @@ body.light-mode,[data-theme="light"]{
 .nav-logo-wordmark{display:block;height:14px;width:auto;opacity:.9;filter:invert(1)}
 [data-theme="dark"] .nav-logo-wordmark{filter:none;opacity:.95}
 @media(max-width:480px){.nav-logo-wordmark{display:none}}
+.pl-wm-img{filter:invert(1)}
+[data-theme="dark"] .pl-wm-img{filter:none}
 /* Right container — margin-left:auto pushes everything to the right edge */
 .nav-right{display:flex;align-items:center;gap:4px;margin-left:auto}
 /* Generic nav-links utility (used by nav.js on marketing pages) */
@@ -4529,7 +4531,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     <div class="footer-brand">
       <a href="/" class="footer-logo-link" onclick="showHome();return false">
         <img src="/favicon-32x32.png" srcset="/android-chrome-192x192.png 3x" alt="Podlens" width="24" height="24" style="border-radius:4px">
-        <img src="/logo-wordmark.png" alt="PODLENS" height="16" style="height:16px;width:auto;opacity:.9;display:block">
+        <img src="/logo-wordmark.png" alt="PODLENS" class="pl-wm-img" height="16" style="height:16px;width:auto;opacity:.9;display:block">
       </a>
       <p class="footer-tagline">
         A force of clarity in the age of noise.
