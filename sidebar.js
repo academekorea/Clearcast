@@ -89,7 +89,7 @@
     html += '<div class="sb-lbl">Menu</div>';
 
     // Home (toggle dropdown + navigate to dashboard)
-    html += '<button class="sb-btn" id="sb-home-toggle" data-sb="home-toggle" onclick="if(typeof showView===\'function\')showView(\'home\');window._sbToggle(\'home\')">' + icons.home + 'Home<span class="sb-arrow" id="sb-arr-home">\u203A</span></button>';
+    html += '<button class="sb-btn" id="sb-home-toggle" data-sb="home-toggle" onclick="if(typeof showView===\'function\')showView(\'home\')">' + icons.home + 'Home<span class="sb-arrow" id="sb-arr-home" onclick="event.stopPropagation();window._sbToggle(\'home\')" style="padding:4px 6px;margin:-4px -6px;border-radius:3px">\u203A</span></button>';
     html += '<div class="sb-sub" id="sb-drop-home">';
     html += homeSubItem('intelligence', icons.intel, 'My intelligence', '');
     html += homeSubItem('queue', icons.queue, 'Smart queue', c.queued || '');
@@ -166,7 +166,8 @@
       '.sb-sub-btn:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.7)}',
       '.sb-sub-btn.active{color:rgba(255,255,255,.9);background:rgba(255,255,255,.07)}',
 
-      '.sb-arrow{margin-left:auto;font-size:11px;color:rgba(255,255,255,.2);transition:transform .15s;line-height:1}',
+      '.sb-arrow{margin-left:auto;font-size:11px;color:rgba(255,255,255,.2);transition:transform .15s;line-height:1;cursor:pointer}',
+      '.sb-arrow:hover{color:rgba(255,255,255,.6);background:rgba(255,255,255,.08)}',
       '.sb-arrow.open{transform:rotate(90deg)}',
 
       '.sb-count{margin-left:auto;font-size:10px;color:rgba(255,255,255,.22)}',
