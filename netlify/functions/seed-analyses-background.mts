@@ -171,62 +171,99 @@ export default async (req: Request) => {
 
   console.log("[seed-analyses] Starting pre-analysis seed run");
 
+  const MAX_CONCURRENT = 5;  // Process 5 episodes at a time
+  const MAX_TOTAL = 20;      // Max episodes per run (background fn has 15 min)
   let submitted = 0;
+  let completed = 0;
   let skipped = 0;
   let errors = 0;
 
+  // Phase 1: Collect uncached episodes across all shows
+  const toAnalyze: Episode[] = [];
   for (const show of CURATED_FEEDS) {
+    if (toAnalyze.length >= MAX_TOTAL) break;
     try {
       const episodes = await getLatestEpisodes(show.feed, show.name, 2);
-
       for (const ep of episodes) {
+        if (toAnalyze.length >= MAX_TOTAL) break;
         const key = canonicalKey(ep.audioUrl);
         const canonKey = `canon:${key}`;
-
-        // Check if already in community cache
         try {
           const cached = await store.get(canonKey, { type: "json" }) as any;
           if (cached?.status === "complete") {
             skipped++;
-            console.log(`[seed] Already cached: ${ep.title.substring(0, 50)}`);
             continue;
           }
         } catch {}
-
-        // Submit for analysis — fire and forget
-        try {
-          await fetch(`${siteUrl}/api/analyze`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-internal-secret": internalSecret,
-            },
-            body: JSON.stringify({
-              url: ep.audioUrl,
-              episodeTitle: ep.title,
-              showName: ep.showName,
-              userId: null,     // no user — community analysis, never counts against quota
-              // userPlan intentionally omitted — bypasses quota check entirely
-              isPreAnalysis: true,
-            }),
-            signal: AbortSignal.timeout(15000),
-          });
-          submitted++;
-          console.log(`[seed] Submitted: ${ep.showName} — ${ep.title.substring(0, 40)}`);
-          // Small delay to avoid hammering the pipeline
-          await new Promise(r => setTimeout(r, 2000));
-        } catch (e: any) {
-          errors++;
-          console.warn(`[seed] Submit failed: ${ep.showName}`, e?.message);
-        }
+        toAnalyze.push(ep);
       }
     } catch (e: any) {
-      errors++;
       console.warn(`[seed] Feed error: ${show.name}`, e?.message);
     }
   }
 
-  console.log(`[seed-analyses] Done. Submitted: ${submitted}, Skipped (cached): ${skipped}, Errors: ${errors}`);
+  console.log(`[seed] Found ${toAnalyze.length} uncached episodes, ${skipped} already cached`);
+
+  // Phase 2: Process in batches — submit, then poll until complete
+  for (let i = 0; i < toAnalyze.length; i += MAX_CONCURRENT) {
+    const batch = toAnalyze.slice(i, i + MAX_CONCURRENT);
+
+    // Submit all in batch
+    const jobs: { ep: Episode; jobId: string }[] = [];
+    for (const ep of batch) {
+      try {
+        const res = await fetch(`${siteUrl}/api/analyze`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-internal-secret": internalSecret },
+          body: JSON.stringify({
+            url: ep.audioUrl, episodeTitle: ep.title, showName: ep.showName,
+            userId: null, isPreAnalysis: true,
+          }),
+          signal: AbortSignal.timeout(15000),
+        });
+        const d = await res.json().catch(() => ({})) as any;
+        if (d?.jobId) {
+          jobs.push({ ep, jobId: d.jobId });
+          submitted++;
+          console.log(`[seed] Submitted: ${ep.showName} — ${ep.title.substring(0, 40)} (${d.jobId})`);
+        }
+      } catch (e: any) {
+        errors++;
+        console.warn(`[seed] Submit failed: ${ep.showName}`, e?.message);
+      }
+    }
+
+    // Poll all jobs in batch concurrently until done or timeout
+    const pending = new Set(jobs.map(j => j.jobId));
+    let pollRound = 0;
+    const maxRounds = 40; // ~6.5 minutes max per batch (10s intervals)
+    while (pending.size > 0 && pollRound < maxRounds) {
+      await new Promise(r => setTimeout(r, 10000));
+      pollRound++;
+      const checks = [...pending].map(async (jobId) => {
+        try {
+          const res = await fetch(`${siteUrl}/api/status?jobId=${jobId}`, { signal: AbortSignal.timeout(15000) });
+          const d = await res.json().catch(() => ({})) as any;
+          if (d?.status === "complete") {
+            pending.delete(jobId);
+            completed++;
+            const j = jobs.find(x => x.jobId === jobId);
+            console.log(`[seed] Complete: ${j?.ep.showName} — ${j?.ep.title.substring(0, 40)}`);
+          } else if (d?.status === "error") {
+            pending.delete(jobId);
+            errors++;
+            console.warn(`[seed] Error: ${jobId}`, d?.error);
+          }
+        } catch {}
+      });
+      await Promise.all(checks);
+    }
+    if (pending.size > 0) {
+      console.warn(`[seed] Batch timed out, ${pending.size} still pending`);
+    }
+  }
+
+  console.log(`[seed-analyses] Done. Submitted: ${submitted}, Completed: ${completed}, Skipped: ${skipped}, Errors: ${errors}`);
 };
 
 export const config: Config = {};  // HTTP-triggered only — seed-scheduler.mts handles cron
