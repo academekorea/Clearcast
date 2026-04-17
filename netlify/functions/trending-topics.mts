@@ -16,34 +16,37 @@ async function fetchCurrentsTrending(): Promise<string[]> {
   const apiKey = Netlify.env.get("CURRENTS_API_KEY");
   if (!apiKey) return [];
   try {
+    // Fetch trending/search endpoint for US-focused topics
     const res = await fetch(
       `https://api.currentsapi.services/v1/latest-news?language=en&country=US&apiKey=${apiKey}`
     );
     if (!res.ok) return [];
     const data = await res.json() as any;
-    const titles = (data.news || []) as any[];
-    // Extract short topic labels from headlines
-    const seen = new Set<string>();
-    const topics: string[] = [];
-    for (const article of titles) {
-      // Use category or extract key phrase from title
+    const articles = (data.news || []) as any[];
+
+    // Count topic frequency across articles to find truly trending topics
+    const topicCounts = new Map<string, number>();
+    const topicDisplay = new Map<string, string>(); // lowercase → display form
+
+    for (const article of articles) {
       const cats = (article.category || []) as string[];
       for (const c of cats) {
         const label = c.trim();
-        if (label && label !== "general" && !seen.has(label.toLowerCase())) {
-          seen.add(label.toLowerCase());
-          topics.push(label.charAt(0).toUpperCase() + label.slice(1));
-        }
+        if (!label || label === "general" || label === "uncategorized") continue;
+        const key = label.toLowerCase();
+        topicCounts.set(key, (topicCounts.get(key) || 0) + 1);
+        if (!topicDisplay.has(key)) topicDisplay.set(key, label.charAt(0).toUpperCase() + label.slice(1));
       }
-      // Also use the title itself, trimmed to a digestible pill label
-      const title = (article.title || "").split(/[:\-–—|]/).shift()?.trim();
-      if (title && title.length <= 40 && title.length > 3 && !seen.has(title.toLowerCase())) {
-        seen.add(title.toLowerCase());
-        topics.push(title);
-      }
-      if (topics.length >= 18) break;
     }
-    return topics;
+
+    // Sort by frequency — most mentioned topics first
+    const sorted = [...topicCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .filter(([, count]) => count >= 2) // Only topics mentioned in 2+ articles
+      .slice(0, 18)
+      .map(([key]) => topicDisplay.get(key) || key);
+
+    return sorted;
   } catch {
     return [];
   }
