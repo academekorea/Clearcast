@@ -4650,7 +4650,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     <h1 style="font-family:var(--ffs);font-size:clamp(28px,4vw,44px);font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:10px;line-height:1.15">Simple, transparent pricing</h1>
     <p style="font-size:15px;color:var(--text2);margin-bottom:16px">Start free. Upgrade when you want more intelligence.</p>
     <div id="founding-badge" style="display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;color:var(--text2);font-weight:500;margin-bottom:28px">&#11088; Founding member pricing &mdash; 33% off forever</div>
-    <div class="billing-toggle"><span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span><span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span><span class="bt-save" id="annual-save-badge" style="display:none">Save 33%</span></div>
+    <div class="billing-toggle"><span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span><span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span><span class="bt-save" id="annual-save-badge" style="display:none">Save 55% with annual + founding</span></div>
   </div>
   <div class="plans" style="padding:0 24px 16px">
     <div class="plan">
@@ -14217,6 +14217,9 @@ function setBilling(billing) {
 }
 
 function plRenderPrices() {
+  var isAnn = _plBilling === 'annual';
+  // Monthly equivalents for showing savings
+  var monthlyFull = { creator: 7, operator: 19, studio: 49 };
   ['creator','operator','studio'].forEach(function(plan) {
     var p = PL_PRICES[_plBilling][plan];
     var priceEl = document.getElementById(plan + '-price');
@@ -14227,7 +14230,17 @@ function plRenderPrices() {
     if (_plFoundingActive) {
       if (origEl) { origEl.textContent = p.full + p.period; origEl.style.display = 'block'; }
       priceEl.textContent = p.founding.replace('$', '');
-      if (noteEl) noteEl.style.display = 'block';
+      if (noteEl) {
+        noteEl.style.display = 'block';
+        if (isAnn) {
+          // Show stacked savings: annual + founding
+          var annualPerMonth = (parseFloat(p.founding.replace('$','')) / 12).toFixed(2);
+          var totalSavePct = Math.round((1 - parseFloat(annualPerMonth) / monthlyFull[plan]) * 100);
+          noteEl.innerHTML = '&#128274; $' + annualPerMonth + '/mo effective &mdash; ' + totalSavePct + '% total savings';
+        } else {
+          noteEl.innerHTML = '&#128274; ' + p.founding + '/mo founding rate &mdash; locked forever';
+        }
+      }
     } else {
       if (origEl) origEl.style.display = 'none';
       priceEl.textContent = p.full.replace('$', '');
