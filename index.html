@@ -2899,9 +2899,10 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 #view-pricing .hero {padding:80px 24px 48px;text-align:center;background:var(--navy);border-radius:12px;color:#fff;min-height:auto}
 #view-pricing .hero h1 {font-family:var(--ffs);font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:16px;letter-spacing:-.02em;color:#fff}
 #view-pricing .hero p {font-size:17px;color:rgba(255,255,255,.6);max-width:480px;margin:0 auto;line-height:1.7}
-#view-pricing .billing-toggle {display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:var(--bg3);border-radius:24px;padding:4px 6px}
-#view-pricing .bt-opt {font-size:13px;color:var(--text2);cursor:pointer;padding:6px 16px;border-radius:20px;transition:all .15s;font-weight:500}
-#view-pricing .bt-opt.on {background:var(--navy);color:#fff}
+#view-pricing .billing-toggle {display:inline-flex;align-items:center;gap:0;margin-top:28px;background:var(--bg3);border:1px solid var(--border2);border-radius:24px;padding:3px;position:relative}
+#view-pricing .bt-opt {font-size:13px;color:var(--text2);cursor:pointer;padding:6px 18px;border-radius:20px;transition:color .2s;font-weight:500;position:relative;z-index:1;user-select:none}
+#view-pricing .bt-opt.on {color:#fff}
+#view-pricing .bt-pill {position:absolute;top:3px;left:3px;height:calc(100% - 6px);background:var(--navy);border-radius:20px;transition:transform .22s cubic-bezier(.4,0,.2,1),width .22s cubic-bezier(.4,0,.2,1);z-index:0;pointer-events:none}
 #view-pricing .bt-save {font-size:11px;font-weight:600;color:#1a7a2e;background:#dcf5dc;padding:2px 8px;border-radius:10px}
 #view-pricing .plans {display:grid;grid-template-columns:repeat(4,1fr);gap:0;max-width:1200px;margin:48px auto;padding:0 24px;border:0.5px solid var(--border);border-radius:16px;overflow:hidden}
 @media(max-width:900px) {
@@ -3899,8 +3900,8 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px">Pricing</div>
     <h1 style="font-family:var(--ffs);font-size:clamp(28px,4vw,44px);font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:10px;line-height:1.15">Simple, transparent pricing</h1>
     <p style="font-size:15px;color:var(--text2);margin-bottom:16px">Start free. Upgrade when you want more intelligence.</p>
-    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;color:var(--text2);font-weight:500;margin-bottom:28px">&#11088; Founding member pricing &mdash; 33% off forever &middot; 500 spots remaining</div>
-    <div class="billing-toggle"><span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span><span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span><span class="bt-save" id="annual-save-badge" style="display:none">Save 33%</span></div>
+    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;color:var(--text2);font-weight:500;margin-bottom:28px">&#11088; Founding member pricing &#8212; 33% off forever</div>
+    <div class="billing-toggle"><div class="bt-pill" id="bt-pill"></div><span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span><span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span><span class="bt-save" id="annual-save-badge" style="display:none">Save 33%</span></div>
   </div>
   <div class="plans" style="padding:0 24px 16px">
     <div class="plan">
@@ -3916,8 +3917,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       </div>
       <a class="plan-btn" href="/" onclick="if(typeof showView==='function'){showView('home');return false}">Get started free &rarr;</a>
     </div>
-    <div class="plan featured">
-      <div class="plan-badge">Most Popular</div>
+    <div class="plan">
       <div class="plan-name">Starter Lens</div>
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="creator-original"></div>
@@ -3937,7 +3937,8 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       </div>
       <button class="plan-btn" onclick="startCheckout('creator')">Start Starter Lens &rarr;</button>
     </div>
-    <div class="plan">
+    <div class="plan featured">
+      <div class="plan-badge">Most Popular</div>
       <div class="plan-name">Pro Lens</div>
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="operator-original"></div>
@@ -13991,9 +13992,18 @@ function setBilling(billing) {
   var mBtn = document.getElementById('bt-monthly');
   var aBtn = document.getElementById('bt-annual');
   var saveBadge = document.getElementById('annual-save-badge');
+  var pill = document.getElementById('bt-pill');
   if (mBtn) mBtn.classList.toggle('on', billing === 'monthly');
   if (aBtn) aBtn.classList.toggle('on', billing === 'annual');
   if (saveBadge) saveBadge.style.display = billing === 'annual' ? '' : 'none';
+  // Slide the pill indicator
+  if (pill && mBtn && aBtn) {
+    var target = billing === 'monthly' ? mBtn : aBtn;
+    pill.style.width = target.offsetWidth + 'px';
+    pill.style.transform = billing === 'annual'
+      ? 'translateX(' + (mBtn.offsetWidth) + 'px)'
+      : 'translateX(0)';
+  }
   // Modal toggle (mod-bt-monthly/mod-bt-annual)
   var modM = document.getElementById('mod-bt-monthly');
   var modA = document.getElementById('mod-bt-annual');
@@ -14122,6 +14132,8 @@ function toggleAllFeatures() {
 
 function initPricingView() {
   plRenderPrices();
+  // Initialise sliding pill position (after DOM is visible so offsetWidth is available)
+  setTimeout(function() { setBilling(_plBilling || 'monthly'); }, 0);
   if (_plPricingInited) return;
   _plPricingInited = true;
   // Load price IDs
