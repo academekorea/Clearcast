@@ -83,20 +83,20 @@ var KOREAN_MARKET_ENABLED = false;
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#000000;--bg2:#1d1d1f;--bg3:#2d2d2f;--bg4:#3a3a3c;
   --text:#f5f5f7;--text2:#86868b;--text3:#6e6e73;
-  --navy:#f5f5f7;
+  --navy:#1d1d1f;
   --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.16);
   --left-bg:#2D1515;--center-bg:#2d2d2f;--right-bg:#131C2A;
   --amber-bg:#1C0A00;--purple-bg:#1E1B4B;--purple-border:#4C1D95;
-  --color-navy:#f5f5f7;--color-navy-mid:#d1d1d6;
+  --color-navy:#1d1d1f;--color-navy-mid:#3a3a3c;
 }}
 [data-theme="dark"]{
   --bg:#000000;--bg2:#1d1d1f;--bg3:#2d2d2f;--bg4:#3a3a3c;
   --text:#f5f5f7;--text2:#86868b;--text3:#6e6e73;
-  --navy:#f5f5f7;
+  --navy:#1d1d1f;
   --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.16);
   --left-bg:#2D1515;--center-bg:#2d2d2f;--right-bg:#131C2A;
   --amber-bg:#1C0A00;--purple-bg:#1E1B4B;--purple-border:#4C1D95;
-  --color-navy:#f5f5f7;--color-navy-mid:#d1d1d6;
+  --color-navy:#1d1d1f;--color-navy-mid:#3a3a3c;
 }
 [data-theme="light"]{
   --bg:#f5f5f7;--bg2:#ffffff;--bg3:#e8e8ed;--bg4:#d2d2d7;
@@ -108,6 +108,54 @@ var KOREAN_MARKET_ENABLED = false;
   --color-navy:#1d1d1f;--color-navy-mid:#424245;
 }
 
+/* ── DARK MODE VISIBILITY OVERRIDES ─────────────────────────────────────────
+   Navy is dark in both modes (used for bg). These rules ensure all text
+   that was navy in light mode is light/readable in dark mode.             */
+[data-theme="dark"] .logo,
+[data-theme="dark"] .nav-logo-text,
+[data-theme="dark"] .section-link,
+[data-theme="dark"] .tg-analyze-link,
+[data-theme="dark"] .recovery-result-go,
+[data-theme="dark"] .adm-tab.on,
+[data-theme="dark"] .account-tab.active,
+[data-theme="dark"] .pf-check,
+[data-theme="dark"] .check-y,
+[data-theme="dark"] .acct-field-action,
+[data-theme="dark"] .archive-show-more:hover,
+[data-theme="dark"] .sp-new-analyze-link:hover,
+[data-theme="dark"] .ar-preview-cta a,
+[data-theme="dark"] .metric-q-tip::after { color:var(--text) }
+/* Primary buttons: white bg / dark text in dark mode (Apple style) */
+[data-theme="dark"] .nav-pro-btn,
+[data-theme="dark"] .btn-signin-nav,
+[data-theme="dark"] .lo-analyze-btn,
+[data-theme="dark"] .lo-cta-btn,
+[data-theme="dark"] .lo-unlock-btn,
+[data-theme="dark"] .fp-cta-btn,
+[data-theme="dark"] .plan-btn,
+[data-theme="dark"] .unheard-unlock-btn,
+[data-theme="dark"] .hpc-unlock-btn,
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .lap-full-link { background:#f5f5f7;color:#1d1d1f;border-color:#f5f5f7 }
+/* Dark sections that use --navy as bg: elevate to bg2 in dark mode */
+[data-theme="dark"] .lo-features,
+[data-theme="dark"] .fp-cta-section,
+[data-theme="dark"] .lo-cta-section { background:var(--bg2) }
+[data-theme="dark"] .lo-feat-t { color:var(--text) }
+[data-theme="dark"] .lo-feat-d { color:var(--text2) }
+[data-theme="dark"] .lo-feats-h { color:var(--text) }
+[data-theme="dark"] .lo-feats-sub { color:var(--text2) }
+[data-theme="dark"] .fp-cta-title { color:var(--text) }
+[data-theme="dark"] .fp-cta-sub { color:var(--text2) }
+/* Outlined buttons (color AND border use --navy) */
+[data-theme="dark"] .tcard-cta,
+[data-theme="dark"] .sp-follow-btn { color:var(--text);border-color:rgba(255,255,255,0.25) }
+[data-theme="dark"] .tcard-cta:hover { background:rgba(255,255,255,0.08) }
+/* Plan/pricing featured badges and tier colors */
+[data-theme="dark"] .plan.featured { background:var(--bg2);color:var(--text) }
+[data-theme="dark"] .plan.featured .plan-name,
+[data-theme="dark"] .plan.featured .plan-price,
+[data-theme="dark"] .plan.featured .plan-desc { color:var(--text) }
 html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-size:16px;line-height:1.6}
 
