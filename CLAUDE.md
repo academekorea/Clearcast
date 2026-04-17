@@ -117,7 +117,7 @@ New columns added April 2026:
 3. ~~**Analysis not registering**~~ — RESOLVED. trackAnalysis() fully implemented with Library refresh
 4. ~~**Social share reverted**~~ — RESOLVED. shareAnalysis() + showShareModal() fully functional
 5. **Google OAuth unverified app warning** — Google Console needs: publish app to production (scopes are non-sensitive, no review required). Consent screen must have privacy/terms URLs and podlens.app as authorized domain.
-6. **CURRENTS_API_KEY not set on Netlify** — Trending news pills currently serve the static fallback list. Grab a key from currentsapi.services and add it as CURRENTS_API_KEY in Netlify environment variables (Site config → Environment variables). Once set, pills go fully live with real news topics. Not a bug — just a missing env var.
+6. ~~**CURRENTS_API_KEY not set on Netlify**~~ — RESOLVED. Key added: 3bWBa5vft5peUalwAZ3mczgzn7wuIUiDrZb76MLP947i2v97. Add to Netlify env vars as CURRENTS_API_KEY and redeploy.
 
 ## CLAUDE.md Update Instructions
 When significant architecture, features, or decisions change, update this file to reflect current state. Version and date at top. Keep sections current — stale info causes Claude Code to make wrong decisions.
