@@ -19,7 +19,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#0A0F1E;--navy-mid:#1a3a4a;--cream:#FAF9F6;--text:#1a1a1a;
+  --navy:#1d1d1f;--navy-mid:#1a3a4a;--cream:#FAF9F6;--text:#1d1d1f;
   --text2:#444;--text3:#888;--border:#e0ddd8;
   --left:#E24B4A;--center:#D1CFC9;--right:#378ADD;
   --ffs:'Playfair Display',Georgia,serif;--ff:'Inter',-apple-system,sans-serif;
@@ -63,7 +63,7 @@ body{font-family:var(--ff);background:var(--navy);color:white;min-height:100vh;o
 .mode-toggle{background:none;border:none;font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:transform .2s ease,background .2s;line-height:1;flex-shrink:0}
 .mode-toggle:hover{transform:scale(1.25);background:rgba(128,128,128,0.1)}
 :root{--bg-primary:#0A0F1E;--bg-secondary:#111827;--bg-card:#111827;--bg-hover:#1a2233;--text-primary:#F9FAFB;--text-secondary:#9CA3AF;--text-muted:#6B7280;--accent:#818CF8;--accent-hover:#A5B4FC;--border-new:#1F2937;--border-subtle:#374151}
-body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6;--bg-card:#FFFFFF;--bg-hover:#F0F0F0;--text-primary:#0A0A0A;--text-secondary:#374151;--text-muted:#9CA3AF;--accent:#6366F1;--accent-hover:#4F46E5;--border-new:#E5E7EB;--border-subtle:#F3F4F6}
+body.light-mode,[data-theme="light"]{--bg-primary:#FAFAFA;--bg-secondary:#F3F4F6;--bg-card:#FFFFFF;--bg-hover:#F0F0F0;--text-primary:#0A0A0A;--text-secondary:#374151;--text-muted:#9CA3AF;--accent:#6366F1;--accent-hover:#4F46E5;--border-new:rgba(0,0,0,0.1);--border-subtle:#F3F4F6}
 </style>
 <script>(function(){var s=localStorage.getItem('podlens-mode')||localStorage.getItem('pl-theme');if(s==='light'){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('light-mode');}else if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');}})()
 function toggleMode(){var isNowLight=document.body.classList.toggle('light-mode');document.documentElement.setAttribute('data-theme',isNowLight?'light':'dark');document.querySelectorAll('.mode-toggle').forEach(function(btn){btn.textContent=isNowLight?'☀️':'🌙';});localStorage.setItem('podlens-mode',isNowLight?'light':'dark');localStorage.setItem('pl-theme',isNowLight?'light':'dark');}
