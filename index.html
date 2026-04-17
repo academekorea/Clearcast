@@ -10741,6 +10741,44 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       colR += '<div style="font-size:11px;color:var(--text3);padding:4px 0 8px">Like episodes to save them here.</div>';
     }
 
+    // BROADEN YOUR PERSPECTIVE — suggest shows with different leans
+    if (typeof CURATED_SHOWS !== 'undefined' && m.avgBiasScore != null) {
+      var showScore = m.avgBiasScore;
+      var showCat = (itunes && itunes.genre) || show.category || '';
+      var showNameLower = (displayName||'').toLowerCase();
+      // Find shows with opposite or different lean
+      var opposites = CURATED_SHOWS.filter(function(c) {
+        if (c.name.toLowerCase() === showNameLower) return false;
+        if (!c.bias) return false;
+        // If show leans left (score < -20), suggest right-leaning or balanced
+        // If show leans right (score > 20), suggest left-leaning or balanced
+        // If balanced, suggest both sides
+        if (showScore < -20) return c.bias.score > 0;
+        if (showScore > 20) return c.bias.score < 0;
+        return Math.abs(c.bias.score) > 25; // balanced show → suggest opinionated ones
+      }).sort(function(a, b) {
+        // Prefer same category, then sort by how different the lean is
+        var aCat = a.cat === showCat.toLowerCase() ? 0 : 1;
+        var bCat = b.cat === showCat.toLowerCase() ? 0 : 1;
+        if (aCat !== bCat) return aCat - bCat;
+        return Math.abs(b.bias.score - showScore) - Math.abs(a.bias.score - showScore);
+      });
+      if (opposites.length) {
+        colR += '<hr class="sp-new-divider">';
+        colR += '<div class="sp-rc-lbl">Broaden your perspective</div>';
+        colR += '<div style="font-size:10px;color:var(--text3);margin-bottom:8px">Shows with a different lean</div>';
+        opposites.slice(0, 4).forEach(function(c) {
+          var cSlug = c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+          colR += '<div class="sp-sim-row" onclick="showView(\'show\');loadShowProfile(\'' + cSlug + '\',null)">'
+            + (c.artwork ? '<img class="sp-sim-art" src="' + _escHtml(c.artwork) + '" alt="" onerror="this.style.background=\'var(--bg3)\'">' : '<div class="sp-sim-art"></div>')
+            + '<div style="flex:1;min-width:0"><div class="sp-sim-name">' + _esc(c.name) + '</div>'
+            + '<div class="sp-sim-cat">' + _esc(c.artist || '') + '</div></div>'
+            + _spBiasPill(c.bias.score)
+            + '</div>';
+        });
+      }
+    }
+
     // SIMILAR PODCASTS
     if (similar && similar.length) {
       colR += '<hr class="sp-new-divider">';
