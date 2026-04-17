@@ -160,11 +160,36 @@ var KOREAN_MARKET_ENABLED = false;
 [data-theme="dark"] .tcard-cta,
 [data-theme="dark"] .sp-follow-btn { color:var(--text);border-color:rgba(255,255,255,0.25) }
 [data-theme="dark"] .tcard-cta:hover { background:rgba(255,255,255,0.08) }
+/* Disc hero: add border in dark mode so it stands out from bg */
+[data-theme="dark"] .disc-hero{border:1px solid rgba(255,255,255,0.08)}
 /* Plan/pricing featured badges and tier colors */
 [data-theme="dark"] .plan.featured { background:var(--bg2);color:var(--text) }
 [data-theme="dark"] .plan.featured .plan-name,
 [data-theme="dark"] .plan.featured .plan-price,
 [data-theme="dark"] .plan.featured .plan-desc { color:var(--text) }
+/* ── SYSTEM DARK MODE MIRRORS (prefers-color-scheme path) ─────────────────── */
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  /* Text on navy-bg elements */
+  .logo,.nav-logo-text,.section-link,.tg-analyze-link,.recovery-result-go,
+  .adm-tab.on,.account-tab.active,.pf-check,.check-y,.acct-field-action,
+  .archive-show-more:hover,.sp-new-analyze-link:hover,.ar-preview-cta a{ color:#f5f5f7 }
+  .metric-q-tip::after { border-top-color:#f5f5f7 }
+  /* Primary buttons: white bg / dark text */
+  .nav-pro-btn,.btn-signin-nav,.lo-analyze-btn,.lo-cta-btn,.lo-unlock-btn,
+  .fp-cta-btn,.plan-btn,.unheard-unlock-btn,.hpc-unlock-btn,.btn-primary,
+  .lap-full-link { background:#f5f5f7;color:#1d1d1f;border-color:#f5f5f7 }
+  /* Outlined buttons */
+  .tcard-cta,.sp-follow-btn { color:#f5f5f7;border-color:rgba(255,255,255,0.25) }
+  .tcard-cta:hover { background:rgba(255,255,255,0.08) }
+  /* Pricing featured card */
+  .plan.featured { background:#1d1d1f;color:#f5f5f7 }
+  .plan.featured .plan-name,.plan.featured .plan-price,
+  .plan.featured .plan-desc { color:#f5f5f7 }
+  /* CTA sections */
+  .fp-cta-section,.lo-cta-section { background:#1d1d1f }
+  .fp-cta-title { color:#f5f5f7 }
+  .fp-cta-sub { color:#86868b }
+}}
 html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-size:16px;line-height:1.6}
 
@@ -277,7 +302,7 @@ body.authenticated .site-footer { display: none !important; }
 .lo-hero{background:#ffffff;text-align:center;padding:72px 24px 56px;border-bottom:1px solid var(--border)}
 .lo-hero-inner{max-width:640px;margin:0 auto}
 .lo-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.05);border-radius:20px;padding:4px 14px;margin-bottom:20px;font-size:10px;color:var(--text3);letter-spacing:.09em;font-weight:600;text-transform:uppercase}
-[data-theme="dark"] .lo-badge{background:rgba(255,255,255,.06);color:var(--text3)}
+[data-theme="dark"] .lo-badge{background:rgba(255,255,255,.08);color:#86868b}
 .lo-h1{font-family:var(--ffs);font-size:clamp(52px,8vw,80px);font-weight:700;line-height:1.03;margin:0 0 8px;letter-spacing:-.03em;color:var(--text)}
 .lo-h2{font-family:var(--ffs);font-size:clamp(24px,3.5vw,36px);font-weight:400;line-height:1.12;margin:0 0 20px;color:var(--text);font-style:italic}
 .lo-sub{font-size:16px;color:var(--text2);line-height:1.7;max-width:500px;margin:0 auto 36px}
