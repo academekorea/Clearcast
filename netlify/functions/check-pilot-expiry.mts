@@ -54,7 +54,7 @@ export default async (req: Request) => {
     }
   } catch (e: any) {
     console.error('[check-pilot-expiry]', e?.message);
-    return new Response(JSON.stringify({ error: e?.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Unable to process request" }), { status: 500 });
   }
 
   return new Response(JSON.stringify({ sent, ts: new Date().toISOString() }), {

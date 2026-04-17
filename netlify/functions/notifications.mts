@@ -50,7 +50,7 @@ export default async (req: Request) => {
       status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ count: 0, notifications: [], error: e?.message }), {
+    return new Response(JSON.stringify({ count: 0, notifications: [], error: "Unable to load notifications" }), {
       status: 200, headers: { 'Content-Type': 'application/json' },
     });
   }

@@ -83,7 +83,7 @@ export default async (req: Request) => {
     }).catch(() => {});
 
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Digest processing error" }), { status: 500 });
   }
 
   return new Response(JSON.stringify({ ok: true, week, digestsSent, errors: errors.slice(0, 5) }), {

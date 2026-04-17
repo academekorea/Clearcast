@@ -42,7 +42,8 @@ export default async (req: Request) => {
       status: 200, headers: { "Content-Type": "application/json" },
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || "Portal session creation failed" }), {
+    console.error("[billing-portal]", e?.message || e);
+    return new Response(JSON.stringify({ error: "Unable to access billing portal" }), {
       status: 500, headers: { "Content-Type": "application/json" },
     });
   }

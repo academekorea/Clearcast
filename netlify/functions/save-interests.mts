@@ -49,7 +49,8 @@ export default async (req: Request) => {
 
     return json({ ok: true, interests: clean });
   } catch (e: any) {
-    return json({ error: e?.message || "Server error" }, 500);
+    console.error("[save-interests]", e?.message || e);
+    return json({ error: "Failed to save preferences" }, 500);
   }
 };
 

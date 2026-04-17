@@ -90,7 +90,7 @@ export default async (req: Request) => {
       const aaiData = await submitTranscription(assemblyKey, audioUrl);
       transcriptId = aaiData.id;
     } catch (e: any) {
-      return new Response(JSON.stringify({ error: e.message || "Transcription service error. Please try again." }), {
+      return new Response(JSON.stringify({ error: "Transcription service error. Please try again." }), {
         status: 500, headers: { "Content-Type": "application/json" },
       });
     }
@@ -109,7 +109,7 @@ export default async (req: Request) => {
       status: 200, headers: { "Content-Type": "application/json" },
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: "Server error: " + (e?.message || "Unknown error") }), {
+    return new Response(JSON.stringify({ error: "Unable to start transcription" }), {
       status: 500, headers: { "Content-Type": "application/json" },
     });
   }

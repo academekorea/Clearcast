@@ -25,7 +25,7 @@ export default async (req: Request) => {
     ({ jobId, youtubeUrl } = await req.json());
     if (!jobId || !youtubeUrl) throw new Error("Missing jobId or youtubeUrl");
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), {
+    return new Response(JSON.stringify({ error: "Transcription service unavailable" }), {
       status: 400, headers: { "Content-Type": "application/json" },
     });
   }

@@ -127,7 +127,8 @@ export default async (req: Request) => {
     }), { status: 200, headers: { "Content-Type": "application/json" } });
 
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || "Checkout creation failed" }), {
+    console.error("[create-checkout]", e?.message || e);
+    return new Response(JSON.stringify({ error: "Unable to create checkout session" }), {
       status: 500, headers: { "Content-Type": "application/json" },
     });
   }

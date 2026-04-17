@@ -198,7 +198,8 @@ export default async (req: Request) => {
     ({ url } = await req.json());
     if (!url || typeof url !== "string") throw new Error("url required");
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), {
+    console.error("[resolve-redirect]", e?.message || e);
+    return new Response(JSON.stringify({ error: "Invalid request" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });

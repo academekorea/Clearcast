@@ -38,7 +38,7 @@ export default async (req: Request) => {
       status: 200, headers: { "Content-Type": "application/json" },
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || "Server error" }), {
+    return new Response(JSON.stringify({ error: "Unable to save settings" }), {
       status: 500, headers: { "Content-Type": "application/json" },
     });
   }

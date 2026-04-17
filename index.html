@@ -9637,7 +9637,7 @@ function startAnalysis(audioUrl, epTitle, showName) {
         var code=d.code||'';
         if (code==='VIDEO_PRIVATE') { showAnalyzeErr('This episode is private or unavailable. Try a public YouTube URL or podcast RSS link.'); resetBtn(); }
         else if (code==='IS_LIVESTREAM') { showAnalyzeErr('Live streams can\u2019t be analyzed while they\u2019re live \u2014 try the replay after it ends.'); resetBtn(); }
-        else if (code==='WRONG_CONTENT_TYPE') { showAnalyzeErr(d.error); resetBtn(); }
+        else if (code==='WRONG_CONTENT_TYPE') { showAnalyzeErr('This content type can\u2019t be analyzed. Please try a podcast episode or audio file.'); resetBtn(); }
         else if (code==='CAPTIONS_UNAVAILABLE') { _currentChannelTitle=d.channelTitle||''; startTranscriptionFallback(audioUrl,epTitle,showName); }
         else { showAnalyzeErr(friendlyError(d.error||'Analysis failed','start-analysis'), d.suggestion); resetBtn(); }
         return;

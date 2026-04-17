@@ -130,7 +130,8 @@ export default async (req: Request) => {
     });
 
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("[community-bias]", err?.message || err);
+    return new Response(JSON.stringify({ error: "Unable to load bias data" }), {
       status: 500, headers: { "Content-Type": "application/json" }
     });
   }

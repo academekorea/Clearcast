@@ -29,7 +29,7 @@ export default async (req: Request) => {
           });
         }
         if (bgJob.status === "error") {
-          return new Response(JSON.stringify({ status: "error", error: bgJob.message, code: bgJob.code, jobId }), {
+          return new Response(JSON.stringify({ status: "error", error: "Transcription failed", jobId }), {
             status: 200, headers: { "Content-Type": "application/json" },
           });
         }
@@ -95,7 +95,7 @@ export default async (req: Request) => {
     });
 
   } catch (e: any) {
-    return new Response(JSON.stringify({ status: "error", error: e?.message || "Unknown error" }), {
+    return new Response(JSON.stringify({ status: "error", error: "Unable to check transcription status" }), {
       status: 200, headers: { "Content-Type": "application/json" },
     });
   }

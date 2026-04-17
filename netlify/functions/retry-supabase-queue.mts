@@ -45,7 +45,8 @@ export default async (req: Request) => {
       }
     }
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message }), { status: 500 });
+    console.error("[retry-supabase-queue]", e?.message || e);
+    return new Response(JSON.stringify({ error: "Queue processing error" }), { status: 500 });
   }
 
   return new Response(JSON.stringify({
