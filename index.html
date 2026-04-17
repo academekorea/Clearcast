@@ -1923,7 +1923,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-show-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s;position:relative;display:flex;flex-direction:column;height:320px;overflow:hidden}
 .disc-show-card:hover{border-color:var(--navy)}
 [data-theme="dark"] .disc-show-card:hover{border-color:rgba(255,255,255,.35)}
-.disc-show-art{width:100%;aspect-ratio:1;border-radius:8px;margin-bottom:9px;display:flex;align-items:center;justify-content:center;font-family:var(--ffs);font-size:20px;font-weight:700;color:rgba(255,255,255,.5);overflow:hidden}
+.disc-show-art{width:100%;aspect-ratio:1;border-radius:8px;margin-bottom:9px;display:flex;align-items:center;justify-content:center;font-family:var(--ffs);font-size:20px;font-weight:700;color:rgba(255,255,255,.5);overflow:hidden;background:var(--bg3)}
 .disc-show-art img{width:100%;height:100%;object-fit:cover;border-radius:8px;display:block}
 .disc-show-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .disc-show-sub{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -6936,6 +6936,36 @@ var CURATED_SHOWS = [
   {name:'New Heights',artist:'Jason & Travis Kelce',artwork:'',feedUrl:'',cat:'sports',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
 ];
 
+// Resolve missing artwork from iTunes Search API (lazy, non-blocking)
+(function _resolveMissingArtwork() {
+  var missing = CURATED_SHOWS.filter(function(s) { return !s.artwork; });
+  if (!missing.length) return;
+  missing.forEach(function(s) {
+    fetch('https://itunes.apple.com/search?media=podcast&limit=1&term=' + encodeURIComponent(s.name), { signal: AbortSignal.timeout(5000) })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.results && d.results[0] && d.results[0].artworkUrl600) {
+          s.artwork = d.results[0].artworkUrl600;
+          // Update any already-rendered placeholder cards
+          document.querySelectorAll('.disc-show-card').forEach(function(card) {
+            var nameEl = card.querySelector('.disc-show-name');
+            if (nameEl && nameEl.textContent === s.name) {
+              var artEl = card.querySelector('.disc-show-art');
+              if (artEl && !artEl.tagName.match(/img/i)) {
+                var img = document.createElement('img');
+                img.className = 'disc-show-art';
+                img.src = s.artwork;
+                img.alt = '';
+                img.onerror = function() { _artError(this); };
+                artEl.parentNode.replaceChild(img, artEl);
+              }
+            }
+          });
+        }
+      }).catch(function() {});
+  });
+})();
+
 // ── BIAS HELPERS ─────────────────────────────────────────────────────────────
 // _biasMini(b) — renders a compact 3-segment bar + lean label pill
 // Always visible to all users. Score percentages are always shown.
@@ -7905,7 +7935,7 @@ function discSetCat(cat, btn) {
 
 function discFilterByMood(mood, clickedEl) {
   var filtered;
-  if (mood === 'heavy')    filtered = CURATED_SHOWS.filter(function(s){ return Math.abs(s.bias&&s.bias.score||0) > 60; });
+  if (mood === 'heavy')    filtered = CURATED_SHOWS.filter(function(s){ return Math.abs(s.bias&&s.bias.score||0) > 40; });
   if (mood === 'balanced') filtered = CURATED_SHOWS.filter(function(s){ return Math.abs(s.bias&&s.bias.score||0) <= 20; });
   if (mood === 'deepdive') filtered = CURATED_SHOWS.filter(function(s){ return s.cat==='society'||s.cat==='tech'||s.cat==='business'; });
   if (mood === 'quick')    filtered = CURATED_SHOWS.filter(function(s){ return s.cat==='news'||s.cat==='comedy'; });
@@ -8206,6 +8236,15 @@ function loadDiscTrendingNews() {
   var el = document.getElementById('disc-trending-news');
   if (!el) return;
 
+  var FALLBACK = [
+    'Trump Tariffs Impact', 'AI Regulation Debate', 'Federal Reserve Rate Decision',
+    'Gaza Ceasefire Talks', 'TikTok Ban Ruling', 'Boeing Whistleblower',
+    'Ukraine NATO Membership', 'Student Loan Forgiveness', 'Tesla Sales Drop',
+    'Border Security Bill', 'Supreme Court Ruling', 'Tech Layoffs 2026',
+    'Medicare Drug Prices', 'China Taiwan Tensions', 'Election Polling',
+    'Housing Market Crisis', 'SpaceX Starship Launch', 'Climate Summit',
+  ];
+
   function renderPills(topics) {
     el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3);padding:6px 0">'
       + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
@@ -8224,8 +8263,8 @@ function loadDiscTrendingNews() {
         }).join('');
   }
 
-  // Show loading state
-  el.innerHTML = '<span style="color:var(--text3);font-size:12px;padding:8px">Loading trending...</span>';
+  // Show fallback immediately, then upgrade with live data
+  renderPills(FALLBACK);
 
   // Fetch live trending news from Currents API + platform data
   fetch('/api/trending-topics', { signal: AbortSignal.timeout(8000) })
@@ -8245,9 +8284,9 @@ function loadDiscTrendingNews() {
       if (merged.length > 0) {
         renderPills(merged);
       } else {
-        el.innerHTML = '';
+        renderPills(FALLBACK);
       }
-    }).catch(function() { el.innerHTML = ''; });
+    }).catch(function() { renderPills(FALLBACK); });
 }
 
 
@@ -15875,17 +15914,28 @@ function _renderAdminTab(tab, d) {
       + '</div>';
 
     // Pre-analysis seeding
-    html += '<div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">'      + '<div style="font-size:13px;font-weight:700;margin-bottom:4px">Community Pre-Analysis</div>'      + '<p style="font-size:12px;color:var(--text3);margin-bottom:12px">Analyzes latest 2 episodes from each of 64 curated shows. Scheduled daily at 3am UTC.</p>'      + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">'      + '<button onclick="_admTriggerSeed()" class="btn-primary" style="font-size:12px;padding:8px 14px">▶ Seed community analyses now</button>'      + '<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px">'      + '<span style="font-size:12px;font-weight:600">Auto (3am UTC)</span>'      + '<button id="adm-seed-auto-toggle" onclick="_admToggleSeedAuto()" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;position:relative;transition:background .2s;padding:0;background:var(--border2)">'      + '<span style="display:block;width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 2px rgba(0,0,0,.2)"></span></button>'      + '</div>'      + '</div>'      + '<div id="adm-seed-status" style="font-size:12px;color:var(--text3)"></div>'      + '</div>';
-    // Load seed auto toggle state
-    fetch('/api/admin-seed-toggle').then(function(r){return r.json();}).then(function(d){
-      var btn = document.getElementById('adm-seed-auto-toggle');
-      if (btn) _admUpdateSeedToggle(btn, !d.paused);
-    }).catch(function(){});
+    html += '<div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">'
+      + '<div style="font-size:13px;font-weight:700;margin-bottom:4px">Community Pre-Analysis</div>'
+      + '<p style="font-size:12px;color:var(--text3);margin-bottom:12px">Analyzes latest 2 episodes from each of 64 curated shows.</p>'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+      + '<label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;cursor:pointer">'
+      + '<span>Daily auto-run (3am UTC)</span>'
+      + '<div id="adm-seed-toggle" onclick="_admToggleAutoSeed()" style="width:36px;height:20px;border-radius:10px;background:#ccc;position:relative;cursor:pointer;transition:background 0.2s">'
+      + '<div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left 0.2s;box-shadow:0 1px 2px rgba(0,0,0,0.2)"></div>'
+      + '</div>'
+      + '</label>'
+      + '<span id="adm-seed-toggle-label" style="font-size:11px;color:var(--text3)">Loading...</span>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">'
+      + '<button onclick="_admTriggerSeed()" class="btn-primary" style="font-size:12px;padding:8px 14px">▶ Seed community analyses now</button>'
+      + '</div>'
+      + '<div id="adm-seed-status" style="font-size:12px;color:var(--text3)"></div>'
+      + '</div>';
 
     // Backup controls
     html += '<div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">'  
       + '<div style="font-size:13px;font-weight:700;margin-bottom:4px">Data Backup</div>'
-      + '<p style="font-size:12px;color:var(--text3);margin-bottom:12px">Weekly backups run every Sunday 2am UTC. Stored in Netlify Blobs, last 4 kept. Full JSON or per-table CSV download.</p>'
+      + '<p style="font-size:12px;color:var(--text3);margin-bottom:12px">Weekly backups run every Sunday 2am UTC. Stored in Supabase Storage, last 4 kept. Full JSON or per-table CSV download.</p>'
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">'
       + '<button onclick="_admRunBackup()" class="btn-primary" style="font-size:12px;padding:8px 14px">▶ Run backup now</button>'
       + '<button onclick="_admListBackups()" style="font-size:12px;padding:8px 14px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none">📋 List backups</button>'
@@ -15919,6 +15969,10 @@ function _renderAdminTab(tab, d) {
   }
 
   el.innerHTML = html;
+
+  if (tab === 'controls') {
+    _admLoadAutoSeedStatus();
+  }
 }
 
 function _admStat(val, lbl, sub) {
@@ -16014,7 +16068,7 @@ function _admTriggerSeed() {
   if (statusEl) statusEl.textContent = 'Triggering pre-analysis... (runs in background, check logs)';
   fetch('/api/trigger-seed', {
     method: 'POST',
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-userid': (plUser()||{}).id || '' }
+    headers: { 'Content-Type': 'application/json', 'x-admin-userid': (plUser()||{}).id || '' }
   }).then(function(r) { return r.json(); })
   .then(function(d) {
     if (statusEl) statusEl.innerHTML = '✅ ' + (d.message || 'Seeding started') + ' — ' + (d.shows||0) + ' shows, ~' + (d.estimatedMinutes||6) + ' min';
@@ -16023,41 +16077,61 @@ function _admTriggerSeed() {
   });
 }
 
-function _admUpdateSeedToggle(btn, isOn) {
-  var knob = btn.querySelector('span');
-  if (isOn) {
-    btn.style.background = '#2a7a4a';
-    if (knob) knob.style.transform = 'translateX(18px)';
-  } else {
-    btn.style.background = 'var(--border2)';
-    if (knob) knob.style.transform = 'translateX(0)';
-  }
-  btn.dataset.on = isOn ? '1' : '0';
+function _admLoadAutoSeedStatus() {
+  var u = plUser(); if (!u) return;
+  fetch('/api/trigger-seed', {
+    method: 'GET',
+    headers: { 'x-admin-userid': u.id || '' }
+  }).then(function(r) { return r.json(); })
+  .then(function(d) {
+    _admRenderSeedToggle(d.autoSeedEnabled !== false);
+  }).catch(function() {
+    _admRenderSeedToggle(true);
+  });
 }
 
-function _admToggleSeedAuto() {
-  var btn = document.getElementById('adm-seed-auto-toggle');
-  if (!btn) return;
-  var isCurrentlyOn = btn.dataset.on === '1';
-  var newPaused = isCurrentlyOn; // if on → pause; if off → unpause
-  _admUpdateSeedToggle(btn, !isCurrentlyOn);
-  var statusEl = document.getElementById('adm-seed-status');
-  fetch('/api/admin-seed-toggle', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ paused: newPaused })
-  }).then(function(r){ return r.json(); }).then(function(d) {
-    if (statusEl) statusEl.textContent = d.paused ? 'Auto pre-analysis paused' : 'Auto pre-analysis enabled (runs daily 3am UTC)';
+function _admRenderSeedToggle(enabled) {
+  var toggle = document.getElementById('adm-seed-toggle');
+  var label = document.getElementById('adm-seed-toggle-label');
+  if (!toggle) return;
+  var knob = toggle.firstElementChild;
+  if (enabled) {
+    toggle.style.background = '#16a34a';
+    knob.style.left = '18px';
+    if (label) label.textContent = 'Enabled — runs daily at 3am UTC';
+  } else {
+    toggle.style.background = '#ccc';
+    knob.style.left = '2px';
+    if (label) label.textContent = 'Disabled — auto-run paused';
+  }
+  toggle.setAttribute('data-enabled', enabled ? 'true' : 'false');
+}
+
+function _admToggleAutoSeed() {
+  var toggle = document.getElementById('adm-seed-toggle');
+  if (!toggle) return;
+  var currentlyEnabled = toggle.getAttribute('data-enabled') === 'true';
+  var newState = !currentlyEnabled;
+  var u = plUser(); if (!u) return;
+  _admRenderSeedToggle(newState);
+  fetch('/api/trigger-seed', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'x-admin-userid': u.id || '' },
+    body: JSON.stringify({ enabled: newState })
+  }).then(function(r) { return r.json(); })
+  .then(function(d) {
+    _admRenderSeedToggle(d.autoSeedEnabled !== false);
+    var statusEl = document.getElementById('adm-seed-status');
+    if (statusEl) statusEl.textContent = d.autoSeedEnabled ? '✓ Auto-seed enabled' : '✓ Auto-seed disabled';
   }).catch(function() {
-    _admUpdateSeedToggle(btn, isCurrentlyOn); // revert on error
-    if (statusEl) statusEl.textContent = 'Failed to update toggle';
+    _admRenderSeedToggle(currentlyEnabled);
   });
 }
 
 function _admRunBackup() {
   var u = plUser(); if (!u) return;
   var statusEl = document.getElementById('adm-backup-status');
-  if (!confirm('Run a manual backup now? This exports all tables to Netlify Blobs.')) return;
+  if (!confirm('Run a manual backup now? This exports all tables to Supabase Storage.')) return;
   if (statusEl) statusEl.textContent = '⏳ Backup running… (may take 30-60 seconds)';
   fetch('/api/weekly-backup', { method: 'POST', headers: _admAdminHeaders(u) })
     .then(function(r) { return r.json(); })

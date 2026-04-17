@@ -1,7 +1,9 @@
 import type { Config } from "@netlify/functions";
-import { getStore } from "@netlify/blobs";
 import { isSuperAdmin } from "./lib/admin.js";
 import { checkRateLimit, getClientIp, rateLimitResponse, verifyAdminToken } from "./lib/security.js";
+
+const SB_URL = "https://suqjdctajnitxivczjtg.supabase.co";
+const BACKUP_BUCKET = "podlens-backups";
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -48,14 +50,24 @@ export default async (req: Request) => {
     if (!valid) return json({ error: "Invalid admin token" }, 403);
   }
 
-  const store = getStore("podlens-backups");
+  const sbKey = Netlify.env.get("SUPABASE_SERVICE_KEY") || "";
+  const sbHeaders: HeadersInit = { apikey: sbKey, Authorization: `Bearer ${sbKey}`, "Content-Type": "application/json" };
 
   // List available backups if no date specified
   if (!dateParam) {
     try {
-      const { blobs } = await store.list({ prefix: "backup-" }).catch(() => ({ blobs: [] }));
-      const backups = (blobs || [])
-        .map((b: any) => b.key.replace("backup-", ""))
+      const res = await fetch(`${SB_URL}/storage/v1/object/list/${BACKUP_BUCKET}`, {
+        method: "POST",
+        headers: sbHeaders,
+        body: JSON.stringify({ prefix: "backup-", limit: 100, sortBy: { column: "name", order: "desc" } }),
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!res.ok) throw new Error("list failed");
+      const files = await res.json();
+      const backups = (files || [])
+        .map((f: any) => f.name)
+        .filter((n: string) => n.startsWith("backup-"))
+        .map((n: string) => n.replace("backup-", "").replace(".json", ""))
         .sort()
         .reverse();
       return json({ backups });
@@ -64,10 +76,15 @@ export default async (req: Request) => {
     }
   }
 
-  // Fetch specific backup
+  // Fetch specific backup from Supabase Storage
   let backup: any;
   try {
-    backup = await store.get(`backup-${dateParam}`, { type: "json" });
+    const res = await fetch(`${SB_URL}/storage/v1/object/${BACKUP_BUCKET}/backup-${dateParam}.json`, {
+      headers: { apikey: sbKey, Authorization: `Bearer ${sbKey}` },
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!res.ok) throw new Error("not found");
+    backup = await res.json();
   } catch {
     return json({ error: "Backup not found" }, 404);
   }

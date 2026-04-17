@@ -7,11 +7,12 @@ const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 // Hardcoded fallback — used when CURRENTS_API_KEY is missing or Currents fails.
 // Mirrors what the frontend used to render directly. Safe to ship without a key.
 const FALLBACK_TOPICS = [
-  "Artificial Intelligence", "Trump Administration", "Federal Reserve",
-  "Gaza Ceasefire", "Climate Policy", "Big Tech Regulation",
-  "Immigration", "World Cup 2026", "Healthcare Costs", "Elon Musk",
-  "Ukraine War", "Stock Market", "Supreme Court", "Social Media",
-  "Nuclear Energy", "Cryptocurrency", "China Trade War", "NATO",
+  "Trump Tariffs Impact", "AI Regulation Debate", "Federal Reserve Rate Decision",
+  "Gaza Ceasefire Talks", "TikTok Ban Ruling", "Boeing Whistleblower",
+  "Ukraine NATO Membership", "Student Loan Forgiveness", "Tesla Sales Drop",
+  "Border Security Bill", "Supreme Court Ruling", "Tech Layoffs 2026",
+  "Medicare Drug Prices", "China Taiwan Tensions", "Election Polling",
+  "Housing Market Crisis", "SpaceX Starship Launch", "Climate Summit",
 ];
 
 // Words to exclude from extracted entity counts — calendar, generic news verbs,
@@ -29,6 +30,22 @@ const STOPWORDS = new Set([
   "Mr", "Mrs", "Ms", "Dr", "Sen", "Rep",
   "AM", "PM", "ET", "PT", "EST", "PDT",
   "US", "USA", "U.S.", "America", "American", "Americans",
+  // Generic single-word nouns that aren't meaningful as trending topics
+  "Company", "Programming", "Photography", "People", "History", "Science",
+  "Technology", "Business", "Health", "Sports", "Music", "Education",
+  "Government", "Police", "Officials", "According", "Sources", "Says",
+  "Show", "Podcast", "Episode", "Video", "Photo", "Image",
+  "Part", "Season", "Series", "Chapter", "Volume", "Section",
+  // US states/cities that appear too generically
+  "Pennsylvania", "Philadelphia", "California", "Florida", "Texas",
+  "Chicago", "Boston", "Atlanta", "Houston", "Phoenix", "Denver",
+  "Oregon", "Michigan", "Ohio", "Virginia", "Maryland", "Georgia",
+  "Carolina", "Minnesota", "Wisconsin", "Indiana", "Tennessee", "Missouri",
+  "Alabama", "Kentucky", "Louisiana", "Connecticut", "Iowa", "Colorado",
+  // Podcast/creator names that leak from news articles about podcasts
+  "Huberman Lab", "Dwarkesh Patel", "Joe Rogan", "Lex Fridman",
+  "Ben Shapiro", "Megyn Kelly", "Tim Ferriss", "Conan Brien",
+  "Alex Cooper", "Call Her Daddy", "Tucker Carlson",
 ]);
 
 interface CurrentsArticle {

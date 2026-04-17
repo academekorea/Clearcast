@@ -1,9 +1,9 @@
 import type { Config } from "@netlify/functions";
-import { getStore } from "@netlify/blobs";
 
 const SB_URL = "https://suqjdctajnitxivczjtg.supabase.co";
 const SUPER_ADMIN_EMAIL = "academekorea@gmail.com";
 const MAX_BACKUPS = 4;
+const BACKUP_BUCKET = "podlens-backups";
 
 function sbHeaders(): HeadersInit {
   const key = Netlify.env.get("SUPABASE_SERVICE_KEY") || "";
@@ -68,9 +68,58 @@ async function sendAdminEmail(subject: string, body: string) {
   } catch { /* non-critical */ }
 }
 
+async function ensureBucket(): Promise<void> {
+  const key = Netlify.env.get("SUPABASE_SERVICE_KEY") || "";
+  // Create bucket if it doesn't exist (idempotent)
+  await fetch(`${SB_URL}/storage/v1/bucket`, {
+    method: "POST",
+    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ id: BACKUP_BUCKET, name: BACKUP_BUCKET, public: false }),
+    signal: AbortSignal.timeout(8000),
+  }).catch(() => {});
+}
+
+async function uploadToStorage(fileName: string, data: string): Promise<boolean> {
+  const key = Netlify.env.get("SUPABASE_SERVICE_KEY") || "";
+  const res = await fetch(`${SB_URL}/storage/v1/object/${BACKUP_BUCKET}/${fileName}`, {
+    method: "POST",
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      "x-upsert": "true",
+    },
+    body: data,
+    signal: AbortSignal.timeout(60000),
+  });
+  return res.ok;
+}
+
+async function listStorageFiles(): Promise<string[]> {
+  const key = Netlify.env.get("SUPABASE_SERVICE_KEY") || "";
+  const res = await fetch(`${SB_URL}/storage/v1/object/list/${BACKUP_BUCKET}`, {
+    method: "POST",
+    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ prefix: "backup-", limit: 100, sortBy: { column: "name", order: "desc" } }),
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!res.ok) return [];
+  const files = await res.json();
+  return (files || []).map((f: any) => f.name).filter((n: string) => n.startsWith("backup-"));
+}
+
+async function deleteFromStorage(fileName: string): Promise<void> {
+  const key = Netlify.env.get("SUPABASE_SERVICE_KEY") || "";
+  await fetch(`${SB_URL}/storage/v1/object/${BACKUP_BUCKET}`, {
+    method: "DELETE",
+    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ prefixes: [fileName] }),
+    signal: AbortSignal.timeout(8000),
+  }).catch(() => {});
+}
+
 export default async () => {
   const dateKey = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const store = getStore("podlens-backups");
 
   const tables = [
     { name: "users",             select: "id,email,name,plan,created_at,last_seen_at,stripe_customer_id,is_super_admin" },
@@ -87,6 +136,9 @@ export default async () => {
   let errorMsg: string | undefined;
 
   try {
+    // Ensure the storage bucket exists
+    await ensureBucket();
+
     for (const t of tables) {
       const rows = await exportTable(t.name, t.select, (t as any).order);
       backup[t.name] = rows;
@@ -100,19 +152,16 @@ export default async () => {
       data: backup,
     };
 
-    // Store current backup
-    await store.setJSON(`backup-${dateKey}`, backupPayload);
+    // Store backup in Supabase Storage
+    const fileName = `backup-${dateKey}.json`;
+    const uploaded = await uploadToStorage(fileName, JSON.stringify(backupPayload));
+    if (!uploaded) throw new Error("Failed to upload backup to Supabase Storage");
 
     // Prune old backups — keep last MAX_BACKUPS
-    const { blobs } = await store.list({ prefix: "backup-" }).catch(() => ({ blobs: [] }));
-    const sorted = (blobs || [])
-      .map((b: any) => b.key)
-      .filter((k: string) => k !== `backup-${dateKey}`)
-      .sort()
-      .reverse(); // newest first
-
-    for (let i = MAX_BACKUPS - 1; i < sorted.length; i++) {
-      await store.delete(sorted[i]).catch(() => {});
+    const files = await listStorageFiles();
+    const otherFiles = files.filter((f) => f !== fileName).sort().reverse();
+    for (let i = MAX_BACKUPS - 1; i < otherFiles.length; i++) {
+      await deleteFromStorage(otherFiles[i]);
     }
 
     await logBackup(dateKey, summary, true);
@@ -120,7 +169,7 @@ export default async () => {
     const totalRows = Object.values(summary).reduce((a, b) => a + b, 0);
     await sendAdminEmail(
       `✅ Podlens weekly backup complete — ${dateKey}`,
-      `Backup completed successfully.\n\nDate: ${dateKey}\nTotal rows exported: ${totalRows}\n\nBreakdown:\n${Object.entries(summary).map(([t, c]) => `  ${t}: ${c} rows`).join("\n")}\n\nBackup stored in Netlify Blobs (podlens-backups) as backup-${dateKey}.`
+      `Backup completed successfully.\n\nDate: ${dateKey}\nTotal rows exported: ${totalRows}\n\nBreakdown:\n${Object.entries(summary).map(([t, c]) => `  ${t}: ${c} rows`).join("\n")}\n\nBackup stored in Supabase Storage (${BACKUP_BUCKET}) as ${fileName}.`
     );
 
     console.log(`[weekly-backup] Success: ${dateKey}`, summary);

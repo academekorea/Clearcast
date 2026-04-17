@@ -3,17 +3,18 @@ import { getStore } from "@netlify/blobs";
 
 // Scheduled trigger — fires daily at 3am UTC
 // Kicks off the background seeder which has a 15-minute window
-// Can be paused via admin dashboard (stores flag in Netlify Blobs)
+// Checks auto-seed toggle before running
 export default async (req: Request) => {
-  // Check if auto pre-analysis is paused
+  const store = getStore("podlens-settings");
   try {
-    const metaStore = getStore("podlens-meta");
-    const flag = await metaStore.get("seed-auto-paused", { type: "json" }) as any;
-    if (flag?.paused) {
-      console.log("[seed-scheduler] Auto pre-analysis is PAUSED — skipping");
+    const flag = await store.get("auto-seed-enabled");
+    if (flag === "false") {
+      console.log("[seed-scheduler] Auto-seed is disabled — skipping");
       return;
     }
-  } catch {}
+  } catch {
+    // If flag doesn't exist, default to enabled
+  }
 
   const siteUrl = Netlify.env.get("URL") || "https://podlens.app";
   const secret = Netlify.env.get("YOUTUBE_SERVICE_SECRET") || "";
