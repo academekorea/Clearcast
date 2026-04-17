@@ -3,7 +3,7 @@ import { getStore } from "@netlify/blobs";
 import { getSupabaseAdmin } from "./lib/supabase.js";
 
 const CACHE_KEY = "trending-topics-cache";
-const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 function json(data: object, status = 200) {
   return new Response(JSON.stringify(data), {
