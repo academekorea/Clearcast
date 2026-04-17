@@ -24,9 +24,28 @@ async function fetchCurrentsTrending(): Promise<string[]> {
     const data = await res.json() as any;
     const articles = (data.news || []) as any[];
 
-    // Count topic frequency across articles to find truly trending topics
+    // Count topic frequency across articles
     const topicCounts = new Map<string, number>();
-    const topicDisplay = new Map<string, string>(); // lowercase → display form
+    const topicDisplay = new Map<string, string>();
+
+    // Group similar categories into parent buckets for balancing
+    const PARENT_BUCKET: Record<string, string> = {
+      sports: "sports", football: "sports", basketball: "sports", soccer: "sports",
+      baseball: "sports", tennis: "sports", golf: "sports", cricket: "sports",
+      hockey: "sports", racing: "sports", boxing: "sports", mma: "sports",
+      nfl: "sports", nba: "sports", mlb: "sports", mls: "sports",
+      politics: "politics", election: "politics", government: "politics",
+      congress: "politics", senate: "politics", democrat: "politics", republican: "politics",
+      technology: "tech", tech: "tech", ai: "tech", crypto: "tech", cybersecurity: "tech",
+      business: "business", finance: "business", economy: "business", markets: "business",
+      stocks: "business", banking: "business", "wall street": "business",
+      entertainment: "entertainment", celebrity: "entertainment", music: "entertainment",
+      movies: "entertainment", television: "entertainment", hollywood: "entertainment",
+      health: "health", medical: "health", covid: "health", vaccine: "health",
+      science: "science", space: "science", climate: "science", environment: "science",
+      world: "world", international: "world",
+    };
+    const MAX_PER_BUCKET = 3;
 
     for (const article of articles) {
       const cats = (article.category || []) as string[];
@@ -39,14 +58,23 @@ async function fetchCurrentsTrending(): Promise<string[]> {
       }
     }
 
-    // Sort by frequency — most mentioned topics first
+    // Sort by frequency, then balance across buckets (max 3 per parent category)
     const sorted = [...topicCounts.entries()]
       .sort((a, b) => b[1] - a[1])
-      .filter(([, count]) => count >= 2) // Only topics mentioned in 2+ articles
-      .slice(0, 18)
-      .map(([key]) => topicDisplay.get(key) || key);
+      .filter(([, count]) => count >= 2);
 
-    return sorted;
+    const bucketUsed: Record<string, number> = {};
+    const balanced: string[] = [];
+    for (const [key] of sorted) {
+      if (balanced.length >= 18) break;
+      const bucket = PARENT_BUCKET[key] || key;
+      const used = bucketUsed[bucket] || 0;
+      if (used >= MAX_PER_BUCKET) continue;
+      bucketUsed[bucket] = used + 1;
+      balanced.push(topicDisplay.get(key) || key);
+    }
+
+    return balanced;
   } catch {
     return [];
   }
