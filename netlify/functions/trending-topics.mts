@@ -24,49 +24,66 @@ async function fetchCurrentsTrending(): Promise<string[]> {
     const data = await res.json() as any;
     const articles = (data.news || []) as any[];
 
-    // Count topic frequency across articles
-    const topicCounts = new Map<string, number>();
-    const topicDisplay = new Map<string, string>();
+    // Skip generic category labels — we want specific topic names from headlines
+    const SKIP_GENERIC = new Set([
+      "general", "uncategorized", "news", "business", "sports", "politics",
+      "technology", "tech", "entertainment", "health", "science", "world",
+      "regional", "national", "international", "finance", "money", "economy",
+      "lifestyle", "opinion", "editorial", "breaking", "local",
+    ]);
 
-    // Group similar categories into parent buckets for balancing
+    // Parent buckets for balancing (max 3 per area)
     const PARENT_BUCKET: Record<string, string> = {
-      sports: "sports", football: "sports", basketball: "sports", soccer: "sports",
-      baseball: "sports", tennis: "sports", golf: "sports", cricket: "sports",
-      hockey: "sports", racing: "sports", boxing: "sports", mma: "sports",
-      nfl: "sports", nba: "sports", mlb: "sports", mls: "sports",
-      politics: "politics", election: "politics", government: "politics",
-      congress: "politics", senate: "politics", democrat: "politics", republican: "politics",
-      technology: "tech", tech: "tech", ai: "tech", crypto: "tech", cybersecurity: "tech",
-      business: "business", finance: "business", economy: "business", markets: "business",
-      stocks: "business", banking: "business", "wall street": "business",
-      entertainment: "entertainment", celebrity: "entertainment", music: "entertainment",
-      movies: "entertainment", television: "entertainment", hollywood: "entertainment",
-      health: "health", medical: "health", covid: "health", vaccine: "health",
-      science: "science", space: "science", climate: "science", environment: "science",
-      world: "world", international: "world",
+      football: "sports", basketball: "sports", soccer: "sports", nfl: "sports",
+      nba: "sports", mlb: "sports", baseball: "sports", tennis: "sports",
+      golf: "sports", hockey: "sports", cricket: "sports", racing: "sports",
+      election: "politics", congress: "politics", senate: "politics",
+      democrat: "politics", republican: "politics", government: "politics",
+      ai: "tech", crypto: "tech", cybersecurity: "tech", programming: "tech",
+      stocks: "business", banking: "business", markets: "business",
+      celebrity: "entertainment", music: "entertainment", movies: "entertainment",
+      hollywood: "entertainment", television: "entertainment",
+      medical: "health", covid: "health", vaccine: "health",
+      space: "science", climate: "science", environment: "science",
     };
     const MAX_PER_BUCKET = 3;
 
+    // Extract specific topics from article titles + non-generic categories
+    const topicCounts = new Map<string, number>();
+    const topicDisplay = new Map<string, string>();
+
     for (const article of articles) {
+      // 1. Use specific (non-generic) categories
       const cats = (article.category || []) as string[];
       for (const c of cats) {
         const label = c.trim();
-        if (!label || label === "general" || label === "uncategorized") continue;
+        if (!label || SKIP_GENERIC.has(label.toLowerCase())) continue;
         const key = label.toLowerCase();
         topicCounts.set(key, (topicCounts.get(key) || 0) + 1);
         if (!topicDisplay.has(key)) topicDisplay.set(key, label.charAt(0).toUpperCase() + label.slice(1));
       }
+
+      // 2. Extract key phrase from headline (first segment before colon/dash)
+      const title = (article.title || "").split(/[:\-–—|]/).shift()?.trim() || "";
+      if (title.length >= 8 && title.length <= 35 && !/^\d/.test(title)) {
+        const tKey = title.toLowerCase();
+        if (!SKIP_GENERIC.has(tKey)) {
+          topicCounts.set(tKey, (topicCounts.get(tKey) || 0) + 1);
+          if (!topicDisplay.has(tKey)) topicDisplay.set(tKey, title);
+        }
+      }
     }
 
-    // Sort by frequency, then balance across buckets (max 3 per parent category)
+    // Sort by frequency, balance across buckets
     const sorted = [...topicCounts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .filter(([, count]) => count >= 2);
+      .sort((a, b) => b[1] - a[1]);
 
     const bucketUsed: Record<string, number> = {};
     const balanced: string[] = [];
-    for (const [key] of sorted) {
+    for (const [key, count] of sorted) {
       if (balanced.length >= 18) break;
+      // Require 2+ mentions for categories, but allow unique headlines
+      if (count < 2 && key.length < 12) continue;
       const bucket = PARENT_BUCKET[key] || key;
       const used = bucketUsed[bucket] || 0;
       if (used >= MAX_PER_BUCKET) continue;
