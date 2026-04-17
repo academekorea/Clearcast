@@ -3180,7 +3180,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 #view-pricing .plan-name {font-family:var(--ffs);font-size:20px;font-weight:700;margin-bottom:8px}
 #view-pricing .plan-price-wrap {margin-bottom:4px}
 #view-pricing .plan-price-original {font-size:14px;color:var(--text3);text-decoration:line-through;display:none}
-#view-pricing .plan-price {font-size:34px;font-weight:700;letter-spacing:-.02em;font-family:var(--ffs);display:flex;align-items:baseline;gap:1px}
+#view-pricing .plan-price {font-size:34px;font-weight:700;letter-spacing:-.02em;font-family:var(--ffs);display:flex;align-items:baseline;gap:4px}
 #view-pricing .plan-price-num {font-size:inherit;font-weight:700}
 #view-pricing .plan-price-period {font-size:13px;font-weight:400;color:var(--text3)}
 #view-pricing .plan-founding-note {font-size:11px;font-weight:600;color:#1a7a2e;margin-top:2px;display:none}
@@ -4690,7 +4690,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="creator-original"></div>
         <div class="plan-price">$<span id="creator-price" class="plan-price-num">7</span><span id="creator-period" class="plan-price-period">/mo</span></div>
-        <div class="plan-founding-note" id="creator-founding-note" style="display:block">&#128274; $4.69/mo founding rate &mdash; locked forever</div>
+        <div class="plan-founding-note" id="creator-founding-note" style="display:block">&#128274; Founding rate &mdash; locked in forever</div>
       </div>
       <div class="plan-desc">For curious listeners who want the full picture on every episode.</div>
       <div class="plan-features">
@@ -4710,7 +4710,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="operator-original"></div>
         <div class="plan-price">$<span id="operator-price" class="plan-price-num">19</span><span id="operator-period" class="plan-price-period">/mo</span></div>
-        <div class="plan-founding-note" id="operator-founding-note" style="display:block">&#128274; $12.73/mo founding rate &mdash; locked forever</div>
+        <div class="plan-founding-note" id="operator-founding-note" style="display:block">&#128274; Founding rate &mdash; locked in forever</div>
       </div>
       <div class="plan-desc">For serious listeners, researchers, and journalists who need full depth.</div>
       <div class="plan-features">
@@ -4730,7 +4730,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="studio-original"></div>
         <div class="plan-price">$<span id="studio-price" class="plan-price-num">49</span><span id="studio-period" class="plan-price-period">/mo</span></div>
-        <div class="plan-founding-note" id="studio-founding-note" style="display:block">&#128274; $32.83/mo founding rate &mdash; locked forever</div>
+        <div class="plan-founding-note" id="studio-founding-note" style="display:block">&#128274; Founding rate &mdash; locked in forever</div>
       </div>
       <div class="plan-desc">For teams, brands, and researchers who need monitoring, delivery intelligence, and API access.</div>
       <div class="plan-features">
@@ -14256,7 +14256,7 @@ function plRenderPrices() {
           var totalSavePct = Math.round((1 - parseFloat(annualPerMonth) / monthlyFull[plan]) * 100);
           noteEl.innerHTML = '&#128274; $' + annualPerMonth + '/mo effective &mdash; ' + totalSavePct + '% total savings';
         } else {
-          noteEl.innerHTML = '&#128274; ' + p.founding + '/mo founding rate &mdash; locked forever';
+          noteEl.innerHTML = '&#128274; Founding rate &mdash; locked in forever';
         }
       }
     } else {
