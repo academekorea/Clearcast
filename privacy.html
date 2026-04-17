@@ -104,14 +104,14 @@ document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getIt
   <h2>What we collect</h2>
   <p>When you use Podlens, we collect what is necessary to provide the service and improve it over time:</p>
   <ul>
-    <li><strong>URLs you submit</strong> &#8212; to fetch and transcribe the podcast or video.</li>
-    <li><strong>Transcripts</strong> &#8212; processed to generate analysis. Episode transcripts are cached to avoid re-processing the same content. Transcripts are not sold or shared with third parties.</li>
-    <li><strong>Account information</strong> (if you sign up) &#8212; your email address and a securely hashed password, or your name and email if you sign in via Google, Spotify, or KakaoTalk OAuth. We do not store payment card details; payments are processed securely by Stripe.</li>
-    <li><strong>Usage and preference data</strong> &#8212; analyses you run, shows you follow or like, topics you select during onboarding, and voice preferences. This data powers your library, your personal intelligence features, and personalized recommendations.</li>
-    <li><strong>Intelligence signals</strong> &#8212; if you use features like the Bias Fingerprint or Echo Chamber Score, listen events are stored locally in your browser (in localStorage) to calculate those scores on-device. If you are logged in, these signals may be associated with your account to enable cross-device continuity of your intelligence profile.</li>
-    <li><strong>Connected account data</strong> &#8212; if you connect Spotify, Google, or KakaoTalk, we receive and store the OAuth access tokens and basic profile information (name, email) returned by those services to enable library import and authentication. We do not access payment data from connected accounts.</li>
-    <li><strong>Usage logs</strong> &#8212; standard server logs (IP address, timestamp, response code) retained for up to 30 days for security and debugging.</li>
-    <li><strong>Error and performance data</strong> &#8212; anonymized error reports and performance metrics to help us diagnose and fix issues.</li>
+    <li><strong>URLs you submit.</strong> We use the URL you paste to fetch and transcribe the podcast or video.</li>
+    <li><strong>Transcripts.</strong> Episode transcripts are processed to generate your analysis and cached to avoid re-processing the same content. They are never sold or shared with third parties.</li>
+    <li><strong>Account information</strong> (if you sign up): your email address and a securely hashed password, or your name and email if you connect via Google, Spotify, or KakaoTalk. We do not store payment card details; Stripe handles all billing securely.</li>
+    <li><strong>Usage and preference data:</strong> analyses you run, shows you follow or like, topics you select during onboarding, and voice preferences. This powers your library, personal intelligence features, and recommendations.</li>
+    <li><strong>Intelligence signals.</strong> If you use features like the Bias Fingerprint or Echo Chamber Score, listen events are stored locally in your browser to calculate those scores. If you are logged in, these signals may be associated with your account for cross-device continuity.</li>
+    <li><strong>Connected accounts.</strong> If you connect Spotify, Google, or KakaoTalk, we store the OAuth tokens and basic profile info (name, email) those services return, to enable library import and authentication. We never access payment data from connected accounts.</li>
+    <li><strong>Usage logs:</strong> standard server logs (IP address, timestamp, response code) kept for up to 30 days for security and debugging.</li>
+    <li><strong>Error and performance data:</strong> anonymized crash reports and performance metrics that help us diagnose and fix bugs.</li>
   </ul>
 
   <h2>How we use your data</h2>
@@ -126,15 +126,15 @@ document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getIt
   <h2>Third-party services</h2>
   <p>To provide the service we use the following third-party processors. Each is bound by their own privacy and data processing agreements:</p>
   <ul>
-    <li><strong>AssemblyAI</strong> &#8212; audio transcription. Audio is transmitted to AssemblyAI for processing. See AssemblyAI&#8217;s privacy policy for their data handling practices.</li>
-    <li><strong>Anthropic (Claude API)</strong> &#8212; transcript analysis. Episode transcripts are sent to Anthropic&#8217;s API. Anthropic does not train on API-submitted data by default. See Anthropic&#8217;s usage policies for details.</li>
-    <li><strong>Stripe</strong> &#8212; payment processing. All billing is handled by Stripe. We do not store or have access to your card number or full payment details.</li>
-    <li><strong>Supabase</strong> &#8212; database and authentication infrastructure. Account data, analyses, and preferences are stored in our Supabase-hosted database.</li>
-    <li><strong>YouTube Data API</strong> &#8212; to verify video metadata. No personal data is sent beyond the URL being analyzed.</li>
-    <li><strong>PostHog</strong> &#8212; product analytics. We use PostHog to understand how features are used in aggregate. Data is pseudonymous. You can opt out by using browser-level Do Not Track settings.</li>
-    <li><strong>Hotjar</strong> &#8212; heatmaps and session recording. We use Hotjar to understand UI usage patterns. Hotjar masks sensitive form inputs by default. See Hotjar&#8217;s privacy policy for opt-out options.</li>
-    <li><strong>Sentry</strong> &#8212; error monitoring. Crash reports and stack traces are sent to Sentry to help us identify and fix bugs. These reports do not include personally identifiable content.</li>
-    <li><strong>Google, Spotify, KakaoTalk</strong> &#8212; OAuth authentication providers. We receive only the data you authorize during the OAuth flow.</li>
+    <li><strong>AssemblyAI</strong> handles audio transcription. Audio is transmitted to AssemblyAI for processing; see their privacy policy for details on data handling.</li>
+    <li><strong>Anthropic (Claude API)</strong> handles transcript analysis. Episode transcripts are sent to their API. Anthropic does not train on API-submitted data by default; see their usage policies for details.</li>
+    <li><strong>Stripe</strong> handles all payment processing. We do not store or have access to your card number or full payment details.</li>
+    <li><strong>Supabase</strong> provides our database and authentication infrastructure. Account data, analyses, and preferences are stored there.</li>
+    <li><strong>YouTube Data API</strong> is used to verify video metadata. No personal data is sent beyond the URL you are analyzing.</li>
+    <li><strong>PostHog</strong> provides product analytics. We use it to understand aggregate feature usage; data is pseudonymous. You can opt out via browser-level Do Not Track settings.</li>
+    <li><strong>Hotjar</strong> provides heatmaps and session recording so we can understand how people use the UI. Hotjar masks sensitive form inputs by default; see their privacy policy for opt-out options.</li>
+    <li><strong>Sentry</strong> handles error monitoring. Crash reports are sent to Sentry to help us identify and fix bugs; these reports do not include personally identifiable content.</li>
+    <li><strong>Google, Spotify, KakaoTalk</strong> are OAuth authentication providers. We receive only the data you explicitly authorize during the OAuth flow.</li>
   </ul>
 
   <h2>Community analysis cache</h2>
@@ -155,10 +155,10 @@ document.addEventListener('DOMContentLoaded',function(){var s=localStorage.getIt
   <h2>Your rights</h2>
   <p>Depending on your location, you may have rights to access, correct, delete, or export your personal data. You may also have the right to object to certain processing or to withdraw consent where processing is based on consent.</p>
   <ul>
-    <li><strong>Access and export</strong> &#8212; you can view and export your analysis history from your account library at any time.</li>
-    <li><strong>Deletion</strong> &#8212; you may delete your account and all associated personal data from Settings &#8594; Account &#8594; Delete account. We will complete deletion within 14 business days. Anonymized, non-identifiable data in the community analysis cache is not deleted as it is not linked to your identity.</li>
-    <li><strong>Correction</strong> &#8212; contact <a href="mailto:hello@podlens.app">hello@podlens.app</a> to correct inaccurate account information.</li>
-    <li><strong>Opt-out of analytics</strong> &#8212; you can use browser-level Do Not Track settings or privacy extensions to limit PostHog and Hotjar data collection.</li>
+    <li><strong>Access and export:</strong> you can view and export your analysis history from your account library at any time.</li>
+    <li><strong>Deletion:</strong> you may delete your account and all associated personal data from Settings &rarr; Account &rarr; Delete account. We complete deletions within 14 business days. Anonymized data in the community analysis cache is not deleted because it is not linked to your identity.</li>
+    <li><strong>Correction:</strong> email <a href="mailto:hello@podlens.app">hello@podlens.app</a> to correct inaccurate account information.</li>
+    <li><strong>Opt out of analytics:</strong> browser-level Do Not Track settings or privacy extensions will limit PostHog and Hotjar data collection.</li>
   </ul>
 
   <h2>Children</h2>
