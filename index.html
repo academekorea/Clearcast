@@ -6645,11 +6645,20 @@ function initDiscover() {
               html += '<div class="foryou-section"><div class="foryou-section-label">'+_escHtml(catLabel)+'</div><div class="foryou-grid">';
               html += shows.slice(0,6).map(function(s) {
                 var fSlug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+                var safeName = (s.name||'').replace(/"/g,'').replace(/'/g,'');
                 var onClick = 'showView(\'show\');loadShowProfile(\''+fSlug+'\',null)';
+                // Check CURATED_SHOWS for bias data
+                var curBias = null;
+                if (typeof CURATED_SHOWS !== 'undefined') {
+                  var cm = CURATED_SHOWS.find(function(c){ return c.name.toLowerCase() === (s.name||'').toLowerCase(); });
+                  if (cm && cm.bias) curBias = cm.bias;
+                }
                 return '<div class="foryou-card" onclick="'+onClick+'">'
                   +'<img class="foryou-art" src="'+_escHtml(s.artwork||'')+'" alt="'+_escHtml(s.name||'')+'" loading="lazy" onerror="this.style.display=\'none\'">'
                   +'<div class="foryou-name">'+_escHtml(s.name||'')+'</div>'
                   +'<div class="foryou-host">'+_escHtml(s.host||s.category||'')+'</div>'
+                  + (curBias ? _biasMini(curBias) : '')
+                  +'<button onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\'\',\''+(s.artwork||'')+'\',this)" style="margin-top:auto;width:100%;padding:7px 5px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name||'')?'✓ Following':'+ Follow')+'</button>'
                   +'</div>';
               }).join('');
               html += '</div></div>';
@@ -6695,10 +6704,16 @@ function initDiscover() {
             html += shows.slice(0,6).map(function(s) {
               var safeName = (s.name||'').replace(/'/g,"\\'");
               var safeSlug = safeName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+              var curBias = null;
+              if (typeof CURATED_SHOWS !== 'undefined') {
+                var cm = CURATED_SHOWS.find(function(c){ return c.name.toLowerCase() === (s.name||'').toLowerCase(); });
+                if (cm && cm.bias) curBias = cm.bias;
+              }
               return '<div class="foryou-card" onclick="showView(\'show\');loadShowProfile(\''+safeSlug+'\')">'
                 +'<img class="foryou-art" src="'+_escHtml(s.artwork||'')+'" alt="'+_escHtml(s.name||'')+'" loading="lazy" onerror="this.style.display=\'none\'">'
                 +'<div class="foryou-name">'+_escHtml(s.name||'')+'</div>'
                 +'<div class="foryou-host">'+_escHtml(s.host||s.category||'')+'</div>'
+                + (curBias ? _biasMini(curBias) : '')
                 +'</div>';
             }).join('');
             html += '</div></div>';
@@ -7174,7 +7189,7 @@ function discSearch(q, isLive) {
         var safeUrl = s.feedUrl.replace(/'/g,"\'").replace(/"/g,'&quot;');
         var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
         var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="">' : '<div class="disc-show-art"></div>';
-        return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+_heartBtn(s.feedUrl,s.name,s.artist,s.artwork)+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'</div>';
+        return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'+art+'<div class="disc-show-name">'+s.name+'</div><div class="disc-show-sub">'+s.artist+'</div>'+_biasMini(s.bias)+'</div>';
       }).join('');
     } else {
       el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:12px 0">Searching…</div>';
@@ -7198,7 +7213,6 @@ function discSearch(q, isLive) {
           var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="" onerror="this.style.display=\'none\'">' : '<div class="disc-show-art"></div>';
           var safeName2 = (s.name||'').replace(/"/g,'').replace(/'/g,'');
           return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
-            +_heartBtn(s.feedUrl,s.name,s.artist,s.artwork)
             +art+'<div class="disc-show-name">'+_escHtml(s.name)+'</div><div class="disc-show-sub">'+_escHtml(s.artist||'')+'</div>'+_biasMini(s.bias||null)
             +'<button data-follow-name="'+safeName2+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName2+'\',\''+safeUrl+'\',\''+(s.artwork||'')+'\',this)" style="margin-top:auto;padding-top:8px;width:100%;padding:8px 5px 5px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button></div>';
         }).join('');
@@ -7761,7 +7775,6 @@ function discRenderShows() {
       var slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
       var art = s.artwork ? '<img class="disc-show-art" src="'+s.artwork+'" alt="" onerror="this.parentElement.innerHTML=\'<div class=disc-show-art></div>\'">' : '<div class="disc-show-art"></div>';
       return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null)">'
-        + _heartBtn(s.feedUrl||s.youtubeUrl||'',name,'',s.artwork)
         + art + '<div class="disc-show-name">'+name+'</div>'
         + '<div class="disc-show-sub">Following</div></div>';
     }).join('');
@@ -7780,7 +7793,6 @@ function discRenderShows() {
     // Use artwork directly from CURATED_SHOWS — no cache lookup needed
     var art = _showArtImg(s.artwork, s.name, 'disc-show-art');
     return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
-      + _heartBtn(s.feedUrl,s.name,s.artist,s.artwork)
       + art + '<div class="disc-show-name">'+s.name+'</div>'
       + '<div class="disc-show-sub">'+s.artist+'</div>'
       + _biasMini(s.bias)
