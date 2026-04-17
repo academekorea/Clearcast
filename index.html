@@ -50,10 +50,10 @@ var KOREAN_MARKET_ENABLED = false;
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --bg:#f5f5f7;--bg2:#ffffff;--bg3:#e8e8ed;--bg4:#d2d2d7;
-  --text:#1d1d1f;--text2:#6e6e73;--text3:#b0b0b5;
-  --navy:#1d1d1f;
-  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.16);
+  --bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --navy:#0f2027;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15);
   --left:#E24B4A;--left-bar:#E24B4A;--left-bg:#FEF2F2;
   --center:#9E9E9E;--center-bar:#9E9E9E;--center-bg:#F5F5F5;
   --right:#378ADD;--right-bar:#378ADD;--right-bg:#EFF6FF;
@@ -63,12 +63,12 @@ var KOREAN_MARKET_ENABLED = false;
   --ffs:'Playfair Display',Georgia,serif;
   --r:4px;
   /* Brand system */
-  --color-navy:#1d1d1f;--color-navy-mid:#424245;
-  --color-cream:#f5f5f7;--color-text:#1d1d1f;--color-muted:#6e6e73;
-  --color-border:#d2d2d7;
+  --color-navy:#0f2027;--color-navy-mid:#1a3a4a;
+  --color-cream:#FAF9F6;--color-text:#1a1a1a;--color-muted:#666666;
+  --color-border:#e0ddd8;
   --color-left:#E24B4A;--color-center:#D1CFC9;--color-right:#378ADD;
-  --color-creator:#7C6AF7;--color-operator:#1d1d1f;--color-studio:#B8860B;
-  /* Semantic aliases */
+  --color-creator:#7C6AF7;--color-operator:#0f2027;--color-studio:#B8860B;
+  /* Semantic aliases — satisfy naming spec */
   --color-bg:var(--bg);--color-surface:var(--bg2);
   --color-text-primary:var(--text);--color-text-secondary:var(--text2);--color-text-tertiary:var(--text3);
   --color-accent:var(--navy);--color-accent-hover:var(--color-navy-mid);
@@ -81,115 +81,27 @@ var KOREAN_MARKET_ENABLED = false;
   --text-lg:18px;--text-xl:24px;--text-2xl:32px;--text-hero:56px;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#000000;--bg2:#1d1d1f;--bg3:#2d2d2f;--bg4:#3a3a3c;
-  --text:#f5f5f7;--text2:#86868b;--text3:#6e6e73;
-  --navy:#1d1d1f;
-  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.16);
-  --left-bg:#2D1515;--center-bg:#2d2d2f;--right-bg:#131C2A;
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --left-bg:#2D1515;--center-bg:#1F1F1F;--right-bg:#131C2A;
   --amber-bg:#1C0A00;--purple-bg:#1E1B4B;--purple-border:#4C1D95;
-  --color-navy:#1d1d1f;--color-navy-mid:#3a3a3c;
 }}
 [data-theme="dark"]{
-  --bg:#000000;--bg2:#1d1d1f;--bg3:#2d2d2f;--bg4:#3a3a3c;
-  --text:#f5f5f7;--text2:#86868b;--text3:#6e6e73;
-  --navy:#1d1d1f;
-  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.16);
-  --left-bg:#2D1515;--center-bg:#2d2d2f;--right-bg:#131C2A;
+  --bg:#0D0D0D;--bg2:#161616;--bg3:#1F1F1F;--bg4:#2A2A2A;
+  --text:#FAF9F6;--text2:#888;--text3:#555;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --left-bg:#2D1515;--center-bg:#1F1F1F;--right-bg:#131C2A;
   --amber-bg:#1C0A00;--purple-bg:#1E1B4B;--purple-border:#4C1D95;
-  --color-navy:#1d1d1f;--color-navy-mid:#3a3a3c;
 }
 [data-theme="light"]{
-  --bg:#f5f5f7;--bg2:#ffffff;--bg3:#e8e8ed;--bg4:#d2d2d7;
-  --text:#1d1d1f;--text2:#6e6e73;--text3:#b0b0b5;
-  --navy:#1d1d1f;
-  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.16);
+  --bg:#FAF9F6;--bg2:#FFFFFF;--bg3:#F0EFE9;--bg4:#E5E4DE;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.15);
   --left-bg:#FEF2F2;--center-bg:#F5F5F5;--right-bg:#EFF6FF;
   --amber-bg:#FFFBEB;--purple-bg:#F5F3FF;--purple-border:#DDD6FE;
-  --color-navy:#1d1d1f;--color-navy-mid:#424245;
 }
 
-/* ── DARK MODE VISIBILITY OVERRIDES ─────────────────────────────────────────
-   Navy is dark in both modes (used for bg). These rules ensure all text
-   that was navy in light mode is light/readable in dark mode.             */
-[data-theme="dark"] .logo,
-[data-theme="dark"] .nav-logo-text,
-[data-theme="dark"] .section-link,
-[data-theme="dark"] .tg-analyze-link,
-[data-theme="dark"] .recovery-result-go,
-[data-theme="dark"] .adm-tab.on,
-[data-theme="dark"] .account-tab.active,
-[data-theme="dark"] .pf-check,
-[data-theme="dark"] .check-y,
-[data-theme="dark"] .acct-field-action,
-[data-theme="dark"] .archive-show-more:hover,
-[data-theme="dark"] .sp-new-analyze-link:hover,
-[data-theme="dark"] .ar-preview-cta a,
-[data-theme="dark"] .metric-q-tip::after { color:var(--text) }
-/* Primary buttons: white bg / dark text in dark mode (Apple style) */
-[data-theme="dark"] .nav-pro-btn,
-[data-theme="dark"] .btn-signin-nav,
-[data-theme="dark"] .lo-analyze-btn,
-[data-theme="dark"] .lo-cta-btn,
-[data-theme="dark"] .lo-unlock-btn,
-[data-theme="dark"] .fp-cta-btn,
-[data-theme="dark"] .plan-btn,
-[data-theme="dark"] .unheard-unlock-btn,
-[data-theme="dark"] .hpc-unlock-btn,
-[data-theme="dark"] .btn-primary,
-[data-theme="dark"] .lap-full-link { background:#f5f5f7;color:#1d1d1f;border-color:#f5f5f7 }
-[data-theme="dark"] .lo-hero { background:var(--bg) }
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .lo-hero{background:#000000}}
-[data-theme="dark"] .lo-hero{background:#000000}
-/* Dark sections that use --navy as bg: elevate to bg2 in dark mode */
-[data-theme="dark"] .fp-cta-section,
-[data-theme="dark"] .lo-cta-section { background:var(--bg2) }
-[data-theme="dark"] .lo-features,
-[data-theme="dark"] .lo-feat { background:#161617 }
-[data-theme="dark"] .lo-feats-h,
-[data-theme="dark"] .lo-feat-t { color:#f5f5f7 }
-[data-theme="dark"] .lo-feats-sub,
-[data-theme="dark"] .lo-feat-d { color:rgba(245,245,247,.55) }
-[data-theme="dark"] .lo-feats-grid { background:rgba(255,255,255,.06) }
-[data-theme="dark"] .fp-cta-title { color:var(--text) }
-[data-theme="dark"] .fp-cta-sub { color:var(--text2) }
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .lo-features,:root:not([data-theme="light"]) .lo-feat{background:#161617}
-:root:not([data-theme="light"]) .lo-feats-h,:root:not([data-theme="light"]) .lo-feat-t{color:#f5f5f7}
-:root:not([data-theme="light"]) .lo-feats-sub,:root:not([data-theme="light"]) .lo-feat-d{color:rgba(245,245,247,.55)}
-:root:not([data-theme="light"]) .lo-feats-grid{background:rgba(255,255,255,.06)}}
-/* Outlined buttons (color AND border use --navy) */
-[data-theme="dark"] .tcard-cta,
-[data-theme="dark"] .sp-follow-btn { color:var(--text);border-color:rgba(255,255,255,0.25) }
-[data-theme="dark"] .tcard-cta:hover { background:rgba(255,255,255,0.08) }
-/* Disc hero: add border in dark mode so it stands out from bg */
-[data-theme="dark"] .disc-hero{border:1px solid rgba(255,255,255,0.08)}
-/* Plan/pricing featured badges and tier colors */
-[data-theme="dark"] .plan.featured { background:var(--bg2);color:var(--text) }
-[data-theme="dark"] .plan.featured .plan-name,
-[data-theme="dark"] .plan.featured .plan-price,
-[data-theme="dark"] .plan.featured .plan-desc { color:var(--text) }
-/* ── SYSTEM DARK MODE MIRRORS (prefers-color-scheme path) ─────────────────── */
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  /* Text on navy-bg elements */
-  .logo,.nav-logo-text,.section-link,.tg-analyze-link,.recovery-result-go,
-  .adm-tab.on,.account-tab.active,.pf-check,.check-y,.acct-field-action,
-  .archive-show-more:hover,.sp-new-analyze-link:hover,.ar-preview-cta a{ color:#f5f5f7 }
-  .metric-q-tip::after { border-top-color:#f5f5f7 }
-  /* Primary buttons: white bg / dark text */
-  .nav-pro-btn,.btn-signin-nav,.lo-analyze-btn,.lo-cta-btn,.lo-unlock-btn,
-  .fp-cta-btn,.plan-btn,.unheard-unlock-btn,.hpc-unlock-btn,.btn-primary,
-  .lap-full-link { background:#f5f5f7;color:#1d1d1f;border-color:#f5f5f7 }
-  /* Outlined buttons */
-  .tcard-cta,.sp-follow-btn { color:#f5f5f7;border-color:rgba(255,255,255,0.25) }
-  .tcard-cta:hover { background:rgba(255,255,255,0.08) }
-  /* Pricing featured card */
-  .plan.featured { background:#1d1d1f;color:#f5f5f7 }
-  .plan.featured .plan-name,.plan.featured .plan-price,
-  .plan.featured .plan-desc { color:#f5f5f7 }
-  /* CTA sections */
-  .fp-cta-section,.lo-cta-section { background:#1d1d1f }
-  .fp-cta-title { color:#f5f5f7 }
-  .fp-cta-sub { color:#86868b }
-}}
 html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-size:16px;line-height:1.6}
 
@@ -297,76 +209,6 @@ body.authenticated .site-footer { display: none !important; }
 
 /* ── HOME HERO — 60/40 GRID ── */
 .home-hero{padding:0;margin:0;border-bottom:1px solid var(--border)}
-
-/* ── LOGGED-OUT HOMEPAGE — Option B "Clarity" ──────────────────────────── */
-.lo-hero{background:#ffffff;text-align:center;padding:72px 24px 56px;border-bottom:1px solid var(--border)}
-.lo-hero-inner{max-width:640px;margin:0 auto}
-.lo-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.05);border-radius:20px;padding:4px 14px;margin-bottom:20px;font-size:10px;color:var(--text3);letter-spacing:.09em;font-weight:600;text-transform:uppercase}
-[data-theme="dark"] .lo-badge{background:rgba(255,255,255,.08);color:#86868b}
-.lo-h1{font-family:var(--ffs);font-size:clamp(52px,8vw,80px);font-weight:700;line-height:1.03;margin:0 0 8px;letter-spacing:-.03em;color:var(--text)}
-.lo-h2{font-family:var(--ffs);font-size:clamp(24px,3.5vw,36px);font-weight:400;line-height:1.12;margin:0 0 20px;color:var(--text);font-style:italic}
-.lo-sub{font-size:16px;color:var(--text2);line-height:1.7;max-width:500px;margin:0 auto 36px}
-.lo-analyze-wrap{display:flex;max-width:520px;margin:0 auto 10px;border:1px solid var(--border2);border-radius:8px;overflow:hidden;background:var(--bg2);box-shadow:0 1px 8px rgba(0,0,0,.06)}
-.lo-analyze-input{flex:1;padding:14px 18px;font-size:14px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none}
-.lo-analyze-input::placeholder{color:var(--text3)}
-.lo-analyze-btn{background:var(--navy);border:none;color:#fff;font-size:13px;font-weight:700;padding:14px 24px;cursor:pointer;white-space:nowrap;transition:opacity .15s;font-family:var(--ff)}
-.lo-analyze-btn:hover{opacity:.88}
-[data-theme="dark"] .lo-analyze-btn{background:var(--text);color:var(--bg)}
-.lo-platforms{font-size:11px;color:var(--text3);margin-bottom:24px}
-.lo-connect-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
-.lo-connect-label{font-size:11px;color:var(--text3);font-weight:500}
-.lo-platform-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:none;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;color:#fff;transition:opacity .15s}
-.lo-platform-btn:hover{opacity:.85}
-.lo-platform-spotify{background:#1DB954}
-.lo-platform-youtube{background:#FF0000}
-.lo-platform-apple{background:#FC3C44}
-.lo-platform-btn.connected{opacity:.5;cursor:default}
-/* Analysis card */
-.lo-card-section{padding:48px 24px;display:flex;justify-content:center;background:var(--bg3);border-bottom:1px solid var(--border)}
-.lo-card{background:var(--bg2);border-radius:18px;padding:28px;max-width:520px;width:100%;border:1px solid var(--border)}
-.lo-card-head{display:flex;gap:14px;margin-bottom:20px;align-items:flex-start}
-.lo-card-art{width:56px;height:56px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
-.lo-card-show{font-size:11px;color:var(--text3);margin-bottom:3px}
-.lo-card-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.3}
-.lo-lean-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.lo-lean-lbl{font-size:12px;color:var(--text3)}
-.lo-lean-val{font-size:12px;font-weight:600;color:var(--text)}
-.lo-bar-wrap{height:5px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:5px}
-.lo-bar-seg{flex-shrink:0}
-.lo-bar-pcts{display:flex;justify-content:space-between;margin-bottom:18px;font-size:10px}
-.lo-dims{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.lo-dim{background:var(--bg3);border-radius:9px;padding:10px 10px;text-align:center}
-.lo-dim-v{font-size:18px;font-weight:700;color:var(--text)}
-.lo-dim-l{font-size:9px;color:var(--text3);margin-top:2px}
-.lo-finding{display:flex;gap:8px;align-items:flex-start;padding:9px 12px;background:var(--bg3);border-radius:8px;margin-bottom:6px}
-.lo-finding-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.lo-finding span{font-size:12px;color:var(--text);line-height:1.5}
-.lo-finding-locked{opacity:.55;position:relative;overflow:hidden}
-.lo-blurred{filter:blur(4px);user-select:none}
-.lo-lock{font-size:11px;margin-left:auto;flex-shrink:0}
-.lo-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-.lo-card-footer span{font-size:11px;color:var(--text3)}
-.lo-unlock-btn{background:var(--navy);border:none;color:#fff;font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:var(--ff)}
-[data-theme="dark"] .lo-unlock-btn{background:var(--text);color:var(--bg)}
-/* Features dark section */
-.lo-features{background:#e8e8ed;padding:60px 24px;text-align:center}
-.lo-feats-h{font-family:var(--ffs);font-size:clamp(24px,3.5vw,36px);font-weight:700;color:#1d1d1f;margin:0 0 10px;letter-spacing:-.02em}
-.lo-feats-sub{font-size:14px;color:#6e6e73;margin:0 auto 36px;max-width:400px;line-height:1.65}
-.lo-feats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(0,0,0,.08);max-width:760px;margin:0 auto;border-radius:12px;overflow:hidden}
-@media(max-width:640px){.lo-feats-grid{grid-template-columns:1fr}}
-.lo-feat{background:#e8e8ed;padding:28px 22px}
-.lo-feat-t{font-family:var(--ffs);font-size:16px;font-weight:600;color:#1d1d1f;margin:0 0 8px}
-.lo-feat-d{font-size:13px;color:#6e6e73;line-height:1.7;margin:0}
-/* Final CTA */
-.lo-cta-section{background:var(--bg3);padding:72px 24px;text-align:center;border-top:1px solid var(--border)}
-.lo-cta-inner{max-width:520px;margin:0 auto}
-.lo-cta-title{font-family:var(--ffs);font-size:clamp(24px,3.5vw,36px);font-weight:700;color:var(--text);margin:0 0 10px;letter-spacing:-.02em}
-.lo-cta-sub{font-size:15px;color:var(--text2);margin:0 auto 24px;line-height:1.65}
-.lo-cta-btn{background:var(--navy);border:none;color:#fff;font-size:14px;font-weight:700;padding:14px 32px;border-radius:28px;cursor:pointer;font-family:var(--ff);transition:opacity .15s}
-.lo-cta-btn:hover{opacity:.88}
-[data-theme="dark"] .lo-cta-btn{background:var(--text);color:var(--bg)}
-.lo-cta-fine{font-size:12px;color:var(--text3);margin-top:14px}
-@media(max-width:640px){.lo-hero{padding:52px 20px 40px}.lo-card-section{padding:28px 16px}.lo-card{padding:20px}.lo-dims{grid-template-columns:repeat(3,1fr)}.lo-cta-section{padding:52px 20px}}
 .hero-inner{max-width:1400px;margin:0 auto;padding:80px 80px 0;display:grid;grid-template-columns:60fr 40fr;gap:56px;align-items:start}
 @media(max-width:1024px){.hero-inner{grid-template-columns:1fr;gap:32px;padding:60px 24px 0}}
 .hero-left{padding-bottom:80px}
@@ -556,6 +398,7 @@ body.player-on .lap{bottom:72px}
 .tg-analyze-link{font-size:11px;color:var(--navy);font-weight:500;text-decoration:none;margin-left:auto}
 /* Skeleton shimmer */
 @keyframes skel-shine{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes shimmer{0%{opacity:.5}50%{opacity:.8}100%{opacity:.5}}
 /* Unheard + Compare split */
 .uh-compare-section{max-width:1400px;margin:0 auto;padding:0 80px 80px;display:grid;grid-template-columns:65fr 35fr;gap:48px;border-top:1px solid var(--border);padding-top:80px}
 @media(max-width:960px){.uh-compare-section{grid-template-columns:1fr;padding:40px 24px 60px}}
@@ -1307,10 +1150,10 @@ body.player-on .lap{bottom:72px}
 .sp-new-ep-title{font-size:11px;color:var(--text);line-height:1.3;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sp-new-ep-date{font-size:10px;color:var(--text3);}
 .sp-new-ep-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.sp-new-heart{background:none;border:none;cursor:pointer;padding:2px;display:flex;align-items:center;opacity:.6;transition:opacity .15s;}
-.sp-new-heart:hover{opacity:1;}
+.sp-new-heart{background:none;border:none;cursor:pointer;padding:2px;display:flex;align-items:center;opacity:.3;transition:opacity .15s;}
+.sp-new-heart:hover{opacity:.7;}
 .sp-new-heart.sp-liked{opacity:1;}
-.sp-new-analyze-link{font-size:11px;color:var(--text2);cursor:pointer;opacity:.85;background:none;border:none;font-family:var(--ff);font-weight:500;}
+.sp-new-analyze-link{font-size:10px;color:var(--text3);cursor:pointer;opacity:.4;background:none;border:none;font-family:var(--ff);}
 .sp-new-analyze-link:hover{opacity:1;color:var(--navy);}
 .sp-sort-btn{font-size:9px;color:var(--text3);border:0.5px solid var(--border2);border-radius:3px;padding:2px 7px;background:transparent;cursor:pointer;font-family:var(--ff);}
 .sp-rc-lbl{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
@@ -1327,11 +1170,7 @@ body.player-on .lap{bottom:72px}
 .sp-sim-cat{font-size:9px;color:var(--text3);}
 .sp-host-card-new{display:flex;gap:10px;align-items:flex-start;background:var(--bg2);border:0.5px solid var(--border);border-radius:7px;padding:10px 12px;margin-bottom:14px;}
 .sp-host-avatar{width:34px;height:34px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:600;color:var(--text3);margin-top:1px;}
-.sp-share-icon-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.75);}
-.sp-share-icon-btn:hover{background:rgba(255,255,255,.15);color:#fff;}
-.sp-new-hero .sp-follow-btn{border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.85);background:transparent;}
-.sp-new-hero .sp-follow-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.6);}
-.sp-new-hero .sp-follow-btn.following{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.5);}
+.sp-share-icon-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);}
 .sp-share-icon-btn:hover{background:rgba(255,255,255,.15);}
 .sp-metric{padding:14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
 .sp-metric:nth-child(3n){border-right:none}
@@ -3057,10 +2896,9 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 #view-pricing .hero {padding:80px 24px 48px;text-align:center;background:var(--navy);border-radius:12px;color:#fff;min-height:auto}
 #view-pricing .hero h1 {font-family:var(--ffs);font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:16px;letter-spacing:-.02em;color:#fff}
 #view-pricing .hero p {font-size:17px;color:rgba(255,255,255,.6);max-width:480px;margin:0 auto;line-height:1.7}
-#view-pricing .billing-toggle {display:inline-flex;align-items:center;gap:0;margin-top:28px;background:var(--bg3);border:1px solid var(--border2);border-radius:24px;padding:3px;position:relative}
-#view-pricing .bt-opt {font-size:13px;color:var(--text2);cursor:pointer;padding:6px 18px;border-radius:20px;transition:color .2s;font-weight:500;position:relative;z-index:1;user-select:none}
-#view-pricing .bt-opt.on {color:#fff}
-#view-pricing .bt-pill {position:absolute;top:3px;left:3px;height:calc(100% - 6px);background:var(--navy);border-radius:20px;transition:transform .22s cubic-bezier(.4,0,.2,1),width .22s cubic-bezier(.4,0,.2,1);z-index:0;pointer-events:none}
+#view-pricing .billing-toggle {display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:var(--bg3);border-radius:24px;padding:4px 6px}
+#view-pricing .bt-opt {font-size:13px;color:var(--text2);cursor:pointer;padding:6px 16px;border-radius:20px;transition:all .15s;font-weight:500}
+#view-pricing .bt-opt.on {background:var(--navy);color:#fff}
 #view-pricing .bt-save {font-size:11px;font-weight:600;color:#1a7a2e;background:#dcf5dc;padding:2px 8px;border-radius:10px}
 #view-pricing .plans {display:grid;grid-template-columns:repeat(4,1fr);gap:0;max-width:1200px;margin:48px auto;padding:0 24px;border:0.5px solid var(--border);border-radius:16px;overflow:hidden}
 @media(max-width:900px) {
@@ -3271,117 +3109,97 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
   <!-- STATE A: Logged out -->
   <div id="home-loggedout" style="display:none">
 
-    <!-- HERO — Option B "Clarity" design -->
-    <section class="lo-hero">
-      <div class="lo-hero-inner">
 
-        <div class="lo-badge">FREE FOREVER &middot; NO CREDIT CARD REQUIRED</div>
 
-        <h1 class="lo-h1">Clarity.</h1>
-        <div class="lo-h2">For every podcast you love.</div>
+    <!-- HERO — 60/40 Grid -->
+    <section class="home-hero">
+      <div class="hero-inner">
+        <!-- Left 60%: heading + analyze bar -->
+        <div class="hero-left">
+          <div class="hero-kicker">Podcast Intelligence</div>
+          <h1 class="hero-h">A force of clarity<br><em>in the age of noise.</em></h1>
+          <p class="hero-sub">See the bias and missing voices in every podcast you love.</p>
 
-        <p class="lo-sub">The world&rsquo;s first bias intelligence platform for podcasts. Political lean, host credibility, and transcript evidence, all grounded in the actual words spoken.</p>
+          <!-- Connected-first platform CTAs -->
+          <div id="hero-connect-block" style="margin-bottom:24px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px">Connect your listening</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button id="hero-spotify-btn" class="hero-platform-btn hero-platform-spotify" onclick="heroConnectSpotify()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                <span id="hero-spotify-label">Connect Spotify</span>
+              </button>
+              <button id="hero-youtube-btn" class="hero-platform-btn hero-platform-youtube" onclick="heroConnectYouTube()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+                <span id="hero-youtube-label">Connect YouTube</span>
+              </button>
+              <button class="hero-platform-btn hero-platform-apple" onclick="heroConnectApple()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                Apple Podcasts
+              </button>
+            </div>
+            <div id="hero-connect-status" style="font-size:12px;color:var(--text3);margin-top:10px;min-height:16px"></div>
+          </div>
 
-        <!-- URL analyze bar -->
-        <div class="lo-analyze-wrap">
-          <input type="text" id="hero-url-input" class="lo-analyze-input" placeholder="Paste a YouTube, Spotify, Apple Podcasts, or RSS link&hellip;" autocomplete="url"/>
-          <button class="lo-analyze-btn" onclick="handleHeroAnalyze()">Analyze &rarr;</button>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">Or analyze any URL</div>
+          <div class="hero-input-wrap">
+            <input type="text" id="hero-url-input" class="hero-input" placeholder="YouTube, Spotify, Apple Podcasts, RSS, or .mp3" autocomplete="url"/>
+            <button class="hero-analyze-btn" onclick="handleHeroAnalyze()">Analyze &rarr;</button>
+          </div>
+          <p class="hero-platforms">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
         </div>
-        <p class="lo-platforms">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
-
-        <!-- Connect platform buttons -->
-        <div class="lo-connect-row">
-          <span class="lo-connect-label">Or connect your listening:</span>
-          <button id="hero-spotify-btn" class="lo-platform-btn lo-platform-spotify" onclick="heroConnectSpotify()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-            <span id="hero-spotify-label">Spotify</span>
-          </button>
-          <button id="hero-youtube-btn" class="lo-platform-btn lo-platform-youtube" onclick="heroConnectYouTube()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
-            <span id="hero-youtube-label">YouTube</span>
-          </button>
-          <button class="lo-platform-btn lo-platform-apple" onclick="heroConnectApple()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-            Apple
-          </button>
-          <div id="hero-connect-status" style="font-size:12px;color:var(--text3);margin-left:4px"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ANALYSIS CARD PREVIEW -->
-    <section class="lo-card-section">
-      <div class="lo-card">
-        <div class="lo-card-head">
-          <img class="lo-card-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/300x300bb.jpg" alt="" onerror="this.style.display='none'">
-          <div>
-            <div class="lo-card-show">The Daily &middot; New York Times</div>
-            <div class="lo-card-title">How the Media Shapes What We Believe</div>
+        <!-- Right 40%: Bias Snapshot Today -->
+        <div class="hero-right-panel" id="hero-stats-panel">
+          <div class="hero-preview-card">
+            <div class="hpc-header">
+              <img class="hpc-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/300x300bb.jpg" alt="">
+              <div class="hpc-meta">
+                <div class="hpc-show">The Daily &middot; NYT</div>
+                <div class="hpc-ep">How the Media Shapes What We Believe</div>
+                <div class="hpc-live-badge">Live example</div>
+              </div>
+            </div>
+            <div class="hpc-section-label">Political Lean &mdash; how this episode frames issues</div>
+            <div class="preview-bias-gradient">
+              <div class="preview-marker" style="left:28%"></div>
+            </div>
+            <div class="hpc-bias-labels">
+              <span>🔴 62% left</span>
+              <span>⬜ 24% center</span>
+              <span>🔵 14% right</span>
+            </div>
+            <div class="hpc-lean-pill">Moderately biased</div>
+            <div class="hpc-section-label" style="margin-top:16px">Findings</div>
+            <div class="hpc-findings">
+              <div class="hpc-finding">
+                <span class="hpc-dot" style="background:#E24B4A"></span>
+                <span>Left-leaning framing in 4 of 5 key claims</span>
+              </div>
+              <div class="hpc-finding">
+                <span class="hpc-dot" style="background:#378ADD"></span>
+                <span>Conservative perspective absent from 3 segments</span>
+              </div>
+              <div class="hpc-finding hpc-finding-locked">
+                <span class="hpc-dot" style="background:rgba(255,255,255,.2)"></span>
+                <span class="hpc-blurred">Sponsor conflict in funding sources detected</span>
+                <span class="hpc-lock-icon">🔒</span>
+              </div>
+              <div class="hpc-finding hpc-finding-locked">
+                <span class="hpc-dot" style="background:rgba(255,255,255,.2)"></span>
+                <span class="hpc-blurred">4 expert voices missing from this coverage</span>
+                <span class="hpc-lock-icon">🔒</span>
+              </div>
+            </div>
+            <div class="hpc-footer">
+              <span>2 findings visible free</span>
+              <button onclick="openModal('signup');return false" class="hpc-unlock-btn">See all findings &rarr;</button>
+            </div>
           </div>
         </div>
-
-        <div class="lo-lean-row">
-          <span class="lo-lean-lbl">Political lean</span>
-          <span class="lo-lean-val">Moderately biased, leaning left</span>
-        </div>
-        <div class="lo-bar-wrap">
-          <div class="lo-bar-seg" style="width:62%;background:#E24B4A;border-radius:3px 0 0 3px"></div>
-          <div class="lo-bar-seg" style="width:2%;background:var(--bg3)"></div>
-          <div class="lo-bar-seg" style="width:22%;background:#D1CFC9"></div>
-          <div class="lo-bar-seg" style="width:2%;background:var(--bg3)"></div>
-          <div class="lo-bar-seg" style="width:12%;background:#378ADD;border-radius:0 3px 3px 0"></div>
-        </div>
-        <div class="lo-bar-pcts">
-          <span style="color:#E24B4A">62% left</span>
-          <span style="color:var(--text3)">22% center</span>
-          <span style="color:#378ADD">16% right</span>
-        </div>
-
-        <div class="lo-dims">
-          <div class="lo-dim"><div class="lo-dim-v">61</div><div class="lo-dim-l">Host Trust</div></div>
-          <div class="lo-dim"><div class="lo-dim-v">58</div><div class="lo-dim-l">Factual Density</div></div>
-          <div class="lo-dim"><div class="lo-dim-v">67</div><div class="lo-dim-l">Omission Risk</div></div>
-          <div class="lo-dim"><div class="lo-dim-v">74</div><div class="lo-dim-l">Framing</div></div>
-          <div class="lo-dim"><div class="lo-dim-v">39</div><div class="lo-dim-l">Source Diversity</div></div>
-          <div class="lo-dim"><div class="lo-dim-v">44</div><div class="lo-dim-l">Perspective</div></div>
-        </div>
-
-        <div class="lo-finding">
-          <div class="lo-finding-dot" style="background:#E24B4A"></div>
-          <span>Left-leaning framing detected in 4 of 5 key claims. Conservative perspective absent from 3 segments.</span>
-        </div>
-        <div class="lo-finding lo-finding-locked">
-          <div class="lo-finding-dot" style="background:rgba(0,0,0,.15)"></div>
-          <span class="lo-blurred">Sponsor conflict in funding sources detected</span>
-          <span class="lo-lock">&#128274;</span>
-        </div>
-
-        <div class="lo-card-footer">
-          <span>2 findings visible free</span>
-          <button onclick="openModal('signup');return false" class="lo-unlock-btn">See all findings &rarr;</button>
-        </div>
       </div>
     </section>
 
-    <!-- FEATURES — dark section -->
-    <section class="lo-features">
-      <h2 class="lo-feats-h">Intelligence you can trust.</h2>
-      <p class="lo-feats-sub">Because a bias score without evidence is just an opinion.</p>
-      <div class="lo-feats-grid">
-        <div class="lo-feat">
-          <h3 class="lo-feat-t">Transcript evidence</h3>
-          <p class="lo-feat-d">Every finding is backed by a direct quote with timestamp. Nothing is asserted without proof from the actual words spoken.</p>
-        </div>
-        <div class="lo-feat">
-          <h3 class="lo-feat-t">6 bias dimensions</h3>
-          <p class="lo-feat-d">Political lean, host trust, factual density, omission risk, source diversity, and framing patterns, each scored independently.</p>
-        </div>
-        <div class="lo-feat">
-          <h3 class="lo-feat-t">Symmetric scoring</h3>
-          <p class="lo-feat-d">The same criteria that flag left-leaning content flag right-leaning content. Political symmetry is the entire foundation of our credibility.</p>
-        </div>
-      </div>
-    </section>
+    <!-- FREE TIER PROMISE -->
+
 
     <!-- TICKER -->
     <div class="ticker-section" id="ticker-section">
@@ -3389,18 +3207,45 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="ticker-wrapper"><div class="ticker-track" id="ticker-track"></div></div>
     </div>
 
+    <!-- SHOWCASE
+
+
+
+
+
+
     <!-- UNHEARD TEASER -->
     <section class="unheard-section show-logged-out">
       <div class="section-eyebrow">Unheard</div>
       <h2 class="section-h">Stories your feeds are skipping</h2>
-      <p class="section-sub">Every week, Podlens surfaces important stories that major podcast networks are ignoring.</p>
+      <p class="section-sub">Every week, Podlens surfaces 5 important stories that major podcast networks are ignoring. Pro feature.</p>
       <div class="unheard-locked-wrap">
         <div class="unheard-blur">
           <div class="unheard-sample-list">
-            <div class="unheard-sample-row"><div><div class="unheard-sample-title">How three major networks covered the same policy story with opposite framing</div><div class="unheard-sample-meta">Politics &middot; 4 shows affected &middot; This week</div></div></div>
-            <div class="unheard-sample-row"><div><div class="unheard-sample-title">The tech story every business podcast avoided mentioning</div><div class="unheard-sample-meta">Technology &middot; 7 shows affected &middot; This week</div></div></div>
-            <div class="unheard-sample-row"><div><div class="unheard-sample-title">Climate coverage gap: what science podcasts said vs what news shows ignored</div><div class="unheard-sample-meta">Science &middot; 5 shows affected &middot; This week</div></div></div>
-            <div class="unheard-sample-row" style="border-bottom:none"><div><div class="unheard-sample-title">International perspective absent from 12 top-ranked US political shows</div><div class="unheard-sample-meta">Politics &middot; 12 shows affected &middot; This week</div></div></div>
+            <div class="unheard-sample-row">
+              <div>
+                <div class="unheard-sample-title">How three major networks covered the same policy story with opposite framing</div>
+                <div class="unheard-sample-meta">Politics &middot; 4 shows affected &middot; This week</div>
+              </div>
+            </div>
+            <div class="unheard-sample-row">
+              <div>
+                <div class="unheard-sample-title">The tech story every business podcast avoided mentioning</div>
+                <div class="unheard-sample-meta">Technology &middot; 7 shows affected &middot; This week</div>
+              </div>
+            </div>
+            <div class="unheard-sample-row">
+              <div>
+                <div class="unheard-sample-title">Climate coverage gap: what science podcasts said vs what news shows ignored</div>
+                <div class="unheard-sample-meta">Science &middot; 5 shows affected &middot; This week</div>
+              </div>
+            </div>
+            <div class="unheard-sample-row" style="border-bottom:none">
+              <div>
+                <div class="unheard-sample-title">International perspective absent from 12 top-ranked US political shows</div>
+                <div class="unheard-sample-meta">Politics &middot; 12 shows affected &middot; This week</div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="unheard-gate">
@@ -3414,12 +3259,11 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     </section>
 
     <!-- FINAL CTA -->
-    <section class="lo-cta-section">
-      <div class="lo-cta-inner">
-        <h2 class="lo-cta-title">Start listening smarter.</h2>
-        <p class="lo-cta-sub">4 free analyses per month, forever. No credit card required.</p>
-        <button class="lo-cta-btn" onclick="openModal('signup')">Analyze your first episode &rarr;</button>
-        <p class="lo-cta-fine">Or <a href="/analyze" onclick="showView('analyze');return false" style="color:inherit;text-decoration:underline">paste a URL and try it now</a> without an account.</p>
+    <section class="fp-cta-section show-logged-out">
+      <div class="fp-cta-inner">
+        <div class="fp-cta-title">Start knowing what you&rsquo;re actually listening to.</div>
+        <div class="fp-cta-sub">Free forever. No credit card. Analyze your first episode in under a minute.</div>
+        <button class="fp-cta-btn" onclick="openModal('signup')">Create free account &rarr;</button>
       </div>
     </section>
 
@@ -3666,29 +3510,21 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           <div id="disc-search-dropdown" style="display:none;position:absolute;left:0;right:0;top:44px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:20;max-height:320px;overflow-y:auto"></div>
         </div>
         <button onclick="discSearch(document.getElementById('disc-search-input').value.trim())" style="padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--ff);white-space:nowrap">Search</button>
-        <div style="position:relative">
-          <button id="disc-region-pill" onclick="_toggleRegionMenu()" title="Change content region" style="display:inline-flex;align-items:center;gap:6px;padding:10px 12px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:var(--ff);white-space:nowrap">
-            <span id="disc-region-pill-flag">🇺🇸</span>
-            <span id="disc-region-pill-label">US</span>
-            <span style="font-size:10px;color:var(--text3)">▾</span>
-          </button>
-          <div id="disc-region-menu" style="display:none;position:absolute;right:0;top:44px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:30;min-width:180px;overflow:hidden"></div>
-        </div>
       </div>
       <div class="disc-hero" id="disc-hero-card">
         <div class="disc-hero-l">
           <div>
             <div class="disc-hero-eye" id="disc-hero-eye">Featured episode</div>
-            <div class="disc-hero-title" id="disc-hero-title">Loading featured episode...</div>
-            <div class="disc-hero-host" id="disc-hero-host"></div>
+            <div class="disc-hero-title" id="disc-hero-title">Jensen Huang &mdash; NVIDIA &amp; the AI Revolution</div>
+            <div class="disc-hero-host" id="disc-hero-host">Lex Fridman Podcast &middot; 2h 18m</div>
           </div>
           <div class="disc-hero-btns">
             <button class="disc-hero-play" id="disc-hero-play-btn" onclick="discHeroPlay()">&#9654; Play</button>
-            <button class="disc-hero-analyze" id="disc-hero-analyze-btn">Analyze &rarr;</button>
+            <button class="disc-hero-analyze" id="disc-hero-analyze-btn" onclick="analyzeEp(null,'https://www.youtube.com/watch?v=vif8NQcjVf0','Jensen Huang — NVIDIA & the AI Revolution','Lex Fridman Podcast',true)">Analyze &rarr;</button>
           </div>
         </div>
         <div class="disc-hero-r" id="disc-hero-video">
-          <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%)"></div>
+          <iframe src="https://www.youtube-nocookie.com/embed/vif8NQcjVf0?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
         </div>
       </div>
       <!-- Related episodes — shown when a topic pill is clicked -->
@@ -3709,6 +3545,16 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
         <div id="foryou-trending"></div>
       </div>
       <div class="disc-shelf">
+        <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Explore by bias profile</div></div>
+        <div class="disc-mood-grid">
+          <div class="disc-mood" style="background:#1e3a5f" onclick="discFilterByMood('deepdive',this)"><h4>Deep dives</h4><p>2h+ &middot; worth the full listen</p></div>
+          <div class="disc-mood" style="background:#3d1a1a" onclick="discFilterByMood('heavy',this)"><h4>Heavy bias</h4><p>Know before you listen</p></div>
+          <div class="disc-mood" style="background:#0f3d2e" onclick="discFilterByMood('balanced',this)"><h4>Balanced picks</h4><p>Both sides, grounded</p></div>
+          <div class="disc-mood" style="background:#2d1a4a" onclick="discFilterByMood('quick',this)"><h4>Quick takes</h4><p>Under 30 min, high signal</p></div>
+        </div>
+        <div class="disc-shows-row" id="disc-mood-row" style="display:none"></div>
+      </div>
+      <div class="disc-shelf">
         <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Trending shows</div><button class="disc-shelf-more">See all &rarr;</button></div>
         <div id="disc-cat-bias" style="margin-bottom:10px;padding:6px 0"></div>
         <div class="disc-shows-row" id="disc-shows-row"></div>
@@ -3719,16 +3565,6 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
         <div class="disc-ep-row" id="disc-ep-row"></div>
       </div>
 
-      <div class="disc-shelf">
-        <div class="disc-shelf-hd"><div class="disc-shelf-ttl">Explore by bias profile</div></div>
-        <div class="disc-mood-grid">
-          <div class="disc-mood" style="background:#1e3a5f" onclick="discFilterByMood('deepdive',this)"><h4>Deep dives</h4><p>2h+ &middot; worth the full listen</p></div>
-          <div class="disc-mood" style="background:#3d1a1a" onclick="discFilterByMood('heavy',this)"><h4>Heavy bias</h4><p>Know before you listen</p></div>
-          <div class="disc-mood" style="background:#0f3d2e" onclick="discFilterByMood('balanced',this)"><h4>Balanced picks</h4><p>Both sides, grounded</p></div>
-          <div class="disc-mood" style="background:#2d1a4a" onclick="discFilterByMood('quick',this)"><h4>Quick takes</h4><p>Under 30 min, high signal</p></div>
-        </div>
-        <div class="disc-shows-row" id="disc-mood-row" style="display:none"></div>
-      </div>
     </div>
     <div class="disc-rc">
       <div id="disc-rc-top"></div>
@@ -3794,15 +3630,15 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="insight-cards-wrap" id="insight-cards">
         <div class="insight-card on" id="ic-0">
           <div class="insight-card-label">Did you know</div>
-          We analyze language patterns and framing choices, including how topics are introduced, not just which topics appear.
+          We analyze language patterns and framing choices &mdash; how topics are introduced and framed &mdash; not just which topics appear.
         </div>
         <div class="insight-card" id="ic-1">
           <div class="insight-card-label">How it works</div>
-          Your analysis covers political lean, host trust indicators, missing perspectives, and sponsor influence, all grounded in the actual transcript.
+          Your analysis covers political lean, host trust indicators, missing perspectives, and sponsor influence &mdash; all grounded in the actual transcript.
         </div>
         <div class="insight-card" id="ic-2">
           <div class="insight-card-label">About Podlens</div>
-          The plain English bias label is always visible to everyone. It's the starting point for understanding what you're listening to.
+          The plain English bias label is always visible to everyone &mdash; it&rsquo;s the starting point for understanding what you&rsquo;re listening to.
         </div>
         <div class="insight-card" id="ic-3">
           <div class="insight-card-label">Pro tip</div>
@@ -3872,7 +3708,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
   <div style="padding:80px 40px 64px;text-align:center;border-bottom:1px solid var(--border)">
     <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">How it works</div>
     <h1 style="font-family:var(--ffs);font-size:clamp(32px,4.5vw,50px);font-weight:700;line-height:1.1;letter-spacing:-.02em;color:var(--text);margin-bottom:16px">From URL to intelligence<br><em style="font-style:italic;font-weight:400">in minutes</em></h1>
-    <p style="font-size:16px;color:var(--text2);max-width:500px;margin:0 auto 32px;line-height:1.75">Paste any podcast link. Podlens transcribes it, scores it across 6 bias dimensions, and surfaces what you need to know before and while you listen.</p>
+    <p style="font-size:16px;color:var(--text2);max-width:500px;margin:0 auto 32px;line-height:1.75">Paste any podcast link. Podlens transcribes it, scores it across 6 bias dimensions, and surfaces what you need to know before &mdash; and while &mdash; you listen.</p>
     <a onclick="if(typeof showView==='function'){showView('analyze');return false}" href="/" style="display:inline-block;padding:14px 32px;background:var(--navy);color:#fff;border-radius:8px;font-size:15px;font-weight:700;text-decoration:none;cursor:pointer">Analyze your first episode free &rarr;</a>
     <div style="font-size:12px;color:var(--text3);margin-top:12px">4 free analyses &middot; No credit card</div>
   </div>
@@ -3886,7 +3722,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           <div style="height:1px;flex:1;background:var(--border)"></div>
         </div>
         <div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px">Paste any URL</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.75">YouTube, Spotify, Apple Podcasts, RSS feed, or direct .mp3. All formats are handled automatically. YouTube captions are tried first as the fastest path, with full transcription as a fallback.</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.75">YouTube, Spotify, Apple Podcasts, RSS feed, or direct .mp3. All formats handled automatically. YouTube captions tried first &mdash; fastest path. Falls back to full transcription if unavailable.</div>
         <div style="margin-top:16px;display:flex;gap:6px;flex-wrap:wrap">
           <span style="font-size:11px;padding:3px 9px;background:var(--bg3);border-radius:3px;color:var(--text3);border:1px solid var(--border)">YouTube</span>
           <span style="font-size:11px;padding:3px 9px;background:var(--bg3);border-radius:3px;color:var(--text3);border:1px solid var(--border)">Spotify</span>
@@ -3912,10 +3748,10 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           <div style="height:1px;flex:1;background:var(--border)"></div>
         </div>
         <div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px">Listen with intelligence</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.75">Your AI-narrated briefing plays first: 2 minutes covering what to watch for. Then listen with the live transcript synced word-by-word to the audio, with bias flags appearing in context.</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.75">Your AI-narrated briefing plays first &mdash; 2 minutes covering what to watch for. Then listen with the live transcript synced word-by-word to the audio and bias flags appearing in context.</div>
         <div style="margin-top:16px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
           <div style="width:8px;height:8px;border-radius:50%;background:#1D9E75;flex-shrink:0"></div>
-          Like Spotify lyrics, but for what the host is actually claiming
+          Like Spotify lyrics &mdash; but for what the host is claiming
         </div>
       </div>
     </div>
@@ -3926,7 +3762,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">The intelligence layer</div>
           <h2 style="font-family:var(--ffs);font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.01em;margin:0">6 dimensions on every episode</h2>
         </div>
-        <div style="font-size:13px;color:var(--text3);max-width:300px;text-align:right;line-height:1.6">All 6 scores on every tier. What varies is the depth of transcript evidence, not access to the scores.</div>
+        <div style="font-size:13px;color:var(--text3);max-width:300px;text-align:right;line-height:1.6">All 6 scores on every tier. Depth of transcript evidence varies &mdash; not access to the scores.</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden">
         <div style="padding:24px;background:var(--bg2)">
@@ -4023,11 +3859,11 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
         </div>
         <div style="border-bottom:1px solid var(--border);padding:22px 0">
           <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">How accurate is it?</div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.75">Podlens is a starting point for critical listening, not a verdict. The AI can miss irony, satire, and specialized context. We benchmark against human-labeled episodes and publish our methodology openly.</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.75">Podlens is a starting point for critical listening &mdash; not a verdict. The AI can miss irony, satire, and specialized context. We benchmark against human-labeled episodes and publish our methodology openly.</div>
         </div>
         <div style="border-bottom:1px solid var(--border);padding:22px 0">
           <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">Does it work with YouTube videos that aren&rsquo;t podcasts?</div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.75">Yes. Any YouTube video, news segment, lecture, or interview is analyzed identically to a podcast. The channel name becomes the show name and all 6 dimensions apply the same way.</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.75">Yes &mdash; any YouTube video, news segment, lecture, or interview is analyzed identically to a podcast. The channel name becomes the &ldquo;show&rdquo; and all 6 dimensions apply the same way.</div>
         </div>
         <div style="padding:22px 0">
           <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">Does Podlens use ads or sell data?</div>
@@ -4038,7 +3874,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
   </div>
 
   <div style="background:var(--navy);padding:80px 24px;text-align:center">
-    <h2 style="font-family:var(--ffs);font-size:32px;font-weight:700;color:#fff;margin-bottom:12px;letter-spacing:-.01em">Start with any episode, free</h2>
+    <h2 style="font-family:var(--ffs);font-size:32px;font-weight:700;color:#fff;margin-bottom:12px;letter-spacing:-.01em">Start with any episode &mdash; free</h2>
     <p style="font-size:15px;color:rgba(255,255,255,.5);margin-bottom:28px;line-height:1.7">4 analyses free. No credit card. Connect Spotify or YouTube<br>to unlock your full intelligence layer.</p>
     <a onclick="if(typeof showView==='function'){showView('analyze');return false}" href="/" style="display:inline-block;background:#fff;color:var(--navy);padding:15px 36px;border-radius:8px;font-size:15px;font-weight:800;text-decoration:none;cursor:pointer">Analyze my first episode &rarr;</a>
   </div>
@@ -4052,8 +3888,8 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px">Pricing</div>
     <h1 style="font-family:var(--ffs);font-size:clamp(28px,4vw,44px);font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:10px;line-height:1.15">Simple, transparent pricing</h1>
     <p style="font-size:15px;color:var(--text2);margin-bottom:16px">Start free. Upgrade when you want more intelligence.</p>
-    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;color:var(--text2);font-weight:500;margin-bottom:28px">&#11088; Founding member pricing &mdash; 33% off forever</div>
-    <div class="billing-toggle"><div class="bt-pill" id="bt-pill"></div><span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span><span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span><span class="bt-save" id="annual-save-badge" style="display:none">Save 33%</span></div>
+    <div style="display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;color:var(--text2);font-weight:500;margin-bottom:28px">&#11088; Founding member pricing &mdash; 33% off forever &middot; 500 spots remaining</div>
+    <div class="billing-toggle"><span class="bt-opt on" id="bt-monthly" onclick="setBilling('monthly')">Monthly</span><span class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</span><span class="bt-save" id="annual-save-badge" style="display:none">Save 33%</span></div>
   </div>
   <div class="plans" style="padding:0 24px 16px">
     <div class="plan">
@@ -4064,24 +3900,25 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
         <div class="pf"><span class="pf-check">&#10003;</span>4 analyses per month</div>
         <div class="pf"><span class="pf-check">&#10003;</span>All 6 bias dimension scores</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Bias fingerprint + echo chamber score</div>
-        <div class="pf"><span class="pf-check">&#10003;</span>Discover: browse 1M+ shows</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Discover &mdash; browse 1M+ shows</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Follow shows + new episode alerts</div>
       </div>
       <a class="plan-btn" href="/" onclick="if(typeof showView==='function'){showView('home');return false}">Get started free &rarr;</a>
     </div>
-    <div class="plan">
+    <div class="plan featured">
+      <div class="plan-badge">Most Popular</div>
       <div class="plan-name">Starter Lens</div>
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="creator-original"></div>
         <div class="plan-price">$<span id="creator-price" class="plan-price-num">7</span><span id="creator-period" class="plan-price-period">/mo</span></div>
-        <div class="plan-founding-note" id="creator-founding-note" style="display:block">&#128274; $4.69/mo founding rate, locked forever</div>
+        <div class="plan-founding-note" id="creator-founding-note" style="display:block">&#128274; $4.69/mo founding rate &mdash; locked forever</div>
       </div>
       <div class="plan-desc">For curious listeners who want the full picture on every episode.</div>
       <div class="plan-features">
         <div class="pf"><span class="pf-check">&#10003;</span>25 analyses per month</div>
         <div class="pf"><span class="pf-check">&#10003;</span>All 6 bias dimensions + key findings</div>
         <div class="pf"><span class="pf-check">&#10003;</span>2 transcript evidence quotes per dimension</div>
-        <div class="pf"><span class="pf-check">&#10003;</span>AI-narrated audio briefing before you listen</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Audio briefing &mdash; AI-narrated before you listen</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Host trust + guest score (when guest detected)</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Live transcript sync (word-by-word)</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Pre-analysis tracking (3 shows)</div>
@@ -4089,13 +3926,12 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       </div>
       <button class="plan-btn" onclick="startCheckout('creator')">Start Starter Lens &rarr;</button>
     </div>
-    <div class="plan featured">
-      <div class="plan-badge">Most Popular</div>
+    <div class="plan">
       <div class="plan-name">Pro Lens</div>
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="operator-original"></div>
         <div class="plan-price">$<span id="operator-price" class="plan-price-num">19</span><span id="operator-period" class="plan-price-period">/mo</span></div>
-        <div class="plan-founding-note" id="operator-founding-note" style="display:block">&#128274; $12.73/mo founding rate, locked forever</div>
+        <div class="plan-founding-note" id="operator-founding-note" style="display:block">&#128274; $12.73/mo founding rate &mdash; locked forever</div>
       </div>
       <div class="plan-desc">For serious listeners, researchers, and journalists who need full depth.</div>
       <div class="plan-features">
@@ -4105,7 +3941,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
         <div class="pf"><span class="pf-check">&#10003;</span>Pre-analysis tracking (5 shows)</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Show bias trend charts (30/90/180 days)</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Deep report + PDF export</div>
-        <div class="pf"><span class="pf-check">&#10003;</span>Unheard section: stories your shows ignored</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Unheard section &mdash; what was missing</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Voice preference for audio briefings</div>
       </div>
       <button class="plan-btn" onclick="startCheckout('operator')">Start Pro Lens &rarr;</button>
@@ -4115,12 +3951,12 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="plan-price-wrap">
         <div class="plan-price-original" id="studio-original"></div>
         <div class="plan-price">$<span id="studio-price" class="plan-price-num">49</span><span id="studio-period" class="plan-price-period">/mo</span></div>
-        <div class="plan-founding-note" id="studio-founding-note" style="display:block">&#128274; $32.83/mo founding rate, locked forever</div>
+        <div class="plan-founding-note" id="studio-founding-note" style="display:block">&#128274; $32.83/mo founding rate &mdash; locked forever</div>
       </div>
       <div class="plan-desc">For teams, brands, and researchers who need monitoring, delivery intelligence, and API access.</div>
       <div class="plan-features">
         <div class="pf"><span class="pf-check">&#10003;</span>Everything in Pro Lens</div>
-        <div class="pf"><span class="pf-check">&#10003;</span>Delivery analysis: vocal tone via Hume AI</div>
+        <div class="pf"><span class="pf-check">&#10003;</span>Delivery analysis &mdash; vocal tone via Hume AI</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Team workspaces (10 seats)</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Brand monitoring</div>
         <div class="pf"><span class="pf-check">&#10003;</span>Bulk scanner (20 URLs at once)</div>
@@ -4140,7 +3976,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
   </div>
   <div class="always-free-section">
     <h2>Always free, no matter your plan</h2>
-    <p>These features are available on every Podlens account, forever.</p>
+    <p>These features are available to every Podlens account &mdash; forever.</p>
     <div class="free-features-grid">
       <div class="free-feature"><span class="free-feature-icon">&#128269;</span><div><strong>Discover page</strong><p>Browse trending podcasts and their aggregate bias scores from 1M+ shows</p></div></div>
       <div class="free-feature"><span class="free-feature-icon">&#129516;</span><div><strong>Bias fingerprint &amp; echo chamber score</strong><p>See your listening patterns and political lean based on what you actually listen to (unlocks after 10 episodes)</p></div></div>
@@ -4263,9 +4099,9 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
             <button class="acct-av-change-btn" onclick="document.getElementById('acct-av-input').click()">Change photo</button>
           </div>
         </div>
-        <div class="acct-field"><span class="acct-field-label">Full name</span><span class="acct-field-val" id="acct-field-name"></span><button class="acct-field-action" onclick="openEditNameModal()">Edit</button></div>
-        <div class="acct-field"><span class="acct-field-label">Email</span><span class="acct-field-val" id="acct-field-email"></span><button class="acct-field-action" onclick="openChangeEmailModal()">Change</button></div>
-        <div class="acct-field"><span class="acct-field-label">Sign-in method</span><span class="acct-field-val" id="acct-field-signin" style="color:var(--text3);font-size:12px">Magic link / Google — passwordless</span></div>
+        <div class="acct-field"><span class="acct-field-label">Full name</span><span class="acct-field-val" id="acct-field-name"></span><button class="acct-field-action" onclick="showDashSection('profile')">Edit</button></div>
+        <div class="acct-field"><span class="acct-field-label">Email</span><span class="acct-field-val" id="acct-field-email"></span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
+        <div class="acct-field"><span class="acct-field-label">Password</span><span class="acct-field-val" style="color:var(--text3)">••••••••••</span><button class="acct-field-action" onclick="showDashSection('profile')">Change</button></div>
       </div>
       <div class="acct-card">
         <div class="acct-card-title">Integrations</div>
@@ -4587,11 +4423,11 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     <div class="auth-modal-body">
       <div class="auth-logo">
         <div class="pl-lockup">
-          <img src="/favicon-32x32.png" srcset="/android-chrome-192x192.png 3x" class="pl-lockup-icon" alt="" width="40" height="40" style="border-radius:8px">
-          <span class="pl-lockup-divider" style="height:40px"></span>
+          <img src="/favicon-32x32.png" srcset="/android-chrome-192x192.png 3x" class="pl-lockup-icon" alt="" width="28" height="28" style="border-radius:6px">
+          <span class="pl-lockup-divider"></span>
           <span class="pl-lockup-text">
-            <img src="/logo-wordmark.png" alt="PODLENS" class="pl-wm-img" style="height:26px;width:auto;display:block;opacity:.95">
-            <span class="pl-lockup-tagline" style="font-size:11px">A force of clarity in the age of noise</span>
+            <img src="/logo-wordmark.png" alt="PODLENS" class="pl-wm-img" style="height:18px;width:auto;display:block;opacity:.95">
+            <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
           </span>
         </div>
       </div>
@@ -4635,16 +4471,16 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     <div class="auth-modal-body">
       <div class="auth-logo">
         <div class="pl-lockup">
-          <img src="/favicon-32x32.png" srcset="/android-chrome-192x192.png 3x" class="pl-lockup-icon" alt="" width="40" height="40" style="border-radius:8px">
-          <span class="pl-lockup-divider" style="height:40px"></span>
+          <img src="/favicon-32x32.png" srcset="/android-chrome-192x192.png 3x" class="pl-lockup-icon" alt="" width="28" height="28" style="border-radius:6px">
+          <span class="pl-lockup-divider"></span>
           <span class="pl-lockup-text">
-            <img src="/logo-wordmark.png" alt="PODLENS" class="pl-wm-img" style="height:26px;width:auto;display:block;opacity:.95">
-            <span class="pl-lockup-tagline" style="font-size:11px">A force of clarity in the age of noise</span>
+            <img src="/logo-wordmark.png" alt="PODLENS" class="pl-wm-img" style="height:18px;width:auto;display:block;opacity:.95">
+            <span class="pl-lockup-tagline">A force of clarity in the age of noise</span>
           </span>
         </div>
       </div>
       <div id="signup-heading" class="signup-heading">Analyze this episode free</div>
-      <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">Free forever. No credit card required.</div>
+      <div id="signup-subtext" class="auth-sub" style="margin-bottom:20px">Free forever &mdash; no credit card required</div>
       <button class="auth-google-btn" onclick="doGoogleOAuth('signup')" style="margin-bottom:10px">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
@@ -4712,7 +4548,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <!-- Step 2: podcast URL -->
       <div class="onb-step" id="onb-step-2">
         <div class="auth-logo" style="text-align:left;margin-bottom:4px">Paste a podcast you love</div>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Optional. We'll use this to personalize your feed.</p>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Optional &mdash; we&rsquo;ll use this to personalize your feed.</p>
         <div class="onb-field"><input type="text" id="onb-podcast-url" placeholder="https://feeds.example.com/podcast.rss" autocomplete="url"/></div>
         <button class="auth-btn" onclick="onbNext(2)">Continue &rarr;</button>
         <div style="text-align:center"><button class="onb-skip" onclick="onbNext(2)">Skip</button></div>
@@ -4775,119 +4611,6 @@ fetch('/api/public-config').then(function(r){ return r.json(); }).then(function(
 function plUser() {
   try { return JSON.parse(localStorage.getItem('pl-user') || 'null'); } catch(e) { return null; }
 }
-// ── Account: edit name, change email (with OTP verification to NEW email) ──
-function openEditNameModal() {
-  var u = plUser(); if (!u) return;
-  var existing = document.getElementById('modal-edit-name');
-  if (existing) existing.remove();
-  document.body.insertAdjacentHTML('beforeend',
-    '<div id="modal-edit-name" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px" onclick="if(event.target===this)this.remove()">'
-    + '<div style="background:var(--bg);border-radius:12px;padding:24px;max-width:400px;width:100%;position:relative">'
-    + '<button onclick="document.getElementById(\'modal-edit-name\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);line-height:1">&times;</button>'
-    + '<div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:14px">Edit your name</div>'
-    + '<input id="edit-name-input" type="text" maxlength="100" value="'+_escHtml(u.name||'')+'" placeholder="Your name" style="width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;font-size:14px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:14px"/>'
-    + '<button onclick="_submitEditName()" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--ff)">Save</button>'
-    + '</div></div>');
-  setTimeout(function(){ var i = document.getElementById('edit-name-input'); if (i) i.focus(); }, 50);
-}
-function _submitEditName() {
-  var u = plUser(); if (!u) return;
-  var inp = document.getElementById('edit-name-input');
-  var newName = (inp.value || '').trim();
-  if (!newName) { inp.focus(); return; }
-  fetch('/api/update-profile', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: u.id, name: newName })
-  }).then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.error) { plToast(d.error || 'Failed to save'); return; }
-      u.name = newName; setPlUser(u);
-      var nameEl = document.getElementById('acct-field-name'); if (nameEl) nameEl.textContent = newName;
-      var displayEl = document.getElementById('acct-display-name'); if (displayEl) displayEl.textContent = newName;
-      document.getElementById('modal-edit-name').remove();
-      plToast('Name updated');
-    }).catch(function(){ plToast('Could not save name'); });
-}
-
-function openChangeEmailModal() {
-  var u = plUser(); if (!u) return;
-  var existing = document.getElementById('modal-change-email');
-  if (existing) existing.remove();
-  document.body.insertAdjacentHTML('beforeend',
-    '<div id="modal-change-email" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px" onclick="if(event.target===this)this.remove()">'
-    + '<div style="background:var(--bg);border-radius:12px;padding:24px;max-width:420px;width:100%;position:relative">'
-    + '<button onclick="document.getElementById(\'modal-change-email\').remove()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);line-height:1">&times;</button>'
-    + '<div id="ce-step1">'
-    + '<div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px">Change email</div>'
-    + '<div style="font-size:13px;color:var(--text3);margin-bottom:14px">We\'ll send a 6-digit code to your new email to verify it.</div>'
-    + '<input id="ce-new-email" type="email" placeholder="new@email.com" autocomplete="email" style="width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;font-size:14px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:12px"/>'
-    + '<div id="ce-err1" style="font-size:12px;color:#e24b4a;margin-bottom:10px;display:none"></div>'
-    + '<button onclick="_sendChangeEmailCode()" id="ce-send-btn" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--ff)">Send verification code</button>'
-    + '</div>'
-    + '<div id="ce-step2" style="display:none">'
-    + '<div style="font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px">Enter code</div>'
-    + '<div style="font-size:13px;color:var(--text3);margin-bottom:14px">Check <span id="ce-target-email" style="font-weight:600;color:var(--text)"></span> for a 6-digit code (expires in 10 minutes).</div>'
-    + '<input id="ce-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" style="width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;font-size:18px;font-family:var(--ff);background:var(--bg2);color:var(--text);outline:none;margin-bottom:12px;letter-spacing:6px;text-align:center"/>'
-    + '<div id="ce-err2" style="font-size:12px;color:#e24b4a;margin-bottom:10px;display:none"></div>'
-    + '<button onclick="_verifyChangeEmailCode()" id="ce-verify-btn" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--ff);margin-bottom:8px">Verify and update</button>'
-    + '<button onclick="document.getElementById(\'ce-step1\').style.display=\'block\';document.getElementById(\'ce-step2\').style.display=\'none\'" style="width:100%;padding:8px;background:none;color:var(--text3);border:none;font-size:12px;cursor:pointer;font-family:var(--ff)">&larr; Back</button>'
-    + '</div>'
-    + '</div></div>');
-  setTimeout(function(){ var i = document.getElementById('ce-new-email'); if (i) i.focus(); }, 50);
-}
-function _sendChangeEmailCode() {
-  var u = plUser(); if (!u) return;
-  var inp = document.getElementById('ce-new-email');
-  var newEmail = (inp.value || '').trim().toLowerCase();
-  var err = document.getElementById('ce-err1');
-  err.style.display = 'none';
-  if (!newEmail || !newEmail.includes('@')) { err.textContent = 'Enter a valid email'; err.style.display = 'block'; return; }
-  if (newEmail === (u.email||'').toLowerCase()) { err.textContent = 'New email must be different'; err.style.display = 'block'; return; }
-  var btn = document.getElementById('ce-send-btn');
-  btn.disabled = true; btn.textContent = 'Sending...';
-  fetch('/api/send-otp', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: newEmail, purpose: 'change_email' })
-  }).then(function(r){ return r.json(); })
-    .then(function(d){
-      btn.disabled = false; btn.textContent = 'Send verification code';
-      if (d.error) { err.textContent = d.error; err.style.display = 'block'; return; }
-      window._ceTargetEmail = newEmail;
-      document.getElementById('ce-target-email').textContent = newEmail;
-      document.getElementById('ce-step1').style.display = 'none';
-      document.getElementById('ce-step2').style.display = 'block';
-      setTimeout(function(){ var c = document.getElementById('ce-code'); if (c) c.focus(); }, 50);
-    }).catch(function(){
-      btn.disabled = false; btn.textContent = 'Send verification code';
-      err.textContent = 'Could not send code. Try again.'; err.style.display = 'block';
-    });
-}
-function _verifyChangeEmailCode() {
-  var u = plUser(); if (!u) return;
-  var code = (document.getElementById('ce-code').value || '').trim();
-  var err = document.getElementById('ce-err2');
-  err.style.display = 'none';
-  if (!/^\d{6}$/.test(code)) { err.textContent = 'Enter the 6-digit code'; err.style.display = 'block'; return; }
-  var btn = document.getElementById('ce-verify-btn');
-  btn.disabled = true; btn.textContent = 'Verifying...';
-  fetch('/api/change-email', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: u.id, currentEmail: u.email, newEmail: window._ceTargetEmail, code: code })
-  }).then(function(r){ return r.json(); })
-    .then(function(d){
-      btn.disabled = false; btn.textContent = 'Verify and update';
-      if (d.error) { err.textContent = d.error; err.style.display = 'block'; return; }
-      u.email = d.email; setPlUser(u);
-      var emailEl = document.getElementById('acct-field-email'); if (emailEl) emailEl.textContent = d.email;
-      var displayEmailEl = document.getElementById('acct-display-email'); if (displayEmailEl) displayEmailEl.textContent = d.email;
-      document.getElementById('modal-change-email').remove();
-      plToast('Email updated to ' + d.email);
-    }).catch(function(){
-      btn.disabled = false; btn.textContent = 'Verify and update';
-      err.textContent = 'Could not verify. Try again.'; err.style.display = 'block';
-    });
-}
-
 function setPlUser(obj) {
   var isAuth = !!(obj && obj.id);
   document.body.classList.toggle('authenticated', isAuth);
@@ -5660,8 +5383,6 @@ function renderHomeState() {
         if (eyeEl) eyeEl.textContent = 'Trending on Podlens';
         if (titleEl) titleEl.textContent = hero.episodeTitle || '';
         if (hostEl) hostEl.textContent = (hero.showName || '') + (dur ? ' \u00b7 ' + dur : '');
-        // Make the host name clickable → opens that show's profile (same UX as discover hero).
-        if (typeof _discMakeShowClickable === 'function') _discMakeShowClickable(hostEl, hero.showName || '', hero.url || '');
         if (videoEl) {
           if (hero.ytId) {
             videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
@@ -5692,7 +5413,7 @@ function renderHomeState() {
     var _nudgeEl = document.getElementById('ar-echo-nudge');
     if (_nudgeEl && _eco && _eco.hasData) {
       _nudgeEl.style.display = 'block';
-      _nudgeEl.innerHTML = '<span style="font-weight:600;color:' + _eco.color + '">' + _eco.label + ' (' + _eco.score + '/100):</span> ' + _eco.description + ' <button onclick="showDashSection(\'intelligence\')" style="background:none;border:none;color:var(--navy);font-size:12px;cursor:pointer;font-family:var(--ff);padding:0;font-weight:600">View full score &rarr;</button>';
+      _nudgeEl.innerHTML = '<span style="font-weight:600;color:' + _eco.color + '">' + _eco.label + ' (' + _eco.score + '/100)</span> &mdash; ' + _eco.description + ' <button onclick="showDashSection(\'intelligence\')" style="background:none;border:none;color:var(--navy);font-size:12px;cursor:pointer;font-family:var(--ff);padding:0;font-weight:600">View full score &rarr;</button>';
     }
   } catch(e) {}
     renderDashUnheardPreview(u);
@@ -5958,7 +5679,7 @@ function toggleFollowShow(name, feedUrl, artwork, btn) {
     followed.push({ name: name, feedUrl: feedUrl || '', artwork: artwork || '', addedAt: new Date().toISOString() });
     u.followedShows = followed;
     setPlUser(u);
-    plToast('Following ' + name + ' — view in Library → Following', 3000);
+    plToast('Following ' + name, 2500);
     if(typeof posthog!=='undefined')posthog.capture('show_followed',{showName:name});
     // Save to Supabase
     safeFetch('/api/follow-show', { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -6018,7 +5739,7 @@ function renderDashIntelligence(u) {
   var ecoHtml = eco.hasData
     ? '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">'
       + '<span style="font-size:32px;font-weight:700;font-family:var(--ffs);color:' + eco.color + '">' + eco.score + '</span>'
-      + '<span style="font-size:13px;color:var(--text3)">/100 &ndash; <strong style="color:' + eco.color + '">' + eco.label + '</strong></span>'
+      + '<span style="font-size:13px;color:var(--text3)">/100 &mdash; <strong style="color:' + eco.color + '">' + eco.label + '</strong></span>'
       + '</div>'
       + '<div style="height:8px;border-radius:4px;background:var(--bg3);overflow:hidden;margin-bottom:10px">'
       + '<div style="height:100%;width:' + eco.score + '%;background:' + ecoBarColor + ';border-radius:4px;transition:width .4s ease"></div></div>'
@@ -6442,14 +6163,12 @@ var CURATED_SHOWS = [
 // _biasMini(b) — renders a compact 3-segment bar + lean label pill
 // Always visible to all users. Score percentages are always shown.
 function _heartBtn(feedUrl, name, artist, artwork) {
-  // Heart on show cards = Follow (not Like). Liked Episodes is strictly for
-  // episodes; shows go in Following. Visual fill reflects follow state.
   var safeUrl = (feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
   var safeName = (name||'').replace(/'/g,'').replace(/"/g,'');
   var safeArtist = (artist||'').replace(/'/g,'').replace(/"/g,'');
   var safeArt = (artwork||'').replace(/'/g,'').replace(/"/g,'');
-  var following = _isFollowingShow(name);
-  return '<button data-kind="show" data-url="'+safeUrl+'" data-title="'+safeName+'" data-artist="'+safeArtist+'" data-art="'+safeArt+'" title="'+(following?'Unfollow':'Follow')+'" onclick="event.stopPropagation();_likeFromBtn(this);this.textContent=this.textContent===\'\u2661\'?\'\u2665\':\'\u2661\';this.style.color=this.textContent===\'\u2665\'?\'#e24b4a\':\'rgba(0,0,0,.3)\'" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:28px;height:28px;font-size:16px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;color:'+(following?'#e24b4a':'rgba(0,0,0,.3)')+'">'+(following?'\u2665':'\u2661')+'</button>';
+  var liked = isLiked({url:feedUrl});
+  return '<button data-kind="show" data-url="'+safeUrl+'" data-title="'+safeName+'" data-artist="'+safeArtist+'" data-art="'+safeArt+'" onclick="event.stopPropagation();_likeFromBtn(this);this.textContent=this.textContent===\'\u2661\'?\'\u2665\':\'\u2661\';this.style.color=this.textContent===\'\u2665\'?\'#e24b4a\':\'rgba(0,0,0,.3)\'" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:28px;height:28px;font-size:16px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;color:'+(liked?'#e24b4a':'rgba(0,0,0,.3)')+'">'+(liked?'\u2665':'\u2661')+'</button>';
 }
 
 function _biasMini(b) {
@@ -6715,11 +6434,6 @@ function showView(name) {
   var el = document.getElementById('view-' + name);
   if (el) { el.classList.add('on'); el.style.display = 'block'; }
 
-  // Scroll to top so the new view is visible from the top, otherwise SPA
-  // navigation can land mid-page (e.g. clicking the founding banner from a
-  // scrolled discover page felt like "nothing happened").
-  try { window.scrollTo({ top: 0, behavior: 'instant' }); } catch (e) { window.scrollTo(0, 0); }
-
   // ── Step 3: If home, show the correct sub-div ──
   if (name === 'home') {
     if (_u && _u.id) {
@@ -6796,13 +6510,9 @@ function showView(name) {
         return '<button data-jid="'+r.jobId+'" onclick="viewAnalysis(this.dataset.jid)" style="display:block;width:100%;text-align:left;padding:8px 8px;font-size:11px;color:rgba(255,255,255,.6);background:none;border:none;cursor:pointer;font-family:var(--ff);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:4px" title="'+(r.episodeTitle||r.title||'Episode')+'">'+(r.showName||'Episode')+'</button>';
       }).join('') : '<div style="padding:8px;font-size:11px;color:rgba(255,255,255,.3)">No recent analyses</div>';
     }
-    // Reset analyze page to hero state — UNLESS the caller is about to immediately
-    // trigger startAnalysis (e.g. from a Discover Analyze button). In that case,
-    // window._skipAnalyzeHeroReset is set so we don't briefly flash the empty
-    // hero/search bar before flipping to the analyzing skeleton.
+    // Reset analyze page to hero state
     var _ah = document.getElementById('analyze-hero');
-    if (_ah && !window._skipAnalyzeHeroReset) _ah.style.display = '';
-    window._skipAnalyzeHeroReset = false;
+    if (_ah) _ah.style.display = '';
     // Restore left nav when returning to input
     (function() {
       var _avR = document.getElementById('view-analyze');
@@ -6846,84 +6556,6 @@ function showView(name) {
 var _discCat = 'all';
 var _discTab = 'foryou';
 
-// ── CONTENT REGION ──────────────────────────────────────────────────────────
-// Defaults to US until the user explicitly switches via the region pill on
-// Discover. The previous behavior auto-set this from IP geo, which surprised
-// users (e.g. a US visitor on a Korea VPN suddenly seeing Korean podcasts).
-// IP geo is still used to auto-apply the Korean UI for KR visitors — that's
-// language preference, not content region.
-// Only English-primary countries — our analysis pipeline (AssemblyAI English
-// transcription model + Claude bias prompt anchored in US/English political
-// framing) doesn't yet handle non-English content reliably. Until we wire
-// per-language transcription + a localized bias framework, switching to KR/JP/
-// DE/FR/etc. would surface podcasts the user can browse but couldn't analyze
-// with meaningful results — worse UX than just keeping the list focused.
-var _DISC_REGIONS = [
-  { code:'us', flag:'🇺🇸', label:'United States' },
-  { code:'gb', flag:'🇬🇧', label:'United Kingdom' },
-  { code:'ca', flag:'🇨🇦', label:'Canada' },
-  { code:'au', flag:'🇦🇺', label:'Australia' },
-  { code:'ie', flag:'🇮🇪', label:'Ireland' },
-  { code:'nz', flag:'🇳🇿', label:'New Zealand' },
-  { code:'in', flag:'🇮🇳', label:'India' },
-  { code:'za', flag:'🇿🇦', label:'South Africa' },
-];
-function _contentRegion() {
-  try { return (localStorage.getItem('pl-content-region') || 'us').toLowerCase(); } catch(e) { return 'us'; }
-}
-function _renderRegionPill() {
-  var pill = document.getElementById('disc-region-pill-flag');
-  var lbl = document.getElementById('disc-region-pill-label');
-  if (!pill || !lbl) return;
-  var code = _contentRegion();
-  var match = _DISC_REGIONS.find(function(r){ return r.code === code; });
-  if (match) { pill.textContent = match.flag; lbl.textContent = match.code.toUpperCase(); }
-}
-function _toggleRegionMenu() {
-  var menu = document.getElementById('disc-region-menu');
-  if (!menu) return;
-  var isOpen = menu.style.display !== 'none';
-  if (isOpen) { menu.style.display = 'none'; return; }
-  var current = _contentRegion();
-  menu.innerHTML = _DISC_REGIONS.map(function(r){
-    var isCurrent = r.code === current;
-    return '<button onclick="_setContentRegion(\''+r.code+'\')" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;background:'+(isCurrent?'var(--bg3)':'transparent')+';border:none;cursor:pointer;font-family:var(--ff);font-size:13px;color:var(--text);text-align:left;'+(isCurrent?'font-weight:600':'')+'" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\''+(isCurrent?'var(--bg3)':'transparent')+'\'">'
-      + '<span style="font-size:16px">'+r.flag+'</span>'
-      + '<span>'+r.label+'</span>'
-      + (isCurrent ? '<span style="margin-left:auto;color:var(--text3);font-size:11px">current</span>' : '')
-      + '</button>';
-  }).join('');
-  menu.style.display = 'block';
-  // Close on outside click
-  setTimeout(function() {
-    function _close(ev) {
-      if (!menu.contains(ev.target) && ev.target.id !== 'disc-region-pill' && !document.getElementById('disc-region-pill').contains(ev.target)) {
-        menu.style.display = 'none';
-        document.removeEventListener('click', _close);
-      }
-    }
-    document.addEventListener('click', _close);
-  }, 0);
-}
-function _setContentRegion(code) {
-  try { localStorage.setItem('pl-content-region', code); } catch(e) {}
-  // Persist to Supabase so region survives cache clears + cross-device.
-  if (typeof syncToServer === 'function') syncToServer('region', code);
-  var menu = document.getElementById('disc-region-menu');
-  if (menu) menu.style.display = 'none';
-  _renderRegionPill();
-  // Invalidate caches — content is region-specific
-  _discMarketCache = {};
-  _discStoriesCache = {};
-  _discHeroCache = {};
-  _discDefaultHeroLoadedFor = null;
-  // Reload all region-driven discover content
-  if (typeof loadDefaultHero === 'function') loadDefaultHero(_discCat);
-  if (typeof discRenderShows === 'function') discRenderShows();
-  if (typeof discRenderEpisodes === 'function') discRenderEpisodes();
-  if (typeof plToast === 'function') plToast('Region: ' + code.toUpperCase(), 1500);
-}
-
 function initDiscover() {
   var u = plUser();
   var greet = document.getElementById('disc-greeting');
@@ -6945,14 +6577,42 @@ function initDiscover() {
     if (sub) sub.textContent = 'Trending shows, new episodes, and what the podcasting world is talking about.';
     if (tabs) tabs.style.display = 'flex';
     if (unheardTeaser) unheardTeaser.style.display = '';
-    // Show hero for signed-in users too — loadDefaultHero() will personalize
-    // it to their top interest (or fall back to category top trending if no
-    // interests are set yet).
     if (heroCard) heroCard.style.display = '';
     discRenderRightCol(true, u);
 
+    // Fetch personalized hero for logged-in user
+    _discHeroLoading();
+    fetch('/api/discover-hero?mode=personalized&userId=' + encodeURIComponent(u.id), { signal: AbortSignal.timeout(6000) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.hero) {
+          _discHeroCache['personalized'] = d.hero;
+          if (_discCat === 'all') _discSetHero(d.hero);
+        }
+      }).catch(function(){});
+
+    // Also populate category hero cache from trending-topics
+    fetch('/api/trending-topics', { signal: AbortSignal.timeout(5000) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.heroes && d.heroes.length) {
+          d.heroes.forEach(function(h) {
+            var dur = h.durationMinutes ? (h.durationMinutes >= 60 ? Math.floor(h.durationMinutes/60)+'h '+Math.round(h.durationMinutes%60)+'m' : Math.round(h.durationMinutes)+'m') : '';
+            _discHeroCache[h.category] = {
+              eye: h.category === 'all' ? 'Featured episode' : (h.category.charAt(0).toUpperCase() + h.category.slice(1)),
+              title: _escHtml(h.episodeTitle || ''),
+              show: h.showName || '',
+              host: h.showName + (dur ? ' &middot; ' + dur : ''),
+              url: h.url || '',
+              ytId: h.ytId || null,
+              artwork: h.artwork || null,
+            };
+          });
+        }
+      }).catch(function(){});
+
     // Load For You shelf — single fetch, handle both rendering and prompt
-    var region = _contentRegion();
+    var region = localStorage.getItem('podlens-region') || localStorage.getItem('pl_prefs_region') || 'us';
     if (foryouShelf) foryouShelf.style.display = '';
     var foryouEl = document.getElementById('foryou-trending');
     fetch('/api/for-you?region=' + encodeURIComponent(region) + '&userId=' + encodeURIComponent(u.id), { signal: AbortSignal.timeout(6000) })
@@ -7059,16 +6719,30 @@ function initDiscover() {
                   +'</div>';
               }).join('');
         }
-        // Hero is now owned by loadDefaultHero() — don't overwrite it from
-        // the trending-topics endpoint (which returns analyzed shows, not
-        // top podcast episodes for the category).
+        // Cache heroes by category from live DB data
+        if (d.heroes && d.heroes.length) {
+          d.heroes.forEach(function(h) {
+            var dur = h.durationMinutes ? (h.durationMinutes >= 60 ? Math.floor(h.durationMinutes/60)+'h '+Math.round(h.durationMinutes%60)+'m' : Math.round(h.durationMinutes)+'m') : '';
+            _discHeroCache[h.category] = {
+              eye: h.category === 'all' ? 'Featured episode' : (h.category.charAt(0).toUpperCase() + h.category.slice(1)),
+              title: _escHtml(h.episodeTitle || ''),
+              show: h.showName || '',
+              host: h.showName + (dur ? ' &middot; ' + dur : ''),
+              url: h.url || '',
+              ytId: h.ytId || null,
+              artwork: h.artwork || null,
+            };
+          });
+          // Update current hero if on default category
+          if (_discCat === 'all' && _discHeroCache['all']) {
+            _discSetHero(_discHeroCache['all']);
+          }
+        }
       }).catch(function(){});
   }
   discRenderShows();
   discRenderEpisodes();
   loadDiscTrendingNews();
-  loadDefaultHero(_discCat);
-  _renderRegionPill();
   // Load trending topics from Supabase (all users)
   fetch('/api/trending-topics')
     .then(function(r){ return r.json(); })
@@ -7095,8 +6769,23 @@ function discNavCat(cat, btn) {
   var labels = {all:'Trending across all categories',news:'Trending in News & Politics',tech:'Trending in Technology',business:'Trending in Business',society:'Trending in Society',crime:'Trending in True Crime',comedy:'Trending in Comedy',health:'Trending in Health',sports:'Trending in Sports'};
   if (sub && !plUser()) sub.textContent = labels[cat] || 'Trending shows';
   _renderCategoryBiasContext(cat);
-  // Live hero for this category — fetches top YT episode for the category query
-  loadDefaultHero(cat);
+  // Update hero card for this category
+  if (_discHeroCache[cat]) {
+    _discSetHero(_discHeroCache[cat]);
+  } else if (cat === 'all' && _discHeroCache['personalized'] && plUser()) {
+    _discSetHero(_discHeroCache['personalized']);
+  } else {
+    _discHeroLoading();
+    var heroMode = cat === 'all' ? 'trending' : 'category';
+    fetch('/api/discover-hero?mode=' + heroMode + '&category=' + encodeURIComponent(cat), { signal: AbortSignal.timeout(6000) })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.hero) { _discHeroCache[cat] = d.hero; _discSetHero(d.hero); }
+      }).catch(function() {});
+  }
+  // Show/hide related shelf
+  var relatedShelf = document.getElementById('disc-related-shelf');
+  if (relatedShelf) relatedShelf.style.display = 'none';
   discRenderShows();
   discRenderEpisodes();
 }
@@ -7118,14 +6807,13 @@ function _discSetHero(hero) {
     if (hero.ytId) {
       videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
     } else if (hero.artwork) {
-      // We already have artwork (e.g. from /api/marketplace) — use it directly,
-      // no extra iTunes fetch.
-      videoEl.innerHTML = '<img src="'+hero.artwork+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
+      // Use artwork from API response
+      videoEl.innerHTML = '<img src="'+_escHtml(hero.artwork)+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
     } else {
-      // Non-YouTube + no artwork: gradient placeholder, then resolve iTunes artwork.
+      // Non-YouTube, no artwork: show placeholder then try iTunes
       videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%)">'
         + '<div style="text-align:center;color:rgba(255,255,255,.5)"><div style="font-size:64px;margin-bottom:12px">&#127911;</div><div style="font-size:14px;font-weight:500">'+_escHtml(hero.show || '')+'</div></div></div>';
-      if (hero.show) {
+      if (hero.show && typeof _itunesArtwork === 'function') {
         _itunesArtwork(hero.show).then(function(url) {
           if (url && videoEl) videoEl.innerHTML = '<img src="'+url+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
         });
@@ -7168,7 +6856,7 @@ function discRenderRightCol(isLoggedIn, user) {
     }
   } else {
     topEl.innerHTML = '<div class="disc-cta-box"><h4>A force of clarity in the age of noise</h4>'
-      + '<p>3 free analyses per month. No credit card needed.</p>'
+      + '<p>3 free analyses/month &mdash; no credit card needed.</p>'
       + '<button onclick="openModal(&quot;signup&quot;)">Start free &rarr;</button></div>';
   }
 }
@@ -7179,71 +6867,14 @@ function discRenderEpisodes() {
   var el = document.getElementById('disc-ep-row');
   if (!el) return;
 
-  // Try Supabase analyzed first (signal: people on Podlens are actually
-  // analyzing these episodes). If too sparse, fall back to live YouTube
-  // top podcast episodes for the current category — never the hardcoded list.
-  el.innerHTML = '<div style="grid-column:1/-1;padding:18px 0;color:var(--text3);font-size:12px">Loading top episodes...</div>';
+  // Try to load recently analyzed from community (live data)
   loadPlatformTrending().then(function(trending) {
     if (trending && trending.length >= 3) {
       _renderLiveEpisodes(el, trending.slice(0, 9));
       return;
     }
-    _renderEpisodesFromStories(el, _discCat);
-  }).catch(function() { _renderEpisodesFromStories(el, _discCat); });
-}
-
-// Live top episodes from /api/stories (YouTube long-form podcasts) for the
-// given category. Replaces the previous _renderCuratedEpisodes fallback that
-// relied on the hardcoded CURATED_SHOWS list.
-function _renderEpisodesFromStories(el, cat) {
-  var query = (typeof _DISC_HERO_QUERY !== 'undefined' && _DISC_HERO_QUERY[cat]) || 'top podcast';
-  var region = _contentRegion();
-  var cacheKey = region + ':' + cat;
-  if (_discStoriesCache[cacheKey]) {
-    _paintEpisodesFromStories(el, _discStoriesCache[cacheKey]);
-    return;
-  }
-  var reqCat = cat;
-  fetch('/api/stories?q=' + encodeURIComponent(query) + '&region=' + encodeURIComponent(region) + '&limit=9', { signal: AbortSignal.timeout(8000) })
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (reqCat !== _discCat) return;
-      var eps = (d.results || []).slice(0, 9);
-      if (!eps.length) { _renderCuratedEpisodes(el); return; }
-      _discStoriesCache[cacheKey] = eps;
-      _paintEpisodesFromStories(el, eps);
-    })
-    .catch(function(){ _renderCuratedEpisodes(el); });
-}
-
-function _paintEpisodesFromStories(el, eps) {
-  var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
-  el.innerHTML = eps.map(function(ep, i) {
-    var url = ep.youtubeUrl || ep.feedUrl || '';
-    var safeUrl = url.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    var showName = ep.showName || '';
-    var safeName = showName.replace(/"/g,'').replace(/'/g,'');
-    var slug = showName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    var epTitle = ep.epTitle || 'Episode';
-    var safeTitle = epTitle.replace(/"/g,'').replace(/'/g,'');
-    var safeArt = (ep.artwork||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    var artHtml = ep.artwork
-      ? '<img src="'+ep.artwork+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\'">'
-      : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+showName.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
-    var dur = ep.duration ? ('<span style="margin-left:6px;color:var(--text3);font-size:10px">'+ep.duration+'</span>') : '';
-    // Episode heart (kind=episode) → goes to Liked Episodes via toggleLike.
-    var liked = isLiked({url: url});
-    return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
-      +'<div class="disc-ep-art" style="background:'+bgs[i % 3]+'">'+artHtml+'</div>'
-      +'<div class="disc-ep-body"><div class="disc-ep-show">'+showName+'</div>'
-      +'<div class="disc-ep-title">'+epTitle+'</div>'
-      +'<div class="disc-ep-dur">Top trending'+dur+'</div></div>'
-      +'<div style="display:flex;gap:6px;align-items:center">'
-      +'<button class="ep-like-btn" data-kind="episode" data-url="'+safeUrl+'" data-title="'+safeTitle+'" data-artist="'+safeName+'" data-art="'+safeArt+'" title="'+(liked?'Unlike':'Like episode')+'" onclick="event.stopPropagation();_likeFromBtn(this);this.textContent=this.textContent===\'\u2661\'?\'\u2665\':\'\u2661\';this.style.color=this.textContent===\'\u2665\'?\'#e24b4a\':\'var(--text3)\'" style="padding:6px 8px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:'+(liked?'#e24b4a':'var(--text3)')+'">'+(liked?'\u2665':'\u2661')+'</button>'
-      +'<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\''+safeTitle+'\',\''+safeName+'\',true)">Analyze</button>'
-      +'</div></div>';
-  }).join('');
-  addScrollDrag(el);
+    _renderCuratedEpisodes(el);
+  }).catch(function() { _renderCuratedEpisodes(el); });
 }
 
 function _renderLiveEpisodes(el, episodes) {
@@ -7385,117 +7016,14 @@ function _renderDashFingerprintSection() {
 }
 
 function _renderDashQueueSection(u) {
-  // Smart queue content — render followed-shows list with per-show toggles +
-  // pending/recent queue items, OR upgrade prompt for free users.
+  // Smart queue content — show enabled shows or upgrade prompt
   var el = document.getElementById('sq-main-content');
   if (!el || !u) return;
   var plan = String(u.plan || 'free').toLowerCase();
   var isEligible = u.email === 'academekorea@gmail.com' || u.isSuperAdmin || ['creator','operator','studio','trial'].includes(plan);
   if (!isEligible) {
-    el.innerHTML = '<div style="padding:40px 0;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚡</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue is a Starter Lens+ feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Auto-analyze new episodes from shows you follow.</div><a href="/pricing" onclick="showView(\'pricing\');return false" style="display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">See plans &rarr;</a></div>';
-    return;
+    el.innerHTML = '<div style="padding:40px 0;text-align:center"><div style="font-size:32px;margin-bottom:12px">⚡</div><div style="font-size:15px;font-weight:500;margin-bottom:6px;color:var(--text)">Smart Queue is a Starter Lens+ feature</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Automatically queue new episodes from shows you follow.</div><a href="/pricing" onclick="showView(\'pricing\');return false" style="display:inline-block;padding:10px 24px;background:var(--navy);color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;text-decoration:none">See plans &rarr;</a></div>';
   }
-
-  // Eligible — load full state from server (auth-of-truth) so the per-show
-  // toggles reflect what the cron actually checks.
-  el.innerHTML = '<div style="padding:24px 0;text-align:center;color:var(--text3);font-size:13px">Loading your Smart Queue...</div>';
-  fetch('/api/smart-queue?userId=' + encodeURIComponent(u.id) + '&action=status')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.error) { el.innerHTML = '<div style="padding:24px 0;text-align:center;color:#e24b4a;font-size:13px">'+_escHtml(d.error)+'</div>'; return; }
-      var shows = d.shows || [];
-      var pending = d.pending || [];
-      var completed = d.completed || [];
-      var tier = d.tier || 'free';
-      var tierLimits = { creator: 3, operator: 5, studio: 999 };
-      var max = tierLimits[tier] || 0;
-      var enabledCount = shows.filter(function(s){ return s.smart_queue; }).length;
-
-      var html = '';
-      // Header strip with quota
-      html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'
-        + '<div><div style="font-size:13px;font-weight:600;color:var(--text)">⚡ Auto-analyze new episodes</div>'
-        + '<div style="font-size:11px;color:var(--text3);margin-top:2px">When a followed show drops a new episode, we analyze it for you in the background.</div></div>'
-        + '<div style="font-size:12px;color:var(--text3);font-weight:500">'+enabledCount+(max<999?' / '+max:'')+' shows enabled</div>'
-        + '</div>';
-
-      // Pending queue items
-      if (pending.length) {
-        html += '<div style="margin-bottom:18px"><div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Analyzing now</div>';
-        pending.forEach(function(p){
-          html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'
-            + '<div class="feed-spin" style="width:14px;height:14px"></div>'
-            + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+_escHtml(p.episode_title||'Episode')+'</div>'
-            + '<div style="font-size:11px;color:var(--text3)">'+_escHtml(p.show_name||'')+' \u00b7 '+(p.status||'pending')+'</div></div>'
-            + '</div>';
-        });
-        html += '</div>';
-      }
-
-      // Completed queue items
-      if (completed.length) {
-        html += '<div style="margin-bottom:18px"><div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Recently auto-analyzed</div>';
-        completed.forEach(function(p){
-          html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'
-            + '<span style="color:#3B6D11;font-weight:700;font-size:14px">\u2713</span>'
-            + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+_escHtml(p.episode_title||'Episode')+'</div>'
-            + '<div style="font-size:11px;color:var(--text3)">'+_escHtml(p.show_name||'')+'</div></div>'
-            + (p.analysis_id ? '<button onclick="viewAnalysis(\''+p.analysis_id+'\')" style="padding:5px 10px;background:none;border:0.5px solid var(--border2);border-radius:6px;cursor:pointer;font-size:11px;color:var(--text2);font-family:var(--ff)">View</button>' : '')
-            + '</div>';
-        });
-        html += '</div>';
-      }
-
-      // Followed shows with per-show toggle
-      html += '<div><div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Your followed shows</div>';
-      if (!shows.length) {
-        html += '<div style="background:var(--bg2);border:1px dashed var(--border2);border-radius:10px;padding:32px 20px;text-align:center">'
-          + '<div style="font-size:28px;margin-bottom:8px">📌</div>'
-          + '<div style="font-size:13px;color:var(--text2);margin-bottom:14px">Follow a show first, then toggle Auto-analyze.</div>'
-          + '<button onclick="showView(\'discover\')" style="padding:9px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff)">Browse shows &rarr;</button>'
-          + '</div>';
-      } else {
-        shows.forEach(function(s){
-          var art = s.show_artwork ? '<img src="'+_escHtml(s.show_artwork)+'" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display=\'none\'">' : '<div style="width:36px;height:36px;border-radius:6px;background:var(--bg3);flex-shrink:0"></div>';
-          var disabledAttr = (!s.smart_queue && enabledCount >= max) ? 'disabled' : '';
-          var disabledHint = disabledAttr ? '<span style="font-size:10px;color:var(--text3)" title="Tier limit reached">Limit</span>' : '';
-          html += '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px">'
-            + art
-            + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+_escHtml(s.show_name||'')+'</div>'
-            + '<div style="font-size:11px;color:var(--text3)">'+(s.last_checked_at?'Last checked '+(new Date(s.last_checked_at).toLocaleString()):'Not checked yet')+'</div></div>'
-            + disabledHint
-            + '<label class="sq-toggle" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" '+(s.smart_queue?'checked':'')+' '+disabledAttr+' onchange="_sqToggleFromQueuePage(\''+s.id+'\',this.checked,this)"><span class="sq-slider"></span></label>'
-            + '</div>';
-        });
-      }
-      html += '</div>';
-
-      el.innerHTML = html;
-    }).catch(function(){
-      el.innerHTML = '<div style="padding:24px 0;text-align:center;color:#e24b4a;font-size:13px">Could not load Smart Queue. Try again.</div>';
-    });
-}
-
-// Toggle Smart Queue from the Queue page (uses showId from server)
-function _sqToggleFromQueuePage(showId, enabled, inputEl) {
-  var u = plUser(); if (!u) return;
-  fetch('/api/smart-queue', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: u.id, action: 'toggle_show', showId: showId, enabled: enabled })
-  }).then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.error) {
-        if (inputEl) inputEl.checked = !enabled;
-        plToast(d.error, 3500);
-        return;
-      }
-      plToast(enabled ? 'Auto-analyze ON' : 'Auto-analyze OFF', 1500);
-      // Refresh the list so the count + limit reflects the change
-      _renderDashQueueSection(u);
-    }).catch(function(){
-      if (inputEl) inputEl.checked = !enabled;
-      plToast('Could not update Smart Queue');
-    });
 }
 
 function discShowFollowing() { showView('home'); showDashSection('following'); }
@@ -7522,7 +7050,7 @@ function navHome() {
   var h = document.getElementById('signup-heading');
   var s = document.getElementById('signup-subtext');
   if (h) h.textContent = 'Your personalized Home dashboard';
-  if (s) s.innerHTML = 'Sign in to unlock your personalized dashboard: analysis history, bias fingerprint, followed shows, and weekly insights all in one place.';
+  if (s) s.innerHTML = 'Sign in to unlock your personalized dashboard &mdash; analysis history, bias fingerprint, followed shows, and weekly insights, all in one place.';
   openModal('signup');
 }
 
@@ -7887,26 +7415,14 @@ function loadDiscTrendingNews() {
   var el = document.getElementById('disc-trending-news');
   if (!el) return;
 
-  // News topics ONLY — never show names. Clicking surfaces popular shows/episodes
-  // covering that topic via discTopicHero() (which fetches a top YT episode for
-  // the topic via /api/stories).
-  // Live topics come from /api/trending-news (Currents API, cached 1hr server-side).
-  // Falls back to a static list if the endpoint is down or the API key is missing.
-  var FALLBACK = [
-    'Artificial Intelligence', 'Trump Administration', 'Federal Reserve',
-    'Gaza Ceasefire', 'Climate Policy', 'Big Tech Regulation',
-    'Immigration', 'World Cup 2026', 'Healthcare Costs', 'Elon Musk',
-    'Ukraine War', 'Stock Market', 'Supreme Court', 'Social Media',
-    'Nuclear Energy', 'Cryptocurrency', 'China Trade War', 'NATO',
-  ];
-
-  function _renderTopicPills(topics) {
+  function renderPills(topics) {
     el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;margin-right:4px;color:var(--text3);padding:6px 0">'
       + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>'
       + '</div>'
       + topics.map(function(topic) {
           var safe = topic.replace(/'/g, "\\'");
-          return '<button onclick="discTopicHero(\''+safe+'\')" '
+          var onclickJs = 'discTopicHero(\''+safe+'\')';
+          return '<button onclick="'+onclickJs+'" '
             + 'style="display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:7px 14px;'
             + 'background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;'
             + 'cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:500;color:var(--text);'
@@ -7917,146 +7433,49 @@ function loadDiscTrendingNews() {
         }).join('');
   }
 
-  // Render fallback immediately (instant pills) then upgrade to live topics
-  _renderTopicPills(FALLBACK);
-  fetch('/api/trending-news', { signal: AbortSignal.timeout(6000) })
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d && d.topics && d.topics.length >= 6) _renderTopicPills(d.topics);
-    })
-    .catch(function(){ /* keep fallback already rendered */ });
+  // Show loading state
+  el.innerHTML = '<span style="color:var(--text3);font-size:12px;padding:8px">Loading trending...</span>';
+
+  // Fetch live trending news from Currents API + platform data
+  fetch('/api/trending-topics', { signal: AbortSignal.timeout(8000) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var newsTopics = (d.trendingNews || []).filter(Boolean);
+      var platformTopics = (d.topics || []).map(function(t) { return t.name; }).filter(Boolean);
+      // News topics first, then platform shows, deduplicated
+      var merged = [];
+      var seen = {};
+      newsTopics.concat(platformTopics).forEach(function(t) {
+        if (!seen[t.toLowerCase()] && merged.length < 18) {
+          seen[t.toLowerCase()] = true;
+          merged.push(t);
+        }
+      });
+      if (merged.length > 0) {
+        renderPills(merged);
+      } else {
+        el.innerHTML = '';
+      }
+    }).catch(function() { el.innerHTML = ''; });
 }
 
 
 
-// ── TOPIC HERO DATA ───────────────────────────────────────────────────────────
-var TOPIC_HEROES = {
-  'Artificial Intelligence': { title:'Sam Altman — OpenAI, GPT-5 & the Future of AI', show:'Lex Fridman Podcast', url:'https://www.youtube.com/watch?v=jvqFAi7vkBc', ytId:'jvqFAi7vkBc', duration:'2h 45m', cat:'tech' },
-  'Trump Administration':    { title:'Trump 2.0 — What Happened in 100 Days', show:'Pod Save America', url:'https://feeds.megaphone.fm/pod-save-america', ytId:null, duration:'1h 12m', cat:'news' },
-  'Federal Reserve':         { title:'Inside the Fed Rate Decision', show:'Planet Money', url:'https://feeds.npr.org/510289/podcast.xml', ytId:null, duration:'28m', cat:'business' },
-  'Gaza Ceasefire':          { title:'The Gaza War — What Comes Next', show:'The Daily', url:'https://feeds.simplecast.com/54nAGcIl', ytId:null, duration:'32m', cat:'news' },
-  'Climate Policy':          { title:'How Climate Policy Is Failing Us', show:'The Ezra Klein Show', url:'https://feeds.simplecast.com/82FI35Px', ytId:null, duration:'1h 8m', cat:'news' },
-  'Big Tech Regulation':     { title:'Breaking Up Big Tech', show:'Hard Fork', url:'https://feeds.simplecast.com/l2i9YnTd', ytId:null, duration:'58m', cat:'tech' },
-  'Immigration':             { title:'The Border Crisis Explained', show:'NPR Politics Podcast', url:'https://feeds.npr.org/510310/podcast.xml', ytId:null, duration:'44m', cat:'news' },
-  'World Cup 2026':          { title:'World Cup 2026 — The Host City Battle', show:'The Bill Simmons Podcast', url:'https://feeds.megaphone.fm/billsimmons', ytId:null, duration:'1h 15m', cat:'sports' },
-  'Healthcare Costs':        { title:'Why American Healthcare Costs So Much', show:'Maintenance Phase', url:'https://feeds.megaphone.fm/maintenancephase', ytId:null, duration:'1h 22m', cat:'health' },
-  'Elon Musk':               { title:'Elon Musk — DOGE, X, and Tesla', show:'All-In Podcast', url:'https://feeds.megaphone.fm/allin', ytId:null, duration:'1h 34m', cat:'business' },
-  'Ukraine War':             { title:'Ukraine — Two Years In', show:'The Daily', url:'https://feeds.simplecast.com/54nAGcIl', ytId:null, duration:'36m', cat:'news' },
-  'Stock Market':            { title:'Markets in Chaos — What Is Actually Happening', show:'Planet Money', url:'https://feeds.npr.org/510289/podcast.xml', ytId:null, duration:'29m', cat:'business' },
-  'Supreme Court':           { title:'The Supreme Courts Most Consequential Term', show:'NPR Politics Podcast', url:'https://feeds.npr.org/510310/podcast.xml', ytId:null, duration:'48m', cat:'news' },
-  'Social Media':            { title:'How Social Media Rewired Politics', show:'The Ezra Klein Show', url:'https://feeds.simplecast.com/82FI35Px', ytId:null, duration:'1h 18m', cat:'news' },
-  'Nuclear Energy':          { title:'Nuclear Power Second Chance', show:'How I Built This', url:'https://feeds.npr.org/510313/podcast.xml', ytId:null, duration:'55m', cat:'business' },
-  'Cryptocurrency':          { title:'Crypto in 2026 — Boom or Bust', show:'All-In Podcast', url:'https://feeds.megaphone.fm/allin', ytId:null, duration:'1h 5m', cat:'business' },
-  'China Trade War':         { title:'Inside the China Trade War', show:'NPR Politics Podcast', url:'https://feeds.npr.org/510310/podcast.xml', ytId:null, duration:'41m', cat:'news' },
-  'NATO':                    { title:'NATO at 75 — Still Relevant?', show:'The Daily', url:'https://feeds.simplecast.com/54nAGcIl', ytId:null, duration:'27m', cat:'news' },
-};
+// ── LIVE HERO CACHE ──────────────────────────────────────────────────────────
+var _discHeroCache = {};  // keyed by "all", "news", "topic:AI", "personalized"
+var _discCurrentHeroUrl = '';
+var _discCurrentHeroShow = '';
+var _discCurrentHeroTitle = '';
 
-// Mutable default hero — replaced on first discover load with a live top
-// trending episode from /api/stories (YouTube long-form podcasts). Static
-// values here are an instant placeholder so the hero never appears empty
-// before the live fetch resolves.
-var _discDefaultHero = {
-  eye:'Featured episode', title:'Loading top episode...',
-  show:'', host:'',
-  url:'', ytId:''
-};
-
-// CATEGORY_HEROES retained as a no-op shape for any callers that read it;
-// per-category heroes are now fetched live in loadDefaultHero(cat).
-var CATEGORY_HEROES = { all: _discDefaultHero };
-var _discCurrentHeroUrl = _discDefaultHero.url;
-var _discCurrentHeroShow = _discDefaultHero.show;
-var _discCurrentHeroTitle = _discDefaultHero.title;
-var _discDefaultHeroLoadedFor = null; // category we last loaded the default for
-
-// Map UI category → /api/stories search query for default-hero rotation
-var _DISC_HERO_QUERY = {
-  all: 'top podcast',
-  news: 'news politics',
-  tech: 'technology',
-  business: 'business',
-  society: 'society culture',
-  crime: 'true crime',
-  comedy: 'comedy',
-  health: 'health',
-  sports: 'sports'
-};
-
-// Pretty eyebrow label per category
-var _DISC_HERO_EYE = {
-  all: 'Featured episode',
-  news: 'Top in News & Politics',
-  tech: 'Top in Technology',
-  business: 'Top in Business',
-  society: 'Top in Society',
-  crime: 'Top in True Crime',
-  comedy: 'Top in Comedy',
-  health: 'Top in Health',
-  sports: 'Top in Sports'
-};
-
-function loadDefaultHero(cat) {
-  cat = cat || _discCat || 'all';
-  var u = plUser();
-  var personalize = !!(u && u.id && cat === 'all' && Array.isArray(u.interests) && u.interests.length);
-  var cacheKey = cat + (personalize ? ':' + (u.id || '') + ':' + u.interests[0] : '');
-  if (_discDefaultHeroLoadedFor === cacheKey && _discDefaultHero.url) {
-    _discSetHero(_discDefaultHero);
-    return;
-  }
-  _discDefaultHeroLoadedFor = cacheKey;
-  var region = _contentRegion();
-
-  // For "all" + signed-in with interests → personalized YouTube episode (current behavior).
-  // For "all" without interests → top YouTube podcast for the region.
-  // For specific categories (news, tech, etc.) → top iTunes SHOW for the category,
-  //   randomized among top 5 for variety. Hero displays the show, Play loads its
-  //   latest episode.
-  if (cat === 'all') {
-    var query = personalize ? (u.interests[0] + ' podcast') : (_DISC_HERO_QUERY['all'] || 'top podcast');
-    var eye = personalize ? ('For you · ' + u.interests[0]) : (_DISC_HERO_EYE['all'] || 'Featured episode');
-    fetch('/api/stories?q=' + encodeURIComponent(query) + '&region=' + encodeURIComponent(region) + '&limit=1', { signal: AbortSignal.timeout(8000) })
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (cat !== _discCat) return;
-        var ep = (d.results || [])[0];
-        if (!ep) return;
-        var url = ep.youtubeUrl || ep.feedUrl || '';
-        var ytMatch = url.match(/[?&]v=([\w-]{11})|youtu\.be\/([\w-]{11})/);
-        var ytId = ytMatch ? (ytMatch[1] || ytMatch[2]) : '';
-        _discDefaultHero = {
-          eye: eye,
-          title: ep.epTitle || 'Top episode',
-          show: ep.showName || '',
-          host: (ep.showName || '') + (ep.duration ? ' · ' + ep.duration : ''),
-          url: url, ytId: ytId
-        };
-        _discSetHero(_discDefaultHero);
-      }).catch(function(){});
-    return;
-  }
-
-  // Category-specific: top iTunes show for that category
-  var marketCat = (typeof _DISC_MARKET_CAT !== 'undefined' && _DISC_MARKET_CAT[cat]) || cat;
-  var eyeLabel = _DISC_HERO_EYE[cat] || 'Featured show';
-  fetch('/api/marketplace?category=' + encodeURIComponent(marketCat) + '&region=' + encodeURIComponent(region), { signal: AbortSignal.timeout(8000) })
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (cat !== _discCat) return;
-      var shows = (d.podcasts || []).slice(0, 5); // rotate among top 5 for variety
-      if (!shows.length) return;
-      var pick = shows[Math.floor(Math.random() * shows.length)];
-      _discDefaultHero = {
-        eye: eyeLabel,
-        title: pick.name || 'Top show',
-        show: pick.name || '',
-        host: (pick.artist || '') + (pick.category ? ' · ' + pick.category : ''),
-        url: pick.feedUrl || pick.itunesUrl || '',
-        ytId: '',
-        artwork: pick.artwork || ''
-      };
-      _discSetHero(_discDefaultHero);
-    }).catch(function(){});
+function _discHeroLoading() {
+  var eyeEl = document.getElementById('disc-hero-eye');
+  var titleEl = document.getElementById('disc-hero-title');
+  var hostEl = document.getElementById('disc-hero-host');
+  var videoEl = document.getElementById('disc-hero-video');
+  if (eyeEl) eyeEl.textContent = '';
+  if (titleEl) titleEl.innerHTML = '<div style="height:22px;width:70%;border-radius:6px;background:var(--border);animation:shimmer 1.2s infinite"></div>';
+  if (hostEl) hostEl.textContent = '';
+  if (videoEl) videoEl.innerHTML = '<div style="position:absolute;inset:0;background:var(--bg2);animation:shimmer 1.2s infinite"></div>';
 }
 
 function _discMakeShowClickable(hostEl, showName, feedUrl) {
@@ -8066,139 +7485,98 @@ function _discMakeShowClickable(hostEl, showName, feedUrl) {
   hostEl.onclick = function() {
     var slug = (showName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     showView('show');
-    // Pass exactName as 3rd arg so iTunes lookup matches even when slug is
-    // ambiguous (e.g. "the-daily" → "the daily" → The Daily by NYT).
-    if (typeof loadShowProfile === 'function') loadShowProfile(slug, null, showName);
+    if (typeof loadShowProfile === 'function') loadShowProfile(slug, feedUrl || null);
   };
 }
 
-// Track in-flight topic-hero request so out-of-order responses don't clobber UI
-var _discHeroReqTopic = null;
-
 function discTopicHero(topic) {
-  var eyeEl = document.getElementById('disc-hero-eye');
-  var titleEl = document.getElementById('disc-hero-title');
-  var hostEl = document.getElementById('disc-hero-host');
-  var videoEl = document.getElementById('disc-hero-video');
-  var playBtn = document.getElementById('disc-hero-play-btn');
-  var analyzeBtn = document.getElementById('disc-hero-analyze-btn');
+  var cacheKey = 'topic:' + topic.toLowerCase();
   var relatedShelf = document.getElementById('disc-related-shelf');
   var relatedTitle = document.getElementById('disc-related-title');
   var relatedList = document.getElementById('disc-related-list');
 
-  if (eyeEl) eyeEl.textContent = topic;
-  if (titleEl) titleEl.innerHTML = 'Loading top episode on: ' + _escHtml(topic) + '...';
-  if (hostEl) hostEl.textContent = '';
-  if (videoEl) {
-    videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%);color:rgba(255,255,255,.4);font-size:13px">Finding top episode...</div>';
-  }
-  // Clear hero state until we have a live result
-  _discCurrentHeroUrl = '';
-  _discCurrentHeroShow = '';
-  _discCurrentHeroTitle = '';
+  // Show related shelf + loading state immediately
   if (relatedShelf) relatedShelf.style.display = '';
   if (relatedTitle) relatedTitle.textContent = 'Podcasts covering: ' + topic;
-  _buildRelatedEpisodes(relatedList, topic, null);
 
-  // Fetch top episode for this topic from YouTube via /api/stories
-  _discHeroReqTopic = topic;
-  var region = _contentRegion();
-  fetch('/api/stories?q=' + encodeURIComponent(topic) + '&region=' + encodeURIComponent(region) + '&limit=1', { signal: AbortSignal.timeout(8000) })
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (_discHeroReqTopic !== topic) return; // stale response
-      var ep = (d.results || [])[0];
-      if (!ep) { _setHeroNoMatch(topic, titleEl, hostEl, videoEl); return; }
-      var url = ep.youtubeUrl || ep.feedUrl || '';
-      var ytId = '';
-      var ytMatch = url.match(/[?&]v=([\w-]{11})|youtu\.be\/([\w-]{11})/);
-      if (ytMatch) ytId = ytMatch[1] || ytMatch[2];
-      if (titleEl) titleEl.textContent = ep.epTitle || 'Top episode';
-      if (hostEl) hostEl.textContent = (ep.showName || '') + (ep.duration ? ' · ' + ep.duration : '');
-      if (videoEl) {
-        if (ytId) {
-          videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
-        } else if (ep.artwork) {
-          videoEl.innerHTML = '<img src="'+ep.artwork+'" style="width:100%;height:100%;object-fit:cover" alt="">';
-        } else {
-          videoEl.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(255,255,255,.2)">&#9654;</div>';
-        }
+  // Check cache
+  if (_discHeroCache[cacheKey]) {
+    var cached = _discHeroCache[cacheKey];
+    if (cached.hero) _discSetHero(cached.hero);
+    if (cached.relatedShows) _buildRelatedFromData(relatedList, cached.relatedShows, topic);
+    return;
+  }
+
+  // Show loading state on hero
+  _discHeroLoading();
+  var eyeEl = document.getElementById('disc-hero-eye');
+  if (eyeEl) eyeEl.textContent = topic;
+
+  fetch('/api/discover-hero?mode=topic&topic=' + encodeURIComponent(topic), { signal: AbortSignal.timeout(8000) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      _discHeroCache[cacheKey] = d;
+      if (d.hero) {
+        _discSetHero(d.hero);
+      } else {
+        // No hero found — show placeholder
+        var titleEl = document.getElementById('disc-hero-title');
+        var hostEl = document.getElementById('disc-hero-host');
+        var videoEl = document.getElementById('disc-hero-video');
+        if (titleEl) titleEl.textContent = 'Top podcasts on: ' + topic;
+        if (hostEl) hostEl.textContent = 'Browse episodes below';
+        if (videoEl) videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%);color:rgba(255,255,255,.5);font-size:14px;text-align:center;padding:16px">'
+          + '<div><div style="font-size:48px;margin-bottom:10px;opacity:0.4">&#128269;</div>'
+          + 'Episodes about <strong style="color:#fff">' + _escHtml(topic) + '</strong> below</div></div>';
+        _discCurrentHeroUrl = '';
+        _discCurrentHeroShow = '';
+        _discCurrentHeroTitle = '';
       }
-      _discCurrentHeroUrl = url;
-      _discCurrentHeroShow = ep.showName || '';
-      _discCurrentHeroTitle = ep.epTitle || '';
-      if (playBtn) playBtn.onclick = discHeroPlay;
-      if (analyzeBtn) analyzeBtn.onclick = function(){ analyzeEp(null, url, ep.epTitle||'', ep.showName||'', true); };
-      _discMakeShowClickable(hostEl, ep.showName || '', url);
-    })
-    .catch(function(){
-      if (_discHeroReqTopic !== topic) return;
-      _setHeroNoMatch(topic, titleEl, hostEl, videoEl);
+      if (d.relatedShows && d.relatedShows.length) {
+        _buildRelatedFromData(relatedList, d.relatedShows, topic);
+      } else {
+        // Fallback to CURATED_SHOWS search
+        _buildRelatedEpisodes(relatedList, topic, null);
+      }
+    }).catch(function() {
+      // Fallback: search locally
+      discSearch(topic);
+      _buildRelatedEpisodes(relatedList, topic, null);
     });
 }
 
-function _setHeroNoMatch(topic, titleEl, hostEl, videoEl) {
-  if (titleEl) titleEl.innerHTML = 'Top podcasts on: ' + _escHtml(topic);
-  if (hostEl) hostEl.textContent = 'Browse episodes below';
-  if (videoEl) {
-    videoEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027 0%,#1a3a5c 100%);color:rgba(255,255,255,.5);font-size:14px;text-align:center;padding:16px">'
-      + '<div><div style="font-size:48px;margin-bottom:10px;opacity:0.4">&#128269;</div>'
-      + 'Episodes about <strong style="color:#fff">' + _escHtml(topic) + '</strong> below</div></div>';
-  }
+function _buildRelatedFromData(el, shows, topic) {
+  if (!el || !shows || !shows.length) return;
+  var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
+  el.innerHTML = shows.slice(0, 6).map(function(s, i) {
+    var slug = (s.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    var safeFeed = (s.feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var safeName = (s.name||'').replace(/"/g,'').replace(/'/g,'');
+    var artHtml = s.artwork ? '<img src="'+_escHtml(s.artwork)+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">' : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+safeName.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
+    return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeFeed+'\')">'
+      +'<div class="disc-ep-art" style="background:'+bgs[i%3]+'">'+artHtml+'</div>'
+      +'<div class="disc-ep-body"><div class="disc-ep-show">'+_escHtml(s.artist||s.name||'')+'</div><div class="disc-ep-title">'+_escHtml(s.name||'')+'</div><div class="disc-ep-dur">Related to '+_escHtml(topic)+'</div></div>'
+      +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeFeed+'\',\'\',\''+safeName+'\',true)">Analyze</button></div></div>';
+  }).join('');
 }
-
-// Map news topics → relevant podcast categories (which shows are most likely to cover them)
-var TOPIC_CATS = {
-  'Artificial Intelligence': ['tech','business'],
-  'Trump Administration':    ['news'],
-  'Federal Reserve':         ['business','news'],
-  'Gaza Ceasefire':          ['news'],
-  'Climate Policy':          ['news','society'],
-  'Big Tech Regulation':     ['tech','news'],
-  'Immigration':             ['news'],
-  'World Cup 2026':          ['sports'],
-  'Healthcare Costs':        ['health','news'],
-  'Elon Musk':               ['business','tech'],
-  'Ukraine War':             ['news'],
-  'Stock Market':            ['business'],
-  'Supreme Court':           ['news'],
-  'Social Media':            ['tech','society'],
-  'Nuclear Energy':          ['business','news'],
-  'Cryptocurrency':          ['business','tech'],
-  'China Trade War':         ['news','business'],
-  'NATO':                    ['news'],
-};
 
 function _buildRelatedEpisodes(el, topic, excludeUrl) {
   if (!el) return;
-  var lower = (topic || '').toLowerCase();
-  var cats = TOPIC_CATS[topic] || [];
-  // Pull popular shows from the relevant categories first, then keyword matches as backup
-  var byCat = CURATED_SHOWS.filter(function(s){
-    return cats.indexOf(s.cat) !== -1 && s.feedUrl && s.feedUrl !== excludeUrl;
+  var lower = topic.toLowerCase();
+  var related = CURATED_SHOWS.filter(function(s){
+    return (s.name.toLowerCase().includes(lower) || s.artist.toLowerCase().includes(lower) || s.cat.toLowerCase().includes(lower))
+      && s.feedUrl !== excludeUrl;
   });
-  var byKeyword = CURATED_SHOWS.filter(function(s){
-    return (s.name.toLowerCase().includes(lower) || (s.artist||'').toLowerCase().includes(lower))
-      && s.feedUrl && s.feedUrl !== excludeUrl
-      && byCat.indexOf(s) === -1;
-  });
-  var related = byCat.concat(byKeyword);
-  if (!related.length) related = CURATED_SHOWS.filter(function(s){ return s.feedUrl && s.feedUrl !== excludeUrl; });
-  // Sort: balanced/center bias first (more credible per-topic coverage)
-  related = related.slice().sort(function(a, b) {
-    var ba = a.bias ? Math.abs(a.bias.score) : 100;
-    var bb = b.bias ? Math.abs(b.bias.score) : 100;
-    return ba - bb;
-  });
-  var bgs = ['#1a3050','#0d1f2d','#1e0a3c','#2d1a4a','#1a2e0d','#3d1a1a'];
-  el.innerHTML = related.slice(0,6).map(function(s, i) {
+  if (!related.length) related = CURATED_SHOWS.filter(function(s){ return s.feedUrl !== excludeUrl; }).slice(0,3);
+  var bgs = ['#1a3050','#0d1f2d','#1e0a3c'];
+  el.innerHTML = related.slice(0,3).map(function(s, i) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    var safeUrl = (s.feedUrl||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
+    var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
     var safeName = s.name.replace(/"/g,'').replace(/'/g,'');
     var artHtml = s.artwork ? '<img src="'+s.artwork+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">' : '<span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">'+s.name.split(' ').map(function(w){return w[0]||'';}).slice(0,3).join('')+'</span>';
     var biasPill = s.bias ? '<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);margin-left:6px">'+s.bias.label+'</span>' : '';
     return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
-      +'<div class="disc-ep-art" style="background:'+bgs[i%bgs.length]+'">'+artHtml+'</div>'
+      +'<div class="disc-ep-art" style="background:'+bgs[i%3]+'">'+artHtml+'</div>'
       +'<div class="disc-ep-body"><div class="disc-ep-show">'+s.artist+'</div><div class="disc-ep-title">'+s.name+'</div><div class="disc-ep-dur">Latest episode'+biasPill+'</div></div>'
       +'<div style="display:flex;gap:6px;align-items:center"><button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\'\',\''+safeName+'\',true)">Analyze</button></div></div>';
   }).join('');
@@ -8207,16 +7585,36 @@ function _buildRelatedEpisodes(el, topic, excludeUrl) {
 function discResetHero() {
   var relatedShelf = document.getElementById('disc-related-shelf');
   if (relatedShelf) relatedShelf.style.display = 'none';
-  // Re-fetch (or reuse cached) default hero for the current category
-  _discDefaultHeroLoadedFor = null; // force refetch in case it's been a while
-  loadDefaultHero(_discCat);
-  // Reset shows/episodes
+  _discCat = 'all';
+  document.querySelectorAll('.disc-nav-cat').forEach(function(b){ b.classList.remove('on'); });
+  var allBtn = document.querySelector('.disc-nav-cat[onclick*="\'all\'"]');
+  if (allBtn) allBtn.classList.add('on');
+
+  // Restore default hero: personalized (logged-in) or trending (logged-out)
+  var u = plUser();
+  var hero = (u && _discHeroCache['personalized']) || _discHeroCache['all'];
+  if (hero) {
+    _discSetHero(hero);
+  } else {
+    // Fetch fresh
+    _discHeroLoading();
+    var mode = (u && u.id) ? 'personalized' : 'trending';
+    var params = mode === 'personalized' ? '?mode=personalized&userId=' + encodeURIComponent(u.id) : '?mode=trending';
+    fetch('/api/discover-hero' + params, { signal: AbortSignal.timeout(6000) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.hero) {
+          _discHeroCache[mode === 'personalized' ? 'personalized' : 'all'] = d.hero;
+          _discSetHero(d.hero);
+        }
+      }).catch(function(){});
+  }
   discRenderShows();
   discRenderEpisodes();
 }
 
 function discHeroPlay() {
-  var url = _discCurrentHeroUrl || _discDefaultHero.url;
+  var url = _discCurrentHeroUrl;
   if (!url) return;
   // Play audio in ar-dock player instead of navigating to analyze
   var dock = document.getElementById('ar-dock');
@@ -8225,85 +7623,28 @@ function discHeroPlay() {
   var dockArt = document.getElementById('ar-dock-art');
   var dockPlay = document.getElementById('ar-dock-play');
   var dockStatus = document.getElementById('ar-dock-status');
-  // For YouTube URLs, just play the embedded video in place. The hero card
-  // already has a YouTube iframe — reload it with autoplay=1 to start playback.
-  // Browsers allow autoplay when triggered by a user click on the same gesture.
+  // For YouTube URLs, fall back to analyze (can't direct-play YT audio)
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    var ytMatch = url.match(/[?&]v=([\w-]{11})|youtu\.be\/([\w-]{11})/);
-    var ytId = ytMatch ? (ytMatch[1] || ytMatch[2]) : '';
-    if (!ytId) {
-      window.open(url, '_blank', 'noopener');
-      return;
-    }
-    // Find the VISIBLE hero video container — both disc-hero-video and
-    // dash-hero-video exist in the DOM at all times; we need the one currently
-    // on screen. offsetParent === null when an ancestor has display:none.
-    var ids = ['disc-hero-video', 'dash-hero-video'];
-    var videoEl = null;
-    for (var i = 0; i < ids.length; i++) {
-      var candidate = document.getElementById(ids[i]);
-      if (candidate && candidate.offsetParent !== null) { videoEl = candidate; break; }
-    }
-    if (!videoEl) videoEl = document.getElementById(ids[0]) || document.getElementById(ids[1]);
-    if (videoEl) {
-      videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
-    } else {
-      window.open(url, '_blank', 'noopener');
-    }
+    var inp = document.getElementById('url-input');
+    if (inp) inp.value = url;
+    showView('analyze');
+    setTimeout(function() { startAnalysis(url); }, 300);
     return;
   }
-  // RSS feed or iTunes URL → resolve to the show's latest episode audio first.
-  // The hero stores the feedUrl (or itunesUrl) for category shows from
-  // /api/marketplace, and Audio() can't play XML/HTML directly. /api/episodes
-  // parses the feed and returns the latest episode's enclosure URL.
-  var isAudioFile = /\.(mp3|m4a|aac|wav|ogg|opus)(\?|$)/i.test(url);
-  var isItunesUrl = /podcasts\.apple\.com|itunes\.apple\.com/i.test(url);
-  if (isItunesUrl) {
-    // iTunes web URL — open in new tab, we don't have the feed.
-    window.open(url, '_blank', 'noopener');
-    return;
-  }
-  if (!isAudioFile) {
-    // Treat as RSS feed: fetch latest episode, then play its audio.
-    if (typeof plToast === 'function') plToast('Loading latest episode...', 1500);
-    fetch('/api/episodes?url=' + encodeURIComponent(url), { signal: AbortSignal.timeout(8000) })
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        var ep = (d && d.episodes || [])[0];
-        if (!ep || !ep.audioUrl) {
-          if (typeof plToast === 'function') plToast('No playable audio found', 2000);
-          return;
-        }
-        // Update hero title to reflect what's actually playing
-        _discCurrentHeroTitle = ep.title || _discCurrentHeroTitle;
-        _playInDock(ep.audioUrl, _discCurrentHeroShow || '', ep.title || _discCurrentHeroTitle || '');
-      })
-      .catch(function(){
-        if (typeof plToast === 'function') plToast('Could not load latest episode', 2000);
-      });
-    return;
-  }
-  // Direct audio URL — play immediately
-  _playInDock(url, _discCurrentHeroShow || _discDefaultHero.show || '', _discCurrentHeroTitle || _discDefaultHero.title || '');
-}
-
-function _playInDock(audioUrl, showName, epTitle) {
+  // For RSS/audio URLs, play in dock
   if (_arMedia.audio) { _arMedia.audio.pause(); _arMedia.audio = null; }
-  var dock = document.getElementById('ar-dock');
-  var dockTitle = document.getElementById('ar-dock-title');
-  var dockShow = document.getElementById('ar-dock-show');
-  var dockArt = document.getElementById('ar-dock-art');
-  var dockPlay = document.getElementById('ar-dock-play');
-  var dockStatus = document.getElementById('ar-dock-status');
-  // Pull artwork from CURATED_SHOWS or the current default hero
-  var curShow = (typeof CURATED_SHOWS !== 'undefined') && CURATED_SHOWS.find(function(s){ return s.name === showName; });
-  var artUrl = (curShow && curShow.artwork) || (_discDefaultHero && _discDefaultHero.artwork) || '';
+  var showName = _discCurrentHeroShow || '';
+  var epTitle = _discCurrentHeroTitle || '';
+  // Find artwork from CURATED_SHOWS
+  var curShow = (typeof CURATED_SHOWS !== 'undefined') && CURATED_SHOWS.find(function(s){ return s.name === showName || s.feedUrl === url; });
+  var artUrl = (curShow && curShow.artwork) || '';
   if (dock) dock.classList.remove('hidden');
-  if (dockTitle) dockTitle.textContent = (epTitle || '').replace(/&mdash;/g,'\u2014').replace(/&amp;/g,'&');
+  if (dockTitle) dockTitle.textContent = epTitle.replace(/&mdash;/g,'\u2014').replace(/&amp;/g,'&');
   if (dockShow) dockShow.textContent = showName;
   if (dockArt && artUrl) dockArt.src = artUrl;
   if (dockStatus) { dockStatus.className = 'ar-dock-status'; dockStatus.textContent = ''; }
-  _arInitNativeAudio(audioUrl, { audioLean: {} });
+  // Initialize native audio player
+  _arInitNativeAudio(url, { audioLean: {} });
   if (_arMedia.audio) {
     _arMedia.audio.play().catch(function(){});
     _arSetPlayIcon(true, document.getElementById('ar-play-btn'), dockPlay);
@@ -8400,38 +7741,6 @@ function discLoadLiveShows(cat) {
     .catch(function() { container.innerHTML = ''; });
 }
 
-// Map UI categories to /api/marketplace category param
-var _DISC_MARKET_CAT = {
-  all: 'all', news: 'news', tech: 'technology', business: 'business',
-  society: 'society', crime: 'true-crime', comedy: 'comedy',
-  health: 'health', sports: 'sports'
-};
-
-// In-memory caches per (region, category). Once loaded, switching categories
-// is instant. Cleared by _setContentRegion when the user changes country.
-var _discMarketCache = {};   // key: region:cat → podcasts[]
-var _discStoriesCache = {};  // key: region:cat → episodes[]
-var _discHeroCache = {};     // key: region:cat → hero object
-
-function _renderShowsRow(el, shows) {
-  if (!shows || !shows.length) { _renderShowsFallback(el); return; }
-  el.innerHTML = shows.map(function(s) {
-    var name = s.name || '';
-    var slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    var safeUrl = (s.feedUrl||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    var safeName = name.replace(/"/g,"").replace(/'/g,"");
-    var safeArt = (s.artwork||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    var art = _showArtImg(s.artwork, name, 'disc-show-art');
-    return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
-      + _heartBtn(s.feedUrl||'',name,s.artist||'',s.artwork||'')
-      + art + '<div class="disc-show-name">'+name+'</div>'
-      + '<div class="disc-show-sub">'+(s.artist||'')+'</div>'
-      + '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+safeArt+'\',this)" style="margin-top:auto;padding-top:8px;width:100%;padding:8px 6px 6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(name)?'✓ Following':'+ Follow')+'</button>'
-      + '</div>';
-  }).join('');
-  addScrollDrag(el);
-}
-
 function discRenderShows() {
   var el = document.getElementById('disc-shows-row');
   if (!el) return;
@@ -8457,36 +7766,15 @@ function discRenderShows() {
     return;
   }
 
-  var marketCat = _DISC_MARKET_CAT[_discCat] || 'all';
-  var region = _contentRegion();
-  var cacheKey = region + ':' + marketCat;
-
-  // Cache hit → instant render, no skeleton flash
-  if (_discMarketCache[cacheKey]) {
-    _renderShowsRow(el, _discMarketCache[cacheKey]);
-    return;
-  }
-
-  el.innerHTML = '<div style="grid-column:1/-1;padding:18px 0;color:var(--text3);font-size:12px">Loading top podcasts...</div>';
-  var reqCat = _discCat;
-  fetch('/api/marketplace?category=' + encodeURIComponent(marketCat) + '&region=' + encodeURIComponent(region), { signal: AbortSignal.timeout(7000) })
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (reqCat !== _discCat) return; // race guard
-      var shows = (d.podcasts || []).slice(0, 24);
-      _discMarketCache[cacheKey] = shows;
-      _renderShowsRow(el, shows);
-    })
-    .catch(function(){ _renderShowsFallback(el); });
-}
-
-// Fallback to CURATED_SHOWS if /api/marketplace fails (network / iTunes outage)
-function _renderShowsFallback(el) {
+  // For you / Trending — show all shows for category (horizontal scroll)
   var filtered = _discCat === 'all' ? CURATED_SHOWS.slice() : CURATED_SHOWS.filter(function(s){return s.cat===_discCat;});
-  el.innerHTML = filtered.map(function(s) {
+  var shows = filtered;
+
+  el.innerHTML = shows.map(function(s) {
     var slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var safeUrl = s.feedUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
     var safeName = s.name.replace(/"/g,"").replace(/'/g,"");
+    // Use artwork directly from CURATED_SHOWS — no cache lookup needed
     var art = _showArtImg(s.artwork, s.name, 'disc-show-art');
     return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\')">'
       + _heartBtn(s.feedUrl,s.name,s.artist,s.artwork)
@@ -8497,6 +7785,8 @@ function _renderShowsFallback(el) {
       + '</div>';
   }).join('');
   addScrollDrag(el);
+  // Load live shows from Podcast Index
+  discLoadLiveShows(_discCat);
 }
 
 function discRenderRecent() {
@@ -9315,16 +8605,8 @@ function analyzeEp(e, url, epTitle, showName, background) {
     });
     return;
   }
-  // Skip the empty-hero flash: tell showView to NOT reset the analyze view to
-  // its empty hero state, since we're about to immediately start an analysis.
-  window._skipAnalyzeHeroReset = true;
   showView('analyze');
   document.getElementById('url-input').value=url;
-  // Pre-hide the hero before startAnalysis even runs, in case its first paint
-  // beats the skeleton render. (startAnalysis also hides it; this is belt+
-  // suspenders.)
-  var _ahPre = document.getElementById('analyze-hero');
-  if (_ahPre) _ahPre.style.display = 'none';
   startAnalysis(url, epTitle||'', showName||'');
 }
 
@@ -9993,7 +9275,7 @@ async function showRecoveryPanel(channelTitle) {
     +'<div class="recovery-opts"><div class="recovery-opt"><div class="recovery-opt-label">Paste the RSS feed URL</div><div class="recovery-row"><input class="recovery-input" id="recovery-rss" type="text" placeholder="https://feeds.example.com/podcast.rss"/><button class="recovery-btn" onclick="tryRecoveryUrl(\'rss\')">Analyze</button></div></div>'
     +'<div class="recovery-opt"><div class="recovery-opt-label">Paste a direct MP3 URL</div><div class="recovery-row"><input class="recovery-input" id="recovery-mp3" type="text" placeholder="https://example.com/episode.mp3"/><button class="recovery-btn" onclick="tryRecoveryUrl(\'mp3\')">Analyze</button></div></div></div>'
     +(ct?'<div class="recovery-links"><a class="recovery-link" href="https://podcasts.apple.com/search?term='+ctEnc+'" target="_blank" rel="noopener">Find on Apple Podcasts &rarr;</a><a class="recovery-link" href="https://open.spotify.com/search/'+ctEnc+'/podcasts" target="_blank" rel="noopener">Find on Spotify &rarr;</a></div>':'')
-    +'<p class="recovery-note">Or try our browser extension (coming soon) for any video. <a href="/extension.html" class="link-btn">Join the waitlist</a></p></div>';
+    +'<p class="recovery-note">Or try our browser extension (coming soon) for any video &mdash; <a href="/extension.html" class="link-btn">join waitlist</a></p></div>';
 }
 
 // Load episodes from an RSS feed into a target element (used by auto-recovery)
@@ -10061,7 +9343,7 @@ function toggleAudioSummary(jobId, script) {
     if (_audioJob === jobId && _audioPlaying) {
       window.speechSynthesis.cancel();
       _stopProgressTick();
-      _setAudioState(jobId, false, 'Hear the full 90-second briefing. <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
+      _setAudioState(jobId, false, 'Hear the full 90-sec briefing &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
       _resetProgress(jobId);
       _audioPlaying=false; _audioPaused=false; _audioJob=null; _audioProgDur=90;
       return;
@@ -10078,7 +9360,7 @@ function toggleAudioSummary(jobId, script) {
       _audioProgStart=Date.now(); _audioProgDur=10; _startProgressTick(jobId);
       var t=setTimeout(function(){
         window.speechSynthesis.cancel(); _stopProgressTick(); _resetProgress(jobId); _audioProgDur=90;
-        _setAudioState(jobId,false,'Hear the full 90-second briefing. <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
+        _setAudioState(jobId,false,'Hear the full 90-sec briefing &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:11px;padding:0">Upgrade to Creator &rarr;</button>');
         _audioPlaying=false; _audioPaused=false; _audioJob=null;
       },10000);
       preview.onend=preview.onerror=function(){ clearTimeout(t); _stopProgressTick(); _resetProgress(jobId); _audioProgDur=90; _audioPlaying=false; _audioPaused=false; _audioJob=null; };
@@ -10178,7 +9460,7 @@ function showAudioGate() {
   if (!activePlayer) { showUpgrade(); return; }
   var status=activePlayer.querySelector('[id^="audio-status-"]');
   if (status) {
-    status.innerHTML='Audio briefings are a Creator plan feature. <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:13px;padding:0">Start free trial &rarr;</button>';
+    status.innerHTML='Audio briefings are on <strong>Creator plan</strong> &mdash; <button onclick="showUpgrade()" style="color:#fff;font-weight:700;text-decoration:underline;background:none;border:none;cursor:pointer;font-size:13px;padding:0">Start free trial &rarr;</button>';
   } else { showUpgrade(); }
 }
 
@@ -10785,7 +10067,14 @@ function handleUrlRouting() {
   // Handle Google OAuth callback
   var googleLogin = params.get('google_login');
   if (googleLogin) {
-    try { handleSocialLogin(JSON.parse(decodeURIComponent(googleLogin))); } catch(e) {}
+    try {
+      var gData = JSON.parse(decodeURIComponent(googleLogin));
+      handleSocialLogin(gData);
+    } catch(e) {
+      console.error('[podlens] Google login parse error:', e, 'raw:', googleLogin.slice(0, 200));
+      plToast('Login failed — please try again');
+      history.replaceState({}, '', window.location.pathname);
+    }
     return false;
   }
   var googleError = params.get('google_error');
@@ -10934,7 +10223,7 @@ async function loadShowTrend(showName, days, btn) {
     var data = await safeFetch('/api/show-trend?show=' + encodeURIComponent(showName) + '&days=' + days);
     if (!data || !data.found || !data.points || data.points.length < 2) {
       chartEl.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0">'
-        + 'Not enough data yet. A few more analyses will build a trend.'
+        + 'Not enough data yet &mdash; more analyses needed to build a trend.'
         + '</div>';
       return;
     }
@@ -11006,36 +10295,20 @@ async function loadShowProfile(slug,compareSlug,exactName) {
 // FIX 2: Fetch real artwork + metadata from iTunes
 async function fetchItunesMeta(showName) {
   if (!showName) return null;
-  // Try the exact name first, then broader queries. Some shows (e.g. YouTube
-  // channels named after the host like "Dwarkesh Patel") need "podcast" appended
-  // to find the iTunes listing ("Dwarkesh Podcast" by Dwarkesh Patel).
-  var queries = [showName, showName + ' podcast'];
-  // If multi-word, also try just the first word as a last resort
-  var firstWord = showName.split(/\s+/)[0];
-  if (firstWord && firstWord !== showName) queries.push(firstWord + ' podcast');
-  var results = [];
   try {
-    for (var qi = 0; qi < queries.length; qi++) {
-      var res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(queries[qi]) + '&media=podcast&entity=podcast&limit=10', { signal: AbortSignal.timeout(5000) });
-      if (!res.ok) continue;
-      var d = await res.json();
-      results = d.results || [];
-      if (results.length) break;
-    }
+    var res=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(showName)+'&media=podcast&entity=podcast&limit=10',{signal:AbortSignal.timeout(5000)});
+    if (!res.ok) return null;
+    var d=await res.json();
+    var results=d.results||[];
     if (!results.length) return null;
     var nl=showName.toLowerCase().replace(/[^a-z0-9 ]/g,'');
-    var best=results[0], bestScore=0, bestCount=0;
+    var best=results[0], bestScore=0;
     results.forEach(function(r){
       var name=(r.collectionName||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
       var wa=new Set(nl.split(' ').filter(Boolean)), wb=new Set(name.split(' ').filter(Boolean));
       var overlap=0; wa.forEach(function(w){if(wb.has(w))overlap++;});
       var score=overlap/Math.max(wa.size,wb.size,1);
-      var cnt=parseInt(r.trackCount,10)||0;
-      // Prefer higher score, OR same score with more episodes (avoids matching
-      // a low-episode trailer/promo feed when the real show is also a result).
-      if (score>bestScore || (score===bestScore && cnt>bestCount)) {
-        bestScore=score; best=r; bestCount=cnt;
-      }
+      if (score>bestScore){bestScore=score;best=r;}
     });
     // Collect similar shows — exclude self by collectionId AND name, deduplicate by collectionId
     var bestNameNorm=(best.collectionName||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
@@ -11081,12 +10354,9 @@ async function fetchRSSFeed(feedUrl) {
     var hostMatch=text.match(/<itunes:author><!\[CDATA\[(.*?)\]\]>/i)
       ||text.match(/<itunes:author>(.*?)<\/itunes:author>/i);
     var host=hostMatch?hostMatch[1].trim():'';
-    // Parse episodes — pull up to 50 so high-frequency podcasts (NPR News Now,
-    // The Daily, etc.) show a meaningful list. The renderer slices further
-    // for display; this just lets it have data to work with.
+    // Parse episodes
     var items=text.match(/<item>[\s\S]*?<\/item>/gi)||[];
-    var totalCount=items.length;
-    var episodes=items.slice(0,50).map(function(item){
+    var episodes=items.slice(0,10).map(function(item){
       var title=(item.match(/<title><!\[CDATA\[(.*?)\]\]>/i)||item.match(/<title>(.*?)<\/title>/i)||['',''])[1];
       var pubDate=(item.match(/<pubDate>(.*?)<\/pubDate>/i)||['',''])[1];
       var duration=(item.match(/<itunes:duration>(.*?)<\/itunes:duration>/i)||['',''])[1];
@@ -11285,10 +10555,10 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
     html = '<div class="sp-new-hero">'
       + artHtml
       + '<div style="flex:1;min-width:0">'
-      + '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:3px">Podcast'+(itunes&&itunes.category?' &middot; '+_esc(itunes.category):'')+'</div>'
-      + '<div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:2px;line-height:1.2">'+_esc(displayName)+'</div>'
-      + (hostName ? '<div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:8px">by '+_esc(hostName)+'</div>' : '<div style="margin-bottom:8px"></div>')
-      + (cleanDesc ? '<div style="font-size:11px;color:rgba(255,255,255,.75);line-height:1.65;margin-bottom:12px;max-width:520px">'+cleanDesc+'</div>' : '')
+      + '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:3px">Podcast'+(itunes&&itunes.category?' &middot; '+_esc(itunes.category):'')+'</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.2">'+_esc(displayName)+'</div>'
+      + (hostName ? '<div style="font-size:11px;color:var(--text3);margin-bottom:8px">by '+_esc(hostName)+'</div>' : '<div style="margin-bottom:8px"></div>')
+      + (cleanDesc ? '<div style="font-size:11px;color:var(--text2);line-height:1.65;margin-bottom:12px;max-width:520px">'+cleanDesc+'</div>' : '')
       + '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
       + followBtn
       + '<div style="width:0.5px;height:18px;background:rgba(255,255,255,.1);flex-shrink:0"></div>'
@@ -11479,29 +10749,11 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
           var cm = CURATED_SHOWS.find(function(c){ return c.name.toLowerCase() === (s.name||'').toLowerCase(); });
           if (cm && cm.bias) simBiasScore = cm.bias.score;
         }
-        colR += '<div class="sp-sim-row" onclick="showView(\'show\');loadShowProfile(\''+simSlug+'\',null,\''+(s.name||'').replace(/'/g,"\\'")+'\')">'
+        colR += '<div class="sp-sim-row" onclick="showView(\'show\');loadShowProfile(\''+simSlug+'\',null)">'
           + (s.artwork ? '<img class="sp-sim-art" src="'+_escHtml(s.artwork)+'" alt="" onerror="this.style.background=\'var(--bg3)\'">' : '<div class="sp-sim-art"></div>')
           + '<div style="flex:1;min-width:0"><div class="sp-sim-name">'+_esc(s.name||'')+'</div>'
           + '<div class="sp-sim-cat">'+_esc(s.genre||s.category||'')+'</div></div>'
           + (simBiasScore!=null ? _spBiasPill(simBiasScore) : '')
-          + '</div>';
-      });
-    }
-
-    // LATEST EPISODES PANEL — always populated when RSS data exists, so the
-    // right column is never blank for shows with no analyses + no iTunes
-    // similar matches (e.g. niche or non-English podcasts).
-    if (rssEpisodes && rssEpisodes.length) {
-      colR += '<hr class="sp-new-divider">';
-      colR += '<div class="sp-rc-lbl">Latest episodes</div>';
-      rssEpisodes.slice(0,5).forEach(function(ep) {
-        var epDate = ep.pubDate ? new Date(ep.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
-        var epUrl = (ep.url || feedUrl || '').replace(/'/g,"\\'");
-        var rArt = artwork || '';
-        colR += '<div class="sp-rc-ep-row" style="cursor:pointer" onclick="goAnalyze(\''+epUrl+'\')">'
-          + (rArt ? '<img class="sp-rc-art" src="'+_escHtml(rArt)+'" alt="" onerror="this.style.background=\'var(--bg3)\'">' : '<div class="sp-rc-art"></div>')
-          + '<div style="flex:1;min-width:0"><div class="sp-rc-title">'+_esc(ep.title||'Episode')+'</div>'
-          + '<div class="sp-rc-date">'+epDate+'</div></div>'
           + '</div>';
       });
     }
@@ -12079,27 +11331,9 @@ async function restoreUserDataFromServer(userId) {
     if (d.theme && !localStorage.getItem('pl-theme')) {
       try { localStorage.setItem('pl-theme', d.theme); } catch(e) {}
     }
-    // Restore region — used both for legacy pl_prefs_region (language hints)
-    // and the new pl-content-region (Discover content). On a fresh device the
-    // user's last picked region is restored automatically.
-    if (d.region) {
-      if (!localStorage.getItem('pl_prefs_region')) {
-        try { localStorage.setItem('pl_prefs_region', d.region); } catch(e) {}
-      }
-      if (!localStorage.getItem('pl-content-region')) {
-        try { localStorage.setItem('pl-content-region', d.region); } catch(e) {}
-      }
-    }
-    // Restore display name from Supabase users.name (canonical) so a fresh
-    // device shows the user's actual chosen name, not the auth-provided one.
-    if (d.name && typeof d.name === 'string') {
-      u.name = d.name;
-    }
-    if (d.bio && typeof d.bio === 'string') {
-      u.bio = d.bio;
-    }
-    if (d.avatar_custom_url && typeof d.avatar_custom_url === 'string') {
-      u.avatar_custom_url = d.avatar_custom_url;
+    // Restore region
+    if (d.region && !localStorage.getItem('pl_prefs_region')) {
+      try { localStorage.setItem('pl_prefs_region', d.region); } catch(e) {}
     }
     // Restore platform connections
     if (d.spotify_connected) {
@@ -12452,7 +11686,7 @@ function siaSetTier(tier, btn) {
   if (reportDesc) reportDesc.innerHTML = isOperator
     ? 'Claim-by-claim breakdown &middot; Narrative arc &middot; Missing voices &middot; Comparative bias &middot; <span style="color:#999">Downloadable PDF</span>'
     : showFull
-      ? 'Bias summary &middot; Top findings &middot; Host trust breakdown &middot; <span style="color:#999">Downloadable PDF on Operator plan</span>'
+      ? 'Bias summary &middot; Top findings &middot; Host trust breakdown &middot; <span style="color:#999">Downloadable PDF &mdash; upgrade to Operator for the full deep report</span>'
       : 'Full intelligence report available on Starter Lens and Pro Lens plans.';
   if (reportBtn) reportBtn.innerHTML = isOperator
     ? '<button class="drpri">Download full report</button>'
@@ -14144,18 +13378,9 @@ function setBilling(billing) {
   var mBtn = document.getElementById('bt-monthly');
   var aBtn = document.getElementById('bt-annual');
   var saveBadge = document.getElementById('annual-save-badge');
-  var pill = document.getElementById('bt-pill');
   if (mBtn) mBtn.classList.toggle('on', billing === 'monthly');
   if (aBtn) aBtn.classList.toggle('on', billing === 'annual');
   if (saveBadge) saveBadge.style.display = billing === 'annual' ? '' : 'none';
-  // Slide the pill indicator
-  if (pill && mBtn && aBtn) {
-    var target = billing === 'monthly' ? mBtn : aBtn;
-    pill.style.width = target.offsetWidth + 'px';
-    pill.style.transform = billing === 'annual'
-      ? 'translateX(' + (mBtn.offsetWidth) + 'px)'
-      : 'translateX(0)';
-  }
   // Modal toggle (mod-bt-monthly/mod-bt-annual)
   var modM = document.getElementById('mod-bt-monthly');
   var modA = document.getElementById('mod-bt-annual');
@@ -14224,59 +13449,6 @@ function toggleAllFeatures() {
   var el = document.getElementById('features-full');
   var btn = document.getElementById('features-toggle');
   if (!el || !btn) return;
-  // Populate on first open
-  if (!el.dataset.loaded) {
-    var rows = [
-      // [label, free, starter, pro, operator]
-      ['Bias fingerprint',                'check',         'check',     'check',     'check'],
-      ['Echo chamber score',              'check',         'check',     'check',     'check'],
-      ['Recommended lean (anti-echo)',    'check',         'check',     'check',     'check'],
-      ['Show profiles + aggregate bias',  'check',         'check',     'check',     'check'],
-      ['Audio player (RSS + YouTube)',    'check',         'check',     'check',     'check'],
-      ['Listen history',                  'check',         'check',     'check',     'check'],
-      ['Save / like analyses',            'check',         'check',     'check',     'check'],
-      ['Share analyses + show profiles',  'check',         'check',     'check',     'check'],
-      ['Smart Queue (priority analysis)', '\u2014',        'check',     'check',     'check'],
-      ['Background analysis',             '\u2014',        '\u2014',    'check',     'check'],
-      ['Spotify import',                  '\u2014',        'check',     'check',     'check'],
-      ['YouTube channel tracking',        '\u2014',        'check',     'check',     'check'],
-      ['Cross-show comparison',           '\u2014',        'check',     'check',     'check'],
-      ['Email notifications',             '\u2014',        'check',     'check',     'check'],
-      ['Embeddable bias widget',          '\u2014',        '\u2014',    'check',     'check'],
-      ['Bulk URL scan',                   '\u2014',        '\u2014',    '\u2014',    'check'],
-      ['Team seats',                      '\u2014',        '\u2014',    '\u2014',    'check'],
-      ['Webhooks',                        '\u2014',        '\u2014',    '\u2014',    'check'],
-      ['White-label embeds',              '\u2014',        '\u2014',    '\u2014',    'check'],
-      ['SSO + custom roles',              '\u2014',        '\u2014',    '\u2014',    'check'],
-      ['Priority support',                'Community',     'Email',     'Priority',  'Dedicated'],
-    ];
-    var cell = function(v, alt) {
-      var bg = alt ? 'var(--bg2)' : 'transparent';
-      if (v === 'check') return '<td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:#3B6D11;font-weight:700;background:'+bg+'">&#10003;</td>';
-      if (v === '\u2014') return '<td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text3);background:'+bg+'">\u2014</td>';
-      return '<td style="padding:11px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text);font-weight:600;font-size:11px;background:'+bg+'">'+v+'</td>';
-    };
-    var tableHtml = '<div style="overflow-x:auto;border:1px solid var(--border);border-radius:10px;overflow:hidden">'
-      + '<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:580px">'
-      + '<thead><tr>'
-      + '<th style="padding:12px 16px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:left;font-size:11px;letter-spacing:.05em;border-bottom:1px solid var(--border);width:34%">More features</th>'
-      + '<th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Free</th>'
-      + '<th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Starter Lens</th>'
-      + '<th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Pro Lens</th>'
-      + '<th style="padding:12px 12px;background:var(--bg3);font-weight:700;color:var(--text2);text-align:center;font-size:11px;border-bottom:1px solid var(--border)">Operator Lens</th>'
-      + '</tr></thead><tbody>'
-      + rows.map(function(r, i) {
-          var alt = i % 2 === 0;
-          var rowBg = alt ? 'background:var(--bg2)' : '';
-          return '<tr style="'+rowBg+'">'
-            + '<td style="padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2)">'+r[0]+'</td>'
-            + cell(r[1], alt) + cell(r[2], alt) + cell(r[3], alt) + cell(r[4], alt)
-            + '</tr>';
-        }).join('')
-      + '</tbody></table></div>';
-    el.innerHTML = tableHtml;
-    el.dataset.loaded = '1';
-  }
   var open = el.style.display !== 'none';
   el.style.display = open ? 'none' : 'block';
   btn.innerHTML = open ? 'See all features &#8595;' : 'Hide details &#8593;';
@@ -14284,8 +13456,6 @@ function toggleAllFeatures() {
 
 function initPricingView() {
   plRenderPrices();
-  // Initialise sliding pill position (after DOM is visible so offsetWidth is available)
-  setTimeout(function() { setBilling(_plBilling || 'monthly'); }, 0);
   if (_plPricingInited) return;
   _plPricingInited = true;
   // Load price IDs
@@ -14458,29 +13628,41 @@ function showEchoChamberModal() {
 }
 
 function _likeFromBtn(btn) {
-  // Heart on show cards = toggle FOLLOW (shows go in Following).
-  // Heart on episode cards = toggle LIKE (episodes go in Liked Episodes).
-  // The data-kind attribute distinguishes them.
+  // Heart buttons on Discover attach show-level data (data-title = show name,
+  // data-artist = publisher, data-url = feed URL). The previous flow stored
+  // "NPR Politics Podcast" as the episode title in Liked Episodes, because no
+  // specific episode was identified at click time. Fix: when kind === 'show',
+  // optimistically save with show-only fields, then async-fetch the latest
+  // episode from the feed and upgrade the saved entry to a real episode.
   var kind = btn.dataset.kind || 'episode';
   var feedUrl = btn.dataset.url || '';
   var dataTitle = btn.dataset.title || '';
   var dataArtist = btn.dataset.artist || '';
   var dataArt = btn.dataset.art || '';
 
-  if (kind === 'show') {
-    // Routes to follow logic. data-title is the show name in this case.
-    toggleFollowShow(dataTitle, feedUrl, dataArt, btn);
-    return;
+  if (kind === 'show' && feedUrl && /^https?:\/\//.test(feedUrl)) {
+    // Optimistic save — title left blank so the UI renders a placeholder until
+    // the async upgrade replaces it with the real latest-episode title.
+    var ep = {
+      url: feedUrl,
+      feedUrl: feedUrl,
+      title: '',                // filled by upgrade
+      showName: dataTitle,      // the show itself (e.g., "Crime Junkie")
+      artist: dataArtist,       // publisher (e.g., "Audiochuck") — kept for reference
+      artwork: dataArt,
+    };
+    toggleLike(ep, btn);
+    // Fire-and-forget upgrade. If the user unlikes before it resolves, it's a no-op.
+    _upgradeShowLikeToLatestEpisode(feedUrl, dataTitle, dataArt);
+  } else {
+    var ep2 = {
+      url: feedUrl,
+      title: dataTitle,
+      showName: dataArtist,     // legacy callers still use this shape
+      artwork: dataArt,
+    };
+    toggleLike(ep2, btn);
   }
-
-  // Episode like
-  var ep = {
-    url: feedUrl,
-    title: dataTitle,
-    showName: dataArtist,     // legacy callers still use this shape
-    artwork: dataArt,
-  };
-  toggleLike(ep, btn);
 }
 
 // Replaces the placeholder stored by a show-level like with the actual latest
@@ -14623,10 +13805,6 @@ function addToPlaylist(ep) {
 })();
 enforcePlanRules();
 initNav();
-// No IP-based detection. Content defaults to US (changeable via the region
-// pill on Discover). UI stays in English — users can use Google Translate
-// or their browser's translation feature for non-English UX. Auto-detecting
-// language from IP misfires too often (VPNs, travelers, mobile carriers).
 // Apply region, translations
 updateRegionUI();
 applyTranslations(_settings.lang);

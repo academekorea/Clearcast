@@ -12,13 +12,50 @@ function json(data: object, status = 200) {
   });
 }
 
+async function fetchCurrentsTrending(): Promise<string[]> {
+  const apiKey = Netlify.env.get("CURRENTS_API_KEY");
+  if (!apiKey) return [];
+  try {
+    const res = await fetch(
+      `https://api.currentsapi.services/v1/latest-news?language=en&country=US&apiKey=${apiKey}`
+    );
+    if (!res.ok) return [];
+    const data = await res.json() as any;
+    const titles = (data.news || []) as any[];
+    // Extract short topic labels from headlines
+    const seen = new Set<string>();
+    const topics: string[] = [];
+    for (const article of titles) {
+      // Use category or extract key phrase from title
+      const cats = (article.category || []) as string[];
+      for (const c of cats) {
+        const label = c.trim();
+        if (label && label !== "general" && !seen.has(label.toLowerCase())) {
+          seen.add(label.toLowerCase());
+          topics.push(label.charAt(0).toUpperCase() + label.slice(1));
+        }
+      }
+      // Also use the title itself, trimmed to a digestible pill label
+      const title = (article.title || "").split(/[:\-–—|]/).shift()?.trim();
+      if (title && title.length <= 40 && title.length > 3 && !seen.has(title.toLowerCase())) {
+        seen.add(title.toLowerCase());
+        topics.push(title);
+      }
+      if (topics.length >= 18) break;
+    }
+    return topics;
+  } catch {
+    return [];
+  }
+}
+
 export default async () => {
   // Check cache first
   try {
     const store = getStore("podlens-cache");
     const cached = await store.get(CACHE_KEY, { type: "json" }) as any;
     if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL) {
-      return json({ topics: cached.topics, heroes: cached.heroes || [] });
+      return json({ topics: cached.topics, heroes: cached.heroes || [], trendingNews: cached.trendingNews || [] });
     }
   } catch {}
 
@@ -101,15 +138,35 @@ export default async () => {
           });
         }
       }
+
+      // Enrich heroes with artwork for non-YouTube entries
+      await Promise.all(
+        heroRows.map(async (hero) => {
+          if (!hero.ytId && hero.showName) {
+            try {
+              const res = await fetch(
+                `https://itunes.apple.com/search?term=${encodeURIComponent(hero.showName)}&media=podcast&limit=1`
+              );
+              if (res.ok) {
+                const d = (await res.json()) as any;
+                hero.artwork = d.results?.[0]?.artworkUrl600 || null;
+              }
+            } catch { hero.artwork = null; }
+          }
+        })
+      );
     } catch {}
+
+    // Fetch live trending news from Currents API
+    const trendingNews = await fetchCurrentsTrending();
 
     // Cache result
     try {
       const store = getStore("podlens-cache");
-      await store.setJSON(CACHE_KEY, { topics, heroes: heroRows, ts: Date.now() });
+      await store.setJSON(CACHE_KEY, { topics, heroes: heroRows, trendingNews, ts: Date.now() });
     } catch {}
 
-    return json({ topics, heroes: heroRows });
+    return json({ topics, heroes: heroRows, trendingNews });
   } catch {
     return json({ topics: [] });
   }
