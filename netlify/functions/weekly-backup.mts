@@ -122,12 +122,16 @@ export default async () => {
   const dateKey = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
   const tables = [
-    { name: "users",             select: "id,email,name,plan,created_at,last_seen_at,stripe_customer_id,is_super_admin" },
-    { name: "analyses",          select: "id,user_id,show_name,episode_title,url,bias_label,bias_score,bias_left_pct,bias_center_pct,bias_right_pct,host_trust_score,summary,share_id,share_count,analyze_count,created_at,analyzed_at" },
-    { name: "subscriptions",     select: "id,user_id,plan,status,amount,stripe_subscription_id,created_at,canceled_at" },
+    { name: "users",             select: "*" },
+    { name: "analyses",          select: "*" },
+    { name: "subscriptions",     select: "*" },
     { name: "events",            select: "id,user_id,event_type,properties,created_at", order: "created_at.desc" },
-    { name: "followed_shows",    select: "id,user_id,show_slug,show_name,created_at" },
-    { name: "connected_accounts",select: "id,user_id,provider,created_at" },
+    { name: "followed_shows",    select: "*" },
+    { name: "connected_accounts",select: "*" },
+    { name: "analysis_queue",    select: "*" },
+    { name: "shows",             select: "*" },
+    { name: "usage",             select: "*" },
+    { name: "notifications",     select: "*" },
   ];
 
   const summary: Record<string, number> = {};

@@ -159,14 +159,18 @@ async function writeAnalysisToSupabase(jobId: string, job: any, result: any): Pr
       } catch {}
     }
 
+    const shareId = crypto.randomUUID();
+
     const analysisRow = {
       job_id:               jobId,
       canonical_key:        canonKey,
+      share_id:             shareId,
       url:                  job.url || result.url || "",
       episode_title:        result.episodeTitle,
       show_name:            result.showName,
       bias_score:           result.biasScore,
       bias_label:           result.biasLabel,
+      bias_direction:       result.biasDirection || result.biasLabel || null,
       factuality_label:     result.factualityLabel || null,
       summary:              result.summary || null,
       dim_perspective_balance: dim.perspectiveBalance?.score ?? null,

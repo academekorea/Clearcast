@@ -473,7 +473,21 @@ export default async (req: Request, context: Context) => {
           if (ytTokenData.expiresAt && Date.now() > ytTokenData.expiresAt - 60000 && ytTokenData.refreshToken) {
             token = await refreshGoogleToken(ytTokenData.refreshToken) || token;
             if (token !== ytTokenData.accessToken) {
-              try { await usersStore.setJSON(`youtube-${userId}`, { ...ytTokenData, accessToken: token, expiresAt: Date.now() + 3600000 }); } catch {}
+              const newExpiry = Date.now() + 3600000;
+              try { await usersStore.setJSON(`youtube-${userId}`, { ...ytTokenData, accessToken: token, expiresAt: newExpiry }); } catch {}
+              // Sync refreshed token to Supabase connected_accounts
+              try {
+                const sbUrl = Netlify.env.get("SUPABASE_URL");
+                const sbKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+                if (sbUrl && sbKey) {
+                  const { createClient } = await import("@supabase/supabase-js");
+                  const sb = createClient(sbUrl, sbKey, { auth: { persistSession: false } });
+                  await sb.from("connected_accounts").update({
+                    access_token: token,
+                    expires_at: new Date(newExpiry).toISOString(),
+                  }).eq("user_id", userId).eq("provider", "google");
+                }
+              } catch {}
             }
           }
           const oauthCaptions = await fetchYouTubeCaptionsOAuth(videoId, token);

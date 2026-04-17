@@ -60,6 +60,21 @@ export default async (req: Request) => {
     const enabled = Boolean(body.enabled);
     await store.set("auto-seed-enabled", enabled ? "true" : "false");
 
+    // Also persist to Supabase for backup/audit
+    try {
+      const sbUrl = Netlify.env.get("SUPABASE_URL");
+      const sbKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+      if (sbUrl && sbKey) {
+        const { createClient } = await import("@supabase/supabase-js");
+        const sb = createClient(sbUrl, sbKey, { auth: { persistSession: false } });
+        await sb.from("admin_settings").upsert({
+          key: "auto-seed-enabled",
+          value: { enabled },
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "key" });
+      }
+    } catch {}
+
     return new Response(JSON.stringify({ autoSeedEnabled: enabled }), {
       headers: { "Content-Type": "application/json" }
     });
