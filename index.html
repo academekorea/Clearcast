@@ -137,6 +137,8 @@ var KOREAN_MARKET_ENABLED = false;
 [data-theme="dark"] .hpc-unlock-btn,
 [data-theme="dark"] .btn-primary,
 [data-theme="dark"] .lap-full-link { background:#f5f5f7;color:#1d1d1f;border-color:#f5f5f7 }
+[data-theme="dark"] .lo-hero { background:var(--bg) }
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .lo-hero{background:var(--bg)}}
 /* Dark sections that use --navy as bg: elevate to bg2 in dark mode */
 [data-theme="dark"] .fp-cta-section,
 [data-theme="dark"] .lo-cta-section { background:var(--bg2) }
@@ -271,7 +273,7 @@ body.authenticated .site-footer { display: none !important; }
 .home-hero{padding:0;margin:0;border-bottom:1px solid var(--border)}
 
 /* ── LOGGED-OUT HOMEPAGE — Option B "Clarity" ──────────────────────────── */
-.lo-hero{background:var(--bg3);text-align:center;padding:72px 24px 56px;border-bottom:1px solid var(--border)}
+.lo-hero{background:#ffffff;text-align:center;padding:72px 24px 56px;border-bottom:1px solid var(--border)}
 .lo-hero-inner{max-width:640px;margin:0 auto}
 .lo-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.05);border-radius:20px;padding:4px 14px;margin-bottom:20px;font-size:10px;color:var(--text3);letter-spacing:.09em;font-weight:600;text-transform:uppercase}
 [data-theme="dark"] .lo-badge{background:rgba(255,255,255,.06);color:var(--text3)}
