@@ -209,6 +209,76 @@ body.authenticated .site-footer { display: none !important; }
 
 /* ── HOME HERO — 60/40 GRID ── */
 .home-hero{padding:0;margin:0;border-bottom:1px solid var(--border)}
+
+/* ── LOGGED-OUT HOMEPAGE — Option B "Clarity" ──────────────────────────── */
+.lo-hero{background:var(--bg3);text-align:center;padding:72px 24px 56px;border-bottom:1px solid var(--border)}
+.lo-hero-inner{max-width:640px;margin:0 auto}
+.lo-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.05);border-radius:20px;padding:4px 14px;margin-bottom:20px;font-size:10px;color:var(--text3);letter-spacing:.09em;font-weight:600;text-transform:uppercase}
+[data-theme="dark"] .lo-badge{background:rgba(255,255,255,.06);color:var(--text3)}
+.lo-h1{font-family:var(--ffs);font-size:clamp(52px,8vw,80px);font-weight:700;line-height:1.03;margin:0 0 8px;letter-spacing:-.03em;color:var(--text)}
+.lo-h2{font-family:var(--ffs);font-size:clamp(24px,3.5vw,36px);font-weight:400;line-height:1.12;margin:0 0 20px;color:var(--text);font-style:italic}
+.lo-sub{font-size:16px;color:var(--text2);line-height:1.7;max-width:500px;margin:0 auto 36px}
+.lo-analyze-wrap{display:flex;max-width:520px;margin:0 auto 10px;border:1px solid var(--border2);border-radius:8px;overflow:hidden;background:var(--bg2);box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.lo-analyze-input{flex:1;padding:14px 18px;font-size:14px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none}
+.lo-analyze-input::placeholder{color:var(--text3)}
+.lo-analyze-btn{background:var(--navy);border:none;color:#fff;font-size:13px;font-weight:700;padding:14px 24px;cursor:pointer;white-space:nowrap;transition:opacity .15s;font-family:var(--ff)}
+.lo-analyze-btn:hover{opacity:.88}
+[data-theme="dark"] .lo-analyze-btn{background:var(--text);color:var(--bg)}
+.lo-platforms{font-size:11px;color:var(--text3);margin-bottom:24px}
+.lo-connect-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.lo-connect-label{font-size:11px;color:var(--text3);font-weight:500}
+.lo-platform-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:none;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;color:#fff;transition:opacity .15s}
+.lo-platform-btn:hover{opacity:.85}
+.lo-platform-spotify{background:#1DB954}
+.lo-platform-youtube{background:#FF0000}
+.lo-platform-apple{background:#FC3C44}
+.lo-platform-btn.connected{opacity:.5;cursor:default}
+/* Analysis card */
+.lo-card-section{padding:48px 24px;display:flex;justify-content:center;background:var(--bg3);border-bottom:1px solid var(--border)}
+.lo-card{background:var(--bg2);border-radius:18px;padding:28px;max-width:520px;width:100%;border:1px solid var(--border)}
+.lo-card-head{display:flex;gap:14px;margin-bottom:20px;align-items:flex-start}
+.lo-card-art{width:56px;height:56px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.lo-card-show{font-size:11px;color:var(--text3);margin-bottom:3px}
+.lo-card-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.3}
+.lo-lean-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.lo-lean-lbl{font-size:12px;color:var(--text3)}
+.lo-lean-val{font-size:12px;font-weight:600;color:var(--text)}
+.lo-bar-wrap{height:5px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:5px}
+.lo-bar-seg{flex-shrink:0}
+.lo-bar-pcts{display:flex;justify-content:space-between;margin-bottom:18px;font-size:10px}
+.lo-dims{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.lo-dim{background:var(--bg3);border-radius:9px;padding:10px 10px;text-align:center}
+.lo-dim-v{font-size:18px;font-weight:700;color:var(--text)}
+.lo-dim-l{font-size:9px;color:var(--text3);margin-top:2px}
+.lo-finding{display:flex;gap:8px;align-items:flex-start;padding:9px 12px;background:var(--bg3);border-radius:8px;margin-bottom:6px}
+.lo-finding-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.lo-finding span{font-size:12px;color:var(--text);line-height:1.5}
+.lo-finding-locked{opacity:.55;position:relative;overflow:hidden}
+.lo-blurred{filter:blur(4px);user-select:none}
+.lo-lock{font-size:11px;margin-left:auto;flex-shrink:0}
+.lo-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.lo-card-footer span{font-size:11px;color:var(--text3)}
+.lo-unlock-btn{background:var(--navy);border:none;color:#fff;font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:var(--ff)}
+[data-theme="dark"] .lo-unlock-btn{background:var(--text);color:var(--bg)}
+/* Features dark section */
+.lo-features{background:var(--navy);padding:60px 24px;text-align:center}
+.lo-feats-h{font-family:var(--ffs);font-size:clamp(24px,3.5vw,36px);font-weight:700;color:#f5f5f7;margin:0 0 10px;letter-spacing:-.02em}
+.lo-feats-sub{font-size:14px;color:rgba(255,255,255,.55);margin:0 auto 36px;max-width:400px;line-height:1.65}
+.lo-feats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.1);max-width:760px;margin:0 auto;border-radius:12px;overflow:hidden}
+@media(max-width:640px){.lo-feats-grid{grid-template-columns:1fr}}
+.lo-feat{background:var(--navy);padding:28px 22px}
+.lo-feat-t{font-family:var(--ffs);font-size:16px;font-weight:600;color:#f5f5f7;margin:0 0 8px}
+.lo-feat-d{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin:0}
+/* Final CTA */
+.lo-cta-section{background:var(--bg3);padding:72px 24px;text-align:center;border-top:1px solid var(--border)}
+.lo-cta-inner{max-width:520px;margin:0 auto}
+.lo-cta-title{font-family:var(--ffs);font-size:clamp(24px,3.5vw,36px);font-weight:700;color:var(--text);margin:0 0 10px;letter-spacing:-.02em}
+.lo-cta-sub{font-size:15px;color:var(--text2);margin:0 auto 24px;line-height:1.65}
+.lo-cta-btn{background:var(--navy);border:none;color:#fff;font-size:14px;font-weight:700;padding:14px 32px;border-radius:28px;cursor:pointer;font-family:var(--ff);transition:opacity .15s}
+.lo-cta-btn:hover{opacity:.88}
+[data-theme="dark"] .lo-cta-btn{background:var(--text);color:var(--bg)}
+.lo-cta-fine{font-size:12px;color:var(--text3);margin-top:14px}
+@media(max-width:640px){.lo-hero{padding:52px 20px 40px}.lo-card-section{padding:28px 16px}.lo-card{padding:20px}.lo-dims{grid-template-columns:repeat(3,1fr)}.lo-cta-section{padding:52px 20px}}
 .hero-inner{max-width:1400px;margin:0 auto;padding:80px 80px 0;display:grid;grid-template-columns:60fr 40fr;gap:56px;align-items:start}
 @media(max-width:1024px){.hero-inner{grid-template-columns:1fr;gap:32px;padding:60px 24px 0}}
 .hero-left{padding-bottom:80px}
@@ -3113,97 +3183,117 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
   <!-- STATE A: Logged out -->
   <div id="home-loggedout" style="display:none">
 
+    <!-- HERO — Option B "Clarity" design -->
+    <section class="lo-hero">
+      <div class="lo-hero-inner">
 
+        <div class="lo-badge">FREE FOREVER &middot; NO CREDIT CARD REQUIRED</div>
 
-    <!-- HERO — 60/40 Grid -->
-    <section class="home-hero">
-      <div class="hero-inner">
-        <!-- Left 60%: heading + analyze bar -->
-        <div class="hero-left">
-          <div class="hero-kicker">Podcast Intelligence</div>
-          <h1 class="hero-h">A force of clarity<br><em>in the age of noise.</em></h1>
-          <p class="hero-sub">See the bias and missing voices in every podcast you love.</p>
+        <h1 class="lo-h1">Clarity.</h1>
+        <div class="lo-h2">For every podcast you love.</div>
 
-          <!-- Connected-first platform CTAs -->
-          <div id="hero-connect-block" style="margin-bottom:24px">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px">Connect your listening</div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <button id="hero-spotify-btn" class="hero-platform-btn hero-platform-spotify" onclick="heroConnectSpotify()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-                <span id="hero-spotify-label">Connect Spotify</span>
-              </button>
-              <button id="hero-youtube-btn" class="hero-platform-btn hero-platform-youtube" onclick="heroConnectYouTube()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
-                <span id="hero-youtube-label">Connect YouTube</span>
-              </button>
-              <button class="hero-platform-btn hero-platform-apple" onclick="heroConnectApple()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                Apple Podcasts
-              </button>
-            </div>
-            <div id="hero-connect-status" style="font-size:12px;color:var(--text3);margin-top:10px;min-height:16px"></div>
-          </div>
+        <p class="lo-sub">The world&rsquo;s first bias intelligence platform for podcasts. Political lean, host credibility, and transcript evidence &mdash; grounded in the actual words spoken.</p>
 
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">Or analyze any URL</div>
-          <div class="hero-input-wrap">
-            <input type="text" id="hero-url-input" class="hero-input" placeholder="YouTube, Spotify, Apple Podcasts, RSS, or .mp3" autocomplete="url"/>
-            <button class="hero-analyze-btn" onclick="handleHeroAnalyze()">Analyze &rarr;</button>
-          </div>
-          <p class="hero-platforms">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
+        <!-- URL analyze bar -->
+        <div class="lo-analyze-wrap">
+          <input type="text" id="hero-url-input" class="lo-analyze-input" placeholder="Paste a YouTube, Spotify, Apple Podcasts, or RSS link&hellip;" autocomplete="url"/>
+          <button class="lo-analyze-btn" onclick="handleHeroAnalyze()">Analyze &rarr;</button>
         </div>
-        <!-- Right 40%: Bias Snapshot Today -->
-        <div class="hero-right-panel" id="hero-stats-panel">
-          <div class="hero-preview-card">
-            <div class="hpc-header">
-              <img class="hpc-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/300x300bb.jpg" alt="">
-              <div class="hpc-meta">
-                <div class="hpc-show">The Daily &middot; NYT</div>
-                <div class="hpc-ep">How the Media Shapes What We Believe</div>
-                <div class="hpc-live-badge">Live example</div>
-              </div>
-            </div>
-            <div class="hpc-section-label">Political Lean &mdash; how this episode frames issues</div>
-            <div class="preview-bias-gradient">
-              <div class="preview-marker" style="left:28%"></div>
-            </div>
-            <div class="hpc-bias-labels">
-              <span>🔴 62% left</span>
-              <span>⬜ 24% center</span>
-              <span>🔵 14% right</span>
-            </div>
-            <div class="hpc-lean-pill">Moderately biased</div>
-            <div class="hpc-section-label" style="margin-top:16px">Findings</div>
-            <div class="hpc-findings">
-              <div class="hpc-finding">
-                <span class="hpc-dot" style="background:#E24B4A"></span>
-                <span>Left-leaning framing in 4 of 5 key claims</span>
-              </div>
-              <div class="hpc-finding">
-                <span class="hpc-dot" style="background:#378ADD"></span>
-                <span>Conservative perspective absent from 3 segments</span>
-              </div>
-              <div class="hpc-finding hpc-finding-locked">
-                <span class="hpc-dot" style="background:rgba(255,255,255,.2)"></span>
-                <span class="hpc-blurred">Sponsor conflict in funding sources detected</span>
-                <span class="hpc-lock-icon">🔒</span>
-              </div>
-              <div class="hpc-finding hpc-finding-locked">
-                <span class="hpc-dot" style="background:rgba(255,255,255,.2)"></span>
-                <span class="hpc-blurred">4 expert voices missing from this coverage</span>
-                <span class="hpc-lock-icon">🔒</span>
-              </div>
-            </div>
-            <div class="hpc-footer">
-              <span>2 findings visible free</span>
-              <button onclick="openModal('signup');return false" class="hpc-unlock-btn">See all findings &rarr;</button>
-            </div>
-          </div>
+        <p class="lo-platforms">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
+
+        <!-- Connect platform buttons -->
+        <div class="lo-connect-row">
+          <span class="lo-connect-label">Or connect your listening:</span>
+          <button id="hero-spotify-btn" class="lo-platform-btn lo-platform-spotify" onclick="heroConnectSpotify()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            <span id="hero-spotify-label">Spotify</span>
+          </button>
+          <button id="hero-youtube-btn" class="lo-platform-btn lo-platform-youtube" onclick="heroConnectYouTube()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+            <span id="hero-youtube-label">YouTube</span>
+          </button>
+          <button class="lo-platform-btn lo-platform-apple" onclick="heroConnectApple()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Apple
+          </button>
+          <div id="hero-connect-status" style="font-size:12px;color:var(--text3);margin-left:4px"></div>
         </div>
       </div>
     </section>
 
-    <!-- FREE TIER PROMISE -->
+    <!-- ANALYSIS CARD PREVIEW -->
+    <section class="lo-card-section">
+      <div class="lo-card">
+        <div class="lo-card-head">
+          <img class="lo-card-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/300x300bb.jpg" alt="" onerror="this.style.display='none'">
+          <div>
+            <div class="lo-card-show">The Daily &middot; New York Times</div>
+            <div class="lo-card-title">How the Media Shapes What We Believe</div>
+          </div>
+        </div>
 
+        <div class="lo-lean-row">
+          <span class="lo-lean-lbl">Political lean</span>
+          <span class="lo-lean-val">Moderately biased &mdash; leans left</span>
+        </div>
+        <div class="lo-bar-wrap">
+          <div class="lo-bar-seg" style="width:62%;background:#E24B4A;border-radius:3px 0 0 3px"></div>
+          <div class="lo-bar-seg" style="width:2%;background:var(--bg3)"></div>
+          <div class="lo-bar-seg" style="width:22%;background:#D1CFC9"></div>
+          <div class="lo-bar-seg" style="width:2%;background:var(--bg3)"></div>
+          <div class="lo-bar-seg" style="width:12%;background:#378ADD;border-radius:0 3px 3px 0"></div>
+        </div>
+        <div class="lo-bar-pcts">
+          <span style="color:#E24B4A">62% left</span>
+          <span style="color:var(--text3)">22% center</span>
+          <span style="color:#378ADD">16% right</span>
+        </div>
+
+        <div class="lo-dims">
+          <div class="lo-dim"><div class="lo-dim-v">61</div><div class="lo-dim-l">Host Trust</div></div>
+          <div class="lo-dim"><div class="lo-dim-v">58</div><div class="lo-dim-l">Factual Density</div></div>
+          <div class="lo-dim"><div class="lo-dim-v">67</div><div class="lo-dim-l">Omission Risk</div></div>
+          <div class="lo-dim"><div class="lo-dim-v">74</div><div class="lo-dim-l">Framing</div></div>
+          <div class="lo-dim"><div class="lo-dim-v">39</div><div class="lo-dim-l">Source Diversity</div></div>
+          <div class="lo-dim"><div class="lo-dim-v">44</div><div class="lo-dim-l">Perspective</div></div>
+        </div>
+
+        <div class="lo-finding">
+          <div class="lo-finding-dot" style="background:#E24B4A"></div>
+          <span>Left-leaning framing detected in 4 of 5 key claims. Conservative perspective absent from 3 segments.</span>
+        </div>
+        <div class="lo-finding lo-finding-locked">
+          <div class="lo-finding-dot" style="background:rgba(0,0,0,.15)"></div>
+          <span class="lo-blurred">Sponsor conflict in funding sources detected</span>
+          <span class="lo-lock">&#128274;</span>
+        </div>
+
+        <div class="lo-card-footer">
+          <span>2 findings visible free</span>
+          <button onclick="openModal('signup');return false" class="lo-unlock-btn">See all findings &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES — dark section -->
+    <section class="lo-features">
+      <h2 class="lo-feats-h">Intelligence you can trust.</h2>
+      <p class="lo-feats-sub">Because a bias score without evidence is just an opinion.</p>
+      <div class="lo-feats-grid">
+        <div class="lo-feat">
+          <h3 class="lo-feat-t">Transcript evidence</h3>
+          <p class="lo-feat-d">Every finding is backed by a direct quote with timestamp. Nothing is asserted without proof from the actual words spoken.</p>
+        </div>
+        <div class="lo-feat">
+          <h3 class="lo-feat-t">6 bias dimensions</h3>
+          <p class="lo-feat-d">Political lean, host trust, factual density, omission risk, source diversity, and framing patterns &mdash; scored independently.</p>
+        </div>
+        <div class="lo-feat">
+          <h3 class="lo-feat-t">Symmetric scoring</h3>
+          <p class="lo-feat-d">The same criteria that flag left-leaning content flag right-leaning content. Political symmetry is the entire foundation of our credibility.</p>
+        </div>
+      </div>
+    </section>
 
     <!-- TICKER -->
     <div class="ticker-section" id="ticker-section">
@@ -3211,45 +3301,18 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="ticker-wrapper"><div class="ticker-track" id="ticker-track"></div></div>
     </div>
 
-    <!-- SHOWCASE
-
-
-
-
-
-
     <!-- UNHEARD TEASER -->
     <section class="unheard-section show-logged-out">
       <div class="section-eyebrow">Unheard</div>
       <h2 class="section-h">Stories your feeds are skipping</h2>
-      <p class="section-sub">Every week, Podlens surfaces 5 important stories that major podcast networks are ignoring. Pro feature.</p>
+      <p class="section-sub">Every week, Podlens surfaces important stories that major podcast networks are ignoring.</p>
       <div class="unheard-locked-wrap">
         <div class="unheard-blur">
           <div class="unheard-sample-list">
-            <div class="unheard-sample-row">
-              <div>
-                <div class="unheard-sample-title">How three major networks covered the same policy story with opposite framing</div>
-                <div class="unheard-sample-meta">Politics &middot; 4 shows affected &middot; This week</div>
-              </div>
-            </div>
-            <div class="unheard-sample-row">
-              <div>
-                <div class="unheard-sample-title">The tech story every business podcast avoided mentioning</div>
-                <div class="unheard-sample-meta">Technology &middot; 7 shows affected &middot; This week</div>
-              </div>
-            </div>
-            <div class="unheard-sample-row">
-              <div>
-                <div class="unheard-sample-title">Climate coverage gap: what science podcasts said vs what news shows ignored</div>
-                <div class="unheard-sample-meta">Science &middot; 5 shows affected &middot; This week</div>
-              </div>
-            </div>
-            <div class="unheard-sample-row" style="border-bottom:none">
-              <div>
-                <div class="unheard-sample-title">International perspective absent from 12 top-ranked US political shows</div>
-                <div class="unheard-sample-meta">Politics &middot; 12 shows affected &middot; This week</div>
-              </div>
-            </div>
+            <div class="unheard-sample-row"><div><div class="unheard-sample-title">How three major networks covered the same policy story with opposite framing</div><div class="unheard-sample-meta">Politics &middot; 4 shows affected &middot; This week</div></div></div>
+            <div class="unheard-sample-row"><div><div class="unheard-sample-title">The tech story every business podcast avoided mentioning</div><div class="unheard-sample-meta">Technology &middot; 7 shows affected &middot; This week</div></div></div>
+            <div class="unheard-sample-row"><div><div class="unheard-sample-title">Climate coverage gap: what science podcasts said vs what news shows ignored</div><div class="unheard-sample-meta">Science &middot; 5 shows affected &middot; This week</div></div></div>
+            <div class="unheard-sample-row" style="border-bottom:none"><div><div class="unheard-sample-title">International perspective absent from 12 top-ranked US political shows</div><div class="unheard-sample-meta">Politics &middot; 12 shows affected &middot; This week</div></div></div>
           </div>
         </div>
         <div class="unheard-gate">
@@ -3263,11 +3326,12 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
     </section>
 
     <!-- FINAL CTA -->
-    <section class="fp-cta-section show-logged-out">
-      <div class="fp-cta-inner">
-        <div class="fp-cta-title">Start knowing what you&rsquo;re actually listening to.</div>
-        <div class="fp-cta-sub">Free forever. No credit card. Analyze your first episode in under a minute.</div>
-        <button class="fp-cta-btn" onclick="openModal('signup')">Create free account &rarr;</button>
+    <section class="lo-cta-section">
+      <div class="lo-cta-inner">
+        <h2 class="lo-cta-title">Start listening smarter.</h2>
+        <p class="lo-cta-sub">4 free analyses per month, forever. No credit card required.</p>
+        <button class="lo-cta-btn" onclick="openModal('signup')">Analyze your first episode &rarr;</button>
+        <p class="lo-cta-fine">Or <a href="/analyze" onclick="showView('analyze');return false" style="color:inherit;text-decoration:underline">paste a URL and try it now</a> without an account.</p>
       </div>
     </section>
 
