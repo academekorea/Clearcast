@@ -89,8 +89,9 @@
     html += '<div class="sb-lbl">Menu</div>';
 
     // Home (toggle dropdown + navigate to dashboard)
-    html += '<button class="sb-btn" id="sb-home-toggle" data-sb="home-toggle" onclick="if(typeof showView===\'function\')showView(\'home\')">' + icons.home + 'Home<span class="sb-arrow" id="sb-arr-home" onclick="event.stopPropagation();window._sbToggle(\'home\')" style="padding:4px 6px;margin:-4px -6px;border-radius:3px">\u203A</span></button>';
+    html += '<button class="sb-btn" id="sb-home-toggle" data-sb="home-toggle" onclick="window._sbToggle(\'home\')">' + icons.home + 'Home<span class="sb-arrow" id="sb-arr-home">\u203A</span></button>';
     html += '<div class="sb-sub" id="sb-drop-home">';
+    html += '<button class="sb-sub-btn" data-sb="home-dash" onclick="if(typeof showView===\'function\')showView(\'home\')">' + icons.home + 'Dashboard</button>';
     html += homeSubItem('intelligence', icons.intel, 'My intelligence', '');
     html += homeSubItem('queue', icons.queue, 'Smart queue', c.queued || '');
     html += '</div>';
