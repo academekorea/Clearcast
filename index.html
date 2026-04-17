@@ -10,6 +10,257 @@
   html.pl-signed-in .show-logged-out,
   html.pl-signed-in #nav-logged-out { display: none !important; }
   html.pl-signed-in #home-loggedin { display: block !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   HOME LOGGED-OUT REDESIGN — all rules scoped to #home-loggedout
+   ═══════════════════════════════════════════════════════════════ */
+
+/* HERO */
+#home-loggedout .hlo-hero{background:#fff;text-align:center;padding:80px 24px 68px;border-bottom:0.5px solid var(--border)}
+#home-loggedout .hlo-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.05);border-radius:20px;padding:5px 14px;margin-bottom:22px;font-size:10px;color:var(--text3);letter-spacing:.1em;font-weight:700;text-transform:uppercase}
+#home-loggedout .hlo-h1{font-family:var(--ffs);font-size:clamp(64px,10vw,96px);font-weight:700;line-height:1.02;letter-spacing:-.03em;color:var(--text);margin-bottom:8px}
+#home-loggedout .hlo-h2{font-family:var(--ffs);font-size:clamp(26px,3.5vw,42px);font-weight:400;font-style:italic;color:var(--text);margin-bottom:22px}
+#home-loggedout .hlo-sub{font-size:16px;color:var(--text2);max-width:520px;margin:0 auto 36px;line-height:1.75}
+#home-loggedout .hlo-bar{display:flex;max-width:540px;margin:0 auto 11px;border:1px solid var(--border2);border-radius:9px;overflow:hidden;background:var(--bg3)}
+#home-loggedout .hlo-inp{flex:1;padding:14px 18px;font-size:14px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none}
+#home-loggedout .hlo-inp::placeholder{color:var(--text3)}
+#home-loggedout .hlo-go{background:var(--navy);color:#fff;border:none;font-size:13px;font-weight:700;padding:14px 22px;white-space:nowrap;cursor:pointer;font-family:var(--ff)}
+#home-loggedout .hlo-plats{font-size:12px;color:var(--text3);margin-bottom:26px}
+#home-loggedout .hlo-conn{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
+#home-loggedout .hlo-conn-lbl{font-size:12px;color:var(--text3)}
+#home-loggedout .hlo-plbtn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:none;border-radius:20px;font-size:12px;font-weight:600;color:#fff;cursor:pointer}
+
+/* ANALYSIS CARD */
+#home-loggedout .hlo-card-sec{padding:56px 24px;display:flex;justify-content:center;background:var(--bg3);border-bottom:0.5px solid var(--border)}
+#home-loggedout .hlo-acard{background:var(--bg2);border-radius:20px;padding:28px;max-width:540px;width:100%;border:0.5px solid var(--border)}
+#home-loggedout .hlo-acard-hd{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px}
+#home-loggedout .hlo-acard-art{width:56px;height:56px;border-radius:11px;background:#1a1a1a;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.05em}
+#home-loggedout .hlo-acard-show{font-size:11px;color:var(--text3);margin-bottom:4px}
+#home-loggedout .hlo-acard-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.3}
+#home-loggedout .hlo-lean-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+#home-loggedout .hlo-lean-lbl{font-size:12px;color:var(--text2)}
+#home-loggedout .hlo-lean-val{font-size:12px;font-weight:600;color:var(--text)}
+#home-loggedout .hlo-bbar{height:6px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:5px}
+#home-loggedout .hlo-bpcts{display:flex;justify-content:space-between;margin-bottom:20px;font-size:10px}
+#home-loggedout .hlo-dims{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+#home-loggedout .hlo-dim{background:var(--bg3);border-radius:9px;padding:10px;text-align:center}
+#home-loggedout .hlo-dim-v{font-size:20px;font-weight:700;color:var(--text)}
+#home-loggedout .hlo-dim-l{font-size:9px;color:var(--text3);margin-top:2px}
+#home-loggedout .hlo-finding{display:flex;gap:8px;align-items:flex-start;padding:10px 13px;background:#fff8f0;border-radius:8px;border:0.5px solid rgba(226,75,74,.1);margin-bottom:7px}
+#home-loggedout .hlo-fdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+#home-loggedout .hlo-finding span{font-size:12px;color:var(--text);line-height:1.55}
+#home-loggedout .hlo-acard-ft{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:0.5px solid var(--border)}
+#home-loggedout .hlo-acard-ft span{font-size:11px;color:var(--text3)}
+#home-loggedout .hlo-unlock{background:var(--navy);border:none;color:#fff;font-size:11px;font-weight:600;padding:6px 14px;border-radius:18px;cursor:pointer;font-family:var(--ff)}
+
+/* SECTION HEADER */
+#home-loggedout .hlo-sec-hd{text-align:center;padding:52px 24px 28px}
+#home-loggedout .hlo-sec-ey{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+#home-loggedout .hlo-sec-t{font-family:var(--ffs);font-size:clamp(28px,4vw,46px);font-weight:700;letter-spacing:-.02em;color:var(--text);line-height:1.1}
+#home-loggedout .hlo-sec-s{font-size:15px;color:var(--text2);margin-top:10px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.65}
+
+/* SHOW CAROUSEL */
+#home-loggedout .hlo-carousel{padding:0 0 52px;background:var(--bg)}
+#home-loggedout .hlo-cw{overflow-x:auto;padding:4px 40px 22px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#home-loggedout .hlo-cw::-webkit-scrollbar{display:none}
+#home-loggedout .hlo-ct{display:flex;gap:14px;width:max-content}
+#home-loggedout .hlo-sc{width:180px;flex-shrink:0;border-radius:10px;overflow:hidden;background:var(--bg2);border:0.5px solid var(--border);cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column}
+#home-loggedout .hlo-sc:hover{border-color:var(--navy)}
+#home-loggedout .hlo-sc-art{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;overflow:hidden}
+#home-loggedout .hlo-sc-art-i{font-family:var(--ffs);font-size:22px;font-weight:700;color:rgba(255,255,255,.88)}
+#home-loggedout .hlo-sc-art-s{font-size:8px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.07em;text-transform:uppercase}
+#home-loggedout .hlo-sc-body{padding:10px 12px 12px}
+#home-loggedout .hlo-sc-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:2px}
+#home-loggedout .hlo-sc-pub{font-size:11px;color:var(--text3);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#home-loggedout .hlo-sc-bbar{height:6px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:7px}
+#home-loggedout .hlo-sc-lean{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:4px;margin-bottom:9px}
+#home-loggedout .hlo-sc-follow{width:100%;padding:7px 0;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff);transition:background .12s}
+#home-loggedout .hlo-sc-follow:hover{background:var(--bg3)}
+
+/* VIDEO ROW */
+#home-loggedout .hlo-vid-sec{padding:0 40px 52px;background:var(--bg)}
+#home-loggedout .hlo-vid-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px}
+#home-loggedout .hlo-vid-t{font-family:var(--ffs);font-size:22px;font-weight:700;color:var(--text)}
+#home-loggedout .hlo-vid-m{font-size:12px;color:var(--text3)}
+#home-loggedout .hlo-vg{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+#home-loggedout .hlo-vc{border-radius:14px;overflow:hidden;background:#1d1d1f;cursor:pointer;transition:transform .2s}
+#home-loggedout .hlo-vc:hover{transform:scale(1.02)}
+#home-loggedout .hlo-vt{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+#home-loggedout .hlo-vp{width:44px;height:44px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center}
+#home-loggedout .hlo-vi{padding:10px 13px 13px}
+#home-loggedout .hlo-vn{font-size:12px;font-weight:600;color:#f5f5f7;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#home-loggedout .hlo-vm{font-size:10px;color:#86868b}
+
+/* DASHBOARD PREVIEW */
+#home-loggedout .hlo-dash-sec{background:var(--bg2);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);padding:64px 40px 0}
+#home-loggedout .hlo-dash-hd{text-align:center;margin-bottom:36px}
+#home-loggedout .hlo-dash-browser{border:0.5px solid var(--border);border-radius:14px 14px 0 0;overflow:hidden;box-shadow:0 -4px 40px rgba(0,0,0,.08);transform:scale(0.82);transform-origin:top center;margin:0 -8%}
+#home-loggedout .hlo-chrome{background:#e8e8ed;padding:9px 16px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid rgba(0,0,0,.09)}
+#home-loggedout .hlo-dc-dots{display:flex;gap:5px}
+#home-loggedout .hlo-dc-dot{width:11px;height:11px;border-radius:50%}
+#home-loggedout .hlo-dc-url{flex:1;background:#fff;border-radius:6px;padding:4px 0;font-size:11px;color:#6e6e73;text-align:center;border:0.5px solid rgba(0,0,0,.09)}
+#home-loggedout .hlo-d3{display:grid;grid-template-columns:220px 1fr 280px;background:var(--bg);min-height:640px}
+
+/* Dashboard sidebar */
+#home-loggedout .hlo-dsb{background:#0a1a20;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column}
+#home-loggedout .hlo-dsb-lbl{padding:16px 20px 6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+#home-loggedout .hlo-dsb-btn{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;border:none;background:transparent;width:100%;text-align:left;color:#fff;cursor:pointer;font-family:var(--ff)}
+#home-loggedout .hlo-dsb-btn.on{background:rgba(255,255,255,.1)}
+#home-loggedout .hlo-dsb-btn svg{width:14px;height:14px;flex-shrink:0;opacity:.65}
+#home-loggedout .hlo-dsb-btn.on svg{opacity:1}
+#home-loggedout .hlo-dsb-arr{margin-left:auto;font-size:11px;color:rgba(255,255,255,.3);transform:rotate(90deg);line-height:1}
+#home-loggedout .hlo-dsb-sub{display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;color:rgba(255,255,255,.4);cursor:pointer;font-family:var(--ff)}
+#home-loggedout .hlo-dsb-sub.on{color:rgba(255,255,255,.85);background:rgba(255,255,255,.07)}
+#home-loggedout .hlo-dsb-sub svg{width:11px;height:11px;flex-shrink:0}
+#home-loggedout .hlo-dsb-cnt{margin-left:auto;font-size:10px;color:rgba(255,255,255,.22)}
+#home-loggedout .hlo-dsb-badge{margin-left:auto;font-size:8px;background:rgba(55,138,221,.3);color:#378ADD;padding:1px 5px;border-radius:8px}
+#home-loggedout .hlo-dsb-soon{margin-left:auto;font-size:9px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.28);padding:1px 4px;border-radius:8px}
+#home-loggedout .hlo-dsb-div{height:0.5px;background:rgba(255,255,255,.1);margin:5px 20px}
+
+/* Dashboard main */
+#home-loggedout .hlo-dm{padding:28px 28px 40px;background:var(--bg);min-width:0}
+#home-loggedout .hlo-dm-greet{font-family:var(--ffs);font-size:36px;font-weight:600;line-height:1.15;margin-bottom:4px;color:var(--text)}
+#home-loggedout .hlo-dm-greet em{font-style:italic;color:var(--text3)}
+#home-loggedout .hlo-dm-plan{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+#home-loggedout .hlo-dm-dot{width:6px;height:6px;border-radius:50%;background:#E24B4A}
+#home-loggedout .hlo-dm-quota{font-size:11px;color:var(--text3);margin-bottom:16px}
+#home-loggedout .hlo-dm-bar{display:flex;border:1px solid var(--border2);border-radius:7px;overflow:hidden;background:var(--bg2);margin-bottom:20px}
+#home-loggedout .hlo-dm-inp{flex:1;padding:13px 16px;font-size:13px;border:none;background:transparent;color:var(--text);font-family:var(--ff);outline:none}
+#home-loggedout .hlo-dm-inp::placeholder{color:var(--text3)}
+#home-loggedout .hlo-dm-go{background:var(--navy);color:#fff;border:none;font-size:13px;font-weight:700;padding:13px 20px;white-space:nowrap;font-family:var(--ff);cursor:pointer}
+#home-loggedout .hlo-dm-hero{display:grid;grid-template-columns:5fr 6fr;border-radius:12px;overflow:hidden;background:#1a1a1a;margin-bottom:20px}
+#home-loggedout .hlo-dmh-l{padding:20px;display:flex;flex-direction:column;justify-content:space-between}
+#home-loggedout .hlo-dmh-eye{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:7px}
+#home-loggedout .hlo-dmh-title{font-family:var(--ffs);font-size:17px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:3px}
+#home-loggedout .hlo-dmh-host{font-size:12px;color:rgba(255,255,255,.5)}
+#home-loggedout .hlo-dmh-btns{display:flex;gap:8px;margin-top:14px}
+#home-loggedout .hlo-dmh-play{background:#fff;color:#1d1d1f;border:none;padding:7px 15px;border-radius:18px;font-size:12px;font-weight:700;cursor:pointer}
+#home-loggedout .hlo-dmh-analyze{background:none;border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:7px 15px;border-radius:18px;font-size:12px;font-weight:600;cursor:pointer}
+#home-loggedout .hlo-dm-sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+#home-loggedout .hlo-dm-st{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
+#home-loggedout .hlo-dm-sl{font-size:11px;color:var(--text);font-weight:600;text-decoration:none;cursor:pointer}
+#home-loggedout .hlo-dm-recent{display:flex;align-items:center;gap:12px;padding:10px 13px;background:var(--bg2);border-radius:8px;border:0.5px solid var(--border);margin-bottom:7px}
+#home-loggedout .hlo-dm-r-art{width:36px;height:36px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:rgba(255,255,255,.8)}
+#home-loggedout .hlo-dm-r-show{font-size:10px;color:var(--text3);margin-bottom:2px}
+#home-loggedout .hlo-dm-r-title{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+#home-loggedout .hlo-dm-r-lean{font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;margin-left:auto}
+#home-loggedout .hlo-dm-empty{padding:16px;text-align:center;font-size:12px;color:var(--text3);background:var(--bg2);border-radius:8px;border:0.5px solid var(--border)}
+#home-loggedout .hlo-rec-wrap{display:flex;align-items:center;gap:6px;margin:18px 0 10px;flex-wrap:wrap}
+#home-loggedout .hlo-cpill{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:600;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--ff)}
+#home-loggedout .hlo-cpill.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+#home-loggedout .hlo-stats-g{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+#home-loggedout .hlo-stat-c{background:var(--bg2);border-radius:10px;padding:16px;border:0.5px solid var(--border);text-align:center}
+#home-loggedout .hlo-stat-n{font-family:var(--ffs);font-size:28px;font-weight:700;color:var(--text);line-height:1}
+#home-loggedout .hlo-stat-l{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-top:5px}
+
+/* Dashboard right sidebar */
+#home-loggedout .hlo-drs{border-left:0.5px solid var(--border);padding:20px 18px;background:var(--bg)}
+#home-loggedout .hlo-drs-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px}
+#home-loggedout .hlo-drs-ct{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+#home-loggedout .hlo-drs-btn{font-size:11px;font-weight:600;color:var(--text);background:none;border:none;cursor:pointer;font-family:var(--ff)}
+#home-loggedout .hlo-fp-track{height:9px;border-radius:4px;background:linear-gradient(90deg,#E24B4A 0%,#d1cfcb 40%,#d1cfcb 60%,#378ADD 100%);position:relative;margin-bottom:6px}
+#home-loggedout .hlo-fp-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:var(--navy);border:2.5px solid var(--bg2);box-shadow:0 0 0 1.5px rgba(0,0,0,.12)}
+#home-loggedout .hlo-fp-lbls{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-bottom:8px}
+#home-loggedout .hlo-pro-badge{font-size:8px;font-weight:700;background:rgba(139,92,246,.1);color:#7c3aed;padding:2px 6px;border-radius:4px}
+#home-loggedout .hlo-echo-bar{height:6px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-bottom:4px}
+#home-loggedout .hlo-echo-meta{display:grid;grid-template-columns:1fr 1fr;font-size:10px;color:var(--text3)}
+
+/* Dashboard fade overlay */
+#home-loggedout .hlo-dash-fade{height:180px;background:linear-gradient(to bottom,transparent 0%,var(--bg2) 80%);margin-top:-180px;position:relative;z-index:10;display:flex;align-items:flex-end;justify-content:center;padding-bottom:36px}
+#home-loggedout .hlo-dash-fade p{font-size:13px;color:var(--text2);margin-bottom:12px;text-align:center}
+#home-loggedout .hlo-dash-cta-btn{background:var(--navy);border:none;color:#fff;font-size:13px;font-weight:600;padding:10px 24px;border-radius:22px;cursor:pointer;font-family:var(--ff)}
+
+/* FEATURE TILES */
+#home-loggedout .hlo-tiles-sec{background:var(--bg);padding:64px 40px}
+#home-loggedout .hlo-tiles-hd{text-align:center;margin-bottom:40px}
+#home-loggedout .hlo-tiles-ey{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+#home-loggedout .hlo-tiles-t{font-family:var(--ffs);font-size:clamp(28px,3.5vw,40px);font-weight:700;letter-spacing:-.02em;color:var(--text)}
+#home-loggedout .hlo-tiles-s{font-size:15px;color:var(--text2);margin-top:10px;max-width:460px;margin-left:auto;margin-right:auto;line-height:1.68}
+#home-loggedout .hlo-tiles-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+#home-loggedout .hlo-tile{border-radius:20px;overflow:hidden;display:flex;flex-direction:column;min-height:500px}
+#home-loggedout .hlo-tile-a{background:#e8f4fd}
+#home-loggedout .hlo-tile-b{background:#1d1d1f}
+#home-loggedout .hlo-tile-c{background:#f0fdf4}
+#home-loggedout .hlo-tile-d{background:#1a0a2e}
+#home-loggedout .hlo-tile-inner{padding:52px 44px 0;flex:1;display:flex;flex-direction:column}
+#home-loggedout .hlo-tey{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+#home-loggedout .hlo-tile-a .hlo-tey,#home-loggedout .hlo-tile-c .hlo-tey{color:#6e6e73}
+#home-loggedout .hlo-tile-b .hlo-tey,#home-loggedout .hlo-tile-d .hlo-tey{color:#86868b}
+#home-loggedout .hlo-ttl{font-family:var(--ffs);font-size:clamp(22px,2.5vw,32px);font-weight:700;letter-spacing:-.02em;line-height:1.08;margin-bottom:10px}
+#home-loggedout .hlo-tile-a .hlo-ttl,#home-loggedout .hlo-tile-c .hlo-ttl{color:#1d1d1f}
+#home-loggedout .hlo-tile-b .hlo-ttl,#home-loggedout .hlo-tile-d .hlo-ttl{color:#f5f5f7}
+#home-loggedout .hlo-tsb{font-size:13px;line-height:1.72;margin-bottom:20px;max-width:340px}
+#home-loggedout .hlo-tile-a .hlo-tsb,#home-loggedout .hlo-tile-c .hlo-tsb{color:#6e6e73}
+#home-loggedout .hlo-tile-b .hlo-tsb,#home-loggedout .hlo-tile-d .hlo-tsb{color:#86868b}
+#home-loggedout .hlo-tbtns{display:flex;gap:9px;margin-bottom:28px}
+#home-loggedout .hlo-tbp{border:none;padding:9px 20px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff)}
+#home-loggedout .hlo-tile-a .hlo-tbp,#home-loggedout .hlo-tile-c .hlo-tbp{background:#1d1d1f;color:#fff}
+#home-loggedout .hlo-tile-b .hlo-tbp,#home-loggedout .hlo-tile-d .hlo-tbp{background:#f5f5f7;color:#1d1d1f}
+#home-loggedout .hlo-tbs{background:none;padding:9px 20px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--ff)}
+#home-loggedout .hlo-tile-a .hlo-tbs,#home-loggedout .hlo-tile-c .hlo-tbs{border:1.5px solid rgba(0,0,0,.18);color:#1d1d1f}
+#home-loggedout .hlo-tile-b .hlo-tbs,#home-loggedout .hlo-tile-d .hlo-tbs{border:1.5px solid rgba(255,255,255,.22);color:#f5f5f7}
+#home-loggedout .hlo-tvis{flex:1;border-radius:14px 14px 0 0;padding:20px;overflow:hidden}
+#home-loggedout .hlo-tile-a .hlo-tvis{background:#fff;border:0.5px solid rgba(0,0,0,.08)}
+#home-loggedout .hlo-tile-b .hlo-tvis{background:#2d2d2f;border:0.5px solid rgba(255,255,255,.07)}
+#home-loggedout .hlo-tile-c .hlo-tvis{background:#fff;border:0.5px solid rgba(0,0,0,.08)}
+#home-loggedout .hlo-tile-d .hlo-tvis{background:#2a1a42;border:0.5px solid rgba(255,255,255,.07)}
+
+/* Fingerprint tile vis */
+#home-loggedout .hlo-fp-ov{background:#f5f5f7;border-radius:8px;padding:10px 13px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+#home-loggedout .hlo-fp-ov-l{font-size:10px;color:#6e6e73}
+#home-loggedout .hlo-fp-ov-v{font-size:12px;font-weight:700;color:#E24B4A}
+#home-loggedout .hlo-fp-weeks{display:flex;align-items:flex-end;gap:5px;height:90px;margin-bottom:9px}
+#home-loggedout .hlo-fp-wk{flex:1;display:flex;flex-direction:column;gap:1px;height:100%}
+#home-loggedout .hlo-fp-seg{border-radius:1px;min-height:2px}
+#home-loggedout .hlo-fp-leg{display:flex;gap:12px}
+#home-loggedout .hlo-fp-li{display:flex;align-items:center;gap:4px;font-size:9px;color:#6e6e73}
+#home-loggedout .hlo-fp-ld{width:7px;height:7px;border-radius:50%}
+
+/* Echo tile vis */
+#home-loggedout .hlo-echo-big{text-align:center;padding:8px 0 14px}
+#home-loggedout .hlo-echo-n{font-family:var(--ffs);font-size:56px;font-weight:700;line-height:1}
+#home-loggedout .hlo-echo-s{font-size:10px;color:#86868b;margin-top:4px;font-weight:600;letter-spacing:.04em}
+#home-loggedout .hlo-echo-trk{height:7px;border-radius:3px;background:#3a3a3c;overflow:hidden;margin-bottom:5px}
+#home-loggedout .hlo-echo-fill{height:100%;width:62%;background:linear-gradient(90deg,#378ADD,#E24B4A);border-radius:3px}
+#home-loggedout .hlo-echo-ends{display:flex;justify-content:space-between;font-size:9px;color:#6e6e73;margin-bottom:12px}
+#home-loggedout .hlo-echo-rs{display:flex;flex-direction:column;gap:6px}
+#home-loggedout .hlo-echo-r{display:flex;align-items:center;gap:8px}
+#home-loggedout .hlo-echo-rd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+#home-loggedout .hlo-echo-rn{font-size:11px;color:#86868b;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#home-loggedout .hlo-echo-rt{font-size:9px;font-weight:700;letter-spacing:.03em}
+
+/* Profile tile vis */
+#home-loggedout .hlo-pi-hd{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+#home-loggedout .hlo-pi-art{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#0d1b2a,#1a3460);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:rgba(255,255,255,.8)}
+#home-loggedout .hlo-pi-nm{font-size:12px;font-weight:600;color:#1d1d1f}
+#home-loggedout .hlo-pi-mt{font-size:10px;color:#6e6e73;margin-top:2px}
+#home-loggedout .hlo-pi-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+#home-loggedout .hlo-pi-st{background:#f5f5f7;border-radius:7px;padding:8px;text-align:center}
+#home-loggedout .hlo-pi-sv{font-size:16px;font-weight:700;color:#1d1d1f}
+#home-loggedout .hlo-pi-sl{font-size:8px;color:#6e6e73;margin-top:2px}
+#home-loggedout .hlo-pi-br{display:flex;align-items:center;gap:7px;font-size:9px;color:#6e6e73;margin-bottom:5px}
+#home-loggedout .hlo-pi-bt{width:56px;flex-shrink:0}
+#home-loggedout .hlo-pi-bv{flex:1;height:4px;border-radius:2px;overflow:hidden;background:#e8e8ed}
+#home-loggedout .hlo-pi-bf{height:100%;background:#0071e3;border-radius:2px}
+#home-loggedout .hlo-pi-bp{font-size:9px;color:#6e6e73;width:24px;flex-shrink:0}
+
+/* Transcript tile vis */
+#home-loggedout .hlo-lt-ep{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+#home-loggedout .hlo-lt-art{width:38px;height:38px;border-radius:7px;background:linear-gradient(135deg,#1f1225,#3d2450);flex-shrink:0}
+#home-loggedout .hlo-lt-nm{font-size:11px;color:#f5f5f7;font-weight:600}
+#home-loggedout .hlo-lt-tm{font-size:9px;color:#86868b;margin-top:2px}
+#home-loggedout .hlo-lt-ls{display:flex;flex-direction:column;gap:5px}
+#home-loggedout .hlo-lt-l{font-size:11px;line-height:1.55;color:#86868b;padding:5px 8px;border-radius:5px}
+#home-loggedout .hlo-lt-l.act{background:rgba(226,75,74,.12);border-left:2px solid #E24B4A;color:#f5f5f7;padding-left:7px}
+#home-loggedout .hlo-lt-l.flg{background:rgba(55,138,221,.1);border-left:2px solid #378ADD;color:#f5f5f7;padding-left:7px}
+#home-loggedout .hlo-lt-tag{display:inline-block;font-size:8px;font-weight:700;letter-spacing:.04em;padding:1px 5px;border-radius:8px;margin-left:5px}
+
+@media(max-width:900px){
+  #home-loggedout .hlo-tiles-grid{grid-template-columns:1fr}
+  #home-loggedout .hlo-d3{grid-template-columns:1fr}
+  #home-loggedout .hlo-vg{grid-template-columns:1fr 1fr}
+  #home-loggedout .hlo-drs{display:none}
+}
 </style>
 <script>(function(){try{var u=JSON.parse(localStorage.getItem('pl-user')||'null');if(u&&u.id){document.documentElement.classList.add('pl-signed-in');}}catch(e){}})()</script>
 <meta name="description" content="Paste any podcast URL. We surface bias, framing patterns, missing perspectives, and host influence — grounded in the actual transcript.">
@@ -3112,110 +3363,395 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
   <!-- STATE A: Logged out -->
   <div id="home-loggedout" style="display:none">
 
+    <!-- HERO -->
+    <section class="hlo-hero">
+      <div class="hlo-badge">Free forever &middot; No credit card required</div>
+      <h1 class="hlo-h1">Clarity.</h1>
+      <div class="hlo-h2">For every podcast you love.</div>
+      <p class="hlo-sub">The world&rsquo;s first bias intelligence platform for podcasts. Political lean, host credibility, and transcript evidence, all grounded in the actual words spoken.</p>
+      <div class="hlo-bar">
+        <input type="text" id="hero-url-input" class="hlo-inp" placeholder="Paste a YouTube, Spotify, Apple Podcasts, or RSS link&hellip;" autocomplete="url" onkeydown="if(event.key==='Enter')handleHeroAnalyze()"/>
+        <button class="hlo-go" onclick="handleHeroAnalyze()">Analyze &rarr;</button>
+      </div>
+      <p class="hlo-plats">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
+      <div class="hlo-conn">
+        <span class="hlo-conn-lbl">Or connect:</span>
+        <button id="hero-spotify-btn" class="hlo-plbtn" style="background:#1DB954" onclick="heroConnectSpotify()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+          <span id="hero-spotify-label">Connect Spotify</span>
+        </button>
+        <button id="hero-youtube-btn" class="hlo-plbtn" style="background:#FF0000" onclick="heroConnectYouTube()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+          <span id="hero-youtube-label">Connect YouTube</span>
+        </button>
+        <button class="hlo-plbtn" style="background:#FC3C44" onclick="heroConnectApple()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Apple Podcasts
+        </button>
+      </div>
+      <div id="hero-connect-status" style="font-size:12px;color:var(--text3);margin-top:10px;min-height:16px;text-align:center"></div>
+    </section>
 
-
-    <!-- HERO — 60/40 Grid -->
-    <section class="home-hero">
-      <div class="hero-inner">
-        <!-- Left 60%: heading + analyze bar -->
-        <div class="hero-left">
-          <div class="hero-kicker">Podcast Intelligence</div>
-          <h1 class="hero-h">A force of clarity<br><em>in the age of noise.</em></h1>
-          <p class="hero-sub">See the bias and missing voices in every podcast you love.</p>
-
-          <!-- Connected-first platform CTAs -->
-          <div id="hero-connect-block" style="margin-bottom:24px">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px">Connect your listening</div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <button id="hero-spotify-btn" class="hero-platform-btn hero-platform-spotify" onclick="heroConnectSpotify()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-                <span id="hero-spotify-label">Connect Spotify</span>
-              </button>
-              <button id="hero-youtube-btn" class="hero-platform-btn hero-platform-youtube" onclick="heroConnectYouTube()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
-                <span id="hero-youtube-label">Connect YouTube</span>
-              </button>
-              <button class="hero-platform-btn hero-platform-apple" onclick="heroConnectApple()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                Apple Podcasts
-              </button>
-            </div>
-            <div id="hero-connect-status" style="font-size:12px;color:var(--text3);margin-top:10px;min-height:16px"></div>
+    <!-- ANALYSIS CARD -->
+    <section class="hlo-card-sec">
+      <div class="hlo-acard">
+        <div class="hlo-acard-hd">
+          <div class="hlo-acard-art">NYT</div>
+          <div>
+            <div class="hlo-acard-show">The Daily &middot; New York Times</div>
+            <div class="hlo-acard-title">How the Media Shapes What We Believe</div>
           </div>
-
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">Or analyze any URL</div>
-          <div class="hero-input-wrap">
-            <input type="text" id="hero-url-input" class="hero-input" placeholder="YouTube, Spotify, Apple Podcasts, RSS, or .mp3" autocomplete="url"/>
-            <button class="hero-analyze-btn" onclick="handleHeroAnalyze()">Analyze &rarr;</button>
-          </div>
-          <p class="hero-platforms">YouTube &middot; Spotify &middot; Apple Podcasts &middot; RSS feeds &middot; Direct MP3</p>
         </div>
-        <!-- Right 40%: Bias Snapshot Today -->
-        <div class="hero-right-panel" id="hero-stats-panel">
-          <div class="hero-preview-card">
-            <div class="hpc-header">
-              <img class="hpc-art" src="https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ab/64/66/ab6466a9-9a7d-e20e-7a3d-bc5be37d29ce/mza_15084852813176276273.jpg/300x300bb.jpg" alt="">
-              <div class="hpc-meta">
-                <div class="hpc-show">The Daily &middot; NYT</div>
-                <div class="hpc-ep">How the Media Shapes What We Believe</div>
-                <div class="hpc-live-badge">Live example</div>
+        <div class="hlo-lean-row"><span class="hlo-lean-lbl">Political lean</span><span class="hlo-lean-val">Moderately biased, leaning left</span></div>
+        <div class="hlo-bbar"><div style="width:62%;background:#E24B4A"></div><div style="width:2%;background:var(--border)"></div><div style="width:22%;background:#d1cfcb"></div><div style="width:2%;background:var(--border)"></div><div style="width:14%;background:#378ADD"></div></div>
+        <div class="hlo-bpcts"><span style="color:#E24B4A">62% left</span><span style="color:var(--text3)">22% center</span><span style="color:#378ADD">16% right</span></div>
+        <div class="hlo-dims">
+          <div class="hlo-dim"><div class="hlo-dim-v">61</div><div class="hlo-dim-l">Host Trust</div></div>
+          <div class="hlo-dim"><div class="hlo-dim-v">58</div><div class="hlo-dim-l">Factual Density</div></div>
+          <div class="hlo-dim"><div class="hlo-dim-v">67</div><div class="hlo-dim-l">Omission Risk</div></div>
+          <div class="hlo-dim"><div class="hlo-dim-v">74</div><div class="hlo-dim-l">Framing</div></div>
+          <div class="hlo-dim"><div class="hlo-dim-v">39</div><div class="hlo-dim-l">Source Diversity</div></div>
+          <div class="hlo-dim"><div class="hlo-dim-v">44</div><div class="hlo-dim-l">Perspective</div></div>
+        </div>
+        <div class="hlo-finding"><div class="hlo-fdot" style="background:#E24B4A"></div><span>Left-leaning framing detected in 4 of 5 key claims. Conservative perspective absent from 3 segments.</span></div>
+        <div class="hlo-finding" style="opacity:.4"><div class="hlo-fdot" style="background:#ccc"></div><span style="filter:blur(3px)">Sponsor conflict in funding sources detected</span></div>
+        <div class="hlo-acard-ft"><span>2 findings visible free</span><button class="hlo-unlock" onclick="openModal('signup')">See all findings &rarr;</button></div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD PREVIEW -->
+    <section class="hlo-dash-sec">
+      <div class="hlo-dash-hd">
+        <div class="hlo-sec-ey">Members get</div>
+        <h2 class="hlo-tiles-t" style="font-size:clamp(26px,3.5vw,40px)">Your intelligence dashboard.</h2>
+        <p class="hlo-tiles-s">Everything you need to know about your listening in one place.</p>
+      </div>
+      <div class="hlo-dash-browser">
+        <div class="hlo-chrome">
+          <div class="hlo-dc-dots">
+            <div class="hlo-dc-dot" style="background:#FF5F57"></div>
+            <div class="hlo-dc-dot" style="background:#FFBD2E"></div>
+            <div class="hlo-dc-dot" style="background:#27C93F"></div>
+          </div>
+          <div class="hlo-dc-url">podlens.app</div>
+          <div style="width:52px"></div>
+        </div>
+        <div class="hlo-d3">
+          <!-- Sidebar -->
+          <div class="hlo-dsb">
+            <div class="hlo-dsb-lbl">Menu</div>
+            <button class="hlo-dsb-btn on">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Home <span class="hlo-dsb-arr">&#8250;</span>
+            </button>
+            <button class="hlo-dsb-sub on">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              My intelligence
+            </button>
+            <button class="hlo-dsb-sub">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+              Smart queue <span class="hlo-dsb-badge">3</span>
+            </button>
+            <button class="hlo-dsb-btn">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Discover
+            </button>
+            <button class="hlo-dsb-btn">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Analyze
+            </button>
+            <div class="hlo-dsb-div"></div>
+            <div class="hlo-dsb-lbl">My Library</div>
+            <button class="hlo-dsb-btn">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              My Library
+            </button>
+            <button class="hlo-dsb-sub">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78z"/></svg>
+              Following <span class="hlo-dsb-cnt">12</span>
+            </button>
+            <button class="hlo-dsb-sub">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78z"/></svg>
+              Liked episodes <span class="hlo-dsb-cnt">34</span>
+            </button>
+            <button class="hlo-dsb-sub">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+              Playlists <span style="margin-left:auto;font-size:10px;color:rgba(255,255,255,.3)">&#8250;</span>
+            </button>
+            <button class="hlo-dsb-sub">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Analyzed <span class="hlo-dsb-cnt">41</span>
+            </button>
+            <button class="hlo-dsb-sub">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Downloads <span class="hlo-dsb-soon">Soon</span>
+            </button>
+            <div class="hlo-dsb-div"></div>
+            <button class="hlo-dsb-btn" style="font-size:11px;color:rgba(255,255,255,.3);padding:8px 20px">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              Bulk Scanner
+            </button>
+          </div>
+          <!-- Main content -->
+          <div class="hlo-dm">
+            <div class="hlo-dm-greet">Good evening, <em>Dave.</em></div>
+            <div class="hlo-dm-plan"><span class="hlo-dm-dot"></span> Pro Lens Plan</div>
+            <div class="hlo-dm-quota">Unlimited analyses</div>
+            <div class="hlo-dm-bar">
+              <input class="hlo-dm-inp" placeholder="Paste a YouTube, Spotify, or RSS URL&hellip;" readonly>
+              <button class="hlo-dm-go">Analyze &rarr;</button>
+            </div>
+            <div class="hlo-dm-hero">
+              <div class="hlo-dmh-l">
+                <div>
+                  <div class="hlo-dmh-eye">Trending on PodLens</div>
+                  <div class="hlo-dmh-title">Jensen Huang: Will Nvidia&rsquo;s moat persist?</div>
+                  <div class="hlo-dmh-host">Dwarkesh Patel</div>
+                </div>
+                <div class="hlo-dmh-btns">
+                  <button class="hlo-dmh-play">&#9654; Play</button>
+                  <button class="hlo-dmh-analyze">Analyze &rarr;</button>
+                </div>
+              </div>
+              <div style="position:relative;overflow:hidden;background:#0f0f0f;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center">
+                <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Dwarkesh Podcast</div>
+                <div style="font-size:12px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:10px">Jensen Huang &mdash; Nvidia CEO</div>
+                <div style="width:40px;height:28px;background:red;border-radius:6px;display:flex;align-items:center;justify-content:center">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                </div>
               </div>
             </div>
-            <div class="hpc-section-label">Political Lean &mdash; how this episode frames issues</div>
-            <div class="preview-bias-gradient">
-              <div class="preview-marker" style="left:28%"></div>
+            <div class="hlo-dm-sh"><span class="hlo-dm-st">Continue where you left off</span><span class="hlo-dm-sl">Analyze new &rarr;</span></div>
+            <div class="hlo-dm-recent">
+              <div class="hlo-dm-r-art" style="background:linear-gradient(135deg,#0d1b2a,#1a3460)">LEX</div>
+              <div style="flex:1;min-width:0">
+                <div class="hlo-dm-r-show">Lex Fridman Podcast</div>
+                <div class="hlo-dm-r-title">Jensen Huang: NVIDIA &mdash; The $4 Trillion Company</div>
+              </div>
+              <div class="hlo-dm-r-lean" style="background:#EFF6FF;color:#378ADD">Lean right</div>
             </div>
-            <div class="hpc-bias-labels">
-              <span>🔴 62% left</span>
-              <span>⬜ 24% center</span>
-              <span>🔵 14% right</span>
+            <div class="hlo-dm-recent">
+              <div class="hlo-dm-r-art" style="background:linear-gradient(135deg,#1a1a1a,#2d2d2f)">NYT</div>
+              <div style="flex:1;min-width:0">
+                <div class="hlo-dm-r-show">The Daily</div>
+                <div class="hlo-dm-r-title">The New Isolationism: America Pulls Back</div>
+              </div>
+              <div class="hlo-dm-r-lean" style="background:#FEF2F2;color:#E24B4A">Leans left</div>
             </div>
-            <div class="hpc-lean-pill">Moderately biased</div>
-            <div class="hpc-section-label" style="margin-top:16px">Findings</div>
-            <div class="hpc-findings">
-              <div class="hpc-finding">
-                <span class="hpc-dot" style="background:#E24B4A"></span>
-                <span>Left-leaning framing in 4 of 5 key claims</span>
+            <div class="hlo-dm-sh" style="margin-top:18px"><span class="hlo-dm-st">New from your shows</span><span class="hlo-dm-sl">Discover more &rarr;</span></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px">
+              <div style="background:var(--bg2);border-radius:8px;border:0.5px solid var(--border);overflow:hidden">
+                <div style="width:100%;aspect-ratio:1;background:linear-gradient(160deg,#0f2a14,#1e5028);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="font-size:12px;font-weight:700;color:rgba(255,255,255,.88)">HUB</span><span style="font-size:7px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)">HUBERMAN</span></div>
+                <div style="padding:7px 8px 9px"><div style="font-size:10px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px">Huberman Lab</div><div style="font-size:9px;color:var(--text3);margin-bottom:5px">Andrew Huberman</div><div style="height:4px;border-radius:2px;overflow:hidden;display:flex;margin-bottom:5px"><div style="width:20%;background:#E24B4A"></div><div style="width:60%;background:#d1cfcb"></div><div style="width:20%;background:#378ADD"></div></div><span style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:3px;background:#F0FDF4;color:#16a34a">Center</span></div>
               </div>
-              <div class="hpc-finding">
-                <span class="hpc-dot" style="background:#378ADD"></span>
-                <span>Conservative perspective absent from 3 segments</span>
+              <div style="background:var(--bg2);border-radius:8px;border:0.5px solid var(--border);overflow:hidden">
+                <div style="width:100%;aspect-ratio:1;background:linear-gradient(160deg,#6b0000,#c1121f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="font-size:12px;font-weight:700;color:rgba(255,255,255,.88)">NPR</span><span style="font-size:7px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)">POLITICS</span></div>
+                <div style="padding:7px 8px 9px"><div style="font-size:10px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px">NPR Politics</div><div style="font-size:9px;color:var(--text3);margin-bottom:5px">NPR</div><div style="height:4px;border-radius:2px;overflow:hidden;display:flex;margin-bottom:5px"><div style="width:72%;background:#E24B4A"></div><div style="width:20%;background:#d1cfcb"></div><div style="width:8%;background:#378ADD"></div></div><span style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:3px;background:#FEF2F2;color:#E24B4A">Left</span></div>
               </div>
-              <div class="hpc-finding hpc-finding-locked">
-                <span class="hpc-dot" style="background:rgba(255,255,255,.2)"></span>
-                <span class="hpc-blurred">Sponsor conflict in funding sources detected</span>
-                <span class="hpc-lock-icon">🔒</span>
-              </div>
-              <div class="hpc-finding hpc-finding-locked">
-                <span class="hpc-dot" style="background:rgba(255,255,255,.2)"></span>
-                <span class="hpc-blurred">4 expert voices missing from this coverage</span>
-                <span class="hpc-lock-icon">🔒</span>
+              <div style="background:var(--bg2);border-radius:8px;border:0.5px solid var(--border);overflow:hidden">
+                <div style="width:100%;aspect-ratio:1;background:linear-gradient(160deg,#1a1a1a,#2d2d2f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="font-size:12px;font-weight:700;color:rgba(255,255,255,.88)">JRE</span><span style="font-size:7px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)">JOE ROGAN</span></div>
+                <div style="padding:7px 8px 9px"><div style="font-size:10px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px">Joe Rogan Experience</div><div style="font-size:9px;color:var(--text3);margin-bottom:5px">Joe Rogan</div><div style="height:4px;border-radius:2px;overflow:hidden;display:flex;margin-bottom:5px"><div style="width:18%;background:#E24B4A"></div><div style="width:32%;background:#d1cfcb"></div><div style="width:50%;background:#378ADD"></div></div><span style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:3px;background:#EFF6FF;color:#378ADD">Lightly right</span></div>
               </div>
             </div>
-            <div class="hpc-footer">
-              <span>2 findings visible free</span>
-              <button onclick="openModal('signup');return false" class="hpc-unlock-btn">See all findings &rarr;</button>
+            <div class="hlo-rec-wrap">
+              <span class="hlo-dm-st" style="margin-right:4px">Recommended</span>
+              <button class="hlo-cpill on">All</button>
+              <button class="hlo-cpill"><span style="color:#E24B4A">&#9679;</span> Left</button>
+              <button class="hlo-cpill"><span style="color:#9E9E9E">&#9679;</span> Center</button>
+              <button class="hlo-cpill"><span style="color:#378ADD">&#9679;</span> Right</button>
+            </div>
+            <div class="hlo-dm-empty">Analyze a few episodes to unlock personalized recommendations.</div>
+            <div class="hlo-dm-sh" style="margin-top:20px"><span class="hlo-dm-st">Your stats</span></div>
+            <div class="hlo-stats-g">
+              <div class="hlo-stat-c"><div class="hlo-stat-n">41</div><div class="hlo-stat-l">Analyzed</div></div>
+              <div class="hlo-stat-c"><div class="hlo-stat-n">12</div><div class="hlo-stat-l">Following</div></div>
+              <div class="hlo-stat-c"><div class="hlo-stat-n" style="font-size:18px;padding-top:6px;color:#E24B4A">Leans left</div><div class="hlo-stat-l">Your lean</div></div>
+            </div>
+          </div>
+          <!-- Right sidebar -->
+          <div class="hlo-drs">
+            <div class="hlo-drs-card">
+              <div class="hlo-drs-ct"><span>Bias Fingerprint</span><button class="hlo-drs-btn">My profile &rarr;</button></div>
+              <div class="hlo-fp-track"><div class="hlo-fp-dot" style="left:32%"></div></div>
+              <div class="hlo-fp-lbls"><span>LEFT</span><span>CENTER</span><span>RIGHT</span></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:8px">
+                <div style="background:#FEF2F2;border-radius:5px;padding:6px;text-align:center"><div style="font-size:14px;font-weight:700;color:#E24B4A">54%</div><div style="font-size:8px;color:#E24B4A;margin-top:1px">Left</div></div>
+                <div style="background:#f5f5f5;border-radius:5px;padding:6px;text-align:center"><div style="font-size:14px;font-weight:700;color:#6e6e73">26%</div><div style="font-size:8px;color:#6e6e73;margin-top:1px">Center</div></div>
+                <div style="background:#EFF6FF;border-radius:5px;padding:6px;text-align:center"><div style="font-size:14px;font-weight:700;color:#378ADD">20%</div><div style="font-size:8px;color:#378ADD;margin-top:1px">Right</div></div>
+              </div>
+              <div style="font-size:10px;color:var(--text3);margin-top:8px">Based on 41 analyses &middot; 6 weeks</div>
+            </div>
+            <div class="hlo-drs-card">
+              <div class="hlo-drs-ct"><span>Echo Chamber Score</span><button class="hlo-drs-btn">Details &rarr;</button></div>
+              <div style="text-align:center;margin-bottom:10px">
+                <div style="font-family:var(--ffs);font-size:44px;font-weight:700;color:#E24B4A;line-height:1">47</div>
+                <div style="font-size:9px;color:var(--text3);margin-top:2px;font-weight:600;letter-spacing:.04em">Moderate echo &middot; Leans left</div>
+              </div>
+              <div class="hlo-echo-bar"><div style="height:100%;width:47%;background:linear-gradient(90deg,#E24B4A,#378ADD);border-radius:3px"></div></div>
+              <div class="hlo-echo-meta" style="margin-bottom:10px"><span>Balanced (0)</span><span>Strong echo (100)</span></div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <div style="display:flex;align-items:center;gap:7px"><div style="width:6px;height:6px;border-radius:50%;background:#E24B4A;flex-shrink:0"></div><div style="font-size:10px;color:var(--text3);flex:1">The Daily</div><div style="font-size:8px;font-weight:700;color:#E24B4A">LEFT 34%</div></div>
+                <div style="display:flex;align-items:center;gap:7px"><div style="width:6px;height:6px;border-radius:50%;background:#E24B4A;flex-shrink:0"></div><div style="font-size:10px;color:var(--text3);flex:1">NPR Politics</div><div style="font-size:8px;font-weight:700;color:#E24B4A">LEFT 20%</div></div>
+                <div style="display:flex;align-items:center;gap:7px"><div style="width:6px;height:6px;border-radius:50%;background:#9E9E9E;flex-shrink:0"></div><div style="font-size:10px;color:var(--text3);flex:1">Huberman Lab</div><div style="font-size:8px;font-weight:700;color:#9E9E9E">CTR 18%</div></div>
+                <div style="display:flex;align-items:center;gap:7px"><div style="width:6px;height:6px;border-radius:50%;background:#378ADD;flex-shrink:0"></div><div style="font-size:10px;color:var(--text3);flex:1">Lex Fridman</div><div style="font-size:8px;font-weight:700;color:#378ADD">RIGHT 14%</div></div>
+              </div>
+            </div>
+            <div class="hlo-drs-card">
+              <div class="hlo-drs-ct">Shows I Follow</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:9px"><div style="width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#1a1a1a,#2d2d2f);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:rgba(255,255,255,.7)">NYT</div><div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--text)">The Daily <span style="display:inline-block;background:#E24B4A;color:#fff;font-size:7px;font-weight:700;padding:1px 4px;border-radius:4px;margin-left:3px">NEW</span></div><div style="font-size:9px;color:var(--text3)">New today</div></div></div>
+                <div style="display:flex;align-items:center;gap:9px"><div style="width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#0f2a14,#1e5028);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:rgba(255,255,255,.7)">HUB</div><div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--text)">Huberman Lab</div><div style="font-size:9px;color:var(--text3)">3 days ago</div></div></div>
+                <div style="display:flex;align-items:center;gap:9px"><div style="width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#0d1b2a,#1a3460);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:rgba(255,255,255,.7)">LEX</div><div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--text)">Lex Fridman <span style="display:inline-block;background:#E24B4A;color:#fff;font-size:7px;font-weight:700;padding:1px 4px;border-radius:4px;margin-left:3px">NEW</span></div><div style="font-size:9px;color:var(--text3)">New today</div></div></div>
+              </div>
+            </div>
+            <div class="hlo-drs-card">
+              <div class="hlo-drs-ct"><span>Unheard</span><span class="hlo-pro-badge">Pro</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="border-left:2px solid #E24B4A;padding-left:8px"><div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:2px">Three networks, same story, opposite framing</div><div style="font-size:9px;color:var(--text3)">Politics &middot; 4 shows &middot; This week</div></div>
+                <div style="border-left:2px solid #378ADD;padding-left:8px"><div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:2px">Tech story every business podcast avoided</div><div style="font-size:9px;color:var(--text3)">Technology &middot; 7 shows &middot; This week</div></div>
+                <div style="border-left:2px solid var(--border);padding-left:8px;opacity:.5"><div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:2px;filter:blur(3px)">International perspective absent from top US shows</div><div style="font-size:9px;color:var(--text3)">+ 3 more stories</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hlo-dash-fade">
+        <div style="text-align:center">
+          <p>Create a free account to unlock your personal intelligence dashboard.</p>
+          <button class="hlo-dash-cta-btn" onclick="openModal('signup')">Create free account &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOW CAROUSEL -->
+    <section class="hlo-carousel">
+      <div class="hlo-sec-hd">
+        <div class="hlo-sec-ey">Browse PodLens</div>
+        <h2 class="hlo-sec-t">Know before you listen.</h2>
+        <p class="hlo-sec-s">Every major show already scored. Bias analysis ready the moment you click.</p>
+      </div>
+      <div class="hlo-cw"><div class="hlo-ct">
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#1a6fa8 0%,#f5c842 100%)"><div class="hlo-sc-art-i">NYT</div><div class="hlo-sc-art-s">The Daily</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">The Daily</div><div class="hlo-sc-pub">The New York Times</div><div class="hlo-sc-bbar"><div style="width:62%;background:#E24B4A"></div><div style="width:22%;background:#d1cfcb"></div><div style="width:16%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#FEF2F2;color:#E24B4A">Leans left</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#1a1a1a 0%,#2d2d2f 100%)"><div class="hlo-sc-art-i">JRE</div><div class="hlo-sc-art-s">Joe Rogan</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">Joe Rogan Experience</div><div class="hlo-sc-pub">Joe Rogan</div><div class="hlo-sc-bbar"><div style="width:18%;background:#E24B4A"></div><div style="width:32%;background:#d1cfcb"></div><div style="width:50%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#EFF6FF;color:#378ADD">Lightly right</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#f0f0f5 0%,#d8d8e0 100%)"><div class="hlo-sc-art-i" style="color:rgba(20,20,20,.8)">CJ</div><div class="hlo-sc-art-s" style="color:rgba(20,20,20,.45)">Crime Junkie</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">Crime Junkie</div><div class="hlo-sc-pub">Audiochuck</div><div class="hlo-sc-bbar"><div style="width:22%;background:#E24B4A"></div><div style="width:56%;background:#d1cfcb"></div><div style="width:22%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#F0FDF4;color:#16a34a">Mostly balanced</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#6b0000 0%,#c1121f 100%)"><div class="hlo-sc-art-i">NPR</div><div class="hlo-sc-art-s">NPR Politics</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">NPR Politics</div><div class="hlo-sc-pub">NPR</div><div class="hlo-sc-bbar"><div style="width:72%;background:#E24B4A"></div><div style="width:20%;background:#d1cfcb"></div><div style="width:8%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#FEF2F2;color:#E24B4A">Left</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#0d1b2a 0%,#1a3460 100%)"><div class="hlo-sc-art-i">LEX</div><div class="hlo-sc-art-s">Fridman</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">Lex Fridman Podcast</div><div class="hlo-sc-pub">Lex Fridman</div><div class="hlo-sc-bbar"><div style="width:22%;background:#E24B4A"></div><div style="width:28%;background:#d1cfcb"></div><div style="width:50%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#EFF6FF;color:#378ADD">Leans right</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#0f2a14 0%,#1e5028 100%)"><div class="hlo-sc-art-i">HUB</div><div class="hlo-sc-art-s">Huberman Lab</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">Huberman Lab</div><div class="hlo-sc-pub">Andrew Huberman</div><div class="hlo-sc-bbar"><div style="width:20%;background:#E24B4A"></div><div style="width:60%;background:#d1cfcb"></div><div style="width:20%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#F0FDF4;color:#16a34a">Center</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#1a0a2e 0%,#3b1f6e 100%)"><div class="hlo-sc-art-i">HB</div><div class="hlo-sc-art-s">Hidden Brain</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">Hidden Brain</div><div class="hlo-sc-pub">NPR / Shankar Vedantam</div><div class="hlo-sc-bbar"><div style="width:24%;background:#E24B4A"></div><div style="width:52%;background:#d1cfcb"></div><div style="width:24%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#F0FDF4;color:#16a34a">Mostly center</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#1a1205 0%,#3d2a0a 100%)"><div class="hlo-sc-art-i">TF</div><div class="hlo-sc-art-s">Tim Ferriss</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">Tim Ferriss Show</div><div class="hlo-sc-pub">Tim Ferriss</div><div class="hlo-sc-bbar"><div style="width:21%;background:#E24B4A"></div><div style="width:58%;background:#d1cfcb"></div><div style="width:21%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#F0FDF4;color:#16a34a">Center</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#0a1e2e 0%,#1a3d5c 100%)"><div class="hlo-sc-art-i">TAL</div><div class="hlo-sc-art-s">This Am. Life</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">This American Life</div><div class="hlo-sc-pub">WBEZ Chicago</div><div class="hlo-sc-bbar"><div style="width:58%;background:#E24B4A"></div><div style="width:28%;background:#d1cfcb"></div><div style="width:14%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#FEF2F2;color:#E24B4A">Leans left</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+        <div class="hlo-sc" onclick="showView('discover')"><div class="hlo-sc-art" style="background:linear-gradient(160deg,#0a1628 0%,#1a3460 100%)"><div class="hlo-sc-art-i">BSS</div><div class="hlo-sc-art-s">Ben Shapiro</div></div><div class="hlo-sc-body"><div class="hlo-sc-name">Ben Shapiro Show</div><div class="hlo-sc-pub">Daily Wire</div><div class="hlo-sc-bbar"><div style="width:8%;background:#E24B4A"></div><div style="width:18%;background:#d1cfcb"></div><div style="width:74%;background:#378ADD"></div></div><div class="hlo-sc-lean" style="background:#EFF6FF;color:#378ADD">Right</div><button class="hlo-sc-follow" onclick="event.stopPropagation();openModal('signup')">+ Follow</button></div></div>
+      </div></div>
+    </section>
+
+    <!-- VIDEO ROW -->
+    <div class="hlo-vid-sec">
+      <div class="hlo-vid-hd"><h3 class="hlo-vid-t">Popular on YouTube</h3><span class="hlo-vid-m">See all &rarr;</span></div>
+      <div class="hlo-vg">
+        <div class="hlo-vc" onclick="showView('analyze')"><div class="hlo-vt" style="background:linear-gradient(135deg,#0d1b2a,#1a3460)"><div class="hlo-vp"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1d1d1f"><path d="M8 5v14l11-7z"/></svg></div></div><div class="hlo-vi"><div class="hlo-vn">Lex Fridman &amp; Sam Altman: The Future of AI</div><div class="hlo-vm">Lex Fridman &middot; 3.2M views</div></div></div>
+        <div class="hlo-vc" onclick="showView('analyze')"><div class="hlo-vt" style="background:linear-gradient(135deg,#0f2a14,#1e5028)"><div class="hlo-vp"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1d1d1f"><path d="M8 5v14l11-7z"/></svg></div></div><div class="hlo-vi"><div class="hlo-vn">Dr. Huberman on Sleep, Stress &amp; Focus</div><div class="hlo-vm">Huberman Lab &middot; 8.1M views</div></div></div>
+        <div class="hlo-vc" onclick="showView('analyze')"><div class="hlo-vt" style="background:linear-gradient(135deg,#1a1a1a,#2d2d2f)"><div class="hlo-vp"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1d1d1f"><path d="M8 5v14l11-7z"/></svg></div></div><div class="hlo-vi"><div class="hlo-vn">The Daily: What the Media Gets Wrong About AI</div><div class="hlo-vm">New York Times &middot; 1.4M views</div></div></div>
+        <div class="hlo-vc" onclick="showView('analyze')"><div class="hlo-vt" style="background:linear-gradient(135deg,#2d1010,#5a1f1f)"><div class="hlo-vp"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1d1d1f"><path d="M8 5v14l11-7z"/></svg></div></div><div class="hlo-vi"><div class="hlo-vn">Joe Rogan &amp; Elon Musk: Free Speech, AI, Mars</div><div class="hlo-vm">JRE &middot; 42M views</div></div></div>
+      </div>
+    </div>
+
+    <!-- FEATURE TILES 2x2 -->
+    <section class="hlo-tiles-sec">
+      <div class="hlo-tiles-hd">
+        <div class="hlo-tiles-ey">What you get</div>
+        <h2 class="hlo-tiles-t">Everything in one place.</h2>
+        <p class="hlo-tiles-s">Every feature grounded in the actual words spoken. No reputation scores, no guesswork.</p>
+      </div>
+      <div class="hlo-tiles-grid">
+        <!-- Bias Fingerprint -->
+        <div class="hlo-tile hlo-tile-a">
+          <div class="hlo-tile-inner">
+            <div class="hlo-tey">Your Media Diet</div>
+            <h2 class="hlo-ttl">Bias<br>Fingerprint.</h2>
+            <p class="hlo-tsb">Every episode you analyze shapes your fingerprint. See how your media diet leans week by week and spot the blind spots you didn&rsquo;t know you had.</p>
+            <div class="hlo-tbtns"><button class="hlo-tbp" onclick="openModal('signup')">See your fingerprint</button><button class="hlo-tbs" onclick="showView('how-it-works')">Learn more</button></div>
+            <div class="hlo-tvis">
+              <div class="hlo-fp-ov"><span class="hlo-fp-ov-l">Your overall lean this month</span><span class="hlo-fp-ov-v">Leans left &nbsp;54%</span></div>
+              <div class="hlo-fp-weeks">
+                <div class="hlo-fp-wk"><div class="hlo-fp-seg" style="flex:62;background:#E24B4A;border-radius:2px 2px 0 0"></div><div class="hlo-fp-seg" style="flex:20;background:#d1cfcb"></div><div class="hlo-fp-seg" style="flex:18;background:#378ADD"></div></div>
+                <div class="hlo-fp-wk"><div class="hlo-fp-seg" style="flex:55;background:#E24B4A;border-radius:2px 2px 0 0"></div><div class="hlo-fp-seg" style="flex:25;background:#d1cfcb"></div><div class="hlo-fp-seg" style="flex:20;background:#378ADD"></div></div>
+                <div class="hlo-fp-wk"><div class="hlo-fp-seg" style="flex:48;background:#E24B4A;border-radius:2px 2px 0 0"></div><div class="hlo-fp-seg" style="flex:28;background:#d1cfcb"></div><div class="hlo-fp-seg" style="flex:24;background:#378ADD"></div></div>
+                <div class="hlo-fp-wk"><div class="hlo-fp-seg" style="flex:50;background:#E24B4A;border-radius:2px 2px 0 0"></div><div class="hlo-fp-seg" style="flex:22;background:#d1cfcb"></div><div class="hlo-fp-seg" style="flex:28;background:#378ADD"></div></div>
+                <div class="hlo-fp-wk"><div class="hlo-fp-seg" style="flex:44;background:#E24B4A;border-radius:2px 2px 0 0"></div><div class="hlo-fp-seg" style="flex:26;background:#d1cfcb"></div><div class="hlo-fp-seg" style="flex:30;background:#378ADD"></div></div>
+                <div class="hlo-fp-wk"><div class="hlo-fp-seg" style="flex:54;background:#E24B4A;border-radius:2px 2px 0 0"></div><div class="hlo-fp-seg" style="flex:20;background:#d1cfcb"></div><div class="hlo-fp-seg" style="flex:26;background:#378ADD"></div></div>
+              </div>
+              <div style="display:flex;margin-bottom:10px"><span style="flex:1;font-size:8px;color:#b0b0b5;text-align:center">Wk 1</span><span style="flex:1;font-size:8px;color:#b0b0b5;text-align:center">Wk 2</span><span style="flex:1;font-size:8px;color:#b0b0b5;text-align:center">Wk 3</span><span style="flex:1;font-size:8px;color:#b0b0b5;text-align:center">Wk 4</span><span style="flex:1;font-size:8px;color:#b0b0b5;text-align:center">Wk 5</span><span style="flex:1;font-size:8px;color:#b0b0b5;text-align:center">This wk</span></div>
+              <div class="hlo-fp-leg"><div class="hlo-fp-li"><div class="hlo-fp-ld" style="background:#E24B4A"></div>Left</div><div class="hlo-fp-li"><div class="hlo-fp-ld" style="background:#d1cfcb"></div>Center</div><div class="hlo-fp-li"><div class="hlo-fp-ld" style="background:#378ADD"></div>Right</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Echo Chamber -->
+        <div class="hlo-tile hlo-tile-b">
+          <div class="hlo-tile-inner">
+            <div class="hlo-tey">Intelligence</div>
+            <h2 class="hlo-ttl">Echo Chamber<br>Score.</h2>
+            <p class="hlo-tsb">A 0 to 100 score measuring perspective diversity across everything you listen to. Activates after 10 analyses. The higher the score, the deeper the bubble.</p>
+            <div class="hlo-tbtns"><button class="hlo-tbp" onclick="openModal('signup')">See your score</button><button class="hlo-tbs" onclick="showView('how-it-works')">How it works</button></div>
+            <div class="hlo-tvis">
+              <div class="hlo-echo-big"><div class="hlo-echo-n" style="color:#E24B4A">62</div><div class="hlo-echo-s">Echo Chamber Score &middot; Leans right</div></div>
+              <div class="hlo-echo-trk"><div class="hlo-echo-fill"></div></div>
+              <div class="hlo-echo-ends"><span>Balanced (0)</span><span>Strong echo (100)</span></div>
+              <div class="hlo-echo-rs">
+                <div class="hlo-echo-r"><div class="hlo-echo-rd" style="background:#378ADD"></div><div class="hlo-echo-rn">Ben Shapiro Show</div><div class="hlo-echo-rt" style="color:#378ADD">RIGHT</div></div>
+                <div class="hlo-echo-r"><div class="hlo-echo-rd" style="background:#378ADD"></div><div class="hlo-echo-rn">Lex Fridman Podcast</div><div class="hlo-echo-rt" style="color:#378ADD">LEANS RIGHT</div></div>
+                <div class="hlo-echo-r"><div class="hlo-echo-rd" style="background:#9E9E9E"></div><div class="hlo-echo-rn">Huberman Lab</div><div class="hlo-echo-rt" style="color:#9E9E9E">CENTER</div></div>
+                <div class="hlo-echo-r"><div class="hlo-echo-rd" style="background:#E24B4A"></div><div class="hlo-echo-rn">The Daily</div><div class="hlo-echo-rt" style="color:#E24B4A">LEANS LEFT</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Profile Intelligence -->
+        <div class="hlo-tile hlo-tile-c">
+          <div class="hlo-tile-inner">
+            <div class="hlo-tey">Show Profiles</div>
+            <h2 class="hlo-ttl">Profile<br>Intelligence.</h2>
+            <p class="hlo-tsb">Every show has a living intelligence profile. Aggregate bias scores, host trust ratings, topic distribution, and historical trend data across hundreds of episodes.</p>
+            <div class="hlo-tbtns"><button class="hlo-tbp" onclick="showView('discover')">Explore profiles</button><button class="hlo-tbs" onclick="showView('methodology')">See methodology</button></div>
+            <div class="hlo-tvis">
+              <div class="hlo-pi-hd"><div class="hlo-pi-art">LEX</div><div><div class="hlo-pi-nm">Lex Fridman Podcast</div><div class="hlo-pi-mt">400+ episodes &middot; Updated daily</div></div></div>
+              <div class="hlo-pi-stats">
+                <div class="hlo-pi-st"><div class="hlo-pi-sv">68</div><div class="hlo-pi-sl">Avg Host Trust</div></div>
+                <div class="hlo-pi-st"><div class="hlo-pi-sv" style="color:#378ADD">R+18</div><div class="hlo-pi-sl">Political lean</div></div>
+                <div class="hlo-pi-st"><div class="hlo-pi-sv">+12&deg;</div><div class="hlo-pi-sl">Drift (12mo)</div></div>
+              </div>
+              <div class="hlo-pi-br"><span class="hlo-pi-bt">AI &amp; Tech</span><div class="hlo-pi-bv"><div class="hlo-pi-bf" style="width:72%"></div></div><span class="hlo-pi-bp">72%</span></div>
+              <div class="hlo-pi-br"><span class="hlo-pi-bt">Science</span><div class="hlo-pi-bv"><div class="hlo-pi-bf" style="width:48%"></div></div><span class="hlo-pi-bp">48%</span></div>
+              <div class="hlo-pi-br"><span class="hlo-pi-bt">Politics</span><div class="hlo-pi-bv"><div class="hlo-pi-bf" style="width:31%"></div></div><span class="hlo-pi-bp">31%</span></div>
+              <div class="hlo-pi-br"><span class="hlo-pi-bt">Business</span><div class="hlo-pi-bv"><div class="hlo-pi-bf" style="width:24%"></div></div><span class="hlo-pi-bp">24%</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Live Transcript -->
+        <div class="hlo-tile hlo-tile-d">
+          <div class="hlo-tile-inner">
+            <div class="hlo-tey">While You Listen</div>
+            <h2 class="hlo-ttl">Live Transcript<br>Sync.</h2>
+            <p class="hlo-tsb">Word-by-word transcript sync as you listen. Bias flags appear in context the moment they&rsquo;re spoken. Click any phrase to jump to that timestamp.</p>
+            <div class="hlo-tbtns"><button class="hlo-tbp" onclick="openModal('signup')">Try it now</button><button class="hlo-tbs" onclick="showView('how-it-works')">See demo</button></div>
+            <div class="hlo-tvis">
+              <div class="hlo-lt-ep"><div class="hlo-lt-art"></div><div><div class="hlo-lt-nm">Huberman Lab &middot; Episode 312</div><div class="hlo-lt-tm">38:14 &nbsp;&middot;&nbsp; 2:04:30 total</div></div></div>
+              <div class="hlo-lt-ls">
+                <div class="hlo-lt-l" style="opacity:.5">...research published in Nature in 2022 with three replications...</div>
+                <div class="hlo-lt-l act">The data shows that <strong>cold exposure of just 11 minutes per week</strong> produces measurable dopamine increases.<span class="hlo-lt-tag" style="background:rgba(55,138,221,.2);color:#378ADD">CLAIM</span></div>
+                <div class="hlo-lt-l flg">Some people say the government <strong>doesn&rsquo;t want you to know</strong> this...<span class="hlo-lt-tag" style="background:rgba(226,75,74,.15);color:#E24B4A">FRAMING</span></div>
+                <div class="hlo-lt-l" style="opacity:.4">So what I recommend is starting with cold showers...</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FREE TIER PROMISE -->
-
-
     <!-- TICKER -->
     <div class="ticker-section" id="ticker-section">
       <div class="ticker-label">RECENTLY ANALYZED</div>
       <div class="ticker-wrapper"><div class="ticker-track" id="ticker-track"></div></div>
     </div>
-
-    <!-- SHOWCASE
-
-
-
-
-
 
     <!-- UNHEARD TEASER -->
     <section class="unheard-section show-logged-out">
@@ -3225,30 +3761,10 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="unheard-locked-wrap">
         <div class="unheard-blur">
           <div class="unheard-sample-list">
-            <div class="unheard-sample-row">
-              <div>
-                <div class="unheard-sample-title">How three major networks covered the same policy story with opposite framing</div>
-                <div class="unheard-sample-meta">Politics &middot; 4 shows affected &middot; This week</div>
-              </div>
-            </div>
-            <div class="unheard-sample-row">
-              <div>
-                <div class="unheard-sample-title">The tech story every business podcast avoided mentioning</div>
-                <div class="unheard-sample-meta">Technology &middot; 7 shows affected &middot; This week</div>
-              </div>
-            </div>
-            <div class="unheard-sample-row">
-              <div>
-                <div class="unheard-sample-title">Climate coverage gap: what science podcasts said vs what news shows ignored</div>
-                <div class="unheard-sample-meta">Science &middot; 5 shows affected &middot; This week</div>
-              </div>
-            </div>
-            <div class="unheard-sample-row" style="border-bottom:none">
-              <div>
-                <div class="unheard-sample-title">International perspective absent from 12 top-ranked US political shows</div>
-                <div class="unheard-sample-meta">Politics &middot; 12 shows affected &middot; This week</div>
-              </div>
-            </div>
+            <div class="unheard-sample-row"><div><div class="unheard-sample-title">How three major networks covered the same policy story with opposite framing</div><div class="unheard-sample-meta">Politics &middot; 4 shows affected &middot; This week</div></div></div>
+            <div class="unheard-sample-row"><div><div class="unheard-sample-title">The tech story every business podcast avoided mentioning</div><div class="unheard-sample-meta">Technology &middot; 7 shows affected &middot; This week</div></div></div>
+            <div class="unheard-sample-row"><div><div class="unheard-sample-title">Climate coverage gap: what science podcasts said vs what news shows ignored</div><div class="unheard-sample-meta">Science &middot; 5 shows affected &middot; This week</div></div></div>
+            <div class="unheard-sample-row" style="border-bottom:none"><div><div class="unheard-sample-title">International perspective absent from 12 top-ranked US political shows</div><div class="unheard-sample-meta">Politics &middot; 12 shows affected &middot; This week</div></div></div>
           </div>
         </div>
         <div class="unheard-gate">
