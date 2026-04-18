@@ -15,7 +15,6 @@ export default async (req: Request) => {
 
   const scopes = [
     'https://www.googleapis.com/auth/youtube.readonly',
-    'https://www.googleapis.com/auth/youtube-paid-content',
   ].join(' ');
 
   const params = new URLSearchParams({
