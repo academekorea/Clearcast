@@ -14694,14 +14694,22 @@ function addToPlaylist(ep) {
     // renderHomeState() or showHome() will handle visibility after routing.
   } catch(e) {}
 })();
-enforcePlanRules();
-initNav();
-// Apply region, translations
-updateRegionUI();
-applyTranslations(_settings.lang);
-initUpgradeTriggers();
+// Process OAuth callbacks FIRST — before any init that could throw
 if (!handleUrlRouting()) {
-  showHome(); // showHome now calls renderHomeState internally — covers both logged-in and logged-out
+  // Init functions — wrapped so they can't block login
+  try { enforcePlanRules(); } catch(e) { console.error('[init] enforcePlanRules:', e); }
+  try { initNav(); } catch(e) { console.error('[init] initNav:', e); }
+  try { updateRegionUI(); } catch(e) { console.error('[init] updateRegionUI:', e); }
+  try { applyTranslations(_settings.lang); } catch(e) { console.error('[init] applyTranslations:', e); }
+  try { initUpgradeTriggers(); } catch(e) { console.error('[init] initUpgradeTriggers:', e); }
+  showHome();
+} else {
+  // OAuth callback handled — still run init
+  try { enforcePlanRules(); } catch(e) { console.error('[init] enforcePlanRules:', e); }
+  try { initNav(); } catch(e) { console.error('[init] initNav:', e); }
+  try { updateRegionUI(); } catch(e) { console.error('[init] updateRegionUI:', e); }
+  try { applyTranslations(_settings.lang); } catch(e) { console.error('[init] applyTranslations:', e); }
+  try { initUpgradeTriggers(); } catch(e) { console.error('[init] initUpgradeTriggers:', e); }
 }
 initFreeAccessPanel();
 loadDiscTrendingNews(); // pre-render pills so they're ready when discover opens
