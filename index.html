@@ -16781,7 +16781,7 @@ function addAppleShows() {
   // Add a "Disconnect" button next to the "Connected" pill in Settings →
   // Integrations Spotify card. Runs when user is connected. Idempotent.
   async function plConfirmDisconnectSpotify() {
-    if (!confirm('Disconnect Spotify?\n\nYour imported shows and saved episodes will be removed from Podlens. You can reconnect anytime.')) return;
+    if (!confirm('Disconnect Spotify?\n\nYour imported shows, saved episodes, and analysis history stay in Podlens. We\'ll just stop syncing new activity from Spotify. You can reconnect anytime to resume sync.')) return;
     var u = (typeof plUser === 'function') ? plUser() : null;
     if (!u || !u.id) return;
     try {
