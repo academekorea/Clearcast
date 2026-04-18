@@ -99,9 +99,6 @@
     html += topNavItem('discover', icons.discover, 'Discover');
     html += topNavItem('analyze', icons.analyze, 'Analyze');
 
-    // Divider
-    html += '<div class="sb-div"></div>';
-
     // Library (toggle dropdown + navigate, same pattern as Home)
     html += '<button class="sb-btn" id="sb-library-toggle" data-sb="library" onclick="window._pendingLibTab=\'library\';if(typeof showView===\'function\')showView(\'library\')">' + icons.library + 'Library<span class="sb-arrow" id="sb-arr-library" onclick="event.stopPropagation();window._sbToggle(\'library\')" style="padding:4px 6px;margin:-4px -6px;border-radius:3px">\u203A</span></button>';
     html += '<div class="sb-sub" id="sb-drop-library">';

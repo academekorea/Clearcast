@@ -7784,7 +7784,7 @@ function _discSetHero(hero) {
   _discCurrentHeroTitle = hero.title ? hero.title.replace(/&[^;]+;/g, '') : '';
   if (videoEl) {
     if (hero.ytId) {
-      videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
+      videoEl.innerHTML = '<img src="https://i.ytimg.com/vi/'+hero.ytId+'/hqdefault.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">';
     } else if (hero.artwork) {
       // Use artwork from API response
       videoEl.innerHTML = '<img src="'+_escHtml(hero.artwork)+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
