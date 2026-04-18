@@ -5714,7 +5714,10 @@ document.addEventListener('DOMContentLoaded', function() {
     syncToServer('spotify_connected', true);
     var spName = params.get('display_name') || 'Spotify';
     showToast('✓ ' + spName + ' connected successfully', 3000);
-    history.replaceState({}, '', window.location.pathname);
+    // Return to the view the user was on before OAuth
+    var returnPath = sessionStorage.getItem('pl-spotify-return-view') || '/';
+    sessionStorage.removeItem('pl-spotify-return-view');
+    history.replaceState({}, '', returnPath);
     var spBtn = document.getElementById('hero-spotify-btn');
     var spLabel = document.getElementById('hero-spotify-label');
     if (spBtn) spBtn.classList.add('connected');
@@ -15946,6 +15949,8 @@ function heroConnectSpotify() {
   var redirect = encodeURIComponent(window.location.origin + '/auth/spotify/callback');
   var state = u.id;
   sessionStorage.setItem('spotify_oauth_state', state);
+  // Remember which view to return to after OAuth
+  sessionStorage.setItem('pl-spotify-return-view', window.location.pathname);
   window.location.href = 'https://accounts.spotify.com/authorize?response_type=code&client_id=' + clientId
     + '&scope=' + encodeURIComponent(scopes) + '&redirect_uri=' + redirect + '&state=' + encodeURIComponent(state);
 }
