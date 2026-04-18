@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Disallow: /api/
+Disallow: /.netlify/
+Disallow: /account
+Disallow: /settings
+Disallow: /admin
+Disallow: /checkout
+
+Sitemap: https://podlens.app/sitemap.xml
