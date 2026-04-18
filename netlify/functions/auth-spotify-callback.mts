@@ -61,6 +61,7 @@ export default async (req: Request) => {
 
     // Write to Supabase connected_accounts
     if (userId) {
+      console.log('[spotify-callback] Writing token for userId:', userId, 'spotifyUser:', spotifyUserId);
       await sbUpsert('connected_accounts', {
         user_id: userId,
         provider: 'spotify',
@@ -73,8 +74,11 @@ export default async (req: Request) => {
         metadata: JSON.stringify({ isPremium }),
         updated_at: new Date().toISOString(),
       }, 'user_id,provider');
+      console.log('[spotify-callback] Token write completed for:', userId);
 
       trackEvent(userId, 'spotify_connected', { is_premium: isPremium });
+    } else {
+      console.warn('[spotify-callback] No userId in state param — token NOT saved');
     }
 
     // Also cache in Netlify Blobs
