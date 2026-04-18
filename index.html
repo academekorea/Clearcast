@@ -3144,107 +3144,97 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 
 /* ── PRICING VIEW (SPA) ── */
 
-#view-pricing /* Founding banner */
-#view-pricing .founding-banner {background:#FFF8E7;border-bottom:1px solid #F0C040;padding:12px 24px;text-align:center;font-size:14px;color:#92600A}
-#view-pricing .founding-banner strong {font-weight:600}
-#view-pricing .founding-spots {font-size:12px;color:#B8860B;display:inline-block;margin-left:8px}
-#view-pricing .founding-progress-wrap {display:inline-block;vertical-align:middle;width:80px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden;margin:0 8px}
-#view-pricing .founding-progress-fill {height:100%;background:#F0C040;border-radius:2px}
-#view-pricing .hero {padding:80px 24px 48px;text-align:center;background:var(--navy);border-radius:12px;color:#fff;min-height:auto}
-#view-pricing .hero h1 {font-family:var(--ffs);font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:16px;letter-spacing:-.02em;color:#fff}
-#view-pricing .hero p {font-size:17px;color:rgba(255,255,255,.6);max-width:480px;margin:0 auto;line-height:1.7}
-#view-pricing .billing-toggle {display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:var(--bg3);border-radius:24px;padding:4px 6px}
-#view-pricing .bt-opt {font-size:13px;color:var(--text2);cursor:pointer;padding:6px 16px;border-radius:20px;transition:all .15s;font-weight:500}
-#view-pricing .bt-opt.on {background:var(--navy);color:#fff}
-#view-pricing .bt-save {font-size:11px;font-weight:600;color:#1a7a2e;background:#dcf5dc;padding:2px 8px;border-radius:10px}
-#view-pricing .plans {display:grid;grid-template-columns:repeat(4,1fr);gap:0;max-width:1200px;margin:48px auto;padding:0 24px;border:0.5px solid var(--border);border-radius:16px;overflow:hidden}
-@media(max-width:900px) {
-#view-pricing .plans {grid-template-columns:repeat(2,1fr);border-radius:12px}
+/* Pricing — always dark, Spotify-style layout, PodLens palette */
+#view-pricing{background:#000;color:#fff;min-height:100vh;padding-bottom:80px}
+#view-pricing *{box-sizing:border-box}
+.pp-hero{text-align:center;padding:80px 32px 40px;max-width:800px;margin:0 auto}
+.pp-hero-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A699FF;margin-bottom:14px}
+.pp-hero-title{font-family:var(--ffs);font-size:clamp(36px,5vw,52px);font-weight:700;letter-spacing:-.025em;line-height:1.05;color:#fff;margin-bottom:14px}
+.pp-hero-sub{font-size:16px;color:#a7a7a7;max-width:560px;margin:0 auto;line-height:1.5}
+.pp-include{background:#121212;border-radius:12px;padding:28px 36px;max-width:1200px;margin:0 auto 32px;display:grid;grid-template-columns:minmax(200px,1fr) 2fr;gap:32px;align-items:center;width:calc(100% - 64px)}
+.pp-include-title{font-size:22px;font-weight:700;line-height:1.2;color:#fff}
+.pp-include-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 32px;font-size:14px;color:#fff}
+.pp-include-item{display:flex;align-items:center;gap:10px}
+.pp-include-check{color:#fff;font-weight:900}
+.pp-plans{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1200px;margin:0 auto 28px;padding:0 32px}
+.pp-plan{background:#121212;border-radius:12px;padding:28px 24px;position:relative;display:flex;flex-direction:column}
+.pp-plan-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.pp-plan-mark{width:20px;height:20px;border-radius:6px;background:#1d1d1f;border:1px solid #2d2d2f;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900}
+.pp-plan-brand{font-size:13px;font-weight:500;color:#a7a7a7}
+.pp-plan-name{font-family:var(--ffs);font-size:26px;font-weight:700;letter-spacing:-.01em;margin-bottom:10px}
+.pp-plan-price{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.pp-plan-price span{font-weight:400;color:#a7a7a7}
+.pp-plan-note{font-size:11px;font-weight:600;margin-bottom:18px}
+.pp-plan-divider{height:1px;background:#282828;margin-bottom:18px}
+.pp-plan-features{display:flex;flex-direction:column;gap:8px;font-size:13px;color:#d4d4d4;line-height:1.5;flex:1;margin-bottom:22px}
+.pp-plan-cta{padding:12px 24px;border-radius:500px;font-size:14px;font-weight:700;letter-spacing:.02em;cursor:pointer;width:100%;border:none;font-family:var(--ff);transition:transform .15s,filter .15s}
+.pp-plan-cta:hover{transform:scale(1.02);filter:brightness(1.06)}
+.pp-plan-badge{position:absolute;top:-1px;left:20px;padding:6px 14px;border-radius:0 0 8px 8px;font-size:12px;font-weight:700}
+.pp-plan-badge-spacer{height:16px}
+.pp-plan--free .pp-plan-name{color:#34D399}
+.pp-plan--free .pp-plan-cta{background:transparent;color:#fff;border:1.5px solid #727272}
+.pp-plan--free .pp-plan-cta:hover{border-color:#fff}
+.pp-plan--starter .pp-plan-name{color:#A699FF}
+.pp-plan--starter .pp-plan-note{color:#A699FF}
+.pp-plan--starter .pp-plan-cta{background:#A699FF;color:#0B0724}
+.pp-plan--starter .pp-plan-badge{background:#E0DAFF;color:#2E1F5C}
+.pp-plan--pro .pp-plan-name{color:#60A5FA}
+.pp-plan--pro .pp-plan-note{color:#60A5FA}
+.pp-plan--pro .pp-plan-cta{background:#60A5FA;color:#0A2540}
+.pp-plan--operator .pp-plan-name{color:#F0C040}
+.pp-plan--operator .pp-plan-note{color:#F0C040}
+.pp-plan--operator .pp-plan-cta{background:#F0C040;color:#3D2800}
+.pp-trust{text-align:center;color:#a7a7a7;font-size:13px;margin:0 auto 40px;max-width:800px;padding:0 32px}
+.pp-pilot{text-align:center;margin:0 auto 56px;padding:0 32px}
+.pp-pilot-box{display:inline-flex;align-items:center;gap:8px;background:#121212;border:1px solid #282828;border-radius:8px;padding:10px 18px}
+.pp-pilot-box .pp-pilot-label{font-size:12px;color:#a7a7a7}
+.pp-pilot-box input{font-size:13px;border:none;background:transparent;color:#fff;font-family:var(--ff);outline:none;width:200px;text-transform:uppercase}
+.pp-pilot-box input::placeholder{color:#6a6a6a}
+.pp-pilot-box #pilot-code-status{font-size:11px;color:#a7a7a7}
+.pp-compare{max-width:1200px;margin:0 auto 64px;padding:0 32px}
+.pp-compare-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px}
+.pp-compare-title{font-family:var(--ffs);font-size:22px;font-weight:700;color:#fff;letter-spacing:-.01em;margin:0}
+.pp-compare-toggle{background:transparent;border:1px solid #282828;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;color:#a7a7a7;cursor:pointer;font-family:var(--ff);transition:background .15s}
+.pp-compare-toggle:hover{background:#121212}
+.pp-compare-wrap{overflow-x:auto;border:1px solid #282828;border-radius:10px;overflow:hidden}
+.pp-compare table{width:100%;border-collapse:collapse;font-size:12px;min-width:580px}
+.pp-compare th{padding:12px 16px;background:#0d0d0d;font-weight:700;color:#a7a7a7;text-align:center;font-size:11px;letter-spacing:.05em;border-bottom:1px solid #282828}
+.pp-compare th:first-child{text-align:left;width:34%}
+.pp-compare td{padding:11px 16px;border-bottom:1px solid #282828;color:#a7a7a7}
+.pp-compare td.val{text-align:center;color:#fff;font-weight:600}
+.pp-compare td.check{text-align:center;color:#34D399;font-weight:700}
+.pp-compare td.dash{text-align:center;color:#5a5a5a}
+.pp-compare tr.price-row td{background:#0d0d0d;font-weight:800;color:#fff;font-size:15px;padding:12px 16px}
+.pp-compare tr.price-row td:first-child{text-align:left}
+.pp-compare tr.price-row td:not(:first-child){text-align:center}
+.pp-compare tr.founding-row td{color:#a7a7a7;font-size:11px;padding:10px 16px}
+.pp-compare tr.founding-row td:not(:first-child){text-align:center;font-weight:600}
+.pp-faq{max-width:900px;margin:0 auto;padding:0 32px}
+.pp-faq-head{text-align:center;margin-bottom:36px}
+.pp-faq-title{font-family:var(--ffs);font-size:clamp(32px,4vw,44px);font-weight:700;letter-spacing:-.02em;color:#fff;margin-bottom:10px}
+.pp-faq-sub{font-size:16px;color:#fff;margin-bottom:6px}
+.pp-faq-support{font-size:14px;color:#a7a7a7}
+.pp-faq-support a{color:#fff;text-decoration:underline}
+.pp-faq-row{border-top:1px solid #282828}
+.pp-faq-row:last-child{border-bottom:1px solid #282828}
+.pp-faq-q{padding:22px 8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;gap:16px}
+.pp-faq-q-text{font-size:16px;font-weight:700;color:#fff}
+.pp-faq-chev{font-size:20px;color:#a7a7a7;transition:transform .2s;flex-shrink:0}
+.pp-faq-row.open .pp-faq-chev{transform:rotate(180deg)}
+.pp-faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding:0 8px;color:#d4d4d4;font-size:15px;line-height:1.7}
+.pp-faq-row.open .pp-faq-a{max-height:600px;padding:0 8px 24px}
+@media (max-width:900px){
+  .pp-plans{grid-template-columns:1fr 1fr}
+  .pp-include{grid-template-columns:1fr;gap:16px}
 }
-@media(max-width:540px) {
-#view-pricing .plans {grid-template-columns:1fr}
+@media (max-width:560px){
+  .pp-plans{grid-template-columns:1fr;padding:0 20px}
+  .pp-include-grid{grid-template-columns:1fr}
+  .pp-hero{padding:48px 24px 32px}
+  .pp-include{width:calc(100% - 40px);padding:24px}
 }
-#view-pricing .plan {background:var(--bg);border-right:0.5px solid var(--border);padding:32px 26px;display:flex;flex-direction:column;position:relative}
-#view-pricing .plan:last-child {border-right:none}
-@media(max-width:900px) {
-#view-pricing .plan:nth-child(2) {border-right:none}
-#view-pricing .plan:nth-child(3) {border-right:none}
-}
-#view-pricing .plan.featured {background:var(--navy);border-right-color:rgba(255,255,255,.12)}
-#view-pricing .plan.featured .plan-name, #view-pricing .plan.featured .plan-price, #view-pricing .plan.featured .plan-desc {color:#fff}
-#view-pricing .plan.featured .plan-price span {color:rgba(255,255,255,.55)}
-#view-pricing .plan.featured .pf {color:rgba(255,255,255,.8)}
-#view-pricing .plan.featured .pf-check {color:#4ade80}
-#view-pricing .plan.featured .plan-desc {border-bottom-color:rgba(255,255,255,.12)}
-#view-pricing .plan.featured .plan-founding-note {color:rgba(255,255,255,.55)}
-#view-pricing .plan.featured .plan-btn {background:#fff;color:var(--navy);border-color:#fff}
-#view-pricing .plan.featured .plan-btn:hover {background:rgba(255,255,255,.9)}
-#view-pricing .plan-badge {font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#fff;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;align-self:flex-start;margin-bottom:16px}
-#view-pricing .plan-name {font-family:var(--ffs);font-size:20px;font-weight:700;margin-bottom:8px}
-#view-pricing .plan-price-wrap {margin-bottom:4px}
-#view-pricing .plan-price-original {font-size:14px;color:var(--text3);text-decoration:line-through;display:none}
-#view-pricing .plan-price {font-size:34px;font-weight:700;letter-spacing:-.02em;font-family:var(--ffs);display:flex;align-items:baseline;gap:4px}
-#view-pricing .plan-price-num {font-size:inherit;font-weight:700}
-#view-pricing .plan-price-period {font-size:13px;font-weight:400;color:var(--text3)}
-#view-pricing .plan-founding-note {font-size:11px;font-weight:600;color:#1a7a2e;margin-top:2px;display:none}
-#view-pricing .plan-desc {font-size:13px;color:var(--text2);margin-top:8px;margin-bottom:20px;line-height:1.6;padding-bottom:20px;border-bottom:0.5px solid var(--border)}
-#view-pricing .plan-features {flex:1;margin-bottom:24px}
-#view-pricing .pf {display:flex;align-items:flex-start;gap:8px;margin-bottom:9px;font-size:13px;color:var(--text2)}
-#view-pricing .pf-check {color:var(--navy);font-weight:700;flex-shrink:0;margin-top:1px}
-#view-pricing .pf.dim {color:var(--text3)}
-#view-pricing .pf.dim .pf-check {color:var(--text3)}
-#view-pricing .plan-btn {display:block;width:100%;padding:11px;text-align:center;font-size:13px;font-weight:600;border:1.5px solid var(--navy);color:var(--navy);border-radius:8px;cursor:pointer;background:transparent;font-family:var(--ff);transition:all .15s;text-decoration:none}
-#view-pricing .plan-btn:hover {background:var(--navy);color:#fff}
-#view-pricing .compare {max-width:900px;margin:40px auto 80px;padding:0 24px}
-#view-pricing .compare h2 {font-family:var(--ffs);font-size:28px;font-weight:600;margin-bottom:24px;text-align:center;letter-spacing:-.01em}
-#view-pricing .compare-table {width:100%;border-collapse:collapse;font-size:13px}
-#view-pricing .compare-table th {text-align:left;padding:10px 14px;border-bottom:2px solid var(--border);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
-#view-pricing .compare-table th:first-child {width:220px}
-#view-pricing .compare-table td {padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
-#view-pricing .compare-table td:first-child {font-weight:500;color:var(--text)}
-#view-pricing .compare-table tr:last-child td {border-bottom:none}
-#view-pricing .check-y {color:var(--navy);font-weight:700}
-#view-pricing .check-n {color:var(--text3)}
-#view-pricing .trial-note {text-align:center;font-size:13px;color:var(--text3);margin-bottom:60px}
-#view-pricing .footer-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:32px;max-width:960px;margin:0 auto}
-#view-pricing .footer-col h4 {font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:12px}
-#view-pricing .footer-col a {display:block;font-size:13px;color:var(--text2);margin-bottom:8px;text-decoration:none}
-#view-pricing .footer-col a:hover {color:var(--text)}
-#view-pricing .footer-bottom {max-width:960px;margin:24px auto 0;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-#view-pricing .podlens-wordmark {font-family:var(--ffs,"Playfair Display",Georgia,serif);letter-spacing:0;line-height:1;display:inline}
-#view-pricing .podlens-wordmark .pod {font-weight:400;color:inherit}
-#view-pricing .podlens-wordmark .lens {font-weight:700;color:inherit}
-/* Always-free section */
-#view-pricing .always-free-section {max-width:860px;margin:0 auto 64px;padding:40px 32px;background:var(--bg2);border-radius:12px;border:1px solid var(--border)}
-#view-pricing .always-free-section h2 {font-family:var(--ffs);font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:8px;letter-spacing:-.01em}
-#view-pricing .always-free-section>p {text-align:center;color:var(--text2);margin-bottom:32px;font-size:14px}
-#view-pricing .free-features-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-@media(max-width:640px) {
-#view-pricing .free-features-grid {grid-template-columns:1fr}
-}
-#view-pricing .free-feature {display:flex;gap:12px;align-items:flex-start}
-#view-pricing .free-feature-icon {font-size:1.4rem;flex-shrink:0;margin-top:2px}
-#view-pricing .free-feature strong {display:block;font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
-#view-pricing .free-feature p {font-size:12px;color:var(--text2);line-height:1.5;margin:0}
-#view-pricing /* ── FOOTER ── */
-footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);background:var(--bg2)}
-#view-pricing .footer-inner {max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px}
-#view-pricing .footer-brand {text-align:left}
-#view-pricing .footer-logo-link {display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--ffs);font-size:18px;font-weight:700;color:var(--text);margin-bottom:12px}
-#view-pricing .footer-tagline {color:var(--text3);font-size:.825rem;line-height:1.5;margin-bottom:20px;max-width:200px}
-#view-pricing .footer-social {display:flex;gap:14px;flex-wrap:wrap}
-#view-pricing .footer-social-link {color:var(--text3);transition:color .15s;display:flex;align-items:center}
-#view-pricing .footer-social-link:hover {color:var(--text)}
-#view-pricing .footer-col-title {font-size:.65rem;font-weight:700;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:16px}
-#view-pricing .footer-links {display:flex;flex-direction:column;gap:10px}
-#view-pricing .footer-links a, #view-pricing .footer-links button {font-size:.875rem;font-size:.875rem;color:var(--text2);text-decoration:none;background:none;border:none;cursor:pointer;font-family:var(--ff);padding:0;text-align:left}
-#view-pricing .footer-links a:hover, #view-pricing .footer-links button:hover {color:var(--text)}
-#view-pricing .footer-bottom-row {max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-#view-pricing .footer-copy, #view-pricing .footer-made {font-size:.75rem;color:var(--text3)}
-@media(max-width:720px) {
-#view-pricing .footer-inner {grid-template-columns:1fr 1fr;gap:20px}
-#view-pricing .footer-brand {grid-column:1/-1}
-}
+/* (old pricing CSS removed — now using .pp-* classes above) */
+/* old pricing CSS removed */
 /* ══ LOGGED-OUT HOMEPAGE — v4 mockup ════════════════════════════════════════ */
 
 /* Hero — centered Clarity. design */
@@ -4648,8 +4638,124 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
 </div>
 </div>
 <div class="view" id="view-pricing" style="display:none">
-<div style="background:var(--bg)">
-<div style="max-width:1100px;margin:0 auto">
+
+  <section class="pp-hero">
+    <div class="pp-hero-eyebrow">Pricing</div>
+    <h1 class="pp-hero-title">Listen smarter.<br>Pick your lens.</h1>
+    <p class="pp-hero-sub">Every plan analyzes the actual words spoken. No ads. No conflicts of interest. Ever.</p>
+  </section>
+
+  <section class="pp-include">
+    <div class="pp-include-title">All PodLens plans include</div>
+    <div class="pp-include-grid">
+      <div class="pp-include-item"><span class="pp-include-check">&#10003;</span>All 6 bias dimension scores</div>
+      <div class="pp-include-item"><span class="pp-include-check">&#10003;</span>Echo Chamber score</div>
+      <div class="pp-include-item"><span class="pp-include-check">&#10003;</span>Discover 1M+ podcasts</div>
+      <div class="pp-include-item"><span class="pp-include-check">&#10003;</span>Follow shows + alerts</div>
+      <div class="pp-include-item"><span class="pp-include-check">&#10003;</span>Zero ads, ever</div>
+      <div class="pp-include-item"><span class="pp-include-check">&#10003;</span>Cancel anytime</div>
+    </div>
+  </section>
+
+  <div class="pp-plans">
+    <div class="pp-plan pp-plan--free">
+      <div class="pp-plan-header"><div class="pp-plan-mark">P</div><span class="pp-plan-brand">PodLens</span></div>
+      <div class="pp-plan-name">Free</div>
+      <div class="pp-plan-price">$0 <span>forever</span></div>
+      <div class="pp-plan-note" style="color:#a7a7a7">4 analyses / month</div>
+      <div class="pp-plan-divider"></div>
+      <div class="pp-plan-features">
+        <div>&bull; 4 analyses per month</div><div>&bull; All 6 bias dimensions</div><div>&bull; Echo Chamber score</div><div>&bull; Discover + follow shows</div><div>&bull; New episode alerts</div>
+      </div>
+      <button class="pp-plan-cta" onclick="if(typeof showView==='function'){showView('home');return false}">Get started free</button>
+    </div>
+    <div class="pp-plan pp-plan--starter">
+      <div class="pp-plan-badge">Most popular</div><div class="pp-plan-badge-spacer"></div>
+      <div class="pp-plan-header"><div class="pp-plan-mark">P</div><span class="pp-plan-brand">PodLens</span></div>
+      <div class="pp-plan-name">Starter Lens</div>
+      <div class="pp-plan-price">$<span id="creator-price" class="plan-price-num">7</span><span id="creator-period"> / month</span></div>
+      <div class="pp-plan-note">&#128274; Founding rate &mdash; locked in forever</div>
+      <div class="pp-plan-divider"></div>
+      <div class="pp-plan-features">
+        <div>&bull; 25 analyses per month</div><div>&bull; Key findings per episode</div><div>&bull; 2 transcript quotes / dimension</div><div>&bull; Audio briefing (AI-narrated)</div><div>&bull; Host + guest trust scores</div><div>&bull; Live transcript sync</div><div>&bull; Pre-analysis tracking (3 shows)</div>
+      </div>
+      <button class="pp-plan-cta" onclick="startCheckout('creator')">Start Starter Lens</button>
+    </div>
+    <div class="pp-plan pp-plan--pro">
+      <div class="pp-plan-header"><div class="pp-plan-mark">P</div><span class="pp-plan-brand">PodLens</span></div>
+      <div class="pp-plan-name">Pro Lens</div>
+      <div class="pp-plan-price">$<span id="operator-price" class="plan-price-num">19</span><span id="operator-period"> / month</span></div>
+      <div class="pp-plan-note">&#128274; Founding rate &mdash; locked in forever</div>
+      <div class="pp-plan-divider"></div>
+      <div class="pp-plan-features">
+        <div>&bull; Unlimited analyses</div><div>&bull; Everything in Starter Lens</div><div>&bull; Unlimited transcript evidence</div><div>&bull; Pre-analysis (5 shows)</div><div>&bull; Bias trend charts (30/90/180d)</div><div>&bull; Deep report + PDF export</div><div>&bull; Unheard &mdash; what was missing</div>
+      </div>
+      <button class="pp-plan-cta" onclick="startCheckout('operator')">Start Pro Lens</button>
+    </div>
+    <div class="pp-plan pp-plan--operator">
+      <div class="pp-plan-header"><div class="pp-plan-mark">P</div><span class="pp-plan-brand">PodLens</span></div>
+      <div class="pp-plan-name">Operator Lens</div>
+      <div class="pp-plan-price">$<span id="studio-price" class="plan-price-num">49</span><span id="studio-period"> / month</span></div>
+      <div class="pp-plan-note">&#128274; Founding rate &mdash; locked in forever</div>
+      <div class="pp-plan-divider"></div>
+      <div class="pp-plan-features">
+        <div>&bull; Everything in Pro Lens</div><div>&bull; Delivery analysis (Hume AI)</div><div>&bull; Team workspaces (10 seats)</div><div>&bull; Brand monitoring</div><div>&bull; Bulk scanner (20 URLs)</div><div>&bull; API access + CSV export</div><div>&bull; Pre-analysis (unlimited)</div>
+      </div>
+      <button class="pp-plan-cta" onclick="startCheckout('studio')">Start Operator Lens</button>
+    </div>
+  </div>
+
+  <p class="pp-trust">No credit card required for Free. &nbsp;&middot;&nbsp; No ads. No conflicts of interest. Ever.</p>
+
+  <div class="pp-pilot">
+    <div class="pp-pilot-box">
+      <span class="pp-pilot-label">Have a pilot code?</span>
+      <input id="pilot-code-input" type="text" placeholder="Enter code (e.g. PILOT2026)" maxlength="20" oninput="this.value=this.value.toUpperCase()"/>
+      <span id="pilot-code-status"></span>
+    </div>
+  </div>
+
+  <section class="pp-compare">
+    <div class="pp-compare-head">
+      <h2 class="pp-compare-title">Compare plans in full</h2>
+      <button id="features-toggle" class="pp-compare-toggle" onclick="toggleAllFeatures()">See all features &#8595;</button>
+    </div>
+    <div class="pp-compare-wrap">
+      <table><thead><tr><th>Feature</th><th>Free</th><th>Starter Lens</th><th>Pro Lens</th><th>Operator Lens</th></tr></thead>
+      <tbody>
+        <tr><td>Analyses/month</td><td class="val">4</td><td class="val">25</td><td class="val">Unlimited</td><td class="val">Unlimited</td></tr>
+        <tr><td>All 6 bias dimensions</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+        <tr><td>Audio briefing</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+        <tr><td>Transcript evidence quotes</td><td class="dash">&mdash;</td><td class="val">2 / dim</td><td class="val">Unlimited</td><td class="val">Unlimited</td></tr>
+        <tr><td>Live transcript sync</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+        <tr><td>Pre-analysis tracking</td><td class="dash">&mdash;</td><td class="val">3 shows</td><td class="val">5 shows</td><td class="val">Unlimited</td></tr>
+        <tr><td>Show bias trend charts</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+        <tr><td>Unheard (missing context)</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+        <tr><td>Delivery analysis (Hume AI)</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td></tr>
+        <tr><td>API access + CSV export</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td></tr>
+        <tr class="price-row"><td>Monthly price</td><td>Free</td><td>$7</td><td>$19</td><td>$49</td></tr>
+        <tr class="founding-row"><td>Founding rate (33% off forever)</td><td class="dash">&mdash;</td><td>$4.69/mo</td><td>$12.73/mo</td><td>$32.83/mo</td></tr>
+      </tbody></table>
+    </div>
+    <div id="features-full" style="display:none;margin-top:24px"></div>
+  </section>
+
+  <section class="pp-faq">
+    <div class="pp-faq-head">
+      <h2 class="pp-faq-title">Questions?</h2>
+      <div class="pp-faq-sub">We've got answers.</div>
+      <div class="pp-faq-support">Find more answers on our <a href="#" onclick="if(typeof showView==='function'){showView('support');return false}">Support site.</a></div>
+    </div>
+    <div class="pp-faq-row"><div class="pp-faq-q" onclick="togglePricingFaq(this)"><div class="pp-faq-q-text">How does the Free plan work?</div><div class="pp-faq-chev">&#8964;</div></div><div class="pp-faq-a">You get 4 episode analyses per month, forever. No credit card required. Every Free account still gets all 6 bias dimension scores, your Echo Chamber score, access to Discover (1M+ podcasts), the ability to follow shows, and new episode alerts.</div></div>
+    <div class="pp-faq-row"><div class="pp-faq-q" onclick="togglePricingFaq(this)"><div class="pp-faq-q-text">What's the difference between Starter and Pro Lens?</div><div class="pp-faq-chev">&#8964;</div></div><div class="pp-faq-a">Starter Lens ($7/mo) gives you 25 analyses per month plus key findings, 2 transcript evidence quotes per dimension, AI-narrated audio briefings, host and guest trust scores, and live transcript sync. Pro Lens ($19/mo) removes the analysis cap (unlimited), unlocks unlimited transcript evidence, adds show bias trend charts over 30/90/180 days, deep reports with PDF export, and the Unheard section.</div></div>
+    <div class="pp-faq-row"><div class="pp-faq-q" onclick="togglePricingFaq(this)"><div class="pp-faq-q-text">How do I cancel my plan?</div><div class="pp-faq-chev">&#8964;</div></div><div class="pp-faq-a">Go to Account &rarr; Billing &rarr; Cancel plan. Your subscription stays active until the end of your current billing period, then reverts to Free automatically. No cancellation fees, no friction. Your bias fingerprint, follow list, and past analyses stay intact.</div></div>
+    <div class="pp-faq-row"><div class="pp-faq-q" onclick="togglePricingFaq(this)"><div class="pp-faq-q-text">What is the Founding rate and how long does it last?</div><div class="pp-faq-chev">&#8964;</div></div><div class="pp-faq-a">Founding rate pricing &mdash; 33% off the eventual standard price &mdash; is locked in for the life of your subscription. As long as you stay subscribed, your rate never changes, even when we raise standard pricing. If you cancel and re-subscribe later, you'd come back at the standard rate.</div></div>
+    <div class="pp-faq-row"><div class="pp-faq-q" onclick="togglePricingFaq(this)"><div class="pp-faq-q-text">Do you offer API access or team workspaces?</div><div class="pp-faq-chev">&#8964;</div></div><div class="pp-faq-a">Yes, both on Operator Lens ($49/mo). You get team workspaces with 10 seats, API access with CSV export, brand monitoring, and the bulk scanner (analyze up to 20 URLs at once). For larger teams, email us for a custom plan.</div></div>
+    <div class="pp-faq-row"><div class="pp-faq-q" onclick="togglePricingFaq(this)"><div class="pp-faq-q-text">How does PodLens measure bias?</div><div class="pp-faq-chev">&#8964;</div></div><div class="pp-faq-a">Every analysis is grounded in the actual transcript of the episode &mdash; no reputation scores, no crowd opinions, no guessing. We score 6 dimensions: political lean, host trust, evidence quality, perspective diversity, framing, and source attribution. Each score comes with direct transcript quotes as evidence.</div></div>
+  </section>
+
+<!-- old pricing HTML wrapper (hidden, preserved for JS references) -->
+<div style="display:none"><div>
   <div style="padding:72px 40px 0;text-align:center">
     <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px">Pricing</div>
     <h1 style="font-family:var(--ffs);font-size:clamp(28px,4vw,44px);font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:10px;line-height:1.15">Simple, transparent pricing</h1>
@@ -14368,6 +14474,11 @@ function startCheckout(planName) {
   .then(function(r){ return r.json(); })
   .then(function(d){ if (d.url) window.location.href = d.url; else alert('Checkout error: ' + (d.error || 'unknown')); })
   .catch(function(e){ if(typeof Sentry!=='undefined')Sentry.captureException(e||new Error('checkout_failed')); alert('Could not start checkout. Please try again.'); });
+}
+
+function togglePricingFaq(el) {
+  var row = el.closest('.pp-faq-row');
+  if (row) row.classList.toggle('open');
 }
 
 function toggleAllFeatures() {
