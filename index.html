@@ -15944,13 +15944,6 @@ function startSpotifyImport() {
 function heroConnectSpotify() {
   var u = plUser();
   if (!u) { openModal('signup'); return; }
-  // Check if already connected
-  var isConnected = localStorage.getItem('pl-spotify-connected') === '1';
-  if (isConnected) {
-    showToast('Spotify already connected — importing library…', 2000);
-    if (typeof startSpotifyImport === 'function') startSpotifyImport();
-    return;
-  }
   // Start Spotify OAuth — encode userId in state so callback can store tokens correctly
   var clientId = window._plConfig && window._plConfig.spotifyClientId || '';
   var scopes = 'user-library-read user-read-recently-played user-top-read';
