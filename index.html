@@ -4282,7 +4282,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
           </div>
         </div>
         <div class="disc-hero-r" id="disc-hero-video">
-          <iframe src="https://www.youtube-nocookie.com/embed/vif8NQcjVf0?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+          <img src="https://i.ytimg.com/vi/vif8NQcjVf0/hqdefault.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
         </div>
       </div>
       <!-- Related episodes — shown when a topic pill is clicked -->
@@ -7662,6 +7662,16 @@ function initDiscover() {
             html += '</div></div>';
           });
           if (html) foryouEl.innerHTML = html;
+        }
+      }).catch(function(){});
+
+    // Fetch trending hero for signed-out users
+    fetch('/api/discover-hero?mode=trending', { signal: AbortSignal.timeout(5000) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.hero) {
+          _discHeroCache['all'] = d.hero;
+          _discSetHero(d.hero);
         }
       }).catch(function(){});
 
