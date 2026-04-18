@@ -13776,7 +13776,8 @@ function applyTranslations(lang) {
   // Hero section sub-labels
   var connectLabel = document.querySelector('#hero-connect-block > div:first-child');
   if (connectLabel && t.connectYourListening) connectLabel.textContent = t.connectYourListening;
-  var urlLabel = document.querySelector('.hero-input-wrap').previousElementSibling;
+  var heroInputWrap = document.querySelector('.hero-input-wrap');
+  var urlLabel = heroInputWrap ? heroInputWrap.previousElementSibling : null;
   // Trending section
   var tge = document.querySelector('.tg-eyebrow');
   if (tge && t.trendingEyebrow) tge.textContent = t.trendingEyebrow;
