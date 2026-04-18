@@ -140,15 +140,15 @@
     var style = document.createElement('style');
     style.id = 'sb-styles';
     style.textContent = [
-      '#app-sidebar,#app-sidebar-lib,#app-sidebar-analyze,#app-sidebar-show{background:#0a1a20;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);min-width:220px;overflow:hidden}',
+      '#app-sidebar,#app-sidebar-lib,#app-sidebar-analyze,#app-sidebar-show,#app-sidebar-discover{background:#0a1a20;display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px);border-right:1px solid rgba(255,255,255,.07);min-width:220px;overflow:hidden}',
       '.sb-top{flex:1;overflow-y:auto;padding:0}',
       '.sb-bottom{flex-shrink:0;padding:4px 0 8px;border-top:0.5px solid rgba(255,255,255,.08)}',
       '.sb-bot{font-size:11px!important;padding:6px 20px!important;color:rgba(255,255,255,.35)!important}',
       '.sb-bot:hover{color:rgba(255,255,255,.65)!important}',
       '.sb-bot.active{color:#fff!important;background:rgba(255,255,255,.08)!important}',
       '.sb-bot svg{width:11px!important;height:11px!important}',
-      '#app-sidebar *,#app-sidebar-lib *,#app-sidebar-analyze *,#app-sidebar-show *{color:#fff}',
-      '#app-sidebar a,#app-sidebar-lib a,#app-sidebar-analyze a,#app-sidebar-show a{text-decoration:none}',
+      '#app-sidebar *,#app-sidebar-lib *,#app-sidebar-analyze *,#app-sidebar-show *,#app-sidebar-discover *{color:#fff}',
+      '#app-sidebar a,#app-sidebar-lib a,#app-sidebar-analyze a,#app-sidebar-show a,#app-sidebar-discover a{text-decoration:none}',
 
       '.sb-lbl{padding:16px 20px 8px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4}',
 
@@ -175,7 +175,7 @@
       '.sb-soon{margin-left:auto;font-size:9px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.3);padding:1px 5px;border-radius:10px}',
       '.sb-muted{color:rgba(255,255,255,.3);font-style:italic}',
 
-      '@media(max-width:1100px){#app-sidebar,#app-sidebar-lib,#app-sidebar-analyze,#app-sidebar-show{display:none}}',
+      '@media(max-width:1100px){#app-sidebar,#app-sidebar-lib,#app-sidebar-analyze,#app-sidebar-show,#app-sidebar-discover{display:none}}',
     ].join('\n');
     document.head.appendChild(style);
   }
@@ -183,7 +183,7 @@
   // ── Helper: get all sidebar containers ────────────────────────────────────────
   function getAllSidebars() {
     var result = [];
-    ['app-sidebar', 'app-sidebar-lib', 'app-sidebar-analyze', 'app-sidebar-show'].forEach(function (id) {
+    ['app-sidebar', 'app-sidebar-lib', 'app-sidebar-analyze', 'app-sidebar-show', 'app-sidebar-discover'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) result.push(el);
     });
@@ -257,13 +257,36 @@
     var primary = document.getElementById('app-sidebar');
     if (primary) primary.innerHTML = html;
     // Secondary sidebars get IDs prefixed to avoid duplicates
-    var prefixMap = { 'app-sidebar-lib': 'sb2-', 'app-sidebar-analyze': 'sb3-', 'app-sidebar-show': 'sb4-' };
-    ['app-sidebar-lib', 'app-sidebar-analyze', 'app-sidebar-show'].forEach(function (containerId) {
+    var prefixMap = { 'app-sidebar-lib': 'sb2-', 'app-sidebar-analyze': 'sb3-', 'app-sidebar-show': 'sb4-', 'app-sidebar-discover': 'sb5-' };
+    ['app-sidebar-lib', 'app-sidebar-analyze', 'app-sidebar-show', 'app-sidebar-discover'].forEach(function (containerId) {
       var el = document.getElementById(containerId);
       if (!el) return;
       var prefix = prefixMap[containerId] || 'sb2-';
       el.innerHTML = html.replace(/id="sb-/g, 'id="' + prefix);
     });
+
+    // Append Categories section to discover sidebar
+    var discoverEl = document.getElementById('app-sidebar-discover');
+    if (discoverEl) {
+      var sbTopDisc = discoverEl.querySelector('.sb-top');
+      if (sbTopDisc) {
+        var catSection = document.createElement('div');
+        catSection.id = 'disc-nav-cat-section';
+        catSection.innerHTML =
+          '<div class="sb-div"></div>' +
+          '<div class="sb-lbl">Categories</div>' +
+          '<button class="disc-nav-cat on" onclick="discNavCat(\'all\',this)"><span class="disc-nav-cdot" style="background:#e0352b"></span>All</button>' +
+          '<button class="disc-nav-cat" onclick="discNavCat(\'news\',this)"><span class="disc-nav-cdot" style="background:#e0352b"></span>News &amp; Politics</button>' +
+          '<button class="disc-nav-cat" onclick="discNavCat(\'tech\',this)"><span class="disc-nav-cdot" style="background:#378ADD"></span>Technology</button>' +
+          '<button class="disc-nav-cat" onclick="discNavCat(\'business\',this)"><span class="disc-nav-cdot" style="background:#22c55e"></span>Business</button>' +
+          '<button class="disc-nav-cat" onclick="discNavCat(\'society\',this)"><span class="disc-nav-cdot" style="background:#a855f7"></span>Society</button>' +
+          '<button class="disc-nav-cat" onclick="discNavCat(\'crime\',this)"><span class="disc-nav-cdot" style="background:#f59e0b"></span>True Crime</button>' +
+          '<button class="disc-nav-cat" onclick="discNavCat(\'comedy\',this)"><span class="disc-nav-cdot" style="background:#ec4899"></span>Comedy</button>' +
+          '<button class="disc-nav-cat" onclick="discNavCat(\'health\',this)"><span class="disc-nav-cdot" style="background:#14b8a6"></span>Health</button>' +
+          '<button class="disc-nav-cat" onclick="discNavCat(\'sports\',this)"><span class="disc-nav-cdot" style="background:#f97316"></span>Sports</button>';
+        sbTopDisc.appendChild(catSection);
+      }
+    }
 
     // Append Recent analyses section to analyze sidebar
     var analyzeEl = document.getElementById('app-sidebar-analyze');

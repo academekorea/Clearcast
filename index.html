@@ -1984,7 +1984,7 @@ footer.site-footer{padding:60px 24px 32px;border-top:1px solid var(--border);bac
 .disc-gate-overlay{position:absolute;inset:0;background:rgba(12,31,39,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:10px}
 .disc-gate-overlay span{font-size:11px;font-weight:700;color:#fff;text-align:center;line-height:1.4}
 .disc-gate-overlay button{padding:6px 14px;background:#fff;color:var(--navy);border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--ff)}
-@media(max-width:900px){.disc-nav{display:none}.disc-rc{display:none}}
+@media(max-width:900px){.disc-nav{display:none}#app-sidebar-discover{display:none!important}.disc-rc{display:none}}
 /* ── ANALYSIS PANEL — DARK MODE ── */
 [data-theme="dark"] .analyze-wrap{color:var(--text)}
 [data-theme="dark"] .url-input{background:var(--bg2);color:var(--text);border-color:var(--border2)}
@@ -4259,31 +4259,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
 <!-- DISCOVER VIEW (replaces marketplace) -->
 <div class="view" id="view-discover">
   <div class="disc-wrap">
-    <div class="disc-nav" id="disc-nav">
-      <div class="disc-nav-lbl">Menu</div>
-      <button class="disc-nav-btn" onclick="var d=document.getElementById('disc-home-drop');var a=document.getElementById('disc-home-arr');if(d){var o=d.style.display==='flex';d.style.display=o?'none':'flex';if(a)a.style.transform=o?'':'rotate(90deg)'}"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home<span id="disc-home-arr" style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.2);transition:transform .15s">&rsaquo;</span></button>
-      <div id="disc-home-drop" style="display:none;flex-direction:column">
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="if(!plUser()){openModal('signup');return}showView('home');if(typeof showDashSection==='function')showDashSection('intelligence')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>My intelligence</button>
-        <button style="display:flex;align-items:center;gap:8px;padding:7px 20px 7px 38px;font-size:12px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;color:rgba(255,255,255,.4);font-family:var(--ff)" onclick="if(!plUser()){openModal('signup');return}showView('home');if(typeof showDashSection==='function')showDashSection('queue')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Smart queue</button>
-      </div>
-      <button class="disc-nav-btn on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover</button>
-      <button class="disc-nav-btn" onclick="showView('analyze')"><svg fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analyze</button>
-
-      <!-- CATEGORY SECTION — always shown on Discover -->
-      <div id="disc-nav-cat-section">
-        <div class="disc-nav-div"></div>
-        <div class="disc-nav-lbl">Categories</div>
-        <button class="disc-nav-cat on" onclick="discNavCat('all',this)"><span class="disc-nav-cdot" style="background:#e0352b"></span>All</button>
-        <button class="disc-nav-cat" onclick="discNavCat('news',this)"><span class="disc-nav-cdot" style="background:#e0352b"></span>News &amp; Politics</button>
-        <button class="disc-nav-cat" onclick="discNavCat('tech',this)"><span class="disc-nav-cdot" style="background:#378ADD"></span>Technology</button>
-        <button class="disc-nav-cat" onclick="discNavCat('business',this)"><span class="disc-nav-cdot" style="background:#22c55e"></span>Business</button>
-        <button class="disc-nav-cat" onclick="discNavCat('society',this)"><span class="disc-nav-cdot" style="background:#a855f7"></span>Society</button>
-        <button class="disc-nav-cat" onclick="discNavCat('crime',this)"><span class="disc-nav-cdot" style="background:#f59e0b"></span>True Crime</button>
-        <button class="disc-nav-cat" onclick="discNavCat('comedy',this)"><span class="disc-nav-cdot" style="background:#ec4899"></span>Comedy</button>
-        <button class="disc-nav-cat" onclick="discNavCat('health',this)"><span class="disc-nav-cdot" style="background:#14b8a6"></span>Health</button>
-        <button class="disc-nav-cat" onclick="discNavCat('sports',this)"><span class="disc-nav-cdot" style="background:#f97316"></span>Sports</button>
-      </div>
-    </div>
+    <div id="app-sidebar-discover"></div>
     <div class="disc-main">
       <div class="disc-greeting" id="disc-greeting">Explore podcasts</div>
       <div class="disc-subline" id="disc-subline">Browse freely. Analyze any episode free.</div>
@@ -8287,12 +8263,12 @@ function loadDiscTrendingNews() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var newsTopics = (d.trendingNews || []).filter(Boolean);
-      var platformTopics = (d.topics || []).map(function(t) { return t.name; }).filter(Boolean);
-      // News topics first, then platform shows, deduplicated
+      // Only show actual news topics — filter out podcast/show names
+      var showNames = (typeof CURATED_SHOWS !== 'undefined' ? CURATED_SHOWS : []).map(function(s){ return s.name.toLowerCase(); });
       var merged = [];
       var seen = {};
-      newsTopics.concat(platformTopics).forEach(function(t) {
-        if (!seen[t.toLowerCase()] && merged.length < 18) {
+      newsTopics.forEach(function(t) {
+        if (!seen[t.toLowerCase()] && merged.length < 18 && showNames.indexOf(t.toLowerCase()) === -1) {
           seen[t.toLowerCase()] = true;
           merged.push(t);
         }
