@@ -10915,7 +10915,8 @@ function handleUrlRouting() {
   var googleError = params.get('google_error');
   if (googleError) {
     history.replaceState({}, '', window.location.pathname);
-    plToast('Google login failed \u2014 please try again or use email');
+    var errMsgs = { access_denied:'Access denied by Google', token_failed:'Token exchange failed', token_timeout:'Google timed out', missing_config:'Server config error', too_many_attempts:'Too many attempts \u2014 try later' };
+    plToast('Google login failed: ' + (errMsgs[googleError] || googleError), 6000);
     return false;
   }
 
