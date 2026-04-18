@@ -10905,10 +10905,12 @@ function handleUrlRouting() {
   if (googleLogin) {
     try {
       var gData = JSON.parse(decodeURIComponent(googleLogin));
+      console.log('[podlens] Google login data received:', gData.email, gData.id);
       handleSocialLogin(gData);
+      console.log('[podlens] handleSocialLogin completed, plUser:', plUser() ? plUser().email : 'NULL');
     } catch(e) {
       console.error('[podlens] Google login parse error:', e, 'raw:', googleLogin.slice(0, 200));
-      showToast('Login failed \u2014 please try again', 6000);
+      showToast('Login failed: ' + e.message, 6000);
       history.replaceState({}, '', window.location.pathname);
     }
     return false;
