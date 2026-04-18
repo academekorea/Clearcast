@@ -28,8 +28,13 @@ async function fetchCurrentsTrending(): Promise<string[]> {
     const SKIP_GENERIC = new Set([
       "general", "uncategorized", "news", "business", "sports", "politics",
       "technology", "tech", "entertainment", "health", "science", "world",
-      "regional", "national", "international", "finance", "money", "economy",
+      "regional", "national", "international", "finance", "finances", "money", "economy",
       "lifestyle", "opinion", "editorial", "breaking", "local",
+      "banking", "legal", "movie", "movies", "programming", "academia",
+      "energy", "automotive", "food", "travel", "education", "gaming",
+      "fashion", "beauty", "religion", "weather", "real estate", "startup",
+      "market", "markets", "stocks", "trading", "investing", "investment",
+      "crypto", "cryptocurrency", "social media", "internet",
     ]);
 
     // Parent buckets for balancing (max 3 per area)
@@ -53,11 +58,13 @@ async function fetchCurrentsTrending(): Promise<string[]> {
     const topicDisplay = new Map<string, string>();
 
     for (const article of articles) {
-      // 1. Use specific (non-generic) categories
+      // 1. Use specific (non-generic) categories — skip single generic words
       const cats = (article.category || []) as string[];
       for (const c of cats) {
         const label = c.trim();
         if (!label || SKIP_GENERIC.has(label.toLowerCase())) continue;
+        // Skip single-word categories (almost always generic)
+        if (label.split(/\s+/).length < 2 && label.length < 10) continue;
         const key = label.toLowerCase();
         topicCounts.set(key, (topicCounts.get(key) || 0) + 1);
         if (!topicDisplay.has(key)) topicDisplay.set(key, label.charAt(0).toUpperCase() + label.slice(1));
@@ -65,7 +72,7 @@ async function fetchCurrentsTrending(): Promise<string[]> {
 
       // 2. Extract key phrase from headline (first segment before colon/dash)
       const title = (article.title || "").split(/[:\-–—|]/).shift()?.trim() || "";
-      if (title.length >= 8 && title.length <= 35 && !/^\d/.test(title)) {
+      if (title.length >= 10 && title.length <= 45 && !/^\d/.test(title) && title.split(/\s+/).length >= 2) {
         const tKey = title.toLowerCase();
         if (!SKIP_GENERIC.has(tKey)) {
           topicCounts.set(tKey, (topicCounts.get(tKey) || 0) + 1);
