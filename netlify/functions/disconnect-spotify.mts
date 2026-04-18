@@ -21,6 +21,10 @@ export default async (req: Request) => {
     if (!sb) return json({ error: "Database not configured" }, 503);
 
     // 1. Delete the token row from connected_accounts
+    // NOTE: We intentionally do NOT delete rows from followed_shows,
+    // saved_episodes, or clear bias_fingerprint / interests on users.
+    // Disconnecting means "stop syncing new data" — user retains everything
+    // they already imported. If they reconnect, new activity merges in.
     const { error: delErr } = await sb
       .from("connected_accounts")
       .delete()
@@ -31,12 +35,11 @@ export default async (req: Request) => {
       console.warn("[disconnect-spotify] delete error:", delErr.message);
     }
 
-    // 2. Clear spotify flags on users table
+    // 2. Clear spotify auth flags on users table (not the data-derived fields)
     const { error: updErr } = await sb
       .from("users")
       .update({
         spotify_connected: false,
-        spotify_show_count: 0,
         spotify_imported_at: null,
       })
       .eq("id", userId);

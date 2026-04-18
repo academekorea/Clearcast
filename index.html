@@ -16795,7 +16795,7 @@ function addAppleShows() {
         return;
       }
       try { localStorage.removeItem('pl-spotify-connected'); } catch (e) {}
-      if (typeof plToast === 'function') plToast('Spotify disconnected');
+      if (typeof plToast === 'function') plToast('Spotify disconnected — your library is preserved');
       // Reload to refresh all connection UI across the page
       setTimeout(function() { location.reload(); }, 600);
     } catch (e) {
