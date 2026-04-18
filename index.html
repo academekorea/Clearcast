@@ -10901,22 +10901,22 @@ function handleUrlRouting() {
 
   // Handle Google OAuth callback
   var googleLogin = params.get('google_login');
+  var googleError = params.get('google_error');
   if (googleLogin) {
     try {
       var gData = JSON.parse(decodeURIComponent(googleLogin));
       handleSocialLogin(gData);
     } catch(e) {
       console.error('[podlens] Google login parse error:', e, 'raw:', googleLogin.slice(0, 200));
-      plToast('Login failed — please try again');
+      showToast('Login failed \u2014 please try again', 6000);
       history.replaceState({}, '', window.location.pathname);
     }
     return false;
   }
-  var googleError = params.get('google_error');
   if (googleError) {
     history.replaceState({}, '', window.location.pathname);
     var errMsgs = { access_denied:'Access denied by Google', token_failed:'Token exchange failed', token_timeout:'Google timed out', missing_config:'Server config error', too_many_attempts:'Too many attempts \u2014 try later' };
-    plToast('Google login failed: ' + (errMsgs[googleError] || googleError), 6000);
+    showToast('Google login failed: ' + (errMsgs[googleError] || googleError), 6000);
     return false;
   }
 
