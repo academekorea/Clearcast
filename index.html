@@ -16031,7 +16031,8 @@ function heroConnectYouTube() {
       connectBtn.style.background = 'rgba(29,185,84,0.12)';
       connectBtn.style.color      = '#1DB954';
       connectBtn.style.cursor     = 'pointer';
-      connectBtn.title = 'Click to refresh your library';
+      connectBtn.title = 'Click to disconnect';
+      connectBtn.setAttribute('onclick', 'if(typeof plConfirmDisconnectSpotify===\'function\')plConfirmDisconnectSpotify()');
       connectBtn.dataset.plConnectedDone = '1';
     });
   }
@@ -16804,44 +16805,8 @@ function addAppleShows() {
   }
   window.plConfirmDisconnectSpotify = plConfirmDisconnectSpotify;
 
-  function plInjectDisconnectButton() {
-    var spotifyConnected = false;
-    try { spotifyConnected = localStorage.getItem('pl-spotify-connected') === '1'; } catch(e) {}
-    if (!spotifyConnected) return;
-
-    // Find the Spotify integrations card
-    var intCards = document.querySelectorAll('.acct-int-card');
-    intCards.forEach(function(card) {
-      if (card.dataset.plDisconnectAttached === '1') return;
-      var titleEl = card.querySelector('div[style*="font-weight:500"]');
-      if (!titleEl || titleEl.textContent.trim() !== 'Spotify') return;
-
-      // Inject a "Disconnect" link button next to the "Connected" pill
-      var disconnectBtn = document.createElement('button');
-      disconnectBtn.textContent = 'Disconnect';
-      disconnectBtn.type = 'button';
-      disconnectBtn.onclick = function() { plConfirmDisconnectSpotify(); };
-      disconnectBtn.style.cssText = 'margin-left:8px;background:transparent;color:var(--text3,#86868b);border:1px solid var(--border2,#d2d2d7);border-radius:999px;padding:6px 12px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--ff);';
-      disconnectBtn.onmouseenter = function() {
-        this.style.background = 'rgba(220,38,38,0.08)';
-        this.style.color = '#dc2626';
-        this.style.borderColor = '#dc2626';
-      };
-      disconnectBtn.onmouseleave = function() {
-        this.style.background = 'transparent';
-        this.style.color = 'var(--text3,#86868b)';
-        this.style.borderColor = 'var(--border2,#d2d2d7)';
-      };
-      card.appendChild(disconnectBtn);
-      card.dataset.plDisconnectAttached = '1';
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', plInjectDisconnectButton);
-  setTimeout(plInjectDisconnectButton, 800);
-  setTimeout(plInjectDisconnectButton, 2500);
-  window.addEventListener('hashchange', function() { setTimeout(plInjectDisconnectButton, 100); });
-  document.addEventListener('click', function() { setTimeout(plInjectDisconnectButton, 200); });
+  // Disconnect button injection removed — "✓ Connected" pill itself
+  // now triggers disconnect via plUpdateCrossPlatformConnectUI.
 })();
 </script>
 </body>
