@@ -15944,8 +15944,15 @@ function startSpotifyImport() {
 function heroConnectSpotify() {
   var u = plUser();
   if (!u) { openModal('signup'); return; }
+  // If already connected, trigger disconnect flow instead
+  var isConnected = localStorage.getItem('pl-spotify-connected') === '1';
+  if (isConnected && typeof plConfirmDisconnectSpotify === 'function') {
+    plConfirmDisconnectSpotify();
+    return;
+  }
   // Start Spotify OAuth — encode userId in state so callback can store tokens correctly
   var clientId = window._plConfig && window._plConfig.spotifyClientId || '';
+  if (!clientId) { showToast('Spotify not configured — try again in a moment', 3000); return; }
   var scopes = 'user-library-read user-read-recently-played user-top-read';
   var redirect = encodeURIComponent(window.location.origin + '/auth/spotify/callback');
   var state = u.id;
@@ -16022,7 +16029,6 @@ function heroConnectYouTube() {
       if (heading) heading.textContent = '\u2713 Spotify Connected';
       if (sub)     sub.textContent     = 'Click to disconnect';
       btn.style.borderLeftColor = '#1DB954';
-      btn.setAttribute('onclick', 'if(typeof plConfirmDisconnectSpotify===\'function\')plConfirmDisconnectSpotify()');
       btn.dataset.plConnectedDone = '1';
     });
 
@@ -16039,7 +16045,6 @@ function heroConnectYouTube() {
       connectBtn.style.color      = '#1DB954';
       connectBtn.style.cursor     = 'pointer';
       connectBtn.title = 'Click to disconnect';
-      connectBtn.setAttribute('onclick', 'if(typeof plConfirmDisconnectSpotify===\'function\')plConfirmDisconnectSpotify()');
       connectBtn.dataset.plConnectedDone = '1';
     });
   }
