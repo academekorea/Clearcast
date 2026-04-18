@@ -5722,7 +5722,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var spLabel = document.getElementById('hero-spotify-label');
     if (spBtn) spBtn.classList.add('connected');
     if (spLabel) spLabel.textContent = '✓ Spotify connected';
+    // Navigate to the correct view after init completes
+    var returnView = { '/settings': 'account', '/account': 'account', '/discover': 'discover', '/dashboard': 'home', '/': 'home' };
+    var targetView = returnView[returnPath] || 'home';
     setTimeout(function() {
+      if (typeof showView === 'function') showView(targetView);
       if (typeof startSpotifyImport === 'function') startSpotifyImport();
     }, 800);
   }
