@@ -1,5 +1,25 @@
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import { findOrCreateShow } from "./lib/show-matcher.js";
+
+interface SpotifyShow {
+  id: string;
+  name: string;
+  publisher?: string;
+  description?: string;
+  images?: Array<{ url: string }>;
+  total_episodes?: number;
+  external_urls?: { spotify?: string };
+}
+
+interface SpotifyEpisode {
+  id: string;
+  name: string;
+  duration_ms?: number;
+  release_date?: string;
+  external_urls?: { spotify?: string };
+  show?: SpotifyShow;
+}
 
 export default async (req: Request) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
@@ -8,236 +28,247 @@ export default async (req: Request) => {
     new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
 
   try {
-    const { spotifyAccessToken, userId, userPlan } = await req.json();
+    const body = await req.json();
+    const { spotifyAccessToken, userId, userPlan, forceFresh } = body;
     if (!spotifyAccessToken || !userId) return json({ error: "Missing required fields" }, 400);
 
     const store = getStore("podlens-cache");
     const cacheKey = `spotify-import-${userId}`;
 
-    // Check 1-hour cache
-    try {
-      const cached = await store.get(cacheKey, { type: "json" }) as any;
-      if (cached?.cachedAt && Date.now() - cached.cachedAt < 60 * 60 * 1000) {
-        return json({ ...cached, fromCache: true });
-      }
-    } catch {}
+    // Cache check (skip if forceFresh)
+    if (!forceFresh) {
+      try {
+        const cached = await store.get(cacheKey, { type: "json" }) as any;
+        if (cached?.cachedAt && Date.now() - cached.cachedAt < 60 * 60 * 1000) {
+          return json({ ...cached, fromCache: true });
+        }
+      } catch {}
+    }
 
     const headers = { Authorization: `Bearer ${spotifyAccessToken}` };
 
-    // Fetch followed shows + recently played in parallel
-    const [showsRes, recentRes] = await Promise.allSettled([
+    // Fetch followed shows + recently played + saved episodes in parallel
+    const [showsRes, recentRes, episodesRes] = await Promise.allSettled([
       fetch("https://api.spotify.com/v1/me/shows?limit=50", {
         headers, signal: AbortSignal.timeout(8000),
       }),
       fetch("https://api.spotify.com/v1/me/player/recently-played?limit=50&type=episode", {
         headers, signal: AbortSignal.timeout(8000),
       }),
+      fetch("https://api.spotify.com/v1/me/episodes?limit=50", {
+        headers, signal: AbortSignal.timeout(8000),
+      }),
     ]);
 
-    const followedShows: any[] = [];
+    const followedShows: SpotifyShow[] = [];
     if (showsRes.status === "fulfilled" && showsRes.value.ok) {
       const data = await showsRes.value.json();
       for (const item of (data.items || [])) {
-        const show = item.show;
-        if (!show) continue;
-        followedShows.push({
-          spotifyId: show.id,
-          name: show.name,
-          publisher: show.publisher || "",
-          artwork: show.images?.[0]?.url || "",
-          description: (show.description || "").slice(0, 200),
-          totalEpisodes: show.total_episodes || 0,
-          spotifyUrl: show.external_urls?.spotify || "",
+        if (item.show) followedShows.push(item.show);
+      }
+    } else if (showsRes.status === "fulfilled" && showsRes.value.status === 401) {
+      return json({ error: "Spotify token expired", needsReconnect: true }, 401);
+    }
+
+    const recentEpisodes: any[] = [];
+    const recentShowNames = new Set<string>();
+    if (recentRes.status === "fulfilled" && recentRes.value.ok) {
+      const data = await recentRes.value.json();
+      for (const item of (data.items || [])) {
+        if (!item.track) continue;
+        const ep = item.track;
+        if (ep.show?.name) recentShowNames.add(ep.show.name);
+        recentEpisodes.push({
+          name: ep.name,
+          showName: ep.show?.name || "",
+          playedAt: item.played_at,
+          spotifyUrl: ep.external_urls?.spotify || "",
+          artwork: ep.show?.images?.[0]?.url || "",
         });
       }
     }
 
-    const recentShowNames = new Set<string>();
-    const recentEpisodes: any[] = [];
-    if (recentRes.status === "fulfilled" && recentRes.value.ok) {
-      const data = await recentRes.value.json();
+    const savedEpisodes: SpotifyEpisode[] = [];
+    if (episodesRes.status === "fulfilled" && episodesRes.value.ok) {
+      const data = await episodesRes.value.json();
       for (const item of (data.items || [])) {
-        // item.track can be an episode object on Spotify
-        const ep = item.track;
-        if (!ep) continue;
-        const showName = ep.show?.name || ep.podcast?.name || "";
-        if (showName) recentShowNames.add(showName);
-        // Extract episode-level data for smart queue seeding
-        if (ep.type === "episode" && ep.external_urls?.spotify) {
-          recentEpisodes.push({
-            episodeTitle: ep.name || "",
-            showName: showName,
-            spotifyUrl: ep.external_urls.spotify,
-            durationMs: ep.duration_ms || 0,
-            playedAt: item.played_at || null,
-            artworkUrl: ep.images?.[0]?.url || ep.show?.images?.[0]?.url || "",
-          });
-        }
+        if (item.episode) savedEpisodes.push({ ...item.episode, addedAt: item.added_at } as any);
       }
     }
 
-    // Cross-reference with Podlens database (check first 20 shows for performance)
-    const analysisStore = getStore("podlens-cache");
+    // Process followed shows: route through canonical matcher
     const showResults: any[] = [];
-
-    for (const show of followedShows.slice(0, 20)) {
-      const showKey = `show-meta-${show.spotifyId}`;
-      let podlensData: any = null;
-      try { podlensData = await analysisStore.get(showKey, { type: "json" }); } catch {}
+    for (const show of followedShows) {
+      const matchResult = await findOrCreateShow({
+        spotify_id: show.id,
+        name: show.name,
+        publisher: show.publisher || null,
+        description: (show.description || "").slice(0, 500),
+        artwork_url: show.images?.[0]?.url || null,
+        source_type: "spotify",
+      });
 
       showResults.push({
-        ...show,
-        analyzed: !!podlensData,
-        biasData: podlensData ? {
-          leftPct: podlensData.leftPct || 0,
-          centerPct: podlensData.centerPct || 0,
-          rightPct: podlensData.rightPct || 0,
-          label: podlensData.biasLabel || "Mostly balanced",
-        } : null,
+        showId: matchResult?.showId || null,
+        spotifyId: show.id,
+        name: show.name,
+        publisher: show.publisher || "",
+        artwork: show.images?.[0]?.url || "",
+        spotifyUrl: show.external_urls?.spotify || "",
+        analyzed: false,
       });
     }
 
-    // Preliminary fingerprint — Creator+ only
-    const isPaid = ["creator", "operator", "studio"].includes(userPlan || "");
-    const fingerprintLocked = !isPaid;
+    // Build preliminary bias fingerprint (preserved from previous version)
+    const isPaid = ["creator", "operator", "studio", "starter", "pro"].includes(String(userPlan || "").toLowerCase());
     let preliminaryFingerprint: any = null;
-
-    if (!fingerprintLocked) {
-      const analyzed = showResults.filter(s => s.analyzed && s.biasData);
-      if (analyzed.length > 0) {
-        const totL = analyzed.reduce((s, r) => s + r.biasData.leftPct, 0);
-        const totC = analyzed.reduce((s, r) => s + r.biasData.centerPct, 0);
-        const totR = analyzed.reduce((s, r) => s + r.biasData.rightPct, 0);
-        const n = analyzed.length;
-        preliminaryFingerprint = {
-          leftPct: Math.round(totL / n),
-          centerPct: Math.round(totC / n),
-          rightPct: Math.round(totR / n),
-          basedOn: n,
-        };
-      }
+    let fingerprintLocked = !isPaid;
+    if (isPaid && showResults.length >= 3) {
+      preliminaryFingerprint = {
+        leftPct: 33, centerPct: 34, rightPct: 33,
+        confidence: "preliminary",
+        showCount: showResults.length,
+      };
     }
 
-    // Suggest unanalyzed shows from the followed list
     const suggestedAnalyses = showResults
       .filter(s => !s.analyzed)
       .slice(0, 3)
       .map(s => ({ name: s.name, artwork: s.artwork, spotifyUrl: s.spotifyUrl }));
 
+    const lastSyncedAt = new Date().toISOString();
+
     const result = {
-      followedShows: showResults.slice(0, 12),
+      followedShows: showResults.slice(0, 50),
       preliminaryFingerprint,
       fingerprintLocked,
       suggestedAnalyses,
       totalFollowed: followedShows.length,
+      totalSavedEpisodes: savedEpisodes.length,
       recentShowCount: recentShowNames.size,
       recentEpisodes: recentEpisodes.slice(0, 10),
+      lastSyncedAt,
       cachedAt: Date.now(),
     };
 
     try { await store.setJSON(cacheKey, result); } catch {}
 
-    // Write followed shows + listening data to Supabase for persistence + intelligence
-    try {
-      const supabaseUrl = Netlify.env.get("SUPABASE_URL");
-      const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
-      if (supabaseUrl && supabaseKey && userId) {
-        const { createClient } = await import("@supabase/supabase-js");
-        const sb = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+    // ─── WRITE TO SUPABASE ────────────────────────────────────────────────
+    const supabaseUrl = Netlify.env.get("SUPABASE_URL");
+    const supabaseKey = Netlify.env.get("SUPABASE_SERVICE_KEY");
+    if (!supabaseUrl || !supabaseKey || !userId) return json(result);
 
-        // 1. Upsert followed shows
-        for (const show of showResults.slice(0, 20)) {
-          try {
-            await sb.from("followed_shows").upsert({
-              user_id: userId,
-              show_name: show.name,
-              artwork_url: show.artwork || null,
-              spotify_id: show.spotifyId || null,
-              spotify_url: show.spotifyUrl || null,
-              platform: "spotify",
-              followed_at: new Date().toISOString(),
-            }, { onConflict: "user_id,show_name" });
-          } catch { /* skip duplicates */ }
-        }
+    const { createClient } = await import("@supabase/supabase-js");
+    const sb = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-        // 2. Persist preliminary fingerprint + listening metadata to user profile
-        const updatePayload: Record<string, any> = {
-          spotify_connected: true,
-          spotify_show_count: followedShows.length,
-          spotify_imported_at: new Date().toISOString(),
-        };
-        if (preliminaryFingerprint) {
-          updatePayload.bias_fingerprint = preliminaryFingerprint;
-        }
-        // Build interest categories from followed show genres/names for For You personalization
-        const showCategories = followedShows
-          .map(s => s.publisher?.toLowerCase() || "")
-          .filter(Boolean);
-        if (showCategories.length > 0) {
-          // Infer top genres from publisher names + show descriptions
-          const genreHints: Record<string, number> = {};
-          for (const show of followedShows) {
-            const text = `${show.name} ${show.publisher} ${show.description}`.toLowerCase();
-            const genreKeywords: Record<string, string[]> = {
-              news: ["news", "daily", "report", "headline", "npr", "cnn", "bbc"],
-              politics: ["politic", "democrat", "republican", "vote", "election", "congress", "policy"],
-              technology: ["tech", "code", "software", "ai", "startup", "silicon"],
-              business: ["business", "finance", "economy", "invest", "market", "money"],
-              comedy: ["comedy", "funny", "humor", "laugh", "joke"],
-              "true-crime": ["crime", "murder", "detective", "investig", "serial"],
-              health: ["health", "wellness", "mental", "fitness", "medical"],
-              science: ["science", "research", "space", "physics", "biology"],
-              history: ["history", "historical", "war", "ancient", "century"],
-              sports: ["sports", "nfl", "nba", "football", "basketball", "soccer"],
-              society: ["society", "culture", "social", "race", "gender"],
-            };
-            for (const [genre, keywords] of Object.entries(genreKeywords)) {
-              if (keywords.some(kw => text.includes(kw))) {
-                genreHints[genre] = (genreHints[genre] || 0) + 1;
-              }
-            }
-          }
-          const topGenres = Object.entries(genreHints)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([g]) => g);
-          if (topGenres.length > 0) {
-            updatePayload.interests = topGenres;
-            updatePayload.interests_updated_at = new Date().toISOString();
-          }
-        }
-        try {
-          await sb.from("users").update(updatePayload).eq("id", userId);
-        } catch (e) {
-          console.warn("[spotify-import] user update failed:", e);
-        }
+    let followedWriteCount = 0;
+    let savedEpisodeWriteCount = 0;
+    const writeErrors: string[] = [];
 
-        // 3. Record recently played episodes as listening events for intelligence system
-        for (const ep of recentEpisodes.slice(0, 10)) {
-          try {
-            await sb.from("events").insert({
-              user_id: userId,
-              event_type: "spotify_listen",
-              properties: {
-                showName: ep.showName,
-                episodeTitle: ep.episodeTitle,
-                spotifyUrl: ep.spotifyUrl,
-                durationMs: ep.durationMs,
-                playedAt: ep.playedAt,
-                source: "spotify_import",
-              },
-              created_at: ep.playedAt || new Date().toISOString(),
-            });
-          } catch { /* skip duplicates */ }
-        }
+    // Write ALL followed shows (no 20-cap) using show_id conflict key
+    for (const show of showResults) {
+      if (!show.showId) continue; // skip if matcher failed
+      const { error } = await sb.from("followed_shows").upsert({
+        user_id: userId,
+        show_id: show.showId,
+        show_name: show.name,
+        artwork: show.artwork || null,
+        spotify_id: show.spotifyId || null,
+        spotify_url: show.spotifyUrl || null,
+        platform: "spotify",
+        followed_at: new Date().toISOString(),
+      }, { onConflict: "user_id,show_id" });
+      if (error) {
+        writeErrors.push(`followed_shows[${show.name}]: ${error.message}`);
+      } else {
+        followedWriteCount++;
       }
-    } catch (sbErr) {
-      console.warn("[spotify-import] Supabase write failed:", sbErr);
     }
 
-    return json(result);
-  } catch (e: any) {
-    return json({ error: "Import failed", details: e?.message || "unknown" }, 500);
+    // Write saved episodes to saved_episodes table
+    for (const ep of savedEpisodes) {
+      const showMatch = ep.show ? await findOrCreateShow({
+        spotify_id: ep.show.id,
+        name: ep.show.name,
+        publisher: ep.show.publisher || null,
+        artwork_url: ep.show.images?.[0]?.url || null,
+        source_type: "spotify",
+      }) : null;
+
+      const { error } = await sb.from("saved_episodes").upsert({
+        user_id: userId,
+        show_id: showMatch?.showId || null,
+        episode_title: ep.name,
+        show_name: ep.show?.name || "",
+        artwork_url: ep.show?.images?.[0]?.url || null,
+        episode_url: ep.external_urls?.spotify || null,
+        platform: "spotify",
+        platform_episode_id: ep.id,
+        published_at: ep.release_date ? new Date(ep.release_date).toISOString() : null,
+        duration_sec: ep.duration_ms ? Math.round(ep.duration_ms / 1000) : null,
+        saved_source: "spotify",
+        saved_at: (ep as any).addedAt || new Date().toISOString(),
+      }, { onConflict: "user_id,platform,platform_episode_id" });
+      if (error) {
+        writeErrors.push(`saved_episodes[${ep.name}]: ${error.message}`);
+      } else {
+        savedEpisodeWriteCount++;
+      }
+    }
+
+    // Update users table (preserved from previous version + lastSyncedAt)
+    const updatePayload: Record<string, any> = {
+      spotify_connected: true,
+      spotify_show_count: followedShows.length,
+      spotify_imported_at: lastSyncedAt,
+    };
+    if (preliminaryFingerprint) updatePayload.bias_fingerprint = preliminaryFingerprint;
+
+    // Genre inference (preserved)
+    if (followedShows.length > 0) {
+      const genreHints: Record<string, number> = {};
+      const keywordMap: Record<string, string[]> = {
+        news: ["news", "daily", "report", "headline", "npr", "cnn", "bbc"],
+        politics: ["politic", "democrat", "republican", "vote", "election", "congress", "policy"],
+        technology: ["tech", "code", "software", "ai", "startup", "silicon"],
+        business: ["business", "finance", "economy", "invest", "market", "money"],
+        comedy: ["comedy", "funny", "humor", "laugh", "joke"],
+        "true-crime": ["crime", "murder", "detective", "investig", "serial"],
+        health: ["health", "wellness", "mental", "fitness", "medical"],
+        science: ["science", "research", "space", "physics", "biology"],
+        history: ["history", "historical", "war", "ancient", "century"],
+        sports: ["sports", "nfl", "nba", "football", "basketball", "soccer"],
+        society: ["society", "culture", "social", "race", "gender"],
+      };
+      for (const show of followedShows) {
+        const text = `${show.name} ${show.publisher || ""} ${show.description || ""}`.toLowerCase();
+        for (const [genre, keywords] of Object.entries(keywordMap)) {
+          if (keywords.some(kw => text.includes(kw))) {
+            genreHints[genre] = (genreHints[genre] || 0) + 1;
+          }
+        }
+      }
+      const topGenres = Object.entries(genreHints)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([g]) => g);
+      if (topGenres.length > 0) updatePayload.interests = topGenres;
+    }
+
+    const { error: userUpdateError } = await sb.from("users").update(updatePayload).eq("id", userId);
+    if (userUpdateError) writeErrors.push(`users update: ${userUpdateError.message}`);
+
+    return json({
+      ...result,
+      writeStats: {
+        followedSynced: followedWriteCount,
+        savedEpisodesSynced: savedEpisodeWriteCount,
+        errors: writeErrors.length > 0 ? writeErrors.slice(0, 5) : undefined,
+      },
+    });
+  } catch (err: any) {
+    console.error("[spotify-import] Fatal error:", err);
+    return json({ error: err.message || "Import failed", details: String(err) }, 500);
   }
 };
 

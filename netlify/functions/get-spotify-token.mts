@@ -87,10 +87,22 @@ export default async (req: Request) => {
     }
   }
 
+  // Fetch lastSyncedAt from users table (small extra query for sync UI)
+  let lastSyncedAt: string | null = null;
+  try {
+    const { data: userData } = await sb
+      .from("users")
+      .select("spotify_imported_at")
+      .eq("id", userId)
+      .maybeSingle();
+    lastSyncedAt = userData?.spotify_imported_at || null;
+  } catch {}
+
   return new Response(
     JSON.stringify({
       accessToken,
       displayName: data.provider_username || "",
+      lastSyncedAt,
     }),
     {
       status: 200,
