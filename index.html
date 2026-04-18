@@ -15924,17 +15924,21 @@ function _viewFromPath(path) {
 }
 function startSpotifyImport() {
   var u = plUser();
-  if (!u || !u.id) return;
+  if (!u || !u.id) { console.warn('[spotify-import] No user'); return; }
+  console.log('[spotify-import] Fetching token for', u.id);
   fetch('/api/get-spotify-token?userId=' + encodeURIComponent(u.id))
     .then(function(r) { return r.json(); })
     .then(function(d) {
+      console.log('[spotify-import] Token response:', d.accessToken ? 'OK' : 'NO TOKEN', d.error || '');
       if (d && d.accessToken) {
         sessionStorage.setItem('pl-spotify-token-' + u.id, JSON.stringify({ accessToken: d.accessToken }));
         if (typeof openSpotifyConnectedOverlay === 'function') {
           openSpotifyConnectedOverlay();
         }
+      } else if (d && d.error) {
+        showToast('Spotify: ' + d.error, 3000);
       }
-    }).catch(function(e) { console.warn('Spotify import failed:', e); });
+    }).catch(function(e) { console.warn('[spotify-import] Failed:', e); showToast('Spotify import failed — try again', 3000); });
 }
 
 function heroConnectSpotify() {
