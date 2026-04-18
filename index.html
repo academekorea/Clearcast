@@ -7093,6 +7093,9 @@ var TOPICS = ['Israel-Gaza','Iran war','Fed rates','AI regulation','Trump tariff
 
 // ── ITUNES ARTWORK HELPER — picks best match, not just first result ──────────
 function _itunesArtwork(showName) {
+  // iTunes blocks client-side CORS — return null; artwork should be pre-populated
+  return Promise.resolve(null);
+  /* disabled: direct iTunes fetch blocked by CORS
   return fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(showName) + '&media=podcast&entity=podcast&limit=5')
     .then(function(r) { return r.json(); })
     .then(function(d) {
@@ -7108,6 +7111,7 @@ function _itunesArtwork(showName) {
       return (best && (best.artworkUrl600 || best.artworkUrl100)) || null;
     })
     .catch(function() { return null; });
+  */
 }
 
 // ── BIAS SCORES: hard-coded from community analysis (refreshed quarterly) ──────
@@ -7224,8 +7228,10 @@ var CURATED_SHOWS = [
   {name:'New Heights',artist:'Jason & Travis Kelce',artwork:'',feedUrl:'',cat:'sports',bias:{score:-5,label:'Mostly balanced',leftPct:28,centerPct:52,rightPct:20}},
 ];
 
-// Resolve missing artwork from iTunes Search API (lazy, non-blocking)
+// Resolve missing artwork — DISABLED: iTunes blocks client-side CORS.
+// Artwork is now pre-populated in CURATED_SHOWS via build-time iTunes API calls.
 (function _resolveMissingArtwork() {
+  return; // disabled — Apple blocks cross-origin fetch from browsers
   var missing = CURATED_SHOWS.filter(function(s) { return !s.artwork; });
   if (!missing.length) return;
   missing.forEach(function(s) {
