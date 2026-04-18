@@ -16014,8 +16014,9 @@ function heroConnectYouTube() {
       var heading = btn.querySelector('div > div[style*="font-weight:700"]');
       var sub     = btn.querySelector('div > div[style*="color:var(--text3)"]');
       if (heading) heading.textContent = '\u2713 Spotify Connected';
-      if (sub)     sub.textContent     = 'Click to refresh your library';
+      if (sub)     sub.textContent     = 'Click to disconnect';
       btn.style.borderLeftColor = '#1DB954';
+      btn.setAttribute('onclick', 'if(typeof plConfirmDisconnectSpotify===\'function\')plConfirmDisconnectSpotify()');
       btn.dataset.plConnectedDone = '1';
     });
 
