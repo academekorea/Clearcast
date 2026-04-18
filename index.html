@@ -4978,7 +4978,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <div class="acct-card">
         <div class="acct-card-title">Integrations</div>
         <div class="acct-int-card"><div class="acct-int-icon" style="background:#E8F9EE">&#127925;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Spotify</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Import your podcast subscriptions and listening history</div></div><button class="acct-btn-primary" onclick="heroConnectSpotify()">Connect</button></div>
-        <div class="acct-int-card" id="acct-yt-card"><div class="acct-int-icon" style="background:#FEE2E2">&#9654;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">YouTube</div><div style="font-size:12px;color:var(--text3);margin-top:2px" id="acct-yt-status">Analyze video podcasts and YouTube channels</div></div><button id="acct-yt-btn" class="acct-btn-primary" onclick="acctYouTubeToggle()">Connect</button></div>
+        <div class="acct-int-card"><div class="acct-int-icon" style="background:#FEE2E2">&#9654;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">YouTube</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze video podcasts and YouTube channels</div></div><button class="acct-btn-primary" onclick="heroConnectYouTube()">Connect</button></div>
         <div class="acct-int-card"><div class="acct-int-icon" style="background:var(--bg3)">&#128276;</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Browser extension</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Analyze any podcast directly from your browser</div></div><a class="acct-btn-secondary" href="/extension.html">Install</a></div>
       </div>
     </div>
@@ -7444,7 +7444,6 @@ function showView(name) {
   }
   if (name === 'account' || name === 'settings') {
     if (typeof renderAccountView === 'function') setTimeout(renderAccountView, 50);
-    if (typeof acctYouTubeRefreshUI === 'function') setTimeout(acctYouTubeRefreshUI, 60);
   }
   if (name === 'discover') { initDiscover(); }
   if (name === 'analyze') {
@@ -15810,53 +15809,6 @@ function heroConnectSpotify() {
   sessionStorage.setItem('spotify_oauth_state', state);
   window.location.href = 'https://accounts.spotify.com/authorize?response_type=code&client_id=' + clientId
     + '&scope=' + encodeURIComponent(scopes) + '&redirect_uri=' + redirect + '&state=' + encodeURIComponent(state);
-}
-
-function acctYouTubeRefreshUI() {
-  var connected = localStorage.getItem('pl-youtube-connected') === '1';
-  var btn = document.getElementById('acct-yt-btn');
-  var status = document.getElementById('acct-yt-status');
-  if (!btn || !status) return;
-  if (connected) {
-    btn.textContent = 'Disconnect';
-    btn.classList.remove('acct-btn-primary');
-    btn.classList.add('acct-btn-secondary');
-    status.textContent = 'Connected. Your subscriptions are importing.';
-  } else {
-    btn.textContent = 'Connect';
-    btn.classList.add('acct-btn-primary');
-    btn.classList.remove('acct-btn-secondary');
-    status.textContent = 'Analyze video podcasts and YouTube channels';
-  }
-}
-
-async function acctYouTubeToggle() {
-  var connected = localStorage.getItem('pl-youtube-connected') === '1';
-  if (!connected) {
-    heroConnectYouTube();
-    return;
-  }
-  if (!confirm('Disconnect YouTube from Podlens? This will revoke access and remove your imported subscriptions.')) return;
-  var u = plUser();
-  var userId = u ? u.id : null;
-  if (!userId) { showToast('Not signed in', 3000); return; }
-  var btn = document.getElementById('acct-yt-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Disconnecting...'; }
-  try {
-    var res = await fetch('/api/disconnect-youtube', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: userId }),
-    });
-    if (!res.ok) throw new Error('Server error');
-    localStorage.removeItem('pl-youtube-connected');
-    if (typeof syncToServer === 'function') syncToServer('youtube_connected', false);
-    acctYouTubeRefreshUI();
-    showToast('YouTube disconnected', 2500);
-  } catch (e) {
-    showToast('Disconnect failed, please try again', 3500);
-    if (btn) { btn.disabled = false; btn.textContent = 'Disconnect'; }
-  }
 }
 
 function heroConnectYouTube() {
