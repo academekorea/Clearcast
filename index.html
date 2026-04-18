@@ -7599,25 +7599,33 @@ function discNavCat(cat, btn) {
   var labels = {all:'Trending across all categories',news:'Trending in News & Politics',tech:'Trending in Technology',business:'Trending in Business',society:'Trending in Society',crime:'Trending in True Crime',comedy:'Trending in Comedy',health:'Trending in Health',sports:'Trending in Sports'};
   if (sub && !plUser()) sub.textContent = labels[cat] || 'Trending shows';
   _renderCategoryBiasContext(cat);
-  // Update hero card for this category
+  // Render shows + episodes INSTANTLY from local data first
+  discRenderShows();
+  discRenderEpisodes();
+  // Show/hide related shelf
+  var relatedShelf = document.getElementById('disc-related-shelf');
+  if (relatedShelf) relatedShelf.style.display = 'none';
+  // Update hero card — cached = instant, else fetch in background
   if (_discHeroCache[cat]) {
     _discSetHero(_discHeroCache[cat]);
   } else if (cat === 'all' && _discHeroCache['personalized'] && plUser()) {
     _discSetHero(_discHeroCache['personalized']);
   } else {
-    _discHeroLoading();
+    // Build instant fallback hero from CURATED_SHOWS for this category
+    var catShows = cat === 'all' ? CURATED_SHOWS : CURATED_SHOWS.filter(function(s){return s.cat===cat;});
+    if (catShows.length) {
+      var pick = catShows[Math.floor(Math.random() * Math.min(catShows.length, 5))];
+      var catLabel = cat === 'all' ? 'Featured' : cat.charAt(0).toUpperCase() + cat.slice(1);
+      _discSetHero({ eye: catLabel, title: 'Top podcast: ' + pick.name, show: pick.name, host: pick.artist, artwork: pick.artwork || null, url: pick.feedUrl || '' });
+    }
+    // Upgrade with API data in background
     var heroMode = cat === 'all' ? 'trending' : 'category';
-    fetch('/api/discover-hero?mode=' + heroMode + '&category=' + encodeURIComponent(cat), { signal: AbortSignal.timeout(6000) })
+    fetch('/api/discover-hero?mode=' + heroMode + '&category=' + encodeURIComponent(cat), { signal: AbortSignal.timeout(4000) })
       .then(function(r) { return r.json(); })
       .then(function(d) {
-        if (d.hero) { _discHeroCache[cat] = d.hero; _discSetHero(d.hero); }
+        if (d.hero && _discCat === cat) { _discHeroCache[cat] = d.hero; _discSetHero(d.hero); }
       }).catch(function() {});
   }
-  // Show/hide related shelf
-  var relatedShelf = document.getElementById('disc-related-shelf');
-  if (relatedShelf) relatedShelf.style.display = 'none';
-  discRenderShows();
-  discRenderEpisodes();
 }
 
 function _discSetHero(hero) {
@@ -8546,8 +8554,8 @@ function discLoadLiveShows(cat) {
     crime:'1488', comedy:'1303', health:'1307', sports:'1545'
   };
   var genreParam = genreMap[cat] ? '&genre=' + genreMap[cat] : '';
-  container.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px 0">Loading more shows...</div>';
-  fetch('/api/podcast-search?q=' + encodeURIComponent(query) + genreParam)
+  container.innerHTML = '';
+  fetch('/api/podcast-search?q=' + encodeURIComponent(query) + genreParam, { signal: AbortSignal.timeout(5000) })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       var results = (data.results || []).filter(function(r) {
@@ -14715,6 +14723,18 @@ if (!handleUrlRouting()) {
 }
 initFreeAccessPanel();
 loadDiscTrendingNews(); // pre-render pills so they're ready when discover opens
+// Pre-fetch category heroes in background so switching is instant
+(function(){
+  var cats = ['all','news','tech','business','society','crime','comedy','health','sports'];
+  cats.forEach(function(cat){
+    if (_discHeroCache && _discHeroCache[cat]) return;
+    var mode = cat === 'all' ? 'trending' : 'category';
+    fetch('/api/discover-hero?mode='+mode+'&category='+encodeURIComponent(cat), { signal: AbortSignal.timeout(8000) })
+      .then(function(r){return r.json();})
+      .then(function(d){ if(d.hero && typeof _discHeroCache!=='undefined') _discHeroCache[cat]=d.hero; })
+      .catch(function(){});
+  });
+})();
 // Pass store to startAnalysis for regional iTunes
 var _origStartAnalysis = startAnalysis;
 // Patch handleAnalyze to include store in body (TASK 6)
