@@ -5812,6 +5812,8 @@ function doLogout() {
   setPlUser(null);
   // Hide everything immediately to prevent flash during navigation
   document.querySelectorAll('.view').forEach(function(v){ v.style.display = 'none'; });
+  var ft = document.getElementById('site-footer');
+  if (ft) ft.classList.remove('footer-visible');
   window.location.href = '/';
 }
 
