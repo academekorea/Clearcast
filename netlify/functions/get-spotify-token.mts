@@ -34,7 +34,11 @@ export default async (req: Request) => {
   }
 
   let accessToken = data.access_token;
-  const expiresAt = data.expires_at ? Number(data.expires_at) : 0;
+  const expiresAt = data.expires_at
+    ? (typeof data.expires_at === "number"
+        ? data.expires_at
+        : new Date(data.expires_at).getTime())
+    : 0;
   const BUFFER_MS = 5 * 60 * 1000; // 5 minute buffer
 
   // Refresh token if expired or expiring within 5 minutes
