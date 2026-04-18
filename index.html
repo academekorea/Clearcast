@@ -16776,5 +16776,73 @@ function addAppleShows() {
     <button onclick="document.getElementById('bg-analysis-strip').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:16px;padding:0 4px">×</button>
   </div>
 </div>
+<script>
+(function() {
+  // Add a "Disconnect" button next to the "Connected" pill in Settings →
+  // Integrations Spotify card. Runs when user is connected. Idempotent.
+  async function plConfirmDisconnectSpotify() {
+    if (!confirm('Disconnect Spotify?\n\nYour imported shows and saved episodes will be removed from Podlens. You can reconnect anytime.')) return;
+    var u = (typeof plUser === 'function') ? plUser() : null;
+    if (!u || !u.id) return;
+    try {
+      var res = await fetch('/api/disconnect-spotify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: u.id }),
+      });
+      if (!res.ok) {
+        if (typeof plToast === 'function') plToast('Disconnect failed — try again');
+        return;
+      }
+      try { localStorage.removeItem('pl-spotify-connected'); } catch (e) {}
+      if (typeof plToast === 'function') plToast('Spotify disconnected');
+      // Reload to refresh all connection UI across the page
+      setTimeout(function() { location.reload(); }, 600);
+    } catch (e) {
+      if (typeof plToast === 'function') plToast('Disconnect failed — try again');
+    }
+  }
+  window.plConfirmDisconnectSpotify = plConfirmDisconnectSpotify;
+
+  function plInjectDisconnectButton() {
+    var spotifyConnected = false;
+    try { spotifyConnected = localStorage.getItem('pl-spotify-connected') === '1'; } catch(e) {}
+    if (!spotifyConnected) return;
+
+    // Find the Spotify integrations card
+    var intCards = document.querySelectorAll('.acct-int-card');
+    intCards.forEach(function(card) {
+      if (card.dataset.plDisconnectAttached === '1') return;
+      var titleEl = card.querySelector('div[style*="font-weight:500"]');
+      if (!titleEl || titleEl.textContent.trim() !== 'Spotify') return;
+
+      // Inject a "Disconnect" link button next to the "Connected" pill
+      var disconnectBtn = document.createElement('button');
+      disconnectBtn.textContent = 'Disconnect';
+      disconnectBtn.type = 'button';
+      disconnectBtn.onclick = function() { plConfirmDisconnectSpotify(); };
+      disconnectBtn.style.cssText = 'margin-left:8px;background:transparent;color:var(--text3,#86868b);border:1px solid var(--border2,#d2d2d7);border-radius:999px;padding:6px 12px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--ff);';
+      disconnectBtn.onmouseenter = function() {
+        this.style.background = 'rgba(220,38,38,0.08)';
+        this.style.color = '#dc2626';
+        this.style.borderColor = '#dc2626';
+      };
+      disconnectBtn.onmouseleave = function() {
+        this.style.background = 'transparent';
+        this.style.color = 'var(--text3,#86868b)';
+        this.style.borderColor = 'var(--border2,#d2d2d7)';
+      };
+      card.appendChild(disconnectBtn);
+      card.dataset.plDisconnectAttached = '1';
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', plInjectDisconnectButton);
+  setTimeout(plInjectDisconnectButton, 800);
+  setTimeout(plInjectDisconnectButton, 2500);
+  window.addEventListener('hashchange', function() { setTimeout(plInjectDisconnectButton, 100); });
+  document.addEventListener('click', function() { setTimeout(plInjectDisconnectButton, 200); });
+})();
+</script>
 </body>
 </html>
