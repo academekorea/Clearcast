@@ -102,25 +102,15 @@
     // Divider
     html += '<div class="sb-div"></div>';
 
-    // My Library section
-    html += '<div class="sb-lbl">My Library</div>';
-
-    // My Library (landing)
-    html += '<button class="sb-btn" data-sb="library" onclick="window._pendingLibTab=\'library\';if(typeof showView===\'function\')showView(\'library\')">' + icons.library + 'My Library</button>';
-
-    // Library sub-items
+    // Library (toggle dropdown + navigate, same pattern as Home)
+    html += '<button class="sb-btn" id="sb-library-toggle" data-sb="library" onclick="window._pendingLibTab=\'library\';if(typeof showView===\'function\')showView(\'library\')">' + icons.library + 'Library<span class="sb-arrow" id="sb-arr-library" onclick="event.stopPropagation();window._sbToggle(\'library\')" style="padding:4px 6px;margin:-4px -6px;border-radius:3px">\u203A</span></button>';
+    html += '<div class="sb-sub" id="sb-drop-library">';
     html += libSubItem('following', icons.following, 'Following', '<span class="sb-count">' + (c.follows || '') + '</span>');
     html += libSubItem('liked', icons.liked, 'Liked episodes', '<span class="sb-count">' + (c.liked || '') + '</span>');
-
-    // Playlists (toggle dropdown)
-    html += '<button class="sb-sub-btn" data-sb="playlists" id="sb-playlists-toggle" onclick="window._sbToggle(\'playlists\');window._pendingLibTab=\'playlists\';if(typeof showView===\'function\')showView(\'library\')">' + icons.playlists + 'Playlists<span class="sb-arrow" id="sb-arr-playlists">\u203A</span></button>';
-    html += '<div class="sb-sub" id="sb-drop-playlists">';
-    html += '<div id="sb-playlists-list" style="display:none"></div>';
-    html += '<button class="sb-sub-btn sb-muted" onclick="window._pendingLibTab=\'playlists\';if(typeof showView===\'function\')showView(\'library\')">' + icons.newPlaylist + 'New playlist</button>';
-    html += '</div>';
-
+    html += '<button class="sb-sub-btn" data-sb="playlists" onclick="window._pendingLibTab=\'playlists\';if(typeof showView===\'function\')showView(\'library\')">' + icons.playlists + 'Playlists</button>';
     html += libSubItem('analyzed', icons.analyzed, 'Analyzed', '<span class="sb-count">' + (c.analyzed || '') + '</span>');
     html += libSubItem('downloads', icons.downloads, 'Downloads', '<span class="sb-soon">Soon</span>');
+    html += '</div>';
 
     html += '</div>'; // end .sb-top
 
@@ -213,9 +203,14 @@
       var target = sidebar.querySelector('[data-sb="' + id + '"]');
       if (target) target.classList.add('active');
       var libraryItems = ['following', 'liked', 'playlists', 'analyzed', 'downloads'];
-      if (libraryItems.indexOf(id) !== -1) {
+      if (libraryItems.indexOf(id) !== -1 || id === 'library') {
         var libBtn = sidebar.querySelector('[data-sb="library"]');
         if (libBtn) libBtn.classList.add('active');
+        // Auto-open library dropdown
+        var libDrop = sidebar.querySelector('[id$="drop-library"]');
+        var libArr = sidebar.querySelector('[id$="arr-library"]');
+        if (libDrop && !libDrop.classList.contains('open')) { libDrop.classList.add('open'); }
+        if (libArr && !libArr.classList.contains('open')) { libArr.classList.add('open'); }
       }
       var homeItems = ['intelligence', 'queue'];
       if (homeItems.indexOf(id) !== -1) {
