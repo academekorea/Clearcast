@@ -485,7 +485,7 @@ export default async (req: Request, context: Context) => {
                   await sb.from("connected_accounts").update({
                     access_token: token,
                     expires_at: new Date(newExpiry).toISOString(),
-                  }).eq("user_id", userId).eq("provider", "google");
+                  }).eq("user_id", userId).eq("provider", "youtube");
                 }
               } catch {}
             }
