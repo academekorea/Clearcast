@@ -181,7 +181,7 @@
   // ── Toggle dropdown ──────────────────────────────────────────────────────────
   window._sbToggle = function (id) {
     // Toggle in both primary (sb-) and secondary (sb2-) sidebars
-    ['sb-', 'sb2-', 'sb3-', 'sb4-'].forEach(function (prefix) {
+    ['sb-', 'sb2-', 'sb3-', 'sb4-', 'sb5-'].forEach(function (prefix) {
       var el = document.getElementById(prefix + 'drop-' + id);
       var arr = document.getElementById(prefix + 'arr-' + id);
       if (!el) return;
@@ -210,10 +210,20 @@
         if (libDrop && !libDrop.classList.contains('open')) { libDrop.classList.add('open'); }
         if (libArr && !libArr.classList.contains('open')) { libArr.classList.add('open'); }
       }
-      var homeItems = ['intelligence', 'queue'];
+      var homeItems = ['intelligence', 'queue', 'home', 'home-toggle'];
       if (homeItems.indexOf(id) !== -1) {
         var homeBtn = sidebar.querySelector('[data-sb="home-toggle"]');
         if (homeBtn) homeBtn.classList.add('active');
+        // Auto-open home dropdown
+        var homeDrop = sidebar.querySelector('[id$="drop-home"]');
+        var homeArr = sidebar.querySelector('[id$="arr-home"]');
+        if (homeDrop && !homeDrop.classList.contains('open')) { homeDrop.classList.add('open'); }
+        if (homeArr && !homeArr.classList.contains('open')) { homeArr.classList.add('open'); }
+        // Also expand library dropdown on home for quick access
+        var libDrop2 = sidebar.querySelector('[id$="drop-library"]');
+        var libArr2 = sidebar.querySelector('[id$="arr-library"]');
+        if (libDrop2 && !libDrop2.classList.contains('open')) { libDrop2.classList.add('open'); }
+        if (libArr2 && !libArr2.classList.contains('open')) { libArr2.classList.add('open'); }
       }
     });
   };
