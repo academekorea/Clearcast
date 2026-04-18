@@ -70,13 +70,14 @@
       return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="if(!plUser()){openModal(\'signup\');return}if(typeof showView===\'function\')showView(\'home\');if(typeof showDashSection===\'function\')showDashSection(\'' + id + '\')">' + icon + label + badgeHtml + '</button>';
     }
 
-    function topNavItem(id, icon, label) {
-      return '<button class="sb-btn" data-sb="' + id + '" onclick="if(typeof showView===\'function\')showView(\'' + id + '\')">' + icon + label + '</button>';
+    function topNavItem(id, icon, label, authRequired) {
+      var gate = authRequired ? 'if(!plUser()){openModal(\'signup\');return}' : '';
+      return '<button class="sb-btn" data-sb="' + id + '" onclick="' + gate + 'if(typeof showView===\'function\')showView(\'' + id + '\')">' + icon + label + '</button>';
     }
 
     function libSubItem(id, icon, label, suffix) {
       var suffixHtml = suffix || '';
-      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="window._pendingLibTab=\'' + id + '\';if(typeof showView===\'function\')showView(\'library\')">' + icon + label + suffixHtml + '</button>';
+      return '<button class="sb-sub-btn" data-sb="' + id + '" onclick="if(!plUser()){openModal(\'signup\');return}window._pendingLibTab=\'' + id + '\';if(typeof showView===\'function\')showView(\'library\')">' + icon + label + suffixHtml + '</button>';
     }
 
     // ── Assemble HTML ──
@@ -89,18 +90,18 @@
     html += '<div class="sb-lbl">Menu</div>';
 
     // Home (toggle dropdown + navigate to dashboard)
-    html += '<button class="sb-btn" id="sb-home-toggle" data-sb="home-toggle" onclick="if(typeof showView===\'function\')showView(\'home\')">' + icons.home + 'Home<span class="sb-arrow" id="sb-arr-home" onclick="event.stopPropagation();window._sbToggle(\'home\')" style="padding:4px 6px;margin:-4px -6px;border-radius:3px">\u203A</span></button>';
+    html += '<button class="sb-btn" id="sb-home-toggle" data-sb="home-toggle" onclick="if(!plUser()){openModal(\'signup\');return}if(typeof showView===\'function\')showView(\'home\')">' + icons.home + 'Home<span class="sb-arrow" id="sb-arr-home" onclick="event.stopPropagation();if(!plUser()){openModal(\'signup\');return}window._sbToggle(\'home\')" style="padding:4px 6px;margin:-4px -6px;border-radius:3px">\u203A</span></button>';
     html += '<div class="sb-sub" id="sb-drop-home">';
     html += homeSubItem('intelligence', icons.intel, 'My intelligence', '');
     html += homeSubItem('queue', icons.queue, 'Smart queue', c.queued || '');
     html += '</div>';
 
     // Discover & Analyze
-    html += topNavItem('discover', icons.discover, 'Discover');
-    html += topNavItem('analyze', icons.analyze, 'Analyze');
+    html += topNavItem('discover', icons.discover, 'Discover', false);
+    html += topNavItem('analyze', icons.analyze, 'Analyze', true);
 
     // Library (toggle dropdown + navigate, same pattern as Home)
-    html += '<button class="sb-btn" id="sb-library-toggle" data-sb="library" onclick="window._pendingLibTab=\'library\';if(typeof showView===\'function\')showView(\'library\')">' + icons.library + 'Library<span class="sb-arrow" id="sb-arr-library" onclick="event.stopPropagation();window._sbToggle(\'library\')" style="padding:4px 6px;margin:-4px -6px;border-radius:3px">\u203A</span></button>';
+    html += '<button class="sb-btn" id="sb-library-toggle" data-sb="library" onclick="if(!plUser()){openModal(\'signup\');return}window._pendingLibTab=\'library\';if(typeof showView===\'function\')showView(\'library\')">' + icons.library + 'Library<span class="sb-arrow" id="sb-arr-library" onclick="event.stopPropagation();if(!plUser()){openModal(\'signup\');return}window._sbToggle(\'library\')" style="padding:4px 6px;margin:-4px -6px;border-radius:3px">\u203A</span></button>';
     html += '<div class="sb-sub" id="sb-drop-library">';
     html += libSubItem('following', icons.following, 'Following', '<span class="sb-count">' + (c.follows || '') + '</span>');
     html += libSubItem('liked', icons.liked, 'Liked episodes', '<span class="sb-count">' + (c.liked || '') + '</span>');
