@@ -11188,6 +11188,31 @@ function handleUrlRouting() {
   var path=window.location.pathname;
   var params=new URLSearchParams(window.location.search);
 
+  // Handle Spotify connect callback (?spotify=connected)
+  var spotifyConnectedParam = params.get('spotify');
+  if (spotifyConnectedParam === 'connected' || params.get('connected') === 'spotify') {
+    localStorage.setItem('pl-spotify-connected', '1');
+    if (typeof syncToServer === 'function') syncToServer('spotify_connected', true);
+    var spName = params.get('display_name') || 'Spotify';
+    if (typeof showToast === 'function') showToast('\u2713 ' + spName + ' connected successfully', 3000);
+    var returnPath = sessionStorage.getItem('pl-spotify-return-view') || '/';
+    sessionStorage.removeItem('pl-spotify-return-view');
+    history.replaceState({}, '', returnPath);
+    var returnViewMap = { '/settings': 'account', '/account': 'account', '/discover': 'discover', '/dashboard': 'home', '/': 'home' };
+    var targetView = returnViewMap[returnPath] || 'home';
+    setTimeout(function() {
+      if (typeof showView === 'function') showView(targetView);
+      if (typeof startSpotifyImport === 'function') startSpotifyImport();
+    }, 300);
+    return true;
+  }
+  if (spotifyConnectedParam === 'error') {
+    var spotifyErrMsg = params.get('msg') || 'unknown error';
+    history.replaceState({}, '', window.location.pathname);
+    if (typeof showToast === 'function') showToast('Spotify connection failed: ' + spotifyErrMsg, 4000);
+    return false;
+  }
+
   // Handle Spotify OAuth callback
   var spotifyLogin = params.get('spotify_login');
   if (spotifyLogin) {
