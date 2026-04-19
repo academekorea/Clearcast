@@ -6749,6 +6749,7 @@ function toggleFollowShow(name, feedUrl, artwork, btn) {
     setPlUser(u);
     plToast('Following ' + name, 2500);
     if(typeof posthog!=='undefined')posthog.capture('show_followed',{showName:name});
+    if (window.plTrack) window.plTrack('show_followed', { showName: name || '' });
     // Save to Supabase
     safeFetch('/api/follow-show', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: u.id, action: 'follow', showName: name, feedUrl: feedUrl || '', artwork: artwork || '' }) }).catch(function(){});
@@ -9615,6 +9616,7 @@ async function _routeApplePodcasts(appleUrl, itunesId) {
 }
 
 async function handleAnalyze() {
+  if (window.plTrack) window.plTrack('analysis_initiated', { source: 'hero' });
   var raw = document.getElementById('url-input').value.trim();
   if (!raw) { document.getElementById('url-input').focus(); return; }
 
@@ -10058,6 +10060,7 @@ function pollStatus(jobId, audioUrl) {
       var d = await safeFetch('/api/status/' + encodeURIComponent(jobId) + '?plan=' + encodeURIComponent(_statusPlan));
 
       if (d.status === 'complete') {
+        if (window.plTrack && !window._plAnalysisCompletedTracked) { window._plAnalysisCompletedTracked = true; window.plTrack('analysis_completed', { jobId: d.jobId || null }); }
         clearInterval(_poll);
         // Complete all LAF steps
         for (var i = lafIdx; i < _lafSteps.length; i++) lafAddStep(i, true);
@@ -10946,6 +10949,7 @@ function _arInitNativeAudio(audioUrl, data) {
   a.addEventListener('ended', function() { _arSetPlayIcon(false, document.getElementById('ar-play-btn'), document.getElementById('ar-dock-play')); });
 }
 function shareAnalysis(jobId) {
+  if (window.plTrack) window.plTrack('share_clicked', { method: 'link' });
   // Find analysis data
   var data = window._lastAnalysisResult || {};
   if (!data.jobId && jobId) data.jobId = jobId;
@@ -14051,6 +14055,7 @@ function doMagicLink() {
 }
 
 function doGoogleOAuth(action) {
+  if (window.plTrack) window.plTrack('signup_started', { method: 'google' });
   // Fetch Google client ID from backend (set in Netlify env vars)
   fetch('/api/get-plan?provider=google')
     .then(function(r) { return r.json(); })
@@ -14094,6 +14099,7 @@ function handleSocialLogin(userData) {
     pilotExpiresAt: userData.pilotExpiresAt || null,
   };
   setPlUser(u);
+  if (window.plTrack) window.plTrack('signup_completed', {});
   // Clean URL
   var cleanUrl = window.location.pathname;
   history.replaceState({}, '', cleanUrl);
@@ -14141,6 +14147,7 @@ function loadSpotifyImport(token, u) {
 }
 
 function renderSpotifyConnected(data, u) {
+  if (window.plTrack && data.totalFollowed != null) { window.plTrack('spotify_library_imported', { followed: data.totalFollowed || 0, saved: data.totalSavedEpisodes || 0 }); }
   var shows = data.followedShows || [];
   var fp = data.preliminaryFingerprint;
   var fpLocked = data.fingerprintLocked;
@@ -14665,6 +14672,7 @@ function plRenderPrices() {
 }
 
 function startCheckout(planName) {
+  if (window.plTrack) window.plTrack('checkout_initiated', { plan: planName || 'unknown' });
   if(typeof posthog!=='undefined')posthog.capture('checkout_started',{plan:planName});
   var key = planName + '_' + (_plBilling === 'annual' ? 'annual' : 'monthly');
   var priceId = PL_PRICE_IDS[key] || '';
@@ -14720,7 +14728,7 @@ var PL_LIKED_KEY = 'pl_liked_episodes';
 var PL_PLAYLISTS_KEY = 'pl_playlists';
 
 function _getLiked() { try { return JSON.parse(localStorage.getItem(PL_LIKED_KEY)||'[]'); } catch(e){ return []; } }
-function _setLiked(arr) { localStorage.setItem(PL_LIKED_KEY, JSON.stringify(arr)); syncToServer('liked_episodes', arr); }
+function _setLiked(arr) { if (window.plTrack) window.plTrack('episode_liked', { count: arr.length }); localStorage.setItem(PL_LIKED_KEY, JSON.stringify(arr)); syncToServer('liked_episodes', arr); }
 function _getPlaylists() { try { return JSON.parse(localStorage.getItem(PL_PLAYLISTS_KEY)||'[]'); } catch(e){ return []; } }
 function _setPlaylists(arr) { localStorage.setItem(PL_PLAYLISTS_KEY, JSON.stringify(arr)); syncToServer('playlists', arr); }
 
@@ -15993,6 +16001,7 @@ function startSpotifyImport() {
 }
 
 function heroConnectSpotify() {
+  if (window.plTrack) window.plTrack('spotify_connect_clicked', { source: 'hero' });
   var u = plUser();
   if (!u) { openModal('signup'); return; }
   // If already connected, trigger disconnect flow instead
@@ -17063,6 +17072,94 @@ function addAppleShows() {
   window.addEventListener('pl-spotify-synced', function() {
     _libraryDataCache = null;
     setTimeout(_maybeRenderLibraryPanels, 100);
+  });
+})();
+</script>
+<script>
+(function() {
+  var SESSION_KEY = 'pl_session_id';
+  var sessionId;
+  try {
+    sessionId = localStorage.getItem(SESSION_KEY);
+    if (!sessionId) {
+      sessionId = 'sess_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem(SESSION_KEY, sessionId);
+    }
+  } catch(e) {
+    sessionId = 'sess_' + Date.now().toString(36);
+  }
+
+  var initialUtm = (function() {
+    var p = new URLSearchParams(window.location.search);
+    var utm = {};
+    ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function(k) {
+      var v = p.get(k);
+      if (v) utm[k] = v;
+    });
+    return utm;
+  })();
+
+  var initialReferrer = '';
+  try {
+    initialReferrer = document.referrer || '';
+    if (initialReferrer.indexOf(window.location.host) !== -1) initialReferrer = '';
+  } catch(e) {}
+
+  window.plTrack = function(eventType, properties) {
+    try {
+      var u = (typeof plUser === 'function') ? plUser() : null;
+      var payload = {
+        event_type: eventType,
+        user_id: u && u.id ? u.id : null,
+        session_id: sessionId,
+        tier: u && u.plan ? u.plan : null,
+        properties: Object.assign({}, properties || {}, {
+          path: window.location.pathname + window.location.hash,
+          referrer: initialReferrer,
+          utm: Object.keys(initialUtm).length ? initialUtm : undefined,
+        }),
+      };
+      fetch('/api/log-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true,
+      }).catch(function() {});
+    } catch(e) {}
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() { window.plTrack('app_loaded', {}); }, 200);
+  });
+
+  var lastView = null;
+  function _trackViewChange() {
+    var hash = window.location.hash.replace(/^#/, '') || 'home';
+    var view = hash.split('/')[0] || hash.split('?')[0] || 'home';
+    if (view === lastView) return;
+    lastView = view;
+    window.plTrack('view_visited', { view: view });
+    if (view === 'library') window.plTrack('library_viewed', {});
+    if (view === 'pricing' || view === 'upgrade') window.plTrack('pricing_viewed', {});
+  }
+  window.addEventListener('hashchange', _trackViewChange);
+  setTimeout(_trackViewChange, 500);
+
+  document.addEventListener('click', function(e) {
+    var t = e.target;
+    if (!t) return;
+    var showLink = t.closest && t.closest('[data-show-slug], [onclick*="loadShowProfile"]');
+    if (showLink) {
+      var slug = showLink.dataset && showLink.dataset.showSlug || '';
+      if (!slug) {
+        var oc = showLink.getAttribute('onclick') || '';
+        var m = oc.match(/loadShowProfile\(['"]([^'"]+)['"]/);
+        if (m) slug = m[1];
+      }
+      if (slug) {
+        setTimeout(function() { window.plTrack('show_profile_viewed', { slug: slug }); }, 300);
+      }
+    }
   });
 })();
 </script>

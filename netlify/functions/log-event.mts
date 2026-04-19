@@ -5,12 +5,21 @@ import { trackEvent } from "./lib/supabase.js";
 // Rate-limited by Netlify; no auth required (events are non-sensitive)
 
 const ALLOWED_EVENTS = new Set([
-  'analysis_started', 'analysis_completed',
-  'player_started', 'spotify_connected', 'youtube_connected', 'apple_connected',
-  'share_created', 'share_viewed',
-  'pdf_downloaded', 'csv_exported',
-  'upgrade_modal_shown', 'upgrade_clicked', 'feature_gate_hit',
-  'live_analysis_started', 'page_view',
+  // Lifecycle
+  'app_loaded', 'view_visited', 'signup_started', 'signup_completed',
+  // Activation
+  'analysis_initiated', 'analysis_completed',
+  'spotify_connect_clicked', 'spotify_library_imported',
+  'library_viewed', 'show_profile_viewed',
+  // Conversion
+  'pricing_viewed', 'checkout_initiated',
+  // Engagement
+  'episode_liked', 'show_followed', 'share_clicked',
+  // Legacy (keep working — still called by older code)
+  'analysis_started', 'player_started', 'spotify_connected',
+  'youtube_connected', 'apple_connected', 'share_created', 'share_viewed',
+  'pdf_downloaded', 'csv_exported', 'upgrade_modal_shown',
+  'upgrade_clicked', 'feature_gate_hit', 'live_analysis_started', 'page_view',
 ]);
 
 export default async (req: Request) => {
@@ -21,7 +30,7 @@ export default async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { event_type, user_id, properties = {}, region, tier, source } = body;
+    const { event_type, user_id, session_id, properties = {}, region, tier, source } = body;
 
     if (!event_type || !ALLOWED_EVENTS.has(event_type)) {
       return new Response(JSON.stringify({ error: 'Invalid event type' }), {
@@ -29,7 +38,7 @@ export default async (req: Request) => {
       });
     }
 
-    trackEvent(user_id, event_type, properties, { region, tierAtTime: tier, source: source || 'web' });
+    trackEvent(user_id, event_type, properties, { region, tierAtTime: tier, source: source || 'web', sessionId: session_id });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

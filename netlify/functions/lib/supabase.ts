@@ -77,10 +77,11 @@ export function trackEvent(
   userId: string | null | undefined,
   eventType: string,
   properties: Record<string, unknown> = {},
-  extra: { region?: string; tierAtTime?: string; source?: string } = {}
+  extra: { region?: string; tierAtTime?: string; source?: string; sessionId?: string | null } = {}
 ): void {
   sbInsert('events', {
     user_id: userId || null,
+    session_id: extra.sessionId || null,
     event_type: eventType,
     properties,
     region: extra.region || null,
