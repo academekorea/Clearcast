@@ -7682,14 +7682,29 @@ function showView(name) {
     setTimeout(function() {
       if (typeof window.renderFollowing === 'function') window.renderFollowing();
     }, 200);
-    // Patch switchTab to also call Supabase renderer for Following
+    // Patch switchTab: for the three unified tabs, skip the localStorage-based
+    // internal renderers entirely and use Supabase renderers directly. This
+    // eliminates the brief flash of legacy data that used to appear.
+    // For 'library' overview and 'playlists', delegate to the original
+    // (library-view.js) which still owns those panels.
     var _origSwitchTab = window.switchTab;
+    var _unifiedTabs = { following: 'renderFollowing', liked: 'renderLiked', analyzed: 'renderAnalyzed' };
     window.switchTab = function(tab) {
-      if (_origSwitchTab) _origSwitchTab(tab);
-      if (tab === 'following') {
-        setTimeout(function() {
-          if (typeof window.renderFollowing === 'function') window.renderFollowing();
-        }, 100);
+      var supabaseFn = _unifiedTabs[tab];
+      var hasSupabase = supabaseFn && typeof window[supabaseFn] === 'function' && window[supabaseFn]._isSupabasePowered;
+
+      if (hasSupabase) {
+        // Unified tab with Supabase renderer available — skip legacy, use Supabase only.
+        // Still need to do panel show/hide + sidebar sync that original switchTab handles.
+        document.querySelectorAll('#view-library .lib-panel').forEach(function(p) {
+          p.classList.toggle('active', p.id === 'panel-' + tab);
+        });
+        if (window.sidebarSetActive) window.sidebarSetActive(tab);
+        window[supabaseFn]();
+      } else {
+        // Not a unified tab (library overview, playlists) OR Supabase renderer missing.
+        // Fall back to legacy behavior.
+        if (_origSwitchTab) _origSwitchTab(tab);
       }
     };
   }
@@ -17216,6 +17231,7 @@ function addAppleShows() {
       '</div>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px">' + cards + '</div>';
   };
+  window.renderFollowing._isSupabasePowered = true;
 
   window.renderLiked = async function() {
     var el = document.getElementById('liked-content');
@@ -17249,6 +17265,7 @@ function addAppleShows() {
       '</div>' +
       '<div style="display:flex;flex-direction:column;gap:10px">' + rows + '</div>';
   };
+  window.renderLiked._isSupabasePowered = true;
 
   window.renderAnalyzed = async function() {
     var el = document.getElementById('analyzed-content');
@@ -17283,6 +17300,7 @@ function addAppleShows() {
       '</div>' +
       '<div style="display:flex;flex-direction:column;gap:10px">' + rows + '</div>';
   };
+  window.renderAnalyzed._isSupabasePowered = true;
 
   function _maybeRenderLibraryPanels() {
     var libView = document.getElementById('view-library');
