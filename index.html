@@ -6833,6 +6833,7 @@ function toggleFollowShow(name, feedUrl, artwork, btn) {
     // Remove from Supabase
     safeFetch('/api/follow-show', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: u.id, action: 'unfollow', showName: name, feedUrl: feedUrl || '' }) }).catch(function(){});
+    try { if (typeof window._plInvalidateLibraryCache === 'function') window._plInvalidateLibraryCache(); } catch(e){}
   } else {
     followed.push({ name: name, feedUrl: feedUrl || '', artwork: artwork || '', addedAt: new Date().toISOString() });
     u.followedShows = followed;
@@ -6843,6 +6844,7 @@ function toggleFollowShow(name, feedUrl, artwork, btn) {
     // Save to Supabase
     safeFetch('/api/follow-show', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: u.id, action: 'follow', showName: name, feedUrl: feedUrl || '', artwork: artwork || '' }) }).catch(function(){});
+    try { if (typeof window._plInvalidateLibraryCache === 'function') window._plInvalidateLibraryCache(); } catch(e){}
   }
   // Refresh ALL follow buttons on the page for this show
   document.querySelectorAll('[data-follow-name]').forEach(function(b) {
@@ -12050,19 +12052,28 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
         var epScore = isAnalyzed ? ((isAnalyzed.audioLean&&isAnalyzed.audioLean.score!=null)?isAnalyzed.audioLean.score:(isAnalyzed.biasScore!=null?isAnalyzed.biasScore:null)) : null;
         var safeEpUrl = _escHtml((ep.url||feedUrl||'').replace(/"/g,'&quot;'));
         var epRightHtml;
+        // Build heart data for BOTH analyzed and unanalyzed episodes so hearts work everywhere
+        var epLikeData = {
+          jobId: isAnalyzed ? (isAnalyzed.jobId || '') : '',
+          title: epTitle || '',
+          showName: displayName || '',
+          artwork: artwork || '',
+          url: ep.url || feedUrl || ''
+        };
+        var epLikeCall = '_spHeartClick(this, ' + JSON.stringify(JSON.stringify(epLikeData)) + ')';
+        // Check if this episode is already liked (match by jobId for analyzed, title+show for unanalyzed)
+        var isThisEpLiked = false;
+        if (isAnalyzed && likedJobIds[isAnalyzed.jobId]) {
+          isThisEpLiked = true;
+        } else if (typeof isLiked === 'function') {
+          try { isThisEpLiked = isLiked({ title: epTitle, showName: displayName, url: ep.url || feedUrl }); } catch(e) {}
+        }
+
         if (isAnalyzed) {
-          var epLikeData = {
-            jobId: isAnalyzed.jobId || '',
-            title: epTitle || '',
-            showName: displayName || '',
-            artwork: artwork || '',
-            url: ep.url || feedUrl || ''
-          };
-          var epLikeCall = '_spHeartClick(this, ' + JSON.stringify(JSON.stringify(epLikeData)) + ')';
-          epRightHtml = _spHeart(likedJobIds[isAnalyzed.jobId]||false, epLikeCall)
-            + (epScore!=null ? _spBiasPill(epScore) : '');
+          epRightHtml = _spHeart(isThisEpLiked, epLikeCall)
+            + (epScore != null ? _spBiasPill(epScore) : '');
         } else {
-          epRightHtml = _spHeart(false, '')
+          epRightHtml = _spHeart(isThisEpLiked, epLikeCall)
             + '<button class="sp-new-analyze-link" onclick="goAnalyze(\''+safeEpUrl+'\')">Analyze &#8594;</button>';
         }
         rows += '<div class="sp-new-ep-row">'
@@ -15190,6 +15201,7 @@ function toggleLike(ep, btnEl) {
         artworkUrl: shape.artwork, biasLabel: shape.biasLabel,
       }),
     }).catch(function(){});
+    try { if (typeof window._plInvalidateLibraryCache === 'function') window._plInvalidateLibraryCache(); } catch(e){}
   } else {
     // UNLIKE — optimistic localStorage + async Supabase tombstone
     var removed = liked[idx];
@@ -15207,6 +15219,7 @@ function toggleLike(ep, btnEl) {
         episodeUrl: removed.url || '', jobId: removed.jobId || '',
       }),
     }).catch(function(){});
+    try { if (typeof window._plInvalidateLibraryCache === 'function') window._plInvalidateLibraryCache(); } catch(e){}
   }
 }
 
@@ -17412,6 +17425,21 @@ function addAppleShows() {
       setTimeout(_maybeRenderLibraryPanels, 100);
     }
   });
+
+  window._plInvalidateLibraryCache = function() {
+    _libraryDataCache = null;
+    _libraryFetchPromise = null;
+    setTimeout(function() {
+      // Re-render whichever library tab is currently visible
+      if (typeof _maybeRenderLibraryPanels === 'function') {
+        _maybeRenderLibraryPanels();
+      } else {
+        if (typeof window.renderFollowing === 'function') window.renderFollowing();
+        if (typeof window.renderLiked === 'function') window.renderLiked();
+        if (typeof window.renderAnalyzed === 'function') window.renderAnalyzed();
+      }
+    }, 50);
+  };
 
   window.addEventListener('pl-spotify-synced', function() {
     _libraryDataCache = null;

@@ -22,6 +22,20 @@ function bestImage(images?: Array<{ url: string; width?: number; height?: number
   return images[0].url; // fallback to first
 }
 
+// Spotify's /me/shows endpoint returns audiobooks alongside podcasts.
+// Their API does NOT reliably distinguish them — both return type='show'
+// and media_type='audio'. The one consistent signal: audiobook descriptions
+// always begin with "Author(s):" (verified against live Spotify API data).
+function _isSpotifyAudiobook(show: any): boolean {
+  if (!show) return false;
+  const desc = String(show.description || "").trim();
+  // Primary: "Author(s):" at start of description
+  if (/^Author\(s\):/i.test(desc)) return true;
+  // Secondary: description contains both Author(s) and Narrator(s) markers
+  if (/Author\(s\):/i.test(desc) && /Narrator\(s\):/i.test(desc)) return true;
+  return false;
+}
+
 interface SpotifyEpisode {
   id: string;
   name: string;
@@ -74,7 +88,7 @@ export default async (req: Request) => {
     if (showsRes.status === "fulfilled" && showsRes.value.ok) {
       const data = await showsRes.value.json();
       for (const item of (data.items || [])) {
-        if (item.show && item.show.media_type !== 'audiobook') followedShows.push(item.show);
+        if (item.show && !_isSpotifyAudiobook(item.show)) followedShows.push(item.show);
       }
     } else if (showsRes.status === "fulfilled" && showsRes.value.status === 401) {
       return json({ error: "Spotify token expired", needsReconnect: true }, 401);

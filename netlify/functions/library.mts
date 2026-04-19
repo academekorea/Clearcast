@@ -33,6 +33,7 @@ export default async (req: Request) => {
           shows:show_id ( slug, name, artwork_url, publisher, host_name )
         `)
         .eq("user_id", userId)
+        .is("unfollowed_at", null)
         .order("followed_at", { ascending: false })
         .limit(100),
 
@@ -53,6 +54,7 @@ export default async (req: Request) => {
           shows:show_id ( slug )
         `)
         .eq("user_id", userId)
+        .is("unliked_at", null)
         .order("saved_at", { ascending: false })
         .limit(100),
 
