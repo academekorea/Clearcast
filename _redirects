@@ -1,3 +1,36 @@
-/api/* /.netlify/functions/:splat 200
-/auth/* /.netlify/functions/:splat 200
-/* /index.html 200
+# ── API + Auth → Netlify Functions ──
+/api/*                    /.netlify/functions/:splat  200
+/auth/spotify/callback    /.netlify/functions/auth-spotify-callback  200
+/auth/google/callback     /.netlify/functions/google-callback  200
+/auth/*                   /.netlify/functions/:splat  200
+
+# ── Static pages ──
+/contact      /contact.html      200
+/faq          /faq.html          200
+/mission      /mission.html      200
+/privacy      /privacy.html      200
+/terms        /terms.html        200
+/about        /about.html        200
+/extension    /extension.html    200
+/bulk-scan    /bulk-scan.html    200
+/methodology  /methodology.html  200
+
+# ── SPA routes → index.html ──
+/pricing      /index.html  200
+/how-it-works /index.html  200
+/library      /index.html  200
+/account      /index.html  200
+/profile      /index.html  200
+/settings     /index.html  200
+/discover     /index.html  200
+/analyze      /index.html  200
+/admin        /index.html  200
+/dashboard    /index.html  200
+/dashboard/*  /index.html  200
+/show/*       /index.html  200
+
+# ── Analysis deep links (edge function handles meta) ──
+/analysis/*   /analysis.html  200
+
+# ── Catch-all (must be last) ──
+/*            /index.html  200
