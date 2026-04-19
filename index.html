@@ -7592,10 +7592,19 @@ function showView(name) {
   if (name === 'library' && typeof initLibraryView === 'function') {
     initLibraryView(window._pendingLibTab); window._pendingLibTab = null;
     // Supplement with Supabase data for Following (Spotify imports only in Supabase)
-    // Don't override Analyzed/Liked if API returns empty — localStorage may have data
     setTimeout(function() {
       if (typeof window.renderFollowing === 'function') window.renderFollowing();
     }, 200);
+    // Patch switchTab to also call Supabase renderer for Following
+    var _origSwitchTab = window.switchTab;
+    window.switchTab = function(tab) {
+      if (_origSwitchTab) _origSwitchTab(tab);
+      if (tab === 'following') {
+        setTimeout(function() {
+          if (typeof window.renderFollowing === 'function') window.renderFollowing();
+        }, 100);
+      }
+    };
   }
   if (name === 'pricing' && typeof initPricingView === 'function') initPricingView();
   if (name === 'profile') {
