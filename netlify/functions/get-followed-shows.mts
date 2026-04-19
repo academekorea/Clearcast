@@ -17,7 +17,7 @@ export default async (req: Request) => {
 
     const { data, error } = await sb
       .from("followed_shows")
-      .select("show_name, feed_url, artwork_url, platform, spotify_url, youtube_channel_id, created_at")
+      .select("show_name, feed_url, artwork, artwork_url, platform, spotify_url, youtube_channel_id, created_at")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -29,7 +29,7 @@ export default async (req: Request) => {
     const shows = (data || []).map((row: any) => ({
       name: row.show_name,
       feedUrl: row.feed_url,
-      artwork: row.artwork_url,
+      artwork: row.artwork_url || row.artwork,
       platform: row.platform || "manual",
       spotifyUrl: row.spotify_url || null,
       youtubeChannelId: row.youtube_channel_id || null,
