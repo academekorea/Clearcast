@@ -306,32 +306,109 @@ export default async (req: Request) => {
         break;
       }
 
-      // ── Payment succeeded (clear grace period) ─────────────────────────────
+      // ── Payment succeeded (clear grace + sync renewal state) ───────────────
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
         const customerId = invoice.customer as string;
         if (!customerId) break;
 
-        // Clear in Supabase
+        // Pull renewal-relevant fields from invoice payload.
+        // Stripe nests subscription metadata under invoice.parent.subscription_details
+        // (not at top-level invoice.metadata, which is empty for renewal invoices).
+        const billingReason = invoice.billing_reason || ''; // 'subscription_cycle', 'subscription_update', etc.
+        const parent = (invoice as any).parent || {};
+        const subDetails = parent.subscription_details || {};
+        const subMetadata = subDetails.metadata || {};
+        const userId = subMetadata.userId || null;
+        const planName = subMetadata.planName || null;
+        const subId = subDetails.subscription || null;
+
+        // current_period_end lives in the line items (Unix timestamp seconds)
+        const lineItem = invoice.lines?.data?.[0] as any;
+        const newPeriodEnd = lineItem?.period?.end
+          ? new Date(lineItem.period.end * 1000).toISOString()
+          : null;
+        const newPeriodStart = lineItem?.period?.start
+          ? new Date(lineItem.period.start * 1000).toISOString()
+          : null;
+
+        // Always clear grace period (existing behavior)
         if (sb) {
           try {
             await sb.from('users')
-              .update({ payment_grace_until: null })
+              .update({
+                payment_grace_until: null,
+                last_seen_at: new Date().toISOString(),
+              })
               .eq('stripe_customer_id', customerId);
-          } catch(e) { console.warn('[stripe-webhook] clear grace failed:', e); }
+          } catch (e: any) {
+            console.error(`[stripe-webhook] clear grace FAILED for customer ${customerId}:`, e?.message || e);
+          }
+        }
 
-          // Find userId to clear Blobs too
+        // For renewals + plan changes (NOT initial creates — checkout.session.completed
+        // already handles those), sync the renewal state.
+        const isRenewal = billingReason === 'subscription_cycle' ||
+                          billingReason === 'subscription_update';
+
+        if (isRenewal && sb && userId && subId) {
+          // Update users table with current state (defensive — in case plan changed)
+          if (planName) {
+            try {
+              await sbUpdate('users', { id: userId }, {
+                plan: planName,
+                tier: planName,
+                stripe_customer_id: customerId,
+                stripe_subscription_id: subId,
+              });
+            } catch (e: any) {
+              console.error(`[stripe-webhook] renewal users update FAILED for user ${userId}:`, e?.message || e);
+            }
+          }
+
+          // Update subscriptions table with new period_end (the critical bit)
+          if (newPeriodEnd) {
+            try {
+              await sbUpsert('subscriptions', {
+                user_id: userId,
+                stripe_customer_id: customerId,
+                stripe_subscription_id: subId,
+                plan: planName || 'creator',
+                status: 'active',
+                current_period_start: newPeriodStart,
+                current_period_end: newPeriodEnd,
+                updated_at: new Date().toISOString(),
+              }, 'stripe_subscription_id');
+            } catch (e: any) {
+              console.error(`[stripe-webhook] renewal subscriptions upsert FAILED for sub ${subId}:`, e?.message || e);
+            }
+          }
+
+          // Track the renewal event (helps with MRR/retention analytics later)
+          trackEvent(userId, 'subscription_renewed', {
+            sub_id: subId,
+            plan: planName || 'unknown',
+            period_end: newPeriodEnd,
+            billing_reason: billingReason,
+          });
+        }
+
+        // Clear Blobs grace flag too (legacy path — keep for backward compat)
+        if (sb) {
           let userData: any = null;
           try {
             const res = await sb.from('users')
               .select('id').eq('stripe_customer_id', customerId).single();
             userData = res.data;
-          } catch(e) { /* user not found */ }
+          } catch (e) { /* user not found */ }
           if (userData?.id) {
             const existing = await store.get(`user-plan-${userData.id}`, { type: "json" }).catch(() => null) as any;
             if (existing) {
               store.setJSON(`user-plan-${userData.id}`, {
-                ...existing, paymentGraceUntil: null, updatedAt: Date.now(),
+                ...existing,
+                paymentGraceUntil: null,
+                ...(newPeriodEnd ? { currentPeriodEnd: newPeriodEnd } : {}),
+                updatedAt: Date.now(),
               }).catch(() => {});
             }
           }
