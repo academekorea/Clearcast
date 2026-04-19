@@ -6,6 +6,8 @@
 <title>Podlens — A force of clarity in the age of noise</title>
 <!-- AUTH STATE: runs before body renders — signed-in users never see marketing page -->
 <style>
+  /* Ensure text is visible while web fonts load */
+  body { font-display: swap; }
   /* Hide logged-out content instantly for signed-in users — prevents flash on hard refresh */
   html.pl-signed-in .show-logged-out,
   html.pl-signed-in #nav-logged-out { display: none !important; }
@@ -280,7 +282,8 @@
 <meta name="twitter:image" content="https://podlens.app/og-image.png">
 <meta name="theme-color" content="#0A0F1E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -291,9 +294,9 @@
      To re-enable: set KOREAN_MARKET_ENABLED = true in the block below. -->
 <link rel="alternate" hreflang="x-default" href="https://podlens.app">
 <link rel="stylesheet" media="print" href="/print.css">
-<script src="/js/utils.js"></script>
-<script src="/js/bias-bar.js"></script>
-<script src="/js/v7-render.js?v=10"></script>
+<script src="/js/utils.js" defer></script>
+<script src="/js/bias-bar.js" defer></script>
+<script src="/js/v7-render.js?v=10" defer></script>
 <script>
 
 var KOREAN_MARKET_ENABLED = false;
@@ -3493,7 +3496,7 @@ footer.site-footer {padding:60px 24px 32px;border-top:1px solid var(--border);ba
 </style>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 <!-- Sentry error tracking (async, never blocks render) -->
-<script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" crossorigin="anonymous" defer></script>
 <script>
 if (typeof Sentry !== 'undefined') {
   Sentry.init({
@@ -15027,8 +15030,8 @@ function addToPlaylist(ep) {
 
 // ── LOAD SPA VIEW SCRIPTS (must be before init so functions are defined) ──
 </script>
-<script src="/sidebar.js"></script>
-<script src="/library-view.js"></script>
+<script src="/sidebar.js" defer></script>
+<script src="/library-view.js" defer></script>
 <script>
 // ── AUTO INIT ──
 // Set auth state synchronously before any render logic runs.
