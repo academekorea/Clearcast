@@ -5223,6 +5223,7 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
       <button class="adm-tab" onclick="adminTab('funnel',this)">Funnel</button>
       <button class="adm-tab" onclick="adminTab('shows',this)">Shows</button>
       <button class="adm-tab" onclick="adminTab('events',this)">Events</button>
+      <button class="adm-tab" onclick="adminTab('analytics',this)">Analytics</button>
       <button class="adm-tab adm-tab-danger" onclick="adminTab('controls',this)">Controls</button>
     </div>
 
@@ -16360,6 +16361,98 @@ function _renderAdminTab(tab, d) {
     });
     html += '</tbody></table>';
     html += '<div style="font-size:12px;color:var(--text3);margin-top:8px">' + d.total + ' total events</div>';
+  }
+
+  else if (tab === 'analytics') {
+    var f = d.funnel || {};
+    var tta = d.time_to_activation || {};
+    var sar = d.second_analysis_rate || {};
+    var conv = d.conversion || {};
+    var aconv = d.activation_conversion || {};
+    var sc = d.spotify_cohort || {};
+    var nsc = d.no_spotify_cohort || {};
+    var ld = d.library_depth || {};
+    var hc = d.health_check || {};
+    function _planDisplayName(internal) { var map = { creator: 'Starter Lens', operator: 'Pro Lens', studio: 'Operator Lens', free: 'Free' }; return map[internal] || internal; }
+    function _statCard(label, value, sub) { return '<div style="background:var(--bg2);padding:14px 16px;border-radius:8px;flex:1;min-width:140px"><div style="font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">'+label+'</div><div style="font-size:20px;font-weight:700">'+value+'</div>'+(sub?'<div style="font-size:11px;color:var(--text3);margin-top:2px">'+sub+'</div>':'')+'</div>'; }
+    function _section(title) { return '<div style="font-size:14px;font-weight:600;margin:24px 0 12px;color:var(--text);border-top:1px solid var(--border);padding-top:18px">'+title+'</div>'; }
+
+    html += '<div style="background:'+(hc.events_last_5_min>0?'#dcfce7':'#fef3c7')+';padding:10px 14px;border-radius:6px;font-size:12px;margin-bottom:20px">'+(hc.events_last_5_min>0?'\u2713 ':'\u26A0 ')+'<b>Tracking is '+(hc.events_last_5_min>0?'live':'idle')+'</b> \u2014 '+hc.events_last_5_min+' events in last 5 min from '+hc.unique_sessions_last_5_min+' sessions</div>';
+
+    html += _section('Conversion funnel (last 30 days)');
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
+    html += _statCard('Visited', f.visited||0); html += _statCard('Tried analysis', f.tried_analysis||0, (f.pct_tried||0)+'% of visited'); html += _statCard('Completed', f.completed_analysis||0, (f.pct_completed_of_tried||0)+'% of tried'); html += _statCard('Started signup', f.started_signup||0); html += _statCard('Completed signup', f.completed_signup||0, (f.pct_signup_completion||0)+'% completion');
+    html += '</div>';
+
+    html += _section('Time to first value');
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
+    html += _statCard('Median (sec)', tta.median_seconds||0, tta.median_seconds<60?'Excellent':tta.median_seconds<180?'OK':'Slow'); html += _statCard('p90 (sec)', tta.p90_seconds||0); html += _statCard('Activated sessions', tta.sessions_who_activated||0);
+    html += '</div>';
+
+    html += _section('Habit signal');
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
+    html += _statCard('1st analysis users', sar.users_with_first||0); html += _statCard('2nd analysis users', sar.users_with_second||0); html += _statCard('Second-analysis rate', (sar.second_analysis_rate_pct||0)+'%', sar.second_analysis_rate_pct>=50?'Excellent':sar.second_analysis_rate_pct>=30?'Good':sar.second_analysis_rate_pct>=15?'Curiosity tool':'Critical'); html += _statCard('Median hours between', sar.median_hours_between||0);
+    html += '</div>';
+
+    html += _section('Free \u2192 paid conversion');
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
+    html += _statCard('Total signups', conv.total_signups||0); html += _statCard('Paid users', conv.converted_to_paid||0, (conv.conversion_pct||0)+'% conversion'); html += _statCard('Activated \u2192 Paid', (aconv.activated_to_paid_pct||0)+'%', aconv.paid_users+' of '+aconv.activated_users); html += _statCard('Starter Lens', conv.on_starter_lens||0); html += _statCard('Pro Lens', conv.on_pro_lens||0); html += _statCard('Operator Lens', conv.on_operator_lens||0);
+    html += '</div>';
+
+    html += _section('Library depth (saved episodes table)');
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
+    html += _statCard('Total saves', ld.total_saves||0); html += _statCard('From Spotify', ld.saves_from_spotify||0); html += _statCard('From Podlens', ld.saves_from_podlens||0); html += _statCard('Users with saves', ld.users_with_saves||0);
+    html += '</div>';
+    html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">';
+    html += _statCard('Spotify cohort: avg saves', ld.spotify_cohort_avg_saves||0, ld.spotify_cohort_users+' users'); html += _statCard('No-Spotify cohort: avg saves', ld.non_spotify_cohort_avg_saves||0, ld.non_spotify_cohort_users+' users');
+    html += '</div>';
+
+    html += _section('Spotify cohort engagement (events-based)');
+    html += '<table class="adm-table"><thead><tr><th>Cohort</th><th>Users</th><th>Avg analyses</th><th>Avg likes</th><th>Avg show views</th></tr></thead><tbody>';
+    html += '<tr><td><b>Connected Spotify</b></td><td>'+sc.users+'</td><td>'+sc.avg_analyses+'</td><td>'+sc.avg_likes+'</td><td>'+sc.avg_show_views+'</td></tr>';
+    html += '<tr><td>No Spotify</td><td>'+nsc.users+'</td><td>'+nsc.avg_analyses+'</td><td>'+nsc.avg_likes+'</td><td>'+nsc.avg_show_views+'</td></tr>';
+    html += '</tbody></table>';
+
+    html += _section('Daily activity (last 14 days)');
+    html += '<table class="adm-table"><thead><tr><th>Day</th><th>Events</th><th>Sessions</th><th>Users</th><th>Visits</th><th>Signups</th><th>Analyses</th></tr></thead><tbody>';
+    (d.daily_activity||[]).forEach(function(r) { html += '<tr><td>'+r.day+'</td><td>'+r.total_events+'</td><td>'+r.unique_sessions+'</td><td>'+r.unique_users+'</td><td>'+r.visits+'</td><td>'+r.signups+'</td><td>'+r.analyses_done+'</td></tr>'; });
+    html += '</tbody></table>';
+
+    html += _section('Drop-off by funnel stage');
+    html += '<table class="adm-table"><thead><tr><th>Step</th><th>Stage</th><th>Reached</th><th>Progressed</th><th>% progressed</th></tr></thead><tbody>';
+    (d.drop_off||[]).forEach(function(r) { html += '<tr><td>'+r.step+'</td><td><code>'+r.stage+'</code></td><td>'+r.sessions_reached+'</td><td>'+r.sessions_progressed+'</td><td>'+(r.pct_progressed!==null?r.pct_progressed+'%':'\u2014')+'</td></tr>'; });
+    html += '</tbody></table>';
+
+    html += _section('Top conversion paths');
+    if (!(d.top_paths||[]).length) { html += '<div style="font-size:12px;color:var(--text3);padding:12px">No signup conversions yet.</div>'; }
+    else { html += '<table class="adm-table"><thead><tr><th>Event sequence</th><th>Sessions</th></tr></thead><tbody>'; d.top_paths.forEach(function(r) { html += '<tr><td style="font-size:11px;font-family:monospace">'+r.path+'</td><td>'+r.count+'</td></tr>'; }); html += '</tbody></table>'; }
+
+    html += _section('Traffic sources');
+    if (!(d.traffic_sources||[]).length) { html += '<div style="font-size:12px;color:var(--text3);padding:12px">No traffic sources yet.</div>'; }
+    else { html += '<table class="adm-table"><thead><tr><th>Source</th><th>UTM source</th><th>UTM campaign</th><th>Sessions</th><th>Signups</th><th>Conv %</th></tr></thead><tbody>'; d.traffic_sources.forEach(function(r) { html += '<tr><td style="font-size:11px">'+_esc(r.source)+'</td><td>'+_esc(r.utm_source)+'</td><td>'+_esc(r.utm_campaign)+'</td><td>'+r.sessions+'</td><td>'+r.signups+'</td><td>'+r.conversion_pct+'%</td></tr>'; }); html += '</tbody></table>'; }
+
+    html += _section('Retention by signup cohort');
+    if (!(d.retention||[]).length) { html += '<div style="font-size:12px;color:var(--text3);padding:12px">No signup data yet.</div>'; }
+    else { html += '<table class="adm-table"><thead><tr><th>Signup day</th><th>Signups</th><th>D1 %</th><th>D7 %</th><th>D30 %</th></tr></thead><tbody>'; d.retention.forEach(function(r) { html += '<tr><td>'+r.signup_day+'</td><td>'+r.signups+'</td><td>'+r.d1_pct+'%</td><td>'+r.d7_pct+'%</td><td>'+r.d30_pct+'%</td></tr>'; }); html += '</tbody></table>'; }
+
+    html += _section('Most-viewed shows');
+    if (!(d.top_shows||[]).length) { html += '<div style="font-size:12px;color:var(--text3);padding:12px">No show views yet.</div>'; }
+    else { html += '<table class="adm-table"><thead><tr><th>Show slug</th><th>Views</th><th>Users</th><th>Sessions</th></tr></thead><tbody>'; d.top_shows.forEach(function(r) { html += '<tr><td><code style="font-size:11px">'+_esc(r.slug)+'</code></td><td>'+r.views+'</td><td>'+r.unique_users+'</td><td>'+r.unique_sessions+'</td></tr>'; }); html += '</tbody></table>'; }
+
+    html += _section('Most-saved episodes');
+    if (!(d.top_saved_episodes||[]).length) { html += '<div style="font-size:12px;color:var(--text3);padding:12px">No saved episodes yet.</div>'; }
+    else { html += '<table class="adm-table"><thead><tr><th>Episode</th><th>Show</th><th>Saves</th><th>Users</th></tr></thead><tbody>'; d.top_saved_episodes.forEach(function(r) { html += '<tr><td style="font-size:11px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_esc(r.episode_title)+'</td><td style="font-size:11px;color:var(--text3)">'+_esc(r.show_name)+'</td><td>'+r.saves+'</td><td>'+r.unique_users+'</td></tr>'; }); html += '</tbody></table>'; }
+
+    html += _section('Frequency (analyses per user per week)');
+    if (!(d.frequency||[]).length) { html += '<div style="font-size:12px;color:var(--text3);padding:12px">No analyses yet.</div>'; }
+    else { html += '<table class="adm-table"><thead><tr><th>Week of</th><th>Active users</th><th>Avg analyses</th><th>Median</th><th>Power (5+)</th><th>One-time</th></tr></thead><tbody>'; d.frequency.forEach(function(r) { html += '<tr><td>'+r.week+'</td><td>'+r.active_users+'</td><td>'+r.avg_analyses+'</td><td>'+r.median_analyses+'</td><td>'+r.power_users_5plus+'</td><td>'+r.one_time_only+'</td></tr>'; }); html += '</tbody></table>'; }
+
+    html += _section('Hour-of-day activity (UTC, last 14 days)');
+    html += '<table class="adm-table"><thead><tr><th>Hour</th><th>Visits</th><th>Signups</th><th>Analyses</th></tr></thead><tbody>';
+    (d.hour_of_day||[]).forEach(function(r) { html += '<tr><td>'+(r.hour_utc<10?'0'+r.hour_utc:r.hour_utc)+':00</td><td>'+r.visits+'</td><td>'+r.signups+'</td><td>'+r.analyses+'</td></tr>'; });
+    html += '</tbody></table>';
+
+    html += '<div style="margin-top:24px;padding:14px;background:var(--bg2);border-radius:6px;font-size:11px;color:var(--text3);line-height:1.6">All data computed live from <code>events</code> + <code>saved_episodes</code> + <code>users</code> tables. Last 30 days unless noted. Most predictive signal: <b>Second-analysis rate</b>. Healthy benchmarks: Activation 40-70%, D1 retention 30-40%, Free\u2192Paid 2-5%, Time-to-value &lt;60s. Internal plan codes (creator/operator/studio) translated to display names.</div>';
   }
 
   else if (tab === 'controls') {
