@@ -11988,7 +11988,16 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
         var epScore = (r.audioLean&&r.audioLean.score!=null) ? r.audioLean.score : (r.biasScore!=null ? r.biasScore : null);
         var artEl = (r.artwork||artwork) ? '<img class="sp-new-ep-art sp-analyzed" src="'+_escHtml(r.artwork||artwork)+'" alt="" onerror="this.className=\'sp-new-ep-art sp-analyzed\';this.style.background=\'var(--bg3)\'">' : '<div class="sp-new-ep-art sp-analyzed"></div>';
         var isLiked = likedJobIds[r.jobId] || false;
-        var likeCall = 'toggleLike && toggleLike(\''+r.jobId+'\',\''+_escHtml((r.episodeTitle||r.title||'').replace(/'/g,"\\'"))+'\',\''+_escHtml(displayName.replace(/'/g,"\\'")+'\',\''+(r.artwork||artwork||'').replace(/'/g,"\\'"))+'\')'
+        // Serialize ep data into JSON that toggleLike can parse at click time.
+        // Avoids the malformed positional-args onclick pattern.
+        var likeEpData = {
+          jobId: r.jobId || '',
+          title: r.episodeTitle || r.title || '',
+          showName: displayName || '',
+          artwork: r.artwork || artwork || '',
+          url: r.audioUrl || r.url || ''
+        };
+        var likeCall = '_spHeartClick(this, ' + JSON.stringify(JSON.stringify(likeEpData)) + ')';
         analyzedEpsHtml += '<div class="sp-new-ep-row" data-bias-score="'+(epScore!=null?epScore:'')+'">'
           + artEl
           + '<div class="sp-new-ep-meta"><div class="sp-new-ep-title">'+_esc(r.episodeTitle||r.title||'Episode')+'</div>'
@@ -12040,11 +12049,22 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
         var artEl = artwork ? '<img class="'+artCls+'" src="'+_escHtml(artwork)+'" alt="" loading="lazy" onerror="this.style.background=\'var(--bg3)\'">' : '<div class="'+artCls+'"></div>';
         var epScore = isAnalyzed ? ((isAnalyzed.audioLean&&isAnalyzed.audioLean.score!=null)?isAnalyzed.audioLean.score:(isAnalyzed.biasScore!=null?isAnalyzed.biasScore:null)) : null;
         var safeEpUrl = _escHtml((ep.url||feedUrl||'').replace(/"/g,'&quot;'));
-        var epRightHtml = isAnalyzed
-          ? _spHeart(likedJobIds[isAnalyzed.jobId]||false, 'toggleLike && toggleLike(\''+isAnalyzed.jobId+'\',\''+_escHtml(epTitle.replace(/'/g,"\\'")+'\',\''+displayName.replace(/'/g,"\\'")+'\',\''+(artwork||'').replace(/'/g,"\\'"))+'\')')
-            + (epScore!=null ? _spBiasPill(epScore) : '')
-          : _spHeart(false, '')
+        var epRightHtml;
+        if (isAnalyzed) {
+          var epLikeData = {
+            jobId: isAnalyzed.jobId || '',
+            title: epTitle || '',
+            showName: displayName || '',
+            artwork: artwork || '',
+            url: ep.url || feedUrl || ''
+          };
+          var epLikeCall = '_spHeartClick(this, ' + JSON.stringify(JSON.stringify(epLikeData)) + ')';
+          epRightHtml = _spHeart(likedJobIds[isAnalyzed.jobId]||false, epLikeCall)
+            + (epScore!=null ? _spBiasPill(epScore) : '');
+        } else {
+          epRightHtml = _spHeart(false, '')
             + '<button class="sp-new-analyze-link" onclick="goAnalyze(\''+safeEpUrl+'\')">Analyze &#8594;</button>';
+        }
         rows += '<div class="sp-new-ep-row">'
           + artEl
           + '<div class="sp-new-ep-meta"><div class="sp-new-ep-title">'+_esc(epTitle)+'</div>'
@@ -15121,6 +15141,19 @@ function _upgradeShowLikeToLatestEpisode(feedUrl, showName, artwork) {
 function isLiked(ep) {
   var id = _epId(ep);
   return _getLiked().some(function(e){ return _epId(e)===id; });
+}
+
+// Handler for sp-new-heart buttons on show profile pages.
+// Parses JSON-encoded episode data from the onclick string and calls
+// toggleLike with a proper object. Replaces the malformed positional-arg
+// onclick pattern that silently failed to write to Supabase.
+function _spHeartClick(btnEl, jsonData) {
+  try {
+    var ep = JSON.parse(jsonData || '{}');
+    toggleLike(ep, btnEl);
+  } catch (e) {
+    console.error('[_spHeartClick] Failed to parse ep data:', e);
+  }
 }
 
 function toggleLike(ep, btnEl) {
