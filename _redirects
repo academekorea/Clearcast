@@ -1,9 +1,3 @@
-# ── API + Auth → Netlify Functions ──
-/api/*                    /.netlify/functions/:splat  200
-/auth/spotify/callback    /.netlify/functions/auth-spotify-callback  200
-/auth/google/callback     /.netlify/functions/google-callback  200
-/auth/*                   /.netlify/functions/:splat  200
-
 # ── Static pages ──
 /contact      /contact.html      200
 /faq          /faq.html          200
