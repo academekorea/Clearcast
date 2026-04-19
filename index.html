@@ -4216,12 +4216,12 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
             <button class="analyze-btn" onclick="handleDashAnalyzeB()">Analyze &rarr;</button>
           </div>
           <!-- Featured hero card (same as Discover) -->
-          <div class="disc-hero" id="dash-hero-card" style="margin:16px 0 24px;display:none">
+          <div class="disc-hero" id="dash-hero-card" style="margin:16px 0 24px">
             <div class="disc-hero-l">
               <div>
                 <div class="disc-hero-eye" id="dash-hero-eye">Featured episode</div>
-                <div class="disc-hero-title" id="dash-hero-title"></div>
-                <div class="disc-hero-host" id="dash-hero-host"></div>
+                <div class="disc-hero-title" id="dash-hero-title"><div class="skeleton-line" style="width:80%;height:18px"></div><div class="skeleton-line" style="width:50%;height:18px"></div></div>
+                <div class="disc-hero-host" id="dash-hero-host"><div class="skeleton-line" style="width:40%;height:12px"></div></div>
               </div>
               <div class="disc-hero-btns">
                 <button class="disc-hero-play" id="dash-hero-play-btn" onclick="discHeroPlay()">&#9654; Play</button>
@@ -6391,45 +6391,8 @@ function renderHomeState() {
     // Render all dashboard data
     renderDashRecent();
     renderBiasFingerprint();
-    // Populate dashboard hero card from live data
-    fetch('/api/trending-topics', { signal: AbortSignal.timeout(5000) })
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        var heroes = d.heroes || [];
-        var hero = heroes.find(function(h) { return h.category === 'all'; }) || heroes[0];
-        if (!hero) return;
-        var dur = hero.durationMinutes ? (hero.durationMinutes >= 60 ? Math.floor(hero.durationMinutes/60)+'h '+Math.round(hero.durationMinutes%60)+'m' : Math.round(hero.durationMinutes)+'m') : '';
-        var eyeEl = document.getElementById('dash-hero-eye');
-        var titleEl = document.getElementById('dash-hero-title');
-        var hostEl = document.getElementById('dash-hero-host');
-        var videoEl = document.getElementById('dash-hero-video');
-        var analyzeBtn = document.getElementById('dash-hero-analyze-btn');
-        if (eyeEl) eyeEl.textContent = 'Trending on Podlens';
-        if (titleEl) titleEl.textContent = hero.episodeTitle || '';
-        if (hostEl) hostEl.textContent = (hero.showName || '') + (dur ? ' \u00b7 ' + dur : '');
-        if (videoEl) {
-          if (hero.ytId) {
-            videoEl.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+hero.ytId+'?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
-          } else if (hero.showName) {
-            _itunesArtwork(hero.showName).then(function(url) {
-              if (url && videoEl) videoEl.innerHTML = '<img src="'+url+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
-            });
-          }
-        }
-        if (analyzeBtn) {
-          var safeUrl = (hero.url || '').replace(/'/g, "\\'");
-          var safeTitle = (hero.episodeTitle || '').replace(/'/g, "\\'");
-          var safeShow = (hero.showName || '').replace(/'/g, "\\'");
-          analyzeBtn.setAttribute('onclick', "analyzeEp(null,'"+safeUrl+"','"+safeTitle+"','"+safeShow+"',true)");
-        }
-        // Show the hero card
-        var heroCard = document.getElementById('dash-hero-card');
-        if (heroCard) heroCard.style.display = '';
-      }).catch(function() {
-        // Hide hero if no data
-        var heroCard = document.getElementById('dash-hero-card');
-        if (heroCard) heroCard.style.display = 'none';
-      });
+    // Populate dashboard hero card — prioritize user's own library
+    _renderDashHero(u);
   // Update echo chamber nudge in analysis results
   try {
     var _recentForEcho = getRecent ? getRecent().filter(function(r){ return r.leftPct !== undefined; }) : [];
@@ -6472,6 +6435,124 @@ function handleDashAnalyzeB() {
   if (mainInp) mainInp.value = url;
   showView('analyze');
   startAnalysis(url);
+}
+
+function _renderDashHero(u) {
+  var eyeEl = document.getElementById('dash-hero-eye');
+  var titleEl = document.getElementById('dash-hero-title');
+  var hostEl = document.getElementById('dash-hero-host');
+  var videoEl = document.getElementById('dash-hero-video');
+  var analyzeBtn = document.getElementById('dash-hero-analyze-btn');
+  var heroCard = document.getElementById('dash-hero-card');
+
+  function applyHero(label, title, showName, dur, url, artwork, ytId) {
+    if (eyeEl) eyeEl.textContent = label;
+    if (titleEl) titleEl.textContent = title;
+    if (hostEl) hostEl.textContent = showName + (dur ? ' \u00b7 ' + dur : '');
+    if (videoEl) {
+      if (ytId) {
+        videoEl.innerHTML = '<img src="https://img.youtube.com/vi/'+ytId+'/hqdefault.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:pointer" onclick="this.outerHTML=\'<iframe src=&quot;https://www.youtube-nocookie.com/embed/'+ytId+'?autoplay=1&rel=0&modestbranding=1&quot; allow=&quot;accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture&quot; allowfullscreen style=&quot;position:absolute;inset:0;width:100%;height:100%;border:none&quot;></iframe>\'">';
+      } else if (artwork) {
+        videoEl.innerHTML = '<img src="'+artwork+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
+      } else if (showName) {
+        _itunesArtwork(showName).then(function(artUrl) {
+          if (artUrl && videoEl) videoEl.innerHTML = '<img src="'+artUrl+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">';
+        });
+      }
+    }
+    if (analyzeBtn && url) {
+      var safeUrl = url.replace(/'/g, "\\'");
+      var safeTitle = title.replace(/'/g, "\\'");
+      var safeShow = showName.replace(/'/g, "\\'");
+      analyzeBtn.setAttribute('onclick', "analyzeEp(null,'"+safeUrl+"','"+safeTitle+"','"+safeShow+"',true)");
+    }
+    if (heroCard) heroCard.style.display = '';
+  }
+
+  function formatDur(mins) {
+    if (!mins) return '';
+    return mins >= 60 ? Math.floor(mins/60)+'h '+Math.round(mins%60)+'m' : Math.round(mins)+'m';
+  }
+
+  function ytIdFromUrl(url) {
+    var m = (url || '').match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  // Priority 1: Latest episode from followed shows (fetches feeds, rotates)
+  var follows = u.followedShows || [];
+  if (follows.length > 0) {
+    var feedShows = follows.filter(function(s) { return s.feedUrl || s.url; }).slice(0, 8);
+    if (feedShows.length > 0) {
+      var allEps = [];
+      var done = 0;
+      feedShows.forEach(function(s) {
+        var feedUrl = s.feedUrl || s.url || '';
+        var showName = s.showName || s.name || '';
+        var showArt = s.artwork || '';
+        fetch('/api/episodes?url=' + encodeURIComponent(feedUrl), { signal: AbortSignal.timeout(5000) })
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            var eps = (d.episodes || []).slice(0, 1);
+            eps.forEach(function(ep) {
+              allEps.push({ title: ep.title || '', showName: showName, artwork: showArt, feedUrl: feedUrl, date: ep.pubDate || ep.datePublished || '', audioUrl: ep.enclosureUrl || ep.audioUrl || '' });
+            });
+          })
+          .catch(function() {})
+          .finally(function() {
+            done++;
+            if (done >= feedShows.length) {
+              if (allEps.length === 0) { _dashHeroFallback(u, applyHero, formatDur, ytIdFromUrl); return; }
+              // Sort by date, pick from top 5 newest using hour-based rotation
+              allEps.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+              var top = allEps.slice(0, Math.min(5, allEps.length));
+              var rotateIdx = Math.floor(Date.now() / 3600000) % top.length; // rotates every hour
+              var ep = top[rotateIdx];
+              var ytId = ytIdFromUrl(ep.audioUrl);
+              applyHero('New from your shows', ep.title, ep.showName, '', ep.audioUrl || ep.feedUrl || '', ep.artwork || '', ytId);
+            }
+          });
+      });
+      return;
+    }
+  }
+
+  _dashHeroFallback(u, applyHero, formatDur, ytIdFromUrl);
+}
+
+function _dashHeroFallback(u, applyHero, formatDur, ytIdFromUrl) {
+  var heroCard = document.getElementById('dash-hero-card');
+
+  // Fallback 1: Most recent activity — liked or analyzed, whichever is newer
+  var liked = (typeof _getLiked === 'function') ? _getLiked() : [];
+  var recent = getRecent();
+  var lastLiked = liked.length > 0 ? liked[0] : null;
+  var lastAnalyzed = recent.length > 0 ? recent[0] : null;
+  var likedTime = lastLiked ? (lastLiked.likedAt || 0) : 0;
+  var analyzedTime = lastAnalyzed ? (new Date(lastAnalyzed.analyzedAt || lastAnalyzed.date || 0).getTime() || 0) : 0;
+
+  if (lastLiked && likedTime >= analyzedTime) {
+    var ytId = ytIdFromUrl(lastLiked.url);
+    applyHero('Continue listening', lastLiked.title || lastLiked.showName || 'Episode', lastLiked.showName || '', '', lastLiked.url || '', lastLiked.artwork || '', ytId);
+    return;
+  }
+  if (lastAnalyzed) {
+    var ytId = ytIdFromUrl(lastAnalyzed.url);
+    applyHero('Recently analyzed', lastAnalyzed.title || lastAnalyzed.showName || 'Episode', lastAnalyzed.showName || '', formatDur(lastAnalyzed.duration_minutes), lastAnalyzed.url || '', lastAnalyzed.artwork || '', ytId);
+    return;
+  }
+
+  // Fallback 2: Platform trending
+  fetch('/api/trending-topics', { signal: AbortSignal.timeout(5000) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var heroes = d.heroes || [];
+      var hero = heroes.find(function(h) { return h.category === 'all'; }) || heroes[0];
+      if (!hero) { if (heroCard) heroCard.style.display = 'none'; return; }
+      applyHero('Trending on Podlens', hero.episodeTitle || '', hero.showName || '', formatDur(hero.durationMinutes), hero.url || '', hero.artwork || '', hero.ytId || null);
+    }).catch(function() {
+      if (heroCard) heroCard.style.display = 'none';
+    });
 }
 
 async function loadDashTrending() {
@@ -15039,7 +15120,7 @@ function addToPlaylist(ep) {
 
 // ── LOAD SPA VIEW SCRIPTS (must be before init so functions are defined) ──
 </script>
-<script src="/sidebar.js" defer></script>
+<script src="/sidebar.js"></script>
 <script src="/library-view.js" defer></script>
 <script>
 // ── AUTO INIT ──
