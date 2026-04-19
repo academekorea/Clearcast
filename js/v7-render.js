@@ -754,7 +754,7 @@ function renderSkeletonDashboard(audioUrl, epTitle, showName) {
     var lbl = document.getElementById('results-share-label');
     if (bar) {
       bar.style.display = 'flex';
-      if (lbl) lbl.textContent = (data.showName || '') + (data.episodeTitle ? ' — ' + (data.episodeTitle).substring(0, 60) : '');
+      if (lbl) lbl.textContent = (showName || '') + (epTitle ? ' — ' + (epTitle).substring(0, 60) : '');
     }
   })();
 
