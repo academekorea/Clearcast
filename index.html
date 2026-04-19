@@ -16712,7 +16712,7 @@ function _admRunBackup() {
   var statusEl = document.getElementById('adm-backup-status');
   if (!confirm('Run a manual backup now? This exports all tables to Supabase Storage.')) return;
   if (statusEl) statusEl.textContent = '⏳ Backup running… (may take 30-60 seconds)';
-  fetch('/api/weekly-backup', { method: 'POST', headers: _admAdminHeaders(u) })
+  fetch('/api/run-backup?email=' + encodeURIComponent(u.email), { method: 'POST', headers: _admAdminHeaders(u) })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (statusEl) statusEl.textContent = d.ok ? '✓ Backup complete: ' + JSON.stringify(d.summary || {}) : '✗ Error: ' + (d.error || 'unknown');
