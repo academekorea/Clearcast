@@ -7187,26 +7187,18 @@ var TOPICS = ['Israel-Gaza','Iran war','Fed rates','AI regulation','Trump tariff
 
 
 // ── ITUNES ARTWORK HELPER — picks best match, not just first result ──────────
+var _itunesArtCache = {};
 function _itunesArtwork(showName) {
-  // iTunes blocks client-side CORS — return null; artwork should be pre-populated
-  return Promise.resolve(null);
-  /* disabled: direct iTunes fetch blocked by CORS
-  return fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(showName) + '&media=podcast&entity=podcast&limit=5')
+  if (!showName) return Promise.resolve(null);
+  var key = showName.toLowerCase();
+  if (_itunesArtCache[key] !== undefined) return Promise.resolve(_itunesArtCache[key]);
+  return fetch('/api/artwork-lookup?q=' + encodeURIComponent(showName), { signal: AbortSignal.timeout(5000) })
     .then(function(r) { return r.json(); })
     .then(function(d) {
-      var results = d.results || [];
-      if (!results.length) return null;
-      var nameLower = showName.toLowerCase();
-      // Prefer exact or close match
-      var best = results.find(function(r) {
-        return r.collectionName && r.collectionName.toLowerCase() === nameLower;
-      }) || results.find(function(r) {
-        return r.collectionName && r.collectionName.toLowerCase().includes(nameLower);
-      }) || results[0];
-      return (best && (best.artworkUrl600 || best.artworkUrl100)) || null;
+      _itunesArtCache[key] = d.url || null;
+      return d.url || null;
     })
-    .catch(function() { return null; });
-  */
+    .catch(function() { _itunesArtCache[key] = null; return null; });
 }
 
 // ── BIAS SCORES: hard-coded from community analysis (refreshed quarterly) ──────
