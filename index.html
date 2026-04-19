@@ -11577,6 +11577,16 @@ async function loadShowProfile(slug,compareSlug,exactName) {
   var el=document.getElementById('sp-content');
   el.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3);font-size:12px"><div class="feed-spin" style="margin:0 auto 12px"></div>Loading show intelligence&hellip;</div>';
   try {
+    // If no feed URL / exactName provided, try CURATED_SHOWS lookup by slug
+    if (!exactName && (!compareSlug || compareSlug.indexOf('http') !== 0)) {
+      var _curatedMatch = CURATED_SHOWS.find(function(s) {
+        return s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') === slug;
+      });
+      if (_curatedMatch) {
+        if (!exactName) exactName = _curatedMatch.name;
+        if (!compareSlug) compareSlug = _curatedMatch.feedUrl || null;
+      }
+    }
     var data=await fetch('/api/show-profile?id='+encodeURIComponent(slug)).then(function(r){return r.json();});
     // Enrich with real iTunes metadata — prefer exact name over slug.
     // If we only have the slug, un-slugify it (dashes → spaces) so iTunes
@@ -11611,7 +11621,7 @@ async function fetchItunesMeta(showName) {
       var wa=new Set(nl.split(' ').filter(Boolean)), wb=new Set(name.split(' ').filter(Boolean));
       var overlap=0; wa.forEach(function(w){if(wb.has(w))overlap++;});
       var score=overlap/Math.max(wa.size,wb.size,1);
-      if (score>bestScore){bestScore=score;best=r;}
+      if (score>bestScore||(score===bestScore&&(r.trackCount||0)>(best.trackCount||0))){bestScore=score;best=r;}
     });
     // Collect similar shows — exclude self by collectionId AND name, deduplicate by collectionId
     var bestNameNorm=(best.collectionName||'').toLowerCase().replace(/[^a-z0-9 ]/g,'');
