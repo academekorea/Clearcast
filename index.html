@@ -11859,14 +11859,38 @@ function renderShowProfile(data,slug,compareSlug,itunes,rss) {
       + '</div>'
       + '</div>';
 
-    // ── BIAS STRIP ────────────────────────────────────────────────────────────
+    // ── BIAS STRIP — red/gray/blue segmented bar matching Discover cards ──
+    var _spLp, _spCp, _spRp, _spBiasLabel;
+    if (biasScore < -5) {
+      _spLp = Math.round(30 + Math.abs(biasScore) * 0.45);
+      _spRp = Math.max(5, Math.round(20 - Math.abs(biasScore) * 0.15));
+      _spCp = Math.max(5, 100 - _spLp - _spRp);
+    } else if (biasScore > 5) {
+      _spRp = Math.round(30 + biasScore * 0.45);
+      _spLp = Math.max(5, Math.round(20 - biasScore * 0.15));
+      _spCp = Math.max(5, 100 - _spLp - _spRp);
+    } else {
+      _spLp = 20; _spCp = 60; _spRp = 20;
+    }
+    var _spDiff = Math.abs(_spLp - _spRp);
+    if (_spDiff < 20) _spBiasLabel = 'Mostly balanced';
+    else if (_spDiff < 40) _spBiasLabel = _spLp > _spRp ? 'Leans left' : 'Leans right';
+    else if (_spDiff < 60) _spBiasLabel = _spLp > _spRp ? 'Moderately left' : 'Moderately right';
+    else _spBiasLabel = _spLp > _spRp ? 'Heavily left' : 'Heavily right';
+    if (m.biasLabel) _spBiasLabel = m.biasLabel;
+    var _spPillColor = _spDiff < 20 ? '#2a7a4a' : _spDiff < 40 ? '#b45309' : '#c0392b';
+
     html += '<div class="sp-bias-strip" id="'+spId+'-strip" onclick="var p=document.getElementById(\''+spId+'-intel\');var l=document.getElementById(\''+spId+'-strip-lbl\');var open=p.style.display===\'block\';p.style.display=open?\'none\':\'block\';l.textContent=open?\'View intelligence \u2193\':\'Collapse \u2191\'">'
       + '<span class="sp-new-sec" style="margin:0;flex-shrink:0">Bias</span>'
-      + '<div class="sp-bias-track">'
-      + '<div style="position:absolute;left:50%;top:-1px;transform:translateX(-50%);width:1px;height:9px;background:var(--border2)"></div>'
-      + '<div class="sp-bias-dot" style="left:'+biasDotLeft+';background:'+biasColor+'"></div>'
+      + '<div style="flex:1;display:flex;flex-direction:column;gap:6px">'
+      + '<div style="height:6px;border-radius:3px;overflow:hidden;display:flex">'
+      + '<div style="width:'+_spLp+'%;background:#E24B4A"></div>'
+      + '<div style="width:'+_spCp+'%;background:#D1CFC9"></div>'
+      + '<div style="width:'+_spRp+'%;background:#378ADD"></div>'
       + '</div>'
-      + '<span style="font-size:13px;font-weight:600;color:'+biasColor+';flex-shrink:0;width:36px;text-align:right">'+biasNumDisplay+'</span>'
+      + '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3)"><span style="color:#E24B4A">'+_spLp+'% left</span><span>'+_spCp+'% center</span><span style="color:#378ADD">'+_spRp+'% right</span></div>'
+      + '</div>'
+      + '<span class="pl-bias-mini-pill" style="background:'+_spPillColor+'22;color:'+_spPillColor+';flex-shrink:0">'+_spBiasLabel+'</span>'
       + '<span id="'+spId+'-strip-lbl" style="font-size:10px;color:var(--text3);flex-shrink:0">View intelligence &#8595;</span>'
       + '</div>';
 
