@@ -4,6 +4,9 @@ import { sendEmail, preAnalysisReadyEmail } from "./lib/email.js";
 
 // Scheduled: every hour — check for new episodes on pre-analysis shows
 // Only runs for Operator+ users who enabled pre-analysis
+// TEMPORARILY DISABLED — re-enable when AssemblyAI budget allows
+export default async () => { console.log("[pre-analyze] Disabled to conserve AssemblyAI credits"); return; };
+/*
 
 const MAX_SHOWS_FREE = 0;
 const MAX_SHOWS_OPERATOR = 5;
@@ -306,6 +309,7 @@ export default async (req: Request) => {
   });
 };
 
+*/
 export const config: Config = {
   schedule: '0 * * * *',  // every hour
 };
