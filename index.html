@@ -7589,7 +7589,15 @@ function showView(name) {
   };
   document.title = titles[name] || 'Podlens';
   if (typeof sidebarSetActive === 'function') sidebarSetActive(name);
-  if (name === 'library' && typeof initLibraryView === 'function') { initLibraryView(window._pendingLibTab); window._pendingLibTab = null; }
+  if (name === 'library' && typeof initLibraryView === 'function') {
+    initLibraryView(window._pendingLibTab); window._pendingLibTab = null;
+    // Override with Supabase-backed data after old renderer runs
+    setTimeout(function() {
+      if (typeof window.renderFollowing === 'function') window.renderFollowing();
+      if (typeof window.renderLiked === 'function') window.renderLiked();
+      if (typeof window.renderAnalyzed === 'function') window.renderAnalyzed();
+    }, 200);
+  }
   if (name === 'pricing' && typeof initPricingView === 'function') initPricingView();
   if (name === 'profile') {
     if (typeof renderProfileView === 'function') setTimeout(renderProfileView, 50);
