@@ -258,8 +258,19 @@ async function modePersonalized(sb: any, userId: string): Promise<any> {
     }
   }
 
-  // 4. Rotate through candidates
+  // 4. Rank by combined recency + popularity, then rotate
   if (candidates.length) {
+    const now = Date.now();
+    candidates.sort((a: any, b: any) => {
+      // Score = analyze_count * recency_factor (episodes older than 14 days decay)
+      const ageA = (now - new Date(a.analyzed_at || 0).getTime()) / 86_400_000;
+      const ageB = (now - new Date(b.analyzed_at || 0).getTime()) / 86_400_000;
+      const recencyA = Math.max(0.2, 1 - ageA / 30);
+      const recencyB = Math.max(0.2, 1 - ageB / 30);
+      const scoreA = (a.analyze_count || 1) * recencyA;
+      const scoreB = (b.analyze_count || 1) * recencyB;
+      return scoreB - scoreA;
+    });
     const top = candidates.slice(0, Math.min(6, candidates.length));
     const rotateIdx = Math.floor(Date.now() / 3600000) % top.length;
     const best = top.find((r: any) => YT_RE.test(r.url || "")) || top[rotateIdx];
