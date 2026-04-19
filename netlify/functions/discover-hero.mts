@@ -96,7 +96,7 @@ async function modeCategory(sb: any, category: string): Promise<any> {
     .ilike("show_category", category)
     .not("bias_score", "is", null)
     .gte("analyzed_at", thirtyDaysAgo())
-    .order("analyze_count", { ascending: false })
+    .order("analyzed_at", { ascending: false })
     .limit(10);
 
   let rows = data || [];
@@ -108,14 +108,15 @@ async function modeCategory(sb: any, category: string): Promise<any> {
       .select("url, show_name, episode_title, bias_score, bias_label, analyze_count, analyzed_at, duration_minutes")
       .ilike("show_category", category)
       .not("bias_score", "is", null)
-      .order("analyze_count", { ascending: false })
+      .order("analyzed_at", { ascending: false })
       .limit(10);
     if (allTime && allTime.length > rows.length) rows = allTime;
   }
 
-  const best = pickBest(rows);
+  const cCandidates = rows.slice(0, Math.min(6, rows.length));
+  const cRotateIdx = cCandidates.length ? Math.floor(Date.now() / 3600000) % cCandidates.length : 0;
+  const best = cCandidates.length ? (cCandidates.find((r: any) => YT_RE.test(r.url || "")) || cCandidates[cRotateIdx]) : null;
   if (!best) {
-    // Fallback: search iTunes for top shows in this category
     const itunesShows = await searchItunes(category);
     return { hero: null, relatedShows: itunesShows.slice(0, 6) };
   }
@@ -137,7 +138,7 @@ async function modeTopic(sb: any, topic: string): Promise<any> {
     .select("url, show_name, episode_title, bias_score, bias_label, analyze_count, analyzed_at, duration_minutes, show_category")
     .or(`episode_title.ilike.%${safeTopic}%,show_name.ilike.%${safeTopic}%`)
     .not("bias_score", "is", null)
-    .order("analyze_count", { ascending: false })
+    .order("analyzed_at", { ascending: false })
     .limit(10);
 
   const rows = data || [];
@@ -179,77 +180,100 @@ async function modeTopic(sb: any, topic: string): Promise<any> {
 }
 
 async function modePersonalized(sb: any, userId: string): Promise<any> {
-  // 1. Get user interests
-  const { data: userData } = await sb
-    .from("users")
-    .select("interests")
-    .eq("id", userId)
-    .single();
+  // 1. Get user interests + analysis history categories
+  const [userRes, historyRes, followRes, userAnalyzedRes] = await Promise.all([
+    sb.from("users").select("interests").eq("id", userId).single(),
+    sb.from("analyses").select("show_category").eq("user_id", userId)
+      .not("show_category", "is", null).order("analyzed_at", { ascending: false }).limit(30),
+    sb.from("followed_shows").select("show_name").eq("user_id", userId)
+      .is("unfollowed_at", null),
+    sb.from("analyses").select("show_name, episode_title").eq("user_id", userId)
+      .order("analyzed_at", { ascending: false }).limit(50),
+  ]);
 
-  // 2. Get top category from analysis history
-  const { data: historyData } = await sb
-    .from("analyses")
-    .select("show_category")
-    .eq("user_id", userId)
-    .not("show_category", "is", null)
-    .order("analyzed_at", { ascending: false })
-    .limit(30);
+  // Build exclusion sets: shows user follows + episodes user has analyzed
+  const followedNames = new Set(
+    ((followRes.data || []) as any[]).map((f: any) => (f.show_name || "").toLowerCase()).filter(Boolean)
+  );
+  const analyzedKeys = new Set(
+    ((userAnalyzedRes.data || []) as any[]).map((a: any) =>
+      ((a.show_name || "") + "|" + (a.episode_title || "")).toLowerCase()
+    )
+  );
 
+  // Determine top interest categories from history + explicit interests
   const catCounts: Record<string, number> = {};
-  for (const row of (historyData || []) as any[]) {
+  for (const row of ((historyRes.data || []) as any[])) {
     const cat = (row.show_category || "").toLowerCase();
     if (cat) catCounts[cat] = (catCounts[cat] || 0) + 1;
   }
-  const topHistoryCat = Object.entries(catCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([k]) => k)[0];
+  const topCats = Object.entries(catCounts).sort((a, b) => b[1] - a[1]).map(([k]) => k);
+  const explicitInterests = ((userRes.data?.interests as string[] | null) || []).map((s: string) => s.toLowerCase());
+  const interestCats = [...new Set([...topCats, ...explicitInterests])].slice(0, 3);
 
-  // 3. Check followed shows for recent analyses
-  const { data: follows } = await sb
-    .from("followed_shows")
-    .select("show_name, artwork, feed_url")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-    .limit(12);
+  // 2. Find trending content the user HASN'T seen, filtered by their interests
+  let candidates: any[] = [];
 
-  const followedNames = ((follows || []) as any[]).map((f: any) => f.show_name).filter(Boolean);
+  if (interestCats.length) {
+    // Query recent analyses in user's interest categories, excluding their own
+    for (const cat of interestCats) {
+      if (candidates.length >= 10) break;
+      const { data } = await sb.from("analyses")
+        .select("url, show_name, episode_title, bias_score, bias_label, analyze_count, analyzed_at, duration_minutes, show_category")
+        .ilike("show_category", cat)
+        .not("bias_score", "is", null)
+        .gte("analyzed_at", thirtyDaysAgo())
+        .order("analyzed_at", { ascending: false })
+        .limit(15);
 
-  // 4. Try to find a hero from followed shows first
-  if (followedNames.length) {
-    const { data: followedEps } = await sb
-      .from("analyses")
+      for (const row of (data || []) as any[]) {
+        const nameLower = (row.show_name || "").toLowerCase();
+        const epKey = (nameLower + "|" + (row.episode_title || "")).toLowerCase();
+        // Exclude shows user follows and episodes user has analyzed
+        if (followedNames.has(nameLower)) continue;
+        if (analyzedKeys.has(epKey)) continue;
+        candidates.push(row);
+        if (candidates.length >= 10) break;
+      }
+    }
+  }
+
+  // 3. If not enough from interest categories, supplement with general trending (excluding seen)
+  if (candidates.length < 3) {
+    const { data } = await sb.from("analyses")
       .select("url, show_name, episode_title, bias_score, bias_label, analyze_count, analyzed_at, duration_minutes, show_category")
-      .in("show_name", followedNames)
       .not("bias_score", "is", null)
-      .order("analyze_count", { ascending: false })
-      .limit(5);
+      .gte("analyzed_at", thirtyDaysAgo())
+      .order("analyzed_at", { ascending: false })
+      .limit(20);
 
-    const best = pickBest(followedEps || []);
-    if (best) {
-      // Use followed show artwork if available
-      const followMatch = ((follows || []) as any[]).find(
-        (f: any) => f.show_name === best.show_name
-      );
-      best.artwork = followMatch?.artwork || await fetchArtwork(best.show_name);
-
-      const relatedShows = await buildRelatedFromFollows(follows || []);
-      return { hero: rowToHero(best, "From your shows"), relatedShows };
+    for (const row of (data || []) as any[]) {
+      const nameLower = (row.show_name || "").toLowerCase();
+      const epKey = (nameLower + "|" + (row.episode_title || "")).toLowerCase();
+      if (followedNames.has(nameLower)) continue;
+      if (analyzedKeys.has(epKey)) continue;
+      if (candidates.some((c: any) => c.url === row.url)) continue;
+      candidates.push(row);
+      if (candidates.length >= 10) break;
     }
   }
 
-  // 5. Try top interest category
-  const activeCat = topHistoryCat ||
-    ((userData?.interests as string[] | null) || [])[0]?.toLowerCase();
+  // 4. Rotate through candidates
+  if (candidates.length) {
+    const top = candidates.slice(0, Math.min(6, candidates.length));
+    const rotateIdx = Math.floor(Date.now() / 3600000) % top.length;
+    const best = top.find((r: any) => YT_RE.test(r.url || "")) || top[rotateIdx];
 
-  if (activeCat) {
-    const result = await modeCategory(sb, activeCat);
-    if (result.hero) {
-      result.hero.eye = "Based on your interests";
-      return result;
+    if (!best.artwork && !YT_RE.test(best.url || "")) {
+      best.artwork = await fetchArtwork(best.show_name);
     }
+
+    const relatedShows = await buildRelatedFromRows(candidates, best.show_name);
+    const eyeLabel = interestCats.length ? "You might like" : "Trending for you";
+    return { hero: rowToHero(best, eyeLabel), relatedShows };
   }
 
-  // 6. Fallback to trending
+  // 5. Fallback to trending (no exclusions)
   return modeTrending(sb);
 }
 
