@@ -42,12 +42,17 @@ export default async (req: Request) => {
     // List all blobs in the podlens-jobs store
     const { blobs } = await store.list();
 
+    const MAX_PROCESS = 50; // Process in batches to avoid timeout
+    let processed = 0;
+
     for (const blob of blobs) {
+      if (processed >= MAX_PROCESS) break;
       const key = blob.key;
       // Skip non-job entries (canon:, brief:, etc.)
       if (key.startsWith("canon:") || key.startsWith("brief:") || key.startsWith("legacy:")) {
         continue;
       }
+      processed++;
 
       try {
         const job = await store.get(key, { type: "json" }) as any;
@@ -137,7 +142,9 @@ export default async (req: Request) => {
     return json({
       migrated,
       skipped,
+      processed,
       totalBlobs: blobs.length,
+      hasMore: processed >= MAX_PROCESS,
       errors: errors.length > 0 ? errors.slice(0, 20) : undefined,
     });
   } catch (err: any) {
