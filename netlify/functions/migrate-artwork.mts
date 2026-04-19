@@ -31,7 +31,7 @@ export default async (req: Request) => {
   // Get all followed shows
   const { data: shows, error } = await sb
     .from("followed_shows")
-    .select("id, show_name, artwork, artwork_url");
+    .select("id, show_name, artwork");
 
   if (error || !shows) {
     return new Response(JSON.stringify({ error: error?.message || "No data" }), {
@@ -57,7 +57,7 @@ export default async (req: Request) => {
       if (cachedUrl) {
         const { error: upErr } = await sb
           .from("followed_shows")
-          .update({ artwork: cachedUrl, artwork_url: cachedUrl })
+          .update({ artwork: cachedUrl })
           .eq("id", show.id);
         if (!upErr) updated++;
         else failed++;
