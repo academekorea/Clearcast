@@ -6608,7 +6608,11 @@ function renderNewFromShows() {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">Follow shows on Discover to see new episodes here <a href="javascript:void(0)" onclick="showView(\'discover\');return false" style="color:var(--navy)">\u2192</a></div>';
     return;
   }
-  var shows = (u.followedShows || []).slice(0, 6);
+  var shows = (u.followedShows || []).filter(function(s) { return s.feedUrl || s.url; }).slice(0, 6);
+  if (!shows.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);font-size:13px">No podcast feeds available. Follow shows on Discover to see episodes here.</div>';
+    return;
+  }
   // Show placeholders while loading
   grid.innerHTML = shows.map(function(s) {
     var name = s.showName || s.name || '';

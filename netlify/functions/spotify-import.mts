@@ -9,6 +9,7 @@ interface SpotifyShow {
   description?: string;
   images?: Array<{ url: string; width?: number; height?: number }>;
   total_episodes?: number;
+  media_type?: string;
   external_urls?: { spotify?: string };
 }
 
@@ -73,7 +74,7 @@ export default async (req: Request) => {
     if (showsRes.status === "fulfilled" && showsRes.value.ok) {
       const data = await showsRes.value.json();
       for (const item of (data.items || [])) {
-        if (item.show) followedShows.push(item.show);
+        if (item.show && item.show.media_type !== 'audiobook') followedShows.push(item.show);
       }
     } else if (showsRes.status === "fulfilled" && showsRes.value.status === 401) {
       return json({ error: "Spotify token expired", needsReconnect: true }, 401);
