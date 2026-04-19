@@ -2,7 +2,7 @@ import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import { getSupabaseAdmin } from "./lib/supabase.js";
 
-const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour — matches hourly rotation
 const YT_RE = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
 function json(data: object, status = 200) {
@@ -63,10 +63,14 @@ async function modeTrending(sb: any): Promise<any> {
     .select("url, show_name, episode_title, bias_score, bias_label, analyze_count, analyzed_at, duration_minutes, show_category")
     .not("bias_score", "is", null)
     .gte("analyzed_at", thirtyDaysAgo())
-    .order("analyze_count", { ascending: false })
+    .order("analyzed_at", { ascending: false })
     .limit(20);
 
-  const best = pickBest(data || []);
+  // Rotate through top results using hour-based index instead of always picking #1
+  const rows = data || [];
+  const candidates = rows.slice(0, Math.min(8, rows.length));
+  const rotateIdx = candidates.length ? Math.floor(Date.now() / 3600000) % candidates.length : 0;
+  const best = candidates.length ? (candidates.find((r: any) => YT_RE.test(r.url || "")) || candidates[rotateIdx]) : null;
   if (!best) return { hero: null, relatedShows: [] };
 
   if (!best.artwork && !YT_RE.test(best.url || "")) {
@@ -203,7 +207,7 @@ async function modePersonalized(sb: any, userId: string): Promise<any> {
   // 3. Check followed shows for recent analyses
   const { data: follows } = await sb
     .from("followed_shows")
-    .select("show_name, artwork_url, feed_url")
+    .select("show_name, artwork, feed_url")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(12);
@@ -226,7 +230,7 @@ async function modePersonalized(sb: any, userId: string): Promise<any> {
       const followMatch = ((follows || []) as any[]).find(
         (f: any) => f.show_name === best.show_name
       );
-      best.artwork = followMatch?.artwork_url || await fetchArtwork(best.show_name);
+      best.artwork = followMatch?.artwork || await fetchArtwork(best.show_name);
 
       const relatedShows = await buildRelatedFromFollows(follows || []);
       return { hero: rowToHero(best, "From your shows"), relatedShows };
@@ -299,7 +303,7 @@ function buildRelatedFromFollows(follows: any[]): any[] {
   return (follows as any[]).slice(0, 6).map((f: any) => ({
     name: f.show_name || "",
     artist: f.show_name || "",
-    artwork: f.artwork_url || null,
+    artwork: f.artwork || null,
     feedUrl: f.feed_url || "",
   }));
 }
