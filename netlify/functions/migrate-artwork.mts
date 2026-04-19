@@ -98,12 +98,54 @@ export default async (req: Request) => {
     }
   }
 
+  // Also update the canonical shows table
+  let showsUpdated = 0;
+  const { data: canonShows } = await sb
+    .from("shows")
+    .select("id, name, artwork_url");
+
+  if (canonShows) {
+    for (const s of canonShows) {
+      if (!s.name) continue;
+      const cached = nameMap.get(s.name);
+      if (cached) {
+        const { error: upErr } = await sb
+          .from("shows")
+          .update({ artwork_url: cached })
+          .eq("id", s.id);
+        if (!upErr) showsUpdated++;
+      } else if (!nameMap.has(s.name)) {
+        // Not yet looked up — fetch now
+        try {
+          const res = await fetch(
+            `https://itunes.apple.com/search?term=${encodeURIComponent(s.name)}&media=podcast&limit=1`,
+            { signal: AbortSignal.timeout(8000) }
+          );
+          if (res.ok) {
+            const d = await res.json();
+            const artUrl = d.results?.[0]?.artworkUrl600 || "";
+            nameMap.set(s.name, artUrl);
+            if (artUrl) {
+              const { error: upErr } = await sb
+                .from("shows")
+                .update({ artwork_url: artUrl })
+                .eq("id", s.id);
+              if (!upErr) showsUpdated++;
+            }
+          }
+          await new Promise(r => setTimeout(r, 300));
+        } catch {}
+      }
+    }
+  }
+
   return new Response(JSON.stringify({
     ok: true,
     total: shows.length,
     updated,
     skipped,
     failed,
+    showsUpdated,
   }), {
     headers: { "Content-Type": "application/json" },
   });
