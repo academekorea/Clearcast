@@ -92,7 +92,7 @@ export default async (req: Request) => {
           : (planAmounts[planName] || 0);
 
         try {
-          const subUpsertResult = await sbUpsert('subscriptions', {
+          await sbUpsert('subscriptions', {
             user_id: userId,
             stripe_customer_id: customerId,
             stripe_subscription_id: subId,
@@ -106,26 +106,20 @@ export default async (req: Request) => {
             founding_discount: foundingApplied,
             updated_at: new Date().toISOString(),
           }, 'stripe_subscription_id');
-          if (!subUpsertResult) {
-            console.error(`[stripe-webhook] subscriptions upsert returned falsy for user ${userId}, sub ${subId}`);
-          }
         } catch (e: any) {
           console.error(`[stripe-webhook] subscriptions upsert FAILED for user ${userId}, sub ${subId}:`, e?.message || e);
         }
 
         // Supabase users table
         try {
-          const userUpdateResult = await sbUpdate('users', { id: userId }, {
-            plan: planName,                  // CRITICAL: was missing before
+          await sbUpdate('users', { id: userId }, {
+            plan: planName,
             tier: planName,
             stripe_customer_id: customerId,
             stripe_subscription_id: subId,
             payment_grace_until: null,
             last_seen_at: new Date().toISOString(),
           });
-          if (!userUpdateResult) {
-            console.error(`[stripe-webhook] users update returned falsy for user ${userId}, plan ${planName}`);
-          }
         } catch (e: any) {
           console.error(`[stripe-webhook] users update FAILED for user ${userId}:`, e?.message || e);
         }
