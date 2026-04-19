@@ -11587,7 +11587,9 @@ async function loadShowProfile(slug,compareSlug,exactName) {
         if (!compareSlug) compareSlug = _curatedMatch.feedUrl || null;
       }
     }
-    var data=await fetch('/api/show-profile?id='+encodeURIComponent(slug)).then(function(r){return r.json();});
+    var _u = (typeof plUser === 'function') ? plUser() : null;
+    var _uid = (_u && _u.id) ? '&userId=' + encodeURIComponent(_u.id) : '';
+    var data=await fetch('/api/show-profile?id='+encodeURIComponent(slug)+_uid).then(function(r){return r.json();});
     // Enrich with real iTunes metadata — prefer exact name over slug.
     // If we only have the slug, un-slugify it (dashes → spaces) so iTunes
     // search actually matches. "the-daily" searched as-is returns junk;
@@ -15118,20 +15120,56 @@ function isLiked(ep) {
 }
 
 function toggleLike(ep, btnEl) {
-  if (!plUser()) { openModal('signup'); return; }
+  var user = plUser();
+  if (!user) { openModal('signup'); return; }
   var liked = _getLiked();
   var id = _epId(ep);
   var idx = liked.findIndex ? liked.findIndex(function(e){return _epId(e)===id;}) : -1;
+
+  var shape = {
+    title: ep.title || ep.episodeTitle || 'Episode',
+    showName: ep.showName || ep.artist || '',
+    artwork: ep.artwork || '',
+    url: ep.url || ep.feedUrl || '',
+    jobId: ep.jobId || '',
+    biasLabel: ep.biasLabel || '',
+    likedAt: Date.now(),
+  };
+
   if (idx === -1) {
-    liked.unshift({ title:ep.title||ep.episodeTitle||'Episode', showName:ep.showName||ep.artist||'', artwork:ep.artwork||'', url:ep.url||ep.feedUrl||'', jobId:ep.jobId||'', biasLabel:ep.biasLabel||'', likedAt:Date.now() });
+    // LIKE — optimistic localStorage + async Supabase write
+    liked.unshift(shape);
     _setLiked(liked);
     if (btnEl) { btnEl.textContent='♥'; btnEl.style.color='#e24b4a'; }
     plToast('Added to Liked Episodes');
+    fetch('/api/toggle-like-episode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        userId: user.id, action: 'like',
+        episodeTitle: shape.title, showName: shape.showName,
+        episodeUrl: shape.url, jobId: shape.jobId,
+        artworkUrl: shape.artwork, biasLabel: shape.biasLabel,
+      }),
+    }).catch(function(){});
   } else {
-    liked.splice(idx,1);
+    // UNLIKE — optimistic localStorage + async Supabase tombstone
+    var removed = liked[idx];
+    liked.splice(idx, 1);
     _setLiked(liked);
     if (btnEl) { btnEl.textContent='♡'; btnEl.style.color=''; }
     plToast('Removed from Liked Episodes');
+    fetch('/api/toggle-like-episode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        userId: user.id, action: 'unlike',
+        episodeTitle: removed.title || '', showName: removed.showName || '',
+        episodeUrl: removed.url || '', jobId: removed.jobId || '',
+      }),
+    }).catch(function(){});
   }
 }
 
@@ -17432,6 +17470,70 @@ function addAppleShows() {
       }
     }
   });
+})();
+
+(function _plSyncLibrarySetup() {
+  // Sync followed shows + liked episodes from Supabase into plUser().followedShows
+  // + localStorage likes. Runs once per user per page load. Makes Spotify-imported
+  // follows + Supabase-stored likes visible across the UI.
+  async function _plSyncLibraryState() {
+    try {
+      var u = (typeof plUser === 'function') ? plUser() : null;
+      if (!u || !u.id) return;
+      // De-dupe per tab session
+      if (window._plLibSynced === u.id) return;
+      window._plLibSynced = u.id;
+
+      var res = await fetch('/api/sync-library-state?userId=' + encodeURIComponent(u.id));
+      if (!res.ok) return;
+      var data = await res.json();
+      if (!data || !data.ok) return;
+
+      // Merge followed shows into plUser().followedShows
+      if (Array.isArray(data.followedShows)) {
+        u.followedShows = data.followedShows;
+        if (typeof setPlUser === 'function') setPlUser(u);
+      }
+
+      // Replace localStorage likes with Supabase truth
+      if (Array.isArray(data.likedEpisodes)) {
+        try {
+          var merged = data.likedEpisodes.map(function(e) {
+            return {
+              title: e.title, showName: e.showName, artwork: e.artwork, url: e.url,
+              jobId: '', biasLabel: '', likedAt: e.likedAt, _source: e.savedSource,
+            };
+          });
+          localStorage.setItem('pl_liked_episodes', JSON.stringify(merged));
+        } catch(e) {}
+      }
+
+      // Refresh visible UI: follow buttons + library panels
+      try {
+        document.querySelectorAll('[data-follow-name]').forEach(function(b) {
+          var n = (b.dataset.followName || '').trim().toLowerCase();
+          if (!n) return;
+          var isFollowing = (u.followedShows || []).some(function(s) {
+            return (s.name || '').trim().toLowerCase() === n;
+          });
+          b.textContent = isFollowing ? '\u2713 Following' : '+ Follow';
+        });
+        if (typeof window.renderFollowing === 'function') window.renderFollowing();
+        if (typeof window.renderLiked === 'function') window.renderLiked();
+      } catch(e) {}
+    } catch(e) {
+      console.warn('[pl-sync] library-state sync failed:', e);
+    }
+  }
+
+  window.plSyncLibraryState = _plSyncLibraryState;
+
+  // Run on page load (after DOMContentLoaded + small delay for plUser to be available)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(_plSyncLibraryState, 800); });
+  } else {
+    setTimeout(_plSyncLibraryState, 800);
+  }
 })();
 </script>
 </body>

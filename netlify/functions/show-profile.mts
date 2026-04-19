@@ -56,6 +56,7 @@ async function fetchYouTubeChannelData(channelId: string): Promise<{
 export default async (req: Request) => {
   const url = new URL(req.url);
   const slug = url.searchParams.get("id") || url.searchParams.get("slug") || "";
+  const userId = url.searchParams.get("userId") || "";
 
   if (!slug) {
     return new Response(JSON.stringify({ error: "Show ID required" }), {
@@ -213,8 +214,39 @@ export default async (req: Request) => {
       if (youtubeChannel) youtubeChannel.channelId = ytChannelMatch[1];
     }
 
+    // Compute per-user state if authenticated
+    let userState: any = { isFollowing: false, followedAt: null, likedCount: 0 };
+    if (userId) {
+      try {
+        const sbUser = getSupabaseAdmin();
+        if (sbUser && show && show.name) {
+          const showNameLower = String(show.name).toLowerCase();
+          const { data: followRows } = await sbUser.from("followed_shows")
+            .select("followed_at, show_name")
+            .eq("user_id", userId)
+            .is("unfollowed_at", null);
+          const followMatch = (followRows || []).find((f: any) =>
+            (f.show_name || "").toLowerCase() === showNameLower
+          );
+          const { data: likedRows } = await sbUser.from("saved_episodes")
+            .select("id")
+            .eq("user_id", userId)
+            .ilike("show_name", show.name)
+            .is("unliked_at", null);
+          userState = {
+            isFollowing: !!followMatch,
+            followedAt: followMatch?.followed_at || null,
+            likedCount: (likedRows || []).length,
+          };
+        }
+      } catch {
+        // Non-fatal — defaults already in userState
+      }
+    }
+
     return new Response(JSON.stringify({
       show,
+      userState,
       episodeCount: completed.length,
       youtubeChannel,
       metrics: {
