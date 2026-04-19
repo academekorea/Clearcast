@@ -7655,7 +7655,7 @@ function showView(name) {
   // Hide footer when in non-home views (except show)
   var footer = document.getElementById('site-footer');
   var _footerAuth = !!(plUser() && plUser().id);
-  var _showFooter = (name === 'home' || name === 'show' || name === 'how-it-works' || name === 'pricing') || (!_footerAuth && (name === 'discover' || name === 'analyze'));
+  var _showFooter = !_footerAuth && (name === 'home' || name === 'show' || name === 'how-it-works' || name === 'pricing' || name === 'discover' || name === 'analyze');
   if (footer) footer.classList.toggle('footer-visible', _showFooter);
   // Banner only shows on home when logged out
   var isHome = (name === 'home');
