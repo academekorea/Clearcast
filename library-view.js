@@ -451,7 +451,9 @@
 
   // Expose so index.html's async "show → latest episode" upgrade can refresh
   // the panel after the like entry is rewritten with real episode data.
-  window.renderLiked = renderLiked;
+  if (!window.renderLiked || !window.renderLiked._isSupabasePowered) {
+    window.renderLiked = renderLiked;
+  }
 
   /* Playlists */
   function renderPlaylists() {
