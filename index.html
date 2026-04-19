@@ -8114,16 +8114,27 @@ function _renderLiveEpisodes(el, episodes) {
   el.innerHTML = episodes.map(function(ep, i) {
     var showName = ep.showName || ep.show_name || '';
     var epTitle = ep.episodeTitle || ep.episode_title || showName;
+    var epUrl = ep.url || ep.source_url || '';
     var slug = showName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     var safeName = showName.replace(/"/g,'').replace(/'/g,'');
+    var safeTitle = epTitle.replace(/"/g,'').replace(/'/g,'');
+    var safeUrl = epUrl.replace(/'/g,"\\'").replace(/"/g,'&quot;');
     var biasLabel = ep.biasLabel || ep.bias_label || '';
     var biasPill = biasLabel ? '<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);margin-left:6px">'+biasLabel+'</span>' : '';
     var artId = 'disc-live-art-' + i;
-    return '<div class="disc-ep-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
-      +'<div class="disc-ep-art" id="'+artId+'" style="background:'+bgs[i % 3]+'"></div>'
-      +'<div class="disc-ep-body"><div class="disc-ep-show">'+showName+'</div>'
+    var likeEp = {url:epUrl,title:epTitle,showName:showName};
+    var liked = isLiked(likeEp);
+    var heartColor = liked ? '#e24b4a' : 'rgba(255,255,255,.5)';
+    var heartChar = liked ? '♥' : '♡';
+    return '<div class="disc-ep-card">'
+      +'<div class="disc-ep-art" id="'+artId+'" style="background:'+bgs[i % 3]+';position:relative" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')">'
+      +'<button class="ep-like-btn" data-kind="episode" data-url="'+safeUrl+'" data-title="'+safeTitle+'" data-artist="'+safeName+'" onclick="event.stopPropagation();_likeFromBtn(this)" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.4);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;line-height:1;color:'+heartColor+';display:flex;align-items:center;justify-content:center">'+heartChar+'</button>'
+      +'</div>'
+      +'<div class="disc-ep-body" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',null,\''+safeName+'\')" style="cursor:pointer"><div class="disc-ep-show">'+showName+'</div>'
       +'<div class="disc-ep-title">'+epTitle+'</div>'
-      +'<div class="disc-ep-dur">Recently analyzed'+biasPill+'</div></div></div>';
+      +'<div class="disc-ep-dur">'+(biasLabel ? biasLabel + biasPill : 'Recently analyzed')+'</div></div>'
+      +(epUrl && !biasLabel ? '<button class="disc-analyze-btn" onclick="event.stopPropagation();analyzeEp(null,\''+safeUrl+'\',\''+safeTitle+'\',\''+safeName+'\',true)" style="flex-shrink:0;padding:5px 10px;background:var(--navy);color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--ff);align-self:center">Analyze</button>' : '')
+      +'</div>';
   }).join('');
   // Lazy-load artwork from iTunes
   episodes.forEach(function(ep, i) {
@@ -8132,7 +8143,11 @@ function _renderLiveEpisodes(el, episodes) {
     _itunesArtwork(name).then(function(url) {
       if (!url) return;
       var artEl = document.getElementById('disc-live-art-' + i);
-      if (artEl) artEl.innerHTML = '<img src="'+url+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">';
+      if (artEl) {
+        var btn = artEl.querySelector('.ep-like-btn');
+        var btnHtml = btn ? btn.outerHTML : '';
+        artEl.innerHTML = '<img src="'+url+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">' + btnHtml;
+      }
     });
   });
   addScrollDrag(el);
@@ -8967,12 +8982,14 @@ function discLoadLiveShows(cat) {
             var artHtml = s.artwork
               ? '<img class="disc-show-art" src="' + s.artwork + '" alt="" onerror="this.parentElement.innerHTML=\'<div class=disc-show-art></div>\'">'
               : '<div class="disc-show-art"></div>';
-            return '<div class="disc-show-card">'
+            var slug = safeName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+            var safeArt = (s.artwork || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            return '<div class="disc-show-card" onclick="showView(\'show\');loadShowProfile(\''+slug+'\',\''+safeUrl+'\',\''+safeName+'\')">'
               + artHtml
               + '<div class="disc-show-name">' + safeName + '</div>'
               + '<div class="disc-show-sub">' + (s.artist || '') + '</div>'
-              + '<div style="font-size:10px;color:var(--text3);margin:4px 0 0">Not yet analyzed</div>'
-              + '<button onclick="event.stopPropagation();analyzeEp(null,\'' + safeUrl + '\',\'\',\'' + safeName + '\',true)" style="margin-top:auto;width:100%;padding:7px 6px;background:var(--navy);color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--ff)">Analyze</button>'
+              + '<div style="font-size:10px;color:var(--text3);margin:4px 0 0">Not enough data yet</div>'
+              + '<button data-follow-name="'+safeName+'" onclick="event.stopPropagation();toggleFollowShow(\''+safeName+'\',\''+safeUrl+'\',\''+safeArt+'\',this)" style="margin-top:auto;width:100%;padding:8px 6px 6px;background:none;border:0.5px solid var(--border2);border-radius:5px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--ff)">'+(_isFollowingShow(s.name)?'✓ Following':'+ Follow')+'</button>'
               + '</div>';
           }).join('')
         + '</div>';
