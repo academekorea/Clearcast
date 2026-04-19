@@ -16853,5 +16853,199 @@ function addAppleShows() {
   // now triggers disconnect via plUpdateCrossPlatformConnectUI.
 })();
 </script>
+<script>
+(function() {
+  var _libraryDataCache = null;
+  var _libraryFetchPromise = null;
+
+  function _fetchLibraryData(forceFresh) {
+    if (_libraryFetchPromise && !forceFresh) return _libraryFetchPromise;
+    if (_libraryDataCache && !forceFresh) return Promise.resolve(_libraryDataCache);
+    var u = (typeof plUser === 'function') ? plUser() : null;
+    if (!u || !u.id) return Promise.resolve(null);
+    _libraryFetchPromise = fetch('/api/library?userId=' + encodeURIComponent(u.id))
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(d) {
+        _libraryDataCache = d;
+        _libraryFetchPromise = null;
+        return d;
+      })
+      .catch(function() {
+        _libraryFetchPromise = null;
+        return null;
+      });
+    return _libraryFetchPromise;
+  }
+
+  function _esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function _timeAgo(iso) {
+    if (!iso) return '';
+    var diffMs = Date.now() - new Date(iso).getTime();
+    if (isNaN(diffMs)) return '';
+    var mins = Math.round(diffMs / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + 'm ago';
+    var hrs = Math.round(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    var days = Math.round(hrs / 24);
+    if (days < 30) return days + 'd ago';
+    var months = Math.round(days / 30);
+    return months + 'mo ago';
+  }
+
+  function _platformBadge(platform) {
+    var p = (platform || '').toLowerCase();
+    var color = p === 'spotify' ? '#1DB954' : p === 'youtube' ? '#FF0000' : p === 'apple' ? '#FC3C44' : '#86868b';
+    var label = p === 'spotify' ? 'Spotify' : p === 'youtube' ? 'YouTube' : p === 'apple' ? 'Apple' : 'RSS';
+    return '<span style="display:inline-block;font-size:9px;padding:2px 6px;background:' + color + '22;color:' + color + ';border-radius:4px;font-weight:500;letter-spacing:.02em">' + label + '</span>';
+  }
+
+  function _biasBar(bs) {
+    if (bs == null) return '';
+    var pct = Math.max(0, Math.min(100, bs));
+    var col = bs < 40 ? '#378ADD' : bs > 60 ? '#E24B4A' : '#86868b';
+    return '<div style="height:3px;width:40px;background:rgba(0,0,0,0.08);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px"><div style="height:100%;width:' + pct + '%;background:' + col + '"></div></div>';
+  }
+
+  window.renderFollowing = async function() {
+    var el = document.getElementById('following-content');
+    if (!el) return;
+    el.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text3);font-size:13px">Loading your shows&hellip;</div>';
+
+    var data = await _fetchLibraryData();
+    if (!data || !data.followed) {
+      el.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text3);font-size:13px">Couldn\'t load your shows. Try refreshing.</div>';
+      return;
+    }
+
+    if (data.followed.length === 0) {
+      el.innerHTML = '<div style="padding:60px 20px;text-align:center"><div style="font-size:32px;margin-bottom:12px">&#127897;&#65039;</div><div style="font-size:15px;font-weight:500;margin-bottom:8px">No shows followed yet</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Connect Spotify to import your subscriptions, or follow shows from the Discover page.</div><button onclick="showView(\'discover\')" style="background:var(--navy);color:#fff;border:none;border-radius:999px;padding:10px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--ff)">Browse shows</button></div>';
+      return;
+    }
+
+    var cards = data.followed.map(function(f) {
+      var shows = f.shows || {};
+      var slug = shows.slug || '';
+      var name = shows.name || f.show_name || 'Unknown Show';
+      var artwork = shows.artwork_url || f.artwork || '';
+      var publisher = shows.publisher || shows.host_name || '';
+      var clickAttr = slug ? 'onclick="showView(\'show\');loadShowProfile(\'' + _esc(slug) + '\')" style="cursor:pointer"' : '';
+      var art = artwork
+        ? '<img src="' + _esc(artwork) + '" onerror="this.style.display=\'none\'" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;margin-bottom:10px">'
+        : '<div style="width:100%;aspect-ratio:1;background:var(--bg3);border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:36px">&#127897;&#65039;</div>';
+      return '<div ' + clickAttr + ' style="padding:12px;background:var(--bg2);border-radius:10px;transition:transform .1s">' + art + '<div style="font-size:13px;font-weight:600;line-height:1.3;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(name) + '</div><div style="font-size:11px;color:var(--text3);margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(publisher) + '</div>' + _platformBadge(f.platform) + '</div>';
+    }).join('');
+
+    el.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+      '<div style="font-size:20px;font-weight:700">Following <span style="color:var(--text3);font-weight:500;font-size:14px">(' + data.followed.length + ')</span></div>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px">' + cards + '</div>';
+  };
+
+  window.renderLiked = async function() {
+    var el = document.getElementById('liked-content');
+    if (!el) return;
+    el.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text3);font-size:13px">Loading saved episodes&hellip;</div>';
+
+    var data = await _fetchLibraryData();
+    if (!data || !data.saved) {
+      el.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text3);font-size:13px">Couldn\'t load saved episodes.</div>';
+      return;
+    }
+
+    if (data.saved.length === 0) {
+      el.innerHTML = '<div style="padding:60px 20px;text-align:center"><div style="font-size:32px;margin-bottom:12px">&#128150;</div><div style="font-size:15px;font-weight:500;margin-bottom:8px">No saved episodes yet</div><div style="font-size:13px;color:var(--text3);margin-bottom:4px">Saved episodes from Spotify will sync here automatically.</div><div style="font-size:12px;color:var(--text3)">You can also heart episodes in Podlens to save them.</div></div>';
+      return;
+    }
+
+    var rows = data.saved.map(function(ep) {
+      var slug = (ep.shows && ep.shows.slug) || '';
+      var titleClick = ep.episode_url ? 'onclick="window.open(\'' + _esc(ep.episode_url) + '\',\'_blank\',\'noopener\')" style="cursor:pointer"' : '';
+      var showClick = slug ? 'onclick="showView(\'show\');loadShowProfile(\'' + _esc(slug) + '\')" style="cursor:pointer;text-decoration:underline;text-decoration-color:transparent;transition:text-decoration-color .15s" onmouseover="this.style.textDecorationColor=\'currentColor\'" onmouseout="this.style.textDecorationColor=\'transparent\'"' : '';
+      var art = ep.artwork_url
+        ? '<img src="' + _esc(ep.artwork_url) + '" onerror="this.style.display=\'none\'" style="width:56px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0">'
+        : '<div style="width:56px;height:56px;background:var(--bg3);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center">&#127897;&#65039;</div>';
+      return '<div style="display:flex;gap:12px;padding:12px;background:var(--bg2);border-radius:8px;align-items:flex-start">' + art + '<div style="flex:1;min-width:0"><div ' + titleClick + ' style="font-size:13px;font-weight:600;margin-bottom:3px;line-height:1.3">' + _esc(ep.episode_title || '') + '</div><div style="font-size:11px;color:var(--text3);margin-bottom:6px"><span ' + showClick + '>' + _esc(ep.show_name || '') + '</span> &middot; saved ' + _timeAgo(ep.saved_at) + '</div>' + _platformBadge(ep.platform) + '</div></div>';
+    }).join('');
+
+    el.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+      '<div style="font-size:20px;font-weight:700">Saved <span style="color:var(--text3);font-weight:500;font-size:14px">(' + data.saved.length + ')</span></div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:10px">' + rows + '</div>';
+  };
+
+  window.renderAnalyzed = async function() {
+    var el = document.getElementById('analyzed-content');
+    if (!el) return;
+    el.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text3);font-size:13px">Loading your analyses&hellip;</div>';
+
+    var data = await _fetchLibraryData();
+    if (!data || !data.analyzed) {
+      el.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text3);font-size:13px">Couldn\'t load analyses.</div>';
+      return;
+    }
+
+    if (data.analyzed.length === 0) {
+      el.innerHTML = '<div style="padding:60px 20px;text-align:center"><div style="font-size:32px;margin-bottom:12px">&#128269;</div><div style="font-size:15px;font-weight:500;margin-bottom:8px">No analyses yet</div><div style="font-size:13px;color:var(--text3);margin-bottom:20px">Paste a podcast URL to run your first analysis.</div><button onclick="showView(\'analyze\')" style="background:var(--navy);color:#fff;border:none;border-radius:999px;padding:10px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--ff)">Start analyzing</button></div>';
+      return;
+    }
+
+    var rows = data.analyzed.map(function(a) {
+      var slug = (a.shows && a.shows.slug) || '';
+      var artwork = (a.shows && a.shows.artwork_url) || a.show_artwork || '';
+      var showClick = slug ? 'onclick="showView(\'show\');loadShowProfile(\'' + _esc(slug) + '\')" style="cursor:pointer;text-decoration:underline;text-decoration-color:transparent;transition:text-decoration-color .15s" onmouseover="this.style.textDecorationColor=\'currentColor\'" onmouseout="this.style.textDecorationColor=\'transparent\'"' : '';
+      var biasHtml = a.bias_score != null ? _biasBar(a.bias_score) + '<span style="font-size:11px;color:var(--text3)">' + _esc(a.bias_label || '') + '</span>' : '';
+      var art = artwork
+        ? '<img src="' + _esc(artwork) + '" onerror="this.style.display=\'none\'" style="width:56px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0">'
+        : '<div style="width:56px;height:56px;background:var(--bg3);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center">&#128269;</div>';
+      return '<div style="display:flex;gap:12px;padding:12px;background:var(--bg2);border-radius:8px;align-items:flex-start"><a href="/analyze?id=' + _esc(a.id) + '" onclick="event.preventDefault();showView(\'analyze\');if(typeof loadAnalysisById===\'function\')loadAnalysisById(\'' + _esc(a.id) + '\')" style="display:flex;gap:12px;flex:1;text-decoration:none;color:inherit">' + art + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;margin-bottom:3px;line-height:1.3">' + _esc(a.episode_title || 'Untitled episode') + '</div><div style="font-size:11px;color:var(--text3);margin-bottom:6px"><span ' + showClick + '>' + _esc(a.show_name || '') + '</span> &middot; analyzed ' + _timeAgo(a.analyzed_at) + '</div>' + biasHtml + '</div></a></div>';
+    }).join('');
+
+    el.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+      '<div style="font-size:20px;font-weight:700">Analyzed <span style="color:var(--text3);font-weight:500;font-size:14px">(' + data.analyzed.length + ')</span></div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:10px">' + rows + '</div>';
+  };
+
+  function _maybeRenderLibraryPanels() {
+    var libView = document.getElementById('view-library');
+    if (!libView || libView.style.display === 'none') return;
+
+    var followingPanel = document.getElementById('panel-following');
+    var likedPanel = document.getElementById('panel-liked');
+    var analyzedPanel = document.getElementById('panel-analyzed');
+
+    if (followingPanel && followingPanel.classList.contains('active')) window.renderFollowing();
+    if (likedPanel && likedPanel.classList.contains('active')) window.renderLiked();
+    if (analyzedPanel && analyzedPanel.classList.contains('active')) window.renderAnalyzed();
+
+    if (followingPanel && followingPanel.offsetParent !== null) window.renderFollowing();
+  }
+
+  document.addEventListener('DOMContentLoaded', _maybeRenderLibraryPanels);
+  setTimeout(_maybeRenderLibraryPanels, 500);
+  setTimeout(_maybeRenderLibraryPanels, 2000);
+  window.addEventListener('hashchange', function() { setTimeout(_maybeRenderLibraryPanels, 150); });
+
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.closest && e.target.closest('[data-lib-tab]')) {
+      setTimeout(_maybeRenderLibraryPanels, 100);
+    }
+  });
+
+  window.addEventListener('pl-spotify-synced', function() {
+    _libraryDataCache = null;
+    setTimeout(_maybeRenderLibraryPanels, 100);
+  });
+})();
+</script>
 </body>
 </html>
