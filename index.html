@@ -4237,9 +4237,9 @@ posthog.init('phc_xMtRLvwaNQnGhGTAuH9NjpotRLEbFya3mr5s9qsmUYiJ', {
                 <div class="connect-btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg></div>
                 <div><div style="font-size:13px;font-weight:700">Connect Spotify</div><div style="font-size:11px;color:var(--text3)">Import your library</div></div>
               </button>
-              <button class="connect-btn youtube" onclick="heroConnectYouTube()">
+              <button class="connect-btn youtube" style="opacity:0.5;cursor:default" disabled>
                 <div class="connect-btn-icon">&#9654;</div>
-                <div><div style="font-size:13px;font-weight:700">Connect YouTube</div><div style="font-size:11px;color:var(--text3)">Analyze any video podcast</div></div>
+                <div><div style="font-size:13px;font-weight:700">Connect YouTube</div><div style="font-size:11px;color:var(--text3)">Coming soon</div></div>
               </button>
             </div>
           </div>
@@ -6383,10 +6383,10 @@ function renderHomeState() {
         quotaEl.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-top:4px">Unlimited analyses</div>';
       }
     }
-    // Show connect CTAs for new users, recent list for returning
+    // Show connect CTAs + recent list (both visible for returning users)
     var newUserCta = document.getElementById('dash-new-user-cta');
     var recentWrap = document.getElementById('dash-recent-wrap');
-    if (newUserCta) newUserCta.style.display = isNewUser ? '' : 'none';
+    if (newUserCta) newUserCta.style.display = '';
     if (recentWrap) recentWrap.style.display = isNewUser ? 'none' : '';
     // Render all dashboard data
     renderDashRecent();
@@ -6466,6 +6466,10 @@ function _renderDashHero(u) {
       var safeShow = showName.replace(/'/g, "\\'");
       analyzeBtn.setAttribute('onclick', "analyzeEp(null,'"+safeUrl+"','"+safeTitle+"','"+safeShow+"',true)");
     }
+    // Wire play button — set the global URL so discHeroPlay() works
+    _discCurrentHeroUrl = url;
+    _discCurrentHeroShow = showName;
+    _discCurrentHeroTitle = title;
     if (heroCard) heroCard.style.display = '';
   }
 
@@ -7064,8 +7068,13 @@ function renderDashRecent() {
     var cleanQuery = query.replace(/\b(E|Ep|EP|Ch|Episode|Part|Vol)\.?\s*\d*\b/gi, '').replace(/\d{2,}/g, '').replace(/[|#\-:]+$/g, '').replace(/\s{2,}/g, ' ').trim();
     if (cleanQuery.length < 4) cleanQuery = query;
     _itunesArtwork(cleanQuery).then(function(url) {
+      // If clean query failed, try raw showName
+      if (!url && r.showName && r.showName !== cleanQuery) return _itunesArtwork(r.showName);
+      return url;
+    }).then(function(url) {
       if (!url) return;
-      // Update the placeholder
+      // Update the placeholder and save artwork to localStorage for next time
+      try { var saved = JSON.parse(localStorage.getItem('pl-recent') || '[]'); var match = saved.find(function(s){ return (s.url||s.jobId) === (r.url||r.jobId); }); if (match && !match.artwork) { match.artwork = url; localStorage.setItem('pl-recent', JSON.stringify(saved)); } } catch(e) {}
       var el2 = document.getElementById(_artId);
       if (el2) {
         var img = document.createElement('img');
