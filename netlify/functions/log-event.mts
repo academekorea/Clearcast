@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { trackEvent } from "./lib/supabase.js";
+import { getClientIp, sha256hex } from "./lib/security.js";
 
 // Public event logging endpoint — called from frontend
 // Rate-limited by Netlify; no auth required (events are non-sensitive)
@@ -32,13 +33,20 @@ export default async (req: Request) => {
     const body = await req.json();
     const { event_type, user_id, session_id, properties = {}, region, tier, source } = body;
 
+    // Hash the client IP so we can filter admin/dev traffic without storing PII
+    let ip_hash: string | null = null;
+    try {
+      const ip = getClientIp(req);
+      if (ip) ip_hash = await sha256hex("ip:" + ip);
+    } catch {}
+
     if (!event_type || !ALLOWED_EVENTS.has(event_type)) {
       return new Response(JSON.stringify({ error: 'Invalid event type' }), {
         status: 400, headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    trackEvent(user_id, event_type, properties, { region, tierAtTime: tier, source: source || 'web', sessionId: session_id });
+    trackEvent(user_id, event_type, properties, { region, tierAtTime: tier, source: source || 'web', sessionId: session_id, ipHash: ip_hash });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

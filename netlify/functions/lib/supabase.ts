@@ -77,7 +77,7 @@ export function trackEvent(
   userId: string | null | undefined,
   eventType: string,
   properties: Record<string, unknown> = {},
-  extra: { region?: string; tierAtTime?: string; source?: string; sessionId?: string | null } = {}
+  extra: { region?: string; tierAtTime?: string; source?: string; sessionId?: string | null; ipHash?: string | null } = {}
 ): void {
   sbInsert('events', {
     user_id: userId || null,
@@ -87,6 +87,7 @@ export function trackEvent(
     region: extra.region || null,
     tier_at_time: extra.tierAtTime || null,
     source: extra.source || 'web',
+    ip_hash: extra.ipHash || null,
     created_at: new Date().toISOString(),
   }).catch(() => {})
 }

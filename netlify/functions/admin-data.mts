@@ -329,10 +329,28 @@ function json(data: unknown, status = 200) {
 }
 
 async function getAnalytics() {
-  const ALL_EVENTS_30D = await sbGet(
-    "events?select=event_type,user_id,session_id,properties,created_at&order=created_at.desc&limit=10000&created_at=gte." +
+  // Get admin user IDs + their IP hashes for filtering
+  const adminUsers = await sbGet(
+    "users?select=id&email=eq.academekorea@gmail.com"
+  );
+  const adminIds = adminUsers.map((u: any) => u.id);
+  const adminIpRows = adminIds.length > 0
+    ? await sbGet(
+        "events?select=ip_hash&ip_hash=not.is.null&user_id=in.(" + adminIds.join(",") + ")&limit=500"
+      )
+    : [];
+  const adminIpHashes = new Set<string>(adminIpRows.map((r: any) => r.ip_hash).filter(Boolean));
+
+  const ALL_EVENTS_30D_RAW = await sbGet(
+    "events?select=event_type,user_id,session_id,properties,ip_hash,created_at&order=created_at.desc&limit=10000&created_at=gte." +
     new Date(Date.now() - 30 * 86400000).toISOString()
   );
+  // Filter out admin IP hashes AND admin user_ids
+  const ALL_EVENTS_30D = ALL_EVENTS_30D_RAW.filter((e: any) => {
+    if (e.ip_hash && adminIpHashes.has(e.ip_hash)) return false;
+    if (e.user_id && adminIds.includes(e.user_id)) return false;
+    return true;
+  });
   const USERS_ALL = await sbGet(
     "users?select=id,email,plan,tier,created_at,last_seen_at&email=neq.academekorea@gmail.com"
   );
@@ -542,8 +560,22 @@ async function getAnalytics() {
   const last5MinEvents = events.filter(e => new Date(e.created_at).getTime() > now - 5 * 60 * 1000);
   const healthCheck = { events_last_5_min: last5MinEvents.length, unique_sessions_last_5_min: new Set(last5MinEvents.map(e => e.session_id)).size, event_types_seen: Array.from(new Set(last5MinEvents.map(e => e.event_type))) };
 
+  // Bar-chart-ready data
+  const funnelBars = [
+    { label: 'Visited', value: funnel.visited, pct: 100 },
+    { label: 'Tried analysis', value: funnel.tried_analysis, pct: funnel.visited ? Math.round(funnel.tried_analysis * 100 / funnel.visited) : 0 },
+    { label: 'Completed analysis', value: funnel.completed_analysis, pct: funnel.visited ? Math.round(funnel.completed_analysis * 100 / funnel.visited) : 0 },
+    { label: 'Started signup', value: funnel.started_signup, pct: funnel.visited ? Math.round(funnel.started_signup * 100 / funnel.visited) : 0 },
+    { label: 'Completed signup', value: funnel.completed_signup, pct: funnel.visited ? Math.round(funnel.completed_signup * 100 / funnel.visited) : 0 },
+  ];
+  const maxHourVisits = Math.max(1, ...hourRows.map((h: any) => h.visits));
+  const hourBarsData = hourRows.map((h: any) => ({ hour: (h.hour_utc < 10 ? '0' : '') + h.hour_utc + ':00', visits: h.visits, pct: Math.round(h.visits * 100 / maxHourVisits) }));
+  const dailyMax = Math.max(1, ...dailyActivityRows.map((d: any) => d.total_events));
+  const dailyBars = dailyActivityRows.map((d: any) => ({ day: d.day.slice(5), total_events: d.total_events, visits: d.visits, signups: d.signups, pct: Math.round(d.total_events * 100 / dailyMax) })).reverse();
+
   return json({
-    daily_activity: dailyActivityRows, funnel, top_paths: topPaths, time_to_activation: timeToActivation,
+    daily_activity: dailyActivityRows, funnel, funnel_bars: funnelBars, daily_bars: dailyBars, hour_bars: hourBarsData,
+    top_paths: topPaths, time_to_activation: timeToActivation,
     drop_off: dropOff, spotify_cohort: spotifyCohort, no_spotify_cohort: noSpotifyCohort,
     traffic_sources: sourceRows, retention: retentionRows, top_shows: topShows,
     hour_of_day: hourRows, frequency: frequencyRows, conversion, activation_conversion: activationConversion,

@@ -16380,9 +16380,18 @@ function _renderAdminTab(tab, d) {
     html += '<div style="background:'+(hc.events_last_5_min>0?'#dcfce7':'#fef3c7')+';padding:10px 14px;border-radius:6px;font-size:12px;margin-bottom:20px">'+(hc.events_last_5_min>0?'\u2713 ':'\u26A0 ')+'<b>Tracking is '+(hc.events_last_5_min>0?'live':'idle')+'</b> \u2014 '+hc.events_last_5_min+' events in last 5 min from '+hc.unique_sessions_last_5_min+' sessions</div>';
 
     html += _section('Conversion funnel (last 30 days)');
-    html += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
-    html += _statCard('Visited', f.visited||0); html += _statCard('Tried analysis', f.tried_analysis||0, (f.pct_tried||0)+'% of visited'); html += _statCard('Completed', f.completed_analysis||0, (f.pct_completed_of_tried||0)+'% of tried'); html += _statCard('Started signup', f.started_signup||0); html += _statCard('Completed signup', f.completed_signup||0, (f.pct_signup_completion||0)+'% completion');
-    html += '</div>';
+    var fb = d.funnel_bars || [];
+    if (fb.length === 0 || fb[0].value === 0) {
+      html += '<div style="font-size:12px;color:var(--text3);padding:12px">No funnel data yet.</div>';
+    } else {
+      html += '<div style="background:var(--bg2);padding:16px;border-radius:8px;border:1px solid var(--border)">';
+      fb.forEach(function(b, i) {
+        var colors = ['#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#ec4899'];
+        var color = colors[i] || '#6366f1';
+        html += '<div style="margin-bottom:' + (i === fb.length - 1 ? '0' : '10px') + '"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">' + b.label + '</span><span style="font-weight:600">' + b.value + ' <span style="color:var(--text3);font-weight:400">(' + b.pct + '%)</span></span></div><div style="height:10px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + b.pct + '%;background:' + color + ';transition:width .3s"></div></div></div>';
+      });
+      html += '</div>';
+    }
 
     html += _section('Time to first value');
     html += '<div style="display:flex;gap:10px;flex-wrap:wrap">';
@@ -16412,6 +16421,14 @@ function _renderAdminTab(tab, d) {
     html += '<tr><td><b>Connected Spotify</b></td><td>'+sc.users+'</td><td>'+sc.avg_analyses+'</td><td>'+sc.avg_likes+'</td><td>'+sc.avg_show_views+'</td></tr>';
     html += '<tr><td>No Spotify</td><td>'+nsc.users+'</td><td>'+nsc.avg_analyses+'</td><td>'+nsc.avg_likes+'</td><td>'+nsc.avg_show_views+'</td></tr>';
     html += '</tbody></table>';
+
+    var db = d.daily_bars || [];
+    if (db.length > 0 && db.some(function(x) { return x.total_events > 0; })) {
+      html += _section('Daily activity \u2014 visual (last 14 days)');
+      html += '<div style="background:var(--bg2);padding:16px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:flex-end;gap:6px;height:160px">';
+      db.forEach(function(b) { var barHeight = Math.max(2, b.pct); html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end"><div style="font-size:10px;font-weight:600;color:var(--text2);line-height:1">' + (b.total_events > 0 ? b.total_events : '') + '</div><div style="width:100%;height:' + barHeight + '%;background:linear-gradient(180deg,#6366f1,#3b82f6);border-radius:3px 3px 0 0;min-height:2px" title="' + b.day + ': ' + b.total_events + ' events"></div><div style="font-size:10px;color:var(--text3)">' + b.day + '</div></div>'; });
+      html += '</div>';
+    }
 
     html += _section('Daily activity (last 14 days)');
     html += '<table class="adm-table"><thead><tr><th>Day</th><th>Events</th><th>Sessions</th><th>Users</th><th>Visits</th><th>Signups</th><th>Analyses</th></tr></thead><tbody>';
@@ -16446,6 +16463,14 @@ function _renderAdminTab(tab, d) {
     html += _section('Frequency (analyses per user per week)');
     if (!(d.frequency||[]).length) { html += '<div style="font-size:12px;color:var(--text3);padding:12px">No analyses yet.</div>'; }
     else { html += '<table class="adm-table"><thead><tr><th>Week of</th><th>Active users</th><th>Avg analyses</th><th>Median</th><th>Power (5+)</th><th>One-time</th></tr></thead><tbody>'; d.frequency.forEach(function(r) { html += '<tr><td>'+r.week+'</td><td>'+r.active_users+'</td><td>'+r.avg_analyses+'</td><td>'+r.median_analyses+'</td><td>'+r.power_users_5plus+'</td><td>'+r.one_time_only+'</td></tr>'; }); html += '</tbody></table>'; }
+
+    var hb = d.hour_bars || [];
+    if (hb.length > 0 && hb.some(function(x) { return x.visits > 0; })) {
+      html += _section('Hour-of-day \u2014 visual (peak traffic times, UTC)');
+      html += '<div style="background:var(--bg2);padding:16px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:flex-end;gap:2px;height:120px">';
+      hb.forEach(function(b) { var barHeight = Math.max(2, b.pct); html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end" title="' + b.hour + ': ' + b.visits + ' visits"><div style="width:100%;height:' + barHeight + '%;background:#8b5cf6;border-radius:2px 2px 0 0;min-height:2px"></div><div style="font-size:9px;color:var(--text3);transform:rotate(-45deg);transform-origin:center;white-space:nowrap">' + b.hour.slice(0, 2) + '</div></div>'; });
+      html += '</div>';
+    }
 
     html += _section('Hour-of-day activity (UTC, last 14 days)');
     html += '<table class="adm-table"><thead><tr><th>Hour</th><th>Visits</th><th>Signups</th><th>Analyses</th></tr></thead><tbody>';
@@ -17201,6 +17226,8 @@ function addAppleShows() {
   window.plTrack = function(eventType, properties) {
     try {
       var u = (typeof plUser === 'function') ? plUser() : null;
+      // Exclude admin users from analytics tracking (includes dev/testing use)
+      if (u && u.isSuperAdmin) return;
       var payload = {
         event_type: eventType,
         user_id: u && u.id ? u.id : null,
