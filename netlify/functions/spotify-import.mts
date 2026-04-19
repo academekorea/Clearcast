@@ -7,9 +7,18 @@ interface SpotifyShow {
   name: string;
   publisher?: string;
   description?: string;
-  images?: Array<{ url: string }>;
+  images?: Array<{ url: string; width?: number; height?: number }>;
   total_episodes?: number;
   external_urls?: { spotify?: string };
+}
+
+// Pick the largest image from Spotify's images array (not always sorted by size)
+function bestImage(images?: Array<{ url: string; width?: number; height?: number }>): string {
+  if (!images || images.length === 0) return "";
+  if (images.length === 1) return images[0].url;
+  const withSize = images.filter(i => i.width);
+  if (withSize.length) return withSize.sort((a, b) => (b.width || 0) - (a.width || 0))[0].url;
+  return images[0].url; // fallback to first
 }
 
 interface SpotifyEpisode {
@@ -83,7 +92,7 @@ export default async (req: Request) => {
           showName: ep.show?.name || "",
           playedAt: item.played_at,
           spotifyUrl: ep.external_urls?.spotify || "",
-          artwork: ep.show?.images?.[0]?.url || "",
+          artwork: bestImage(ep.show?.images) || "",
         });
       }
     }
@@ -104,7 +113,7 @@ export default async (req: Request) => {
         name: show.name,
         publisher: show.publisher || null,
         description: (show.description || "").slice(0, 500),
-        artwork_url: show.images?.[0]?.url || null,
+        artwork_url: bestImage(show.images) || null,
         source_type: "spotify",
       });
 
@@ -113,7 +122,7 @@ export default async (req: Request) => {
         spotifyId: show.id,
         name: show.name,
         publisher: show.publisher || "",
-        artwork: show.images?.[0]?.url || "",
+        artwork: bestImage(show.images) || "",
         spotifyUrl: show.external_urls?.spotify || "",
         analyzed: false,
       });
@@ -191,7 +200,7 @@ export default async (req: Request) => {
         spotify_id: ep.show.id,
         name: ep.show.name,
         publisher: ep.show.publisher || null,
-        artwork_url: ep.show.images?.[0]?.url || null,
+        artwork_url: bestImage(ep.show.images) || null,
         source_type: "spotify",
       }) : null;
 
@@ -200,7 +209,7 @@ export default async (req: Request) => {
         show_id: showMatch?.showId || null,
         episode_title: ep.name,
         show_name: ep.show?.name || "",
-        artwork_url: ep.show?.images?.[0]?.url || null,
+        artwork_url: bestImage(ep.show?.images) || null,
         episode_url: ep.external_urls?.spotify || null,
         platform: "spotify",
         platform_episode_id: ep.id,
