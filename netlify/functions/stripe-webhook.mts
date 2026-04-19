@@ -91,29 +91,44 @@ export default async (req: Request) => {
           ? Math.round((planAmounts[planName] || 0) * 0.67)  // 33% founding discount
           : (planAmounts[planName] || 0);
 
-        sbUpsert('subscriptions', {
-          user_id: userId,
-          stripe_customer_id: customerId,
-          stripe_subscription_id: subId,
-          plan: planName,
-          billing_period: subscription?.items?.data?.[0]?.price?.recurring?.interval || 'month',
-          status: 'active',
-          amount: planAmountCents,
-          current_period_start: subscription?.current_period_start
-            ? new Date(subscription.current_period_start * 1000).toISOString() : null,
-          current_period_end: periodEnd,
-          founding_discount: foundingApplied,
-          updated_at: new Date().toISOString(),
-        }, 'stripe_subscription_id').catch(() => {});
+        try {
+          const subUpsertResult = await sbUpsert('subscriptions', {
+            user_id: userId,
+            stripe_customer_id: customerId,
+            stripe_subscription_id: subId,
+            plan: planName,
+            billing_period: subscription?.items?.data?.[0]?.price?.recurring?.interval || 'month',
+            status: 'active',
+            amount: planAmountCents,
+            current_period_start: subscription?.current_period_start
+              ? new Date(subscription.current_period_start * 1000).toISOString() : null,
+            current_period_end: periodEnd,
+            founding_discount: foundingApplied,
+            updated_at: new Date().toISOString(),
+          }, 'stripe_subscription_id');
+          if (!subUpsertResult) {
+            console.error(`[stripe-webhook] subscriptions upsert returned falsy for user ${userId}, sub ${subId}`);
+          }
+        } catch (e: any) {
+          console.error(`[stripe-webhook] subscriptions upsert FAILED for user ${userId}, sub ${subId}:`, e?.message || e);
+        }
 
         // Supabase users table
-        sbUpdate('users', { id: userId }, {
-          tier: planName,
-          stripe_customer_id: customerId,
-          stripe_subscription_id: subId,
-          payment_grace_until: null,
-          last_seen_at: new Date().toISOString(),
-        }).catch(() => {});
+        try {
+          const userUpdateResult = await sbUpdate('users', { id: userId }, {
+            plan: planName,                  // CRITICAL: was missing before
+            tier: planName,
+            stripe_customer_id: customerId,
+            stripe_subscription_id: subId,
+            payment_grace_until: null,
+            last_seen_at: new Date().toISOString(),
+          });
+          if (!userUpdateResult) {
+            console.error(`[stripe-webhook] users update returned falsy for user ${userId}, plan ${planName}`);
+          }
+        } catch (e: any) {
+          console.error(`[stripe-webhook] users update FAILED for user ${userId}:`, e?.message || e);
+        }
 
         trackEvent(userId, 'upgrade_clicked', {
           plan: planName, founding_applied: foundingApplied,
@@ -166,20 +181,29 @@ export default async (req: Request) => {
         const updPlanAmounts: Record<string, number> = { creator: 469, operator: 1273, studio: 3283 };
         const updAmount = isActive ? (updPlanAmounts[planName] || 0) : 0;
 
-        sbUpsert('subscriptions', {
-          user_id: userId,
-          stripe_subscription_id: sub.id,
-          plan: isActive ? planName : 'free',
-          status: sub.status,
-          amount: updAmount,
-          current_period_end: periodEnd,
-          updated_at: new Date().toISOString(),
-        }, 'stripe_subscription_id').catch(() => {});
+        try {
+          await sbUpsert('subscriptions', {
+            user_id: userId,
+            stripe_subscription_id: sub.id,
+            plan: isActive ? planName : 'free',
+            status: sub.status,
+            amount: updAmount,
+            current_period_end: periodEnd,
+            updated_at: new Date().toISOString(),
+          }, 'stripe_subscription_id');
+        } catch (e: any) {
+          console.error(`[stripe-webhook] subscriptions upsert (updated) FAILED for user ${userId}:`, e?.message || e);
+        }
 
-        sbUpdate('users', { id: userId }, {
-          tier: isActive ? planName : 'free',
-          stripe_subscription_id: sub.id,
-        }).catch(() => {});
+        try {
+          await sbUpdate('users', { id: userId }, {
+            plan: isActive ? planName : 'free',          // CRITICAL: was missing
+            tier: isActive ? planName : 'free',
+            stripe_subscription_id: sub.id,
+          });
+        } catch (e: any) {
+          console.error(`[stripe-webhook] users update (updated) FAILED for user ${userId}:`, e?.message || e);
+        }
         break;
       }
 
@@ -195,11 +219,23 @@ export default async (req: Request) => {
           subscriptionId: sub.id, updatedAt: Date.now(),
         });
 
-        sbUpdate('subscriptions', { stripe_subscription_id: sub.id }, {
-          plan: 'free', status: 'canceled', updated_at: new Date().toISOString(),
-        }).catch(() => {});
+        try {
+          await sbUpdate('subscriptions', { stripe_subscription_id: sub.id }, {
+            plan: 'free', status: 'canceled', updated_at: new Date().toISOString(),
+          });
+        } catch (e: any) {
+          console.error(`[stripe-webhook] subscriptions cancel FAILED for sub ${sub.id}:`, e?.message || e);
+        }
 
-        sbUpdate('users', { id: userId }, { tier: 'free' }).catch(() => {});
+        try {
+          await sbUpdate('users', { id: userId }, {
+            plan: 'free',                  // CRITICAL: was missing
+            tier: 'free',
+            stripe_subscription_id: null,  // clear it on cancel
+          });
+        } catch (e: any) {
+          console.error(`[stripe-webhook] users cancel FAILED for user ${userId}:`, e?.message || e);
+        }
         trackEvent(userId, 'subscription_canceled', { sub_id: sub.id });
         break;
       }
@@ -233,7 +269,11 @@ export default async (req: Request) => {
         // Set 3-day grace period in Supabase + Blobs
         const gracePeriodEnd = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
         if (userId) {
-          sbUpdate('users', { id: userId }, { payment_grace_until: gracePeriodEnd }).catch(() => {});
+          try {
+            await sbUpdate('users', { id: userId }, { payment_grace_until: gracePeriodEnd });
+          } catch (e: any) {
+            console.error(`[stripe-webhook] grace period set FAILED for user ${userId}:`, e?.message || e);
+          }
           // Also write to Blobs so get-plan.mts can read it
           const existing = await store.get(`user-plan-${userId}`, { type: "json" }).catch(() => null) as any;
           store.setJSON(`user-plan-${userId}`, {
